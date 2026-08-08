@@ -9,8 +9,8 @@ export const EmployerAnalyticsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Analytics</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Track your hiring performance.</p>
+      <h1 className="page-title">Analytics</h1>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Track your hiring performance.</p>
 
       {loading && !analytics ? (
         <LoadingState label="Loading analytics…" />
@@ -34,7 +34,7 @@ export const EmployerAnalyticsPage = () => {
                       <span>Stage {index + 1}</span>
                       <span>{value}</span>
                     </div>
-                     <div className="match-score__track" style={{ marginTop: '0.25rem' }} role="progressbar" aria-valuenow={Math.min(value, 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Stage ${index + 1} ${value}`}>
+                     <div className="match-score__track card__subtitle card__subtitle--mt" role="progressbar" aria-valuenow={Math.min(value, 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Stage ${index + 1} ${value}`}>
                        <div className="match-score__fill" style={{ width: `${Math.min(value, 100)}%` }} />
                      </div>
                   </div>
@@ -49,3 +49,6 @@ export const EmployerAnalyticsPage = () => {
     </div>
   );
 };
+
+
+

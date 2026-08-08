@@ -6,6 +6,7 @@ import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { MorphingText } from '../../components/MorphingText';
+import { PageHeader } from '../../components/PageHeader';
 import type { JobType } from '../../core/types';
 
 export const JobListPage = () => {
@@ -14,22 +15,24 @@ export const JobListPage = () => {
 
   return (
     <div className="page fade-in">
-      <div className="section-header">
-        <MorphingText text="Job & internship listings" as="h1" className="page-title" />
-        <div className="filter-bar">
-          <label className="form-label" htmlFor="job-type-filter">Type:</label>
-          <select
-            id="job-type-filter"
-            className="select select--auto"
-            value={type}
-            onChange={(e) => setType(e.target.value as JobType | '')}
-          >
-            <option value="">All</option>
-            <option value="HIRING">Hiring</option>
-            <option value="INTERNSHIP">Internship</option>
-          </select>
-        </div>
-      </div>
+      <PageHeader
+        title={<MorphingText text="Job & internship listings" as="span" />}
+        action={
+          <div className="filter-bar">
+            <label className="form-label" htmlFor="job-type-filter">Type:</label>
+            <select
+              id="job-type-filter"
+              className="select select--auto"
+              value={type}
+              onChange={(e) => setType(e.target.value as JobType | '')}
+            >
+              <option value="">All</option>
+              <option value="HIRING">Hiring</option>
+              <option value="INTERNSHIP">Internship</option>
+            </select>
+          </div>
+        }
+      />
 
       <div className="list-container">
         {loading ? (
@@ -49,7 +52,7 @@ export const JobListPage = () => {
                   </div>
                   <span className="list-item__action">View →</span>
                 </div>
-                <div className="match-score" role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Match score ${job.matchScore}%`}>
+                <div className="match-score" role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${Math.min(job.matchScore, 100)}% match score`} aria-label={`Match score ${job.matchScore}%`}>
                   <div className="match-score__top">
                     <span>Match score</span>
                     <strong>{job.matchScore}%</strong>

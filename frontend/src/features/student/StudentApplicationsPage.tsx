@@ -3,14 +3,14 @@ import { studentsApi } from '../../core/api/endpoints/students';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentApplicationsPage = () => {
   const { data: applications, loading } = useAsync(() => studentsApi.listApplications(), []);
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">My applications</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Track the status of every role you&apos;ve applied to.</p>
+      <PageHeader title="My applications" subtitle="Track the status of every role you&apos;ve applied to." />
 
       <div className="list-container">
         {loading ? (

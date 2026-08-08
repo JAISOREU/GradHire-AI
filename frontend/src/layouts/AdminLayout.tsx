@@ -4,21 +4,7 @@ import { Sidebar } from '../components/Sidebar';
 import { AuthHeader } from '../components/AuthHeader';
 import { SkipLink } from '../components/SkipLink';
 import { useState } from 'react';
-
-const ADMIN_SIDEBAR_NAV = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-  { to: '/admin/users', label: 'Users', icon: '👥' },
-  { to: '/admin/jobs', label: 'Jobs', icon: '🗂️' },
-  { to: '/admin/applications', label: 'Applications', icon: '📨' },
-  { to: '/admin/companies', label: 'Companies', icon: '🏢' },
-  { to: '/admin/settings', label: 'System Settings', icon: '⚙️' },
-];
-
-const ADMIN_HEADER_ACTIONS = [
-  { to: '/admin/audit-logs', label: 'Audit Logs', icon: '📋' },
-  { to: '/admin/developer-tools', label: 'Dev Tools', icon: '🛠️' },
-  { to: '/admin/profile', label: 'Profile', icon: '👤' },
-];
+import { ADMIN_SIDEBAR_NAV, ADMIN_HEADER_ACTIONS } from '../core/utils/navigation';
 
 export const AdminLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -42,33 +28,34 @@ export const AdminLayout = () => {
   return (
     <div className="auth-layout">
       <SkipLink />
-      <AuthHeader
+      <Sidebar
         title="Admin"
-        user={{ email: user.email, name: user.name, role: 'Admin' }}
-        links={ADMIN_HEADER_ACTIONS}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        onLogout={async () => {
-          await logout();
-          navigate('/');
-        }}
-      />
-      <div className="auth-body">
-        <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
-        <Sidebar
-          title="Admin"
-          items={ADMIN_SIDEBAR_NAV}
-          collapsed={collapsed}
-          onToggle={toggleCollapsed}
-          className={sidebarOpen ? 'is-open' : ''}
-          footer={
-            <div className="sidebar-user">
-              <div className="header-avatar">{user.email?.slice(0, 2).toUpperCase()}</div>
-              <div className="sidebar-user__meta">
-                <span className="sidebar-user__name">{user.email}</span>
-                <span className="sidebar-user__role">Admin</span>
-              </div>
+        sections={ADMIN_SIDEBAR_NAV}
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        className={sidebarOpen ? 'is-open' : ''}
+        footer={
+          <div className="sidebar-user">
+            <div className="header-avatar">{user.email?.slice(0, 2).toUpperCase()}</div>
+            <div className="sidebar-user__meta">
+              <span className="sidebar-user__name">{user.email}</span>
+              <span className="sidebar-user__role">Admin</span>
             </div>
-          }
+          </div>
+        }
+      />
+      <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+      <div className="auth-main">
+        <AuthHeader
+          title="Admin"
+          user={{ email: user.email, name: user.name, role: 'Admin' }}
+          links={ADMIN_HEADER_ACTIONS}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onLogout={async () => {
+            await logout();
+            navigate('/');
+          }}
+          sidebarOpen={sidebarOpen}
         />
         <main id="main-content" className="auth-content">
           <Outlet />

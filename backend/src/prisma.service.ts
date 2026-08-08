@@ -14,10 +14,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   async onModuleInit() {
     try {
       await this.$connect();
-    } catch {
-      // Do not block app startup when PostgreSQL is unavailable.
-      // AppService detects this and falls back to in-memory storage.
-      this.logger.warn('PostgreSQL connection failed — continuing with in-memory fallback');
+      this.logger.log('Connected to PostgreSQL');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`PostgreSQL connection failed: ${message}`);
     }
   }
 

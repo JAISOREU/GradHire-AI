@@ -8,8 +8,8 @@ export const EmployerInterviewsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Interview scheduling</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Manage interviews with your candidates.</p>
+      <h1 className="page-title">Interview scheduling</h1>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
 
       <div className="list" style={{ marginTop: '1.25rem' }}>
         {loading ? (
@@ -19,7 +19,7 @@ export const EmployerInterviewsPage = () => {
             <article key={inv.id} className="list-item">
               <div className="list-item__head">
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>{inv.candidate}</h3>
+                  <h3 className="card__title">{inv.candidate}</h3>
                   <div className="list-item__meta">
                     <span>{inv.job.title}</span>
                     <span>{new Date(inv.scheduledAt).toLocaleString()}</span>
@@ -36,3 +36,7 @@ export const EmployerInterviewsPage = () => {
     </div>
   );
 };
+
+
+
+

@@ -18,8 +18,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cmd.exe /c "set PATH=C:\\Program Files\\nodejs;%PATH% && npx vite"',
+    command: 'cmd.exe /c "cd C:\\Portfolio\\GradHire AI\\frontend && npx vite"',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });

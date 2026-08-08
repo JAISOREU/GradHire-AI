@@ -5,6 +5,7 @@ import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { LoadingState } from '../../components/LoadingState';
 import { EmptyState } from '../../components/EmptyState';
 import { Link } from 'react-router-dom';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentRecommendedJobsPage = () => {
   const { data: aiJobs, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
@@ -27,10 +28,7 @@ export const StudentRecommendedJobsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Recommended jobs</h1>
-      <p className="card__subtitle card__subtitle--mt">
-        AI-matched roles based on your focus area.
-      </p>
+      <PageHeader title="Recommended jobs" subtitle="AI-matched roles based on your focus area." />
 
       <div className="list-container">
         {aiLoading ? (
@@ -48,7 +46,7 @@ export const StudentRecommendedJobsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="match-score" role="progressbar" aria-valuenow={job.matchScore} aria-valuemin={0} aria-valuemax={100} aria-label={`Match score ${job.matchScore}%`}>
+              <div className="match-score" role="progressbar" aria-valuenow={job.matchScore} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${job.matchScore}% match score`} aria-label={`Match score ${job.matchScore}%`}>
                 <div className="match-score__top"><span>Match score</span><strong>{job.matchScore}%</strong></div>
                 <div className="match-score__track"><div className="match-score__fill" style={{ width: `${job.matchScore}%` }} /></div>
               </div>

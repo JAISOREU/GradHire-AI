@@ -4,6 +4,7 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { FormInput } from '../../components/FormField';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentSettingsPage = () => {
   const { data: settings, loading } = useAsync(() => studentsApi.getSettings(), []);
@@ -57,8 +58,7 @@ export const StudentSettingsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Settings</h1>
-      <p className="card__subtitle card__subtitle--mt">Manage your account preferences.</p>
+      <PageHeader title="Settings" subtitle="Manage your account preferences." />
 
       <div className="form-container">
         <Card title="Notification preferences">

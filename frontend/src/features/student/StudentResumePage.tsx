@@ -5,6 +5,7 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentResumePage = () => {
   const [message, setMessage] = useState('');
@@ -33,10 +34,7 @@ export const StudentResumePage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Resume</h1>
-      <p className="card__subtitle card__subtitle--mt">
-        Upload your resume to auto-fill your profile and refresh your matches.
-      </p>
+      <PageHeader title="Resume" subtitle="Upload your resume to auto-fill your profile and refresh your matches." />
 
       <div className="form-container">
         <Card title="Upload resume">

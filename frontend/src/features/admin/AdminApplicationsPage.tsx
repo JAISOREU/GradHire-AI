@@ -9,14 +9,14 @@ export const AdminApplicationsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Applications</h1>
+      <h1 className="page-title page-title--admin">Applications</h1>
       <AdminListPage
         items={applications}
         renderItem={(a) => (
           <div className="list-item">
             <div className="list-item__head">
               <div>
-                <h3 className="list-item__title" style={{ fontSize: '1rem', fontWeight: 600 }}>{a.job?.title}</h3>
+                <h3 className="list-item__title card__title">{a.job?.title}</h3>
                 <div className="list-item__meta">
                   <span>{a.student?.email}</span>
                   <span>{a.job?.company}</span>
@@ -35,3 +35,6 @@ export const AdminApplicationsPage = () => {
     </div>
   );
 };
+
+
+

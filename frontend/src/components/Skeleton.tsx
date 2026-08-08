@@ -7,27 +7,27 @@ type SkeletonProps = {
 export const Skeleton = ({ lines = 3, className = '', variant = 'text' }: SkeletonProps) => {
   if (variant === 'card') {
     return (
-      <div className={`card ${className}`} style={{ padding: 'var(--space-5)' }}>
-        <div className="skeleton skeleton-text" style={{ width: '60%', height: '1.25rem', marginBottom: 'var(--space-3)' }} />
-        <div className="skeleton skeleton-text" style={{ width: '100%', height: '0.875rem' }} />
-        <div className="skeleton skeleton-text" style={{ width: '90%', height: '0.875rem' }} />
-        <div className="skeleton skeleton-text" style={{ width: '40%', height: '0.875rem', marginTop: 'var(--space-3)' }} />
+      <div className={`skeleton-card ${className}`}>
+        <div className="skeleton skeleton-text skeleton-card__title" />
+        <div className="skeleton skeleton-text skeleton-card__body" />
+        <div className="skeleton skeleton-text skeleton-card__body" style={{ width: '90%' }} />
+        <div className="skeleton skeleton-text skeleton-card__body--short" />
       </div>
     );
   }
 
   if (variant === 'table') {
     return (
-      <div className={`${className}`} style={{ display: 'grid', gap: 'var(--space-2)' }}>
+      <div className={`skeleton-table ${className}`}>
         {Array.from({ length: lines }).map((_, index) => (
-          <div key={index} className="skeleton" style={{ height: '3rem', borderRadius: 'var(--radius-md)' }} />
+          <div key={index} className="skeleton skeleton-table__row" />
         ))}
       </div>
     );
   }
 
   if (variant === 'avatar') {
-    return <div className="skeleton avatar avatar--md" style={{ borderRadius: 'var(--radius-full)' }} />;
+    return <div className="skeleton avatar avatar--md" />;
   }
 
   return (

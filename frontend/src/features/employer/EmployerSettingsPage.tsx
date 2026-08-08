@@ -36,8 +36,8 @@ export const EmployerSettingsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Settings</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Manage your account preferences.</p>
+      <h1 className="page-title">Settings</h1>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Manage your account preferences.</p>
 
       <div style={{ marginTop: '1.25rem', maxWidth: '560px' }}>
         <Card title="Account preferences">
@@ -59,3 +59,6 @@ export const EmployerSettingsPage = () => {
     </div>
   );
 };
+
+
+

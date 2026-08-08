@@ -3,16 +3,14 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { companiesApi } from '../../core/api/endpoints/companies';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
+import { PageHeader } from '../../components/PageHeader';
 
 export const CompaniesPage = () => {
   const { data: companies, loading } = useAsync(() => companiesApi.list(), []);
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Featured companies</h1>
-      <p className="card__subtitle card__subtitle--mt">
-        Explore organizations hiring on GradHire.
-      </p>
+      <PageHeader title="Featured companies" subtitle="Explore organizations hiring on GradHire." />
 
       <div className="list-container">
         {loading ? (

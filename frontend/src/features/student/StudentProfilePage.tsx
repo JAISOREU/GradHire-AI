@@ -5,6 +5,7 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { FormInput, FormTextarea } from '../../components/FormField';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentProfilePage = () => {
   const { user } = useAuth();
@@ -41,8 +42,7 @@ export const StudentProfilePage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Student profile</h1>
-      <p className="card__subtitle card__subtitle--mt">Keep your details up to date for better AI matches.</p>
+      <PageHeader title="Student profile" subtitle="Keep your details up to date for better AI matches." />
 
       <div className="form-container">
         <Card title="Profile details">

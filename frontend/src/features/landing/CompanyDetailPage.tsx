@@ -4,6 +4,7 @@ import { companiesApi } from '../../core/api/endpoints/companies';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
+import { PageHeader } from '../../components/PageHeader';
 
 export const CompanyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,12 +21,7 @@ export const CompanyDetailPage = () => {
       ) : company ? (
         <>
           <div className="card section--mt">
-            <div className="list-item__head">
-              <div>
-                <h1 className="page-title" style={{ fontSize: '1.5rem' }}>{company.name}</h1>
-                <p className="card__subtitle">{company.industry} · {company.location}</p>
-              </div>
-            </div>
+            <PageHeader title={company.name} subtitle={`${company.industry} · ${company.location}`} />
             {company.description && (
               <p className="card__subtitle section--mt" style={{ whiteSpace: 'pre-wrap' }}>{company.description}</p>
             )}

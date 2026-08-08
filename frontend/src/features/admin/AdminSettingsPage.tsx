@@ -1,6 +1,9 @@
 export const AdminSettingsPage = () => (
   <div className="page fade-in">
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>System Settings</h1>
-    <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Manage platform configuration.</p>
+    <h1 className="page-title page-title--admin">System Settings</h1>
+    <p className="card__subtitle card__subtitle card__subtitle--mt">Manage platform configuration.</p>
   </div>
 );
+
+
+

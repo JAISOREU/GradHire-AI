@@ -1,11 +1,8 @@
+import { PageHeader } from '../../components/PageHeader';
+
 export const AboutPage = () => (
   <div className="page fade-in">
-    <section className="app-hero">
-      <h1>About GradHire AI</h1>
-      <p className="hero-subtitle">
-        We help fresh graduates and students discover opportunities and help employers find great talent.
-      </p>
-    </section>
+    <PageHeader title="About GradHire AI" subtitle="We help fresh graduates and students discover opportunities and help employers find great talent." />
 
     <section className="section">
       <div className="grid-2">

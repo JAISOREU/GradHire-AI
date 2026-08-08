@@ -5,6 +5,7 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { LoadingState } from '../../components/LoadingState';
 import { categorize } from '../../core/utils/categorize';
+import { PageHeader } from '../../components/PageHeader';
 
 type Recommendation = {
   title: string;
@@ -48,10 +49,7 @@ export const StudentAiResumeBuilderPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">AI Resume Builder</h1>
-      <p className="card__subtitle card__subtitle--mt">
-        Generate a tailored resume from your profile and focus area.
-      </p>
+      <PageHeader title="AI Resume Builder" subtitle="Generate a tailored resume from your profile and focus area." />
 
       <div className="form-container">
         <Card title="Build your resume">

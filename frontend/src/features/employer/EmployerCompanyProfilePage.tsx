@@ -44,7 +44,7 @@ export const EmployerCompanyProfilePage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Company profile</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Tell candidates about your company.</p>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Tell candidates about your company.</p>
 
       <div className="form-container">
         <Card title="Company details">
@@ -63,3 +63,5 @@ export const EmployerCompanyProfilePage = () => {
     </div>
   );
 };
+
+

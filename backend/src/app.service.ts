@@ -23,8 +23,10 @@ export class AppService implements OnModuleInit {
       await this.prisma.$queryRaw`SELECT 1`;
       this.dbAvailable = true;
       this.logger.log('PostgreSQL connection established');
-    } catch {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
       this.dbAvailable = false;
+      console.error('[AppService] PostgreSQL check failed:', message);
       this.logger.warn('PostgreSQL unavailable — falling back to in-memory storage');
     }
   }

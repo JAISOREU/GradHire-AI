@@ -142,7 +142,7 @@
 - [x] Add email delivery retry logic with exponential backoff
 - [x] Upgrade password hashing from bcryptjs to Argon2id
 
-### Phase 16 — Production Hardening (in progress)
+### Phase 16 — Production Hardening (completed)
 - [x] Add class-validator DTOs for all major endpoints
 - [x] Add global exception filter with sanitized error responses
 - [x] Add image upload rejection to resume parser
@@ -151,4 +151,20 @@
 - [x] Add OpenAPI/Swagger spec for all endpoints
 - [x] Add Redis caching for job listings
 - [x] Add request tracing (x-correlation-id)
-- [ ] Add frontend error boundaries + Sentry
+- [x] Add frontend error boundaries + Sentry
+
+### Phase 17 — Deployment & Production Validation (in progress)
+- [x] Fix NestJS DI injection failure (`reflect-metadata` missing in `main.ts`)
+- [x] Fix tsx decorator metadata emission issue (build with `tsc` + run `dist/main.js`)
+- [x] Fix `node:path` default import in `local-storage.service.ts`
+- [x] Fix email failure blocking application creation (wrap in try/catch)
+- [x] Add `jobId` to student applications list response
+- [x] Create notification when message is sent
+- [x] Fix Playwright multipart form upload for resume E2E test
+- [x] Fix E2E test email uniqueness and notifications endpoint
+- [ ] Push fixes to GitHub
+- [ ] Run PostgreSQL migrations on production database
+- [ ] Deploy backend to Railway
+- [ ] Deploy AI service to Railway
+- [ ] Deploy frontend to Vercel
+- [ ] Verify production health checks pass

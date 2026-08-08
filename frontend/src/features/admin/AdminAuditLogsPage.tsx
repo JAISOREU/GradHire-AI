@@ -7,14 +7,14 @@ export const AdminAuditLogsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Audit Logs</h1>
+      <h1 className="page-title page-title--admin">Audit Logs</h1>
       <AdminListPage
         items={logs ?? []}
         renderItem={(log) => (
           <div className="list-item">
             <div className="list-item__head">
               <div>
-                <h3 className="list-item__title" style={{ fontSize: '1rem', fontWeight: 600 }}>{log.action}</h3>
+                <h3 className="list-item__title card__title">{log.action}</h3>
                 <div className="list-item__meta">
                   <span>{log.user?.email}</span>
                   <span>{new Date(log.createdAt).toLocaleDateString()}</span>
@@ -31,3 +31,6 @@ export const AdminAuditLogsPage = () => {
     </div>
   );
 };
+
+
+

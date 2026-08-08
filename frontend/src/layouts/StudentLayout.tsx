@@ -28,33 +28,34 @@ export const StudentLayout = () => {
   return (
     <div className="auth-layout">
       <SkipLink />
-      <AuthHeader
+      <Sidebar
         title="Student"
-        user={{ email: user.email, name: user.name, role: 'Student' }}
-        links={STUDENT_HEADER_ACTIONS}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        onLogout={async () => {
-          await logout();
-          navigate('/');
-        }}
-      />
-      <div className="auth-body">
-        <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
-        <Sidebar
-          title="Student"
-          items={STUDENT_SIDEBAR_NAV}
-          collapsed={collapsed}
-          onToggle={toggleCollapsed}
-          className={sidebarOpen ? 'is-open' : ''}
-          footer={
-            <div className="sidebar-user">
-              <div className="header-avatar">{initialsOf(user.email)}</div>
-              <div className="sidebar-user__meta">
-                <span className="sidebar-user__name">{user.email}</span>
-                <span className="sidebar-user__role">Student</span>
-              </div>
+        sections={STUDENT_SIDEBAR_NAV}
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        className={sidebarOpen ? 'is-open' : ''}
+        footer={
+          <div className="sidebar-user">
+            <div className="header-avatar">{initialsOf(user.email)}</div>
+            <div className="sidebar-user__meta">
+              <span className="sidebar-user__name">{user.email}</span>
+              <span className="sidebar-user__role">Student</span>
             </div>
-          }
+          </div>
+        }
+      />
+      <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+      <div className="auth-main">
+        <AuthHeader
+          title="Student"
+          user={{ email: user.email, name: user.name, role: 'Student' }}
+          links={STUDENT_HEADER_ACTIONS}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onLogout={async () => {
+            await logout();
+            navigate('/');
+          }}
+          sidebarOpen={sidebarOpen}
         />
         <main id="main-content" className="auth-content">
           <Outlet />

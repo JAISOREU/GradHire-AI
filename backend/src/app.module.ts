@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
 import { MetricsController } from './metrics/metrics.controller';
 import { MetricsService } from './metrics/metrics.service';
-import { PrismaService } from './prisma.service';
+import { PrismaModule } from './prisma.module';
 import { CacheModule } from './cache/cache.module';
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
@@ -22,9 +22,8 @@ import { NotificationsGatewayModule } from './websockets/notifications.gateway.m
 import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule],
+  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule],
   controllers: [AppController, MetricsController],
-  providers: [AppService, HealthService, MetricsService, PrismaService],
-  exports: [PrismaService],
+  providers: [AppService, HealthService, MetricsService],
 })
 export class AppModule {}

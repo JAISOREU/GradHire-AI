@@ -28,33 +28,34 @@ export const EmployerLayout = () => {
   return (
     <div className="auth-layout">
       <SkipLink />
-      <AuthHeader
+      <Sidebar
         title="Employer"
-        user={{ email: user.email, name: user.name, role: 'Employer' }}
-        links={EMPLOYER_HEADER_ACTIONS}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        onLogout={async () => {
-          await logout();
-          navigate('/');
-        }}
-      />
-      <div className="auth-body">
-        <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
-        <Sidebar
-          title="Employer"
-          items={EMPLOYER_SIDEBAR_NAV}
-          collapsed={collapsed}
-          onToggle={toggleCollapsed}
-          className={sidebarOpen ? 'is-open' : ''}
-          footer={
-            <div className="sidebar-user">
-              <div className="header-avatar">{initialsOf(user.email)}</div>
-              <div className="sidebar-user__meta">
-                <span className="sidebar-user__name">{user.email}</span>
-                <span className="sidebar-user__role">Employer</span>
-              </div>
+        sections={EMPLOYER_SIDEBAR_NAV}
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        className={sidebarOpen ? 'is-open' : ''}
+        footer={
+          <div className="sidebar-user">
+            <div className="header-avatar">{initialsOf(user.email)}</div>
+            <div className="sidebar-user__meta">
+              <span className="sidebar-user__name">{user.email}</span>
+              <span className="sidebar-user__role">Employer</span>
             </div>
-          }
+          </div>
+        }
+      />
+      <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+      <div className="auth-main">
+        <AuthHeader
+          title="Employer"
+          user={{ email: user.email, name: user.name, role: 'Employer' }}
+          links={EMPLOYER_HEADER_ACTIONS}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onLogout={async () => {
+            await logout();
+            navigate('/');
+          }}
+          sidebarOpen={sidebarOpen}
         />
         <main id="main-content" className="auth-content">
           <Outlet />

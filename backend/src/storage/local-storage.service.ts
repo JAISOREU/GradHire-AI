@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IStorageService, UploadedFile } from './storage.service';
+import { join, dirname } from 'node:path';
 import { promises as fs } from 'node:fs';
-import path from 'node:path';
 
 @Injectable()
 export class LocalStorageService implements IStorageService {
@@ -13,8 +13,8 @@ export class LocalStorageService implements IStorageService {
   }
 
   async upload(file: UploadedFile, key: string): Promise<string> {
-    const fullPath = path.join(this.basePath, key);
-    const dir = path.dirname(fullPath);
+    const fullPath = join(this.basePath, key);
+    const dir = dirname(fullPath);
 
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(fullPath, file.buffer);
@@ -24,7 +24,7 @@ export class LocalStorageService implements IStorageService {
   }
 
   async remove(key: string): Promise<void> {
-    const fullPath = path.join(this.basePath, key);
+    const fullPath = join(this.basePath, key);
     try {
       await fs.unlink(fullPath);
     } catch {

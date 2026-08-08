@@ -14,6 +14,8 @@ interface UseFormValidationReturn<T extends Record<string, unknown>> {
   errors: Partial<Record<keyof T, string>>;
   touched: Partial<Record<keyof T, boolean>>;
   isSubmitting: boolean;
+  formError: string;
+  setFormError: (error: string) => void;
   handleChange: (field: keyof T, value: unknown) => void;
   handleBlur: (field: keyof T) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
@@ -29,6 +31,7 @@ export function useFormValidation<T extends Record<string, unknown>>({
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const validate = (data: T): Partial<Record<keyof T, string>> => {
     try {
@@ -82,6 +85,7 @@ export function useFormValidation<T extends Record<string, unknown>>({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
     const allTouched = Object.keys(values).reduce((acc, key) => {
       acc[key as keyof T] = true;
       return acc;
@@ -98,6 +102,9 @@ export function useFormValidation<T extends Record<string, unknown>>({
     setIsSubmitting(true);
     try {
       await onSubmit(values);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      setFormError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +115,8 @@ export function useFormValidation<T extends Record<string, unknown>>({
     setErrors({});
     setTouched({});
     setIsSubmitting(false);
+    setFormError('');
   };
 
-  return { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, reset };
+  return { values, errors, touched, isSubmitting, formError, setFormError, handleChange, handleBlur, handleSubmit, reset };
 }

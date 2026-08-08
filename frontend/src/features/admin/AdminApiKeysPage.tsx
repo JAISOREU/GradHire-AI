@@ -2,8 +2,8 @@ import { AdminListPage } from '../../components/AdminListPage';
 
 export const AdminApiKeysPage = () => (
   <div className="page fade-in">
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>API Keys</h1>
-    <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Manage API keys and access tokens.</p>
+    <h1 className="page-title page-title--admin">API Keys</h1>
+    <p className="card__subtitle card__subtitle card__subtitle--mt">Manage API keys and access tokens.</p>
     <AdminListPage
       items={[]}
       renderItem={() => null}
@@ -14,3 +14,6 @@ export const AdminApiKeysPage = () => (
     />
   </div>
 );
+
+
+

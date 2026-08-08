@@ -2,14 +2,14 @@ import { useRealtimeQuery } from '../../core/hooks/useRealtimeQuery';
 import { notificationsApi } from '../../core/api/endpoints/notifications';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
+import { PageHeader } from '../../components/PageHeader';
 
 export const StudentNotificationsPage = () => {
   const { data: notifications, loading } = useRealtimeQuery(() => notificationsApi.listMine(), [], { eventName: 'notification' });
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Notifications</h1>
-      <p className="card__subtitle card__subtitle--mt">Updates on your applications and matches.</p>
+      <PageHeader title="Notifications" subtitle="Updates on your applications and matches." />
 
       <div className="list-container">
         {loading ? (

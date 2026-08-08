@@ -14,7 +14,7 @@ export const HomePage = () => (
     <section className="hero-wrapper hero-glow">
       <div className="app-hero">
         <div className="text-3d">
-          <MorphingText text="GradHire AI" as="h1" />
+          <MorphingText text="GradHire AI" as="span" />
         </div>
         <p className="hero-subtitle morph-word" style={{ animationDelay: '0.3s' }}>
           Build a stronger profile and let AI connect you with the right opportunities.

@@ -2,6 +2,7 @@ import { messagesApi } from '../../core/api/endpoints/employers';
 import { useRealtimeQuery } from '../../core/hooks/useRealtimeQuery';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
+import { PageHeader } from '../../components/PageHeader';
 import type { Message } from '../../core/types';
 
 export const StudentMessagesPage = () => {
@@ -9,8 +10,7 @@ export const StudentMessagesPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Messages</h1>
-      <p className="card__subtitle card__subtitle--mt">Conversations with employers.</p>
+      <PageHeader title="Messages" subtitle="Conversations with employers." />
 
       <div className="list-container">
         {loading ? (

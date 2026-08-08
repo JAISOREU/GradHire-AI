@@ -3,12 +3,13 @@ import { PrismaService } from '../prisma.service';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination, normalizePagination } from '../common/pagination';
 import { NotificationsGateway } from '../websockets/notifications.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class MessagesService {
   private readonly logger = new Logger(MessagesService.name);
 
-  constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway) {}
+  constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway, private readonly notifications: NotificationsService) {}
 
   async listForUser(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<{ id: string; from: string; to: string; body: string; createdAt: string; read: boolean }>> {
     const { page = 1, limit = 20 } = pagination ?? {};
@@ -54,6 +55,8 @@ export class MessagesService {
 
     this.gateway.server.to(`user:${recipientId}`).emit('message', payload);
     this.gateway.server.to(`user:${senderId}`).emit('message', payload);
+
+    await this.notifications.create(recipientId, `New message: ${body.slice(0, 100)}`, undefined);
 
     return payload;
   }

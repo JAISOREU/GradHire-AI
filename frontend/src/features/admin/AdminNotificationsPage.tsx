@@ -7,14 +7,14 @@ export const AdminNotificationsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Notifications</h1>
+      <h1 className="page-title page-title--admin">Notifications</h1>
       <AdminListPage
         items={notifications ?? []}
         renderItem={(n) => (
           <div className="list-item">
             <div className="list-item__head">
               <div>
-                <h3 className="list-item__title" style={{ fontSize: '1rem', fontWeight: 600 }}>{n.message}</h3>
+                <h3 className="list-item__title card__title">{n.message}</h3>
                 <div className="list-item__meta">
                   <span>{n.recipient?.email}</span>
                   <span>{new Date(n.createdAt).toLocaleDateString()}</span>
@@ -31,3 +31,6 @@ export const AdminNotificationsPage = () => {
     </div>
   );
 };
+
+
+

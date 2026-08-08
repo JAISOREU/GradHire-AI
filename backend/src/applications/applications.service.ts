@@ -43,24 +43,28 @@ export class ApplicationsService {
     });
 
     if (employer) {
-      const emailResult = await this.email.send({
-        to: employer.email,
-        subject: `New application: ${job.title} at ${job.company}`,
-        text: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via GradHire AI.`,
-        html: `<p>A student applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via GradHire AI.</p>`,
-      });
-
-      await this.prisma.emailEvent.create({
-        data: {
-          applicationId: application.id,
-          recipientId: job.employerId,
-          recipientEmail: employer.email,
+      try {
+        const emailResult = await this.email.send({
+          to: employer.email,
           subject: `New application: ${job.title} at ${job.company}`,
-          body: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via GradHire AI.`,
-          status: emailResult.status,
-          sentAt: emailResult.status === 'SENT' ? new Date() : null,
-        },
-      });
+          text: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via GradHire AI.`,
+          html: `<p>A student applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via GradHire AI.</p>`,
+        });
+
+        await this.prisma.emailEvent.create({
+          data: {
+            applicationId: application.id,
+            recipientId: job.employerId,
+            recipientEmail: employer.email,
+            subject: `New application: ${job.title} at ${job.company}`,
+            body: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via GradHire AI.`,
+            status: emailResult.status,
+            sentAt: emailResult.status === 'SENT' ? new Date() : null,
+          },
+        });
+      } catch (emailError) {
+        this.logger.warn(`Notification email failed: ${emailError instanceof Error ? emailError.message : String(emailError)}`);
+      }
     }
 
     return {
@@ -87,8 +91,9 @@ export class ApplicationsService {
       }),
       this.prisma.application.count({ where }),
     ]);
-    const items = apps.map((a: { id: string; status: string; createdAt: Date; job: { title: string; company: string; location: string; type: string } }) => ({
+    const items = apps.map((a: { id: string; status: string; createdAt: Date; jobId: string; job: { title: string; company: string; location: string; type: string } }) => ({
       id: a.id,
+      jobId: a.jobId,
       status: a.status,
       createdAt: a.createdAt,
       job: a.job,

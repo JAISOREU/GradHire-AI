@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://localhost:3000/api/v1';
-const UNIQUE = Date.now();
+const unique = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 async function registerUser(request: any, role: 'STUDENT' | 'EMPLOYER' = 'STUDENT') {
-  const email = `e2e-${UNIQUE}-${role.toLowerCase()}@example.com`;
+  const email = `e2e-${unique()}-${role.toLowerCase()}@example.com`;
   const res = await request.post(`${API_BASE}/auth/register`, {
     data: { email, password: 'SecurePass1!', name: `E2E ${role}`, role },
   });
@@ -16,13 +16,13 @@ async function registerUser(request: any, role: 'STUDENT' | 'EMPLOYER' = 'STUDEN
 
 async function authRequest(request: any, token: string) {
   return request.post(`${API_BASE}/auth/login`, {
-    data: { email: `e2e-${UNIQUE}-student@example.com`, password: 'SecurePass1!' },
+    data: { email: `e2e-${unique()}-student@example.com`, password: 'SecurePass1!' },
   });
 }
 
 test.describe('Critical E2E flows', () => {
   test('register -> login -> get profile', async ({ request }) => {
-    const email = `e2e-${UNIQUE}-student@example.com`;
+    const email = `e2e-${unique()}-student@example.com`;
     const regRes = await request.post(`${API_BASE}/auth/register`, {
       data: { email, password: 'SecurePass1!', name: 'E2E Student', role: 'STUDENT' },
     });
@@ -89,9 +89,8 @@ Education: BS Computer Science`;
     const uploadRes = await request.post(`${API_BASE}/resumes`, {
       headers: {
         Authorization: `Bearer ${student.token}`,
-        ...form.getHeaders(),
       },
-      data: form,
+      multipart: form,
     });
     expect(uploadRes.ok()).toBeTruthy();
     const uploadBody = await uploadRes.json();
@@ -101,7 +100,7 @@ Education: BS Computer Science`;
 
   test('send message -> check notifications', async ({ request }) => {
     const sender = await registerUser(request, 'STUDENT');
-    const recipient = await registerUser(request, 'STUDENT');
+    const recipient = await registerUser(request, 'EMPLOYER');
 
     const msgRes = await request.post(`${API_BASE}/messages`, {
       headers: { Authorization: `Bearer ${sender.token}` },
@@ -111,7 +110,7 @@ Education: BS Computer Science`;
     const msg = await msgRes.json();
     expect(msg.body).toBe('Hello from E2E test');
 
-    const notifRes = await request.get(`${API_BASE}/notifications`, {
+    const notifRes = await request.get(`${API_BASE}/notifications/me`, {
       headers: { Authorization: `Bearer ${recipient.token}` },
     });
     expect(notifRes.ok()).toBeTruthy();

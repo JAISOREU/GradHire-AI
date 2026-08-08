@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './Button';
+import { Icon } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
 import type { NavItem } from '../core/utils/navigation';
 
@@ -10,6 +11,7 @@ type AuthHeaderProps = {
   links: NavItem[];
   onToggleSidebar: () => void;
   onLogout: () => void;
+  sidebarOpen?: boolean;
 };
 
 const initials = (name?: string): string => {
@@ -20,10 +22,11 @@ const initials = (name?: string): string => {
   return (first + last).toUpperCase();
 };
 
-export const AuthHeader = ({ title, user, links, onToggleSidebar, onLogout }: AuthHeaderProps) => {
+export const AuthHeader = ({ title, user, links, onToggleSidebar, onLogout, sidebarOpen }: AuthHeaderProps) => {
   const displayName = user.name || user.email;
   const initial = initials(user.name || user.email);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -67,24 +70,25 @@ export const AuthHeader = ({ title, user, links, onToggleSidebar, onLogout }: Au
   return (
     <header ref={headerRef} className="app-header">
       <div className="app-header__inner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onToggleSidebar}
-          aria-label="Toggle menu"
-          className="mobile-menu-toggle"
-        >
-          ☰
-        </Button>
-          <div className="brand">
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleSidebar}
+            aria-label="Toggle sidebar"
+            aria-expanded={sidebarOpen ?? false}
+            className="mobile-menu-toggle"
+            style={{ display: 'inline-flex', padding: 'var(--space-2)', fontSize: '1.25rem', lineHeight: 1 }}
+          >
+            <Icon name="menu" size={22} />
+          </Button>
+          <Link to="/" className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3)' }}>
             <span className="brand__mark">G</span>
             <span>{title}</span>
-          </div>
+          </Link>
         </div>
 
         <div className="header-user">
-          <ThemeToggle />
           <div className="header-dropdown" ref={dropdownRef}>
             <button
               type="button"
@@ -92,29 +96,40 @@ export const AuthHeader = ({ title, user, links, onToggleSidebar, onLogout }: Au
               aria-haspopup="true"
               aria-expanded={dropdownOpen}
               onClick={() => setDropdownOpen((prev) => !prev)}
+              aria-label={displayName}
             >
               <div className="header-avatar" aria-hidden="true">{initial}</div>
-              <div className="header-user__meta">
-                <span className="header-user__name">{displayName}</span>
-                <span className="header-user__role">{user.role}</span>
-              </div>
               <span className="header-dropdown__arrow" aria-hidden="true">▾</span>
             </button>
             <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="list">
               {links.map((link) => (
                 <Link key={link.to} to={link.to} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
-                  {link.icon && <span aria-hidden="true">{link.icon}</span>}
+                  {link.icon && <span aria-hidden="true"><Icon name={link.icon as any} size={18} /></span>}
                   <span>{link.label}</span>
                 </Link>
               ))}
-              <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={onLogout} role="listitem">
+              <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={() => setConfirmLogout(true)} role="listitem">
                 <span>🚪</span>
                 <span>Log out</span>
               </button>
             </div>
           </div>
+          <ThemeToggle />
         </div>
       </div>
+
+      {confirmLogout && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm logout">
+          <div className="modal">
+            <h3 className="card__title">Log out?</h3>
+            <p className="card__subtitle">You will need to sign in again to access your dashboard.</p>
+            <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-5)' }}>
+              <Button variant="secondary" onClick={() => setConfirmLogout(false)}>Cancel</Button>
+              <Button variant="danger" onClick={() => { setConfirmLogout(false); onLogout(); }}>Log out</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

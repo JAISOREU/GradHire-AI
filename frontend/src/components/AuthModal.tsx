@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
+import { FormInput, FormSelect } from './FormField';
 
 type Mode = 'signin' | 'register';
 
@@ -135,36 +136,18 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
 
         <form onSubmit={handleSubmit} className="stack">
           {mode === 'register' && (
-            <div className="form-group">
-              <label className="form-label" htmlFor="auth-name">Name</label>
-              <input id="auth-name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-            </div>
+            <FormInput label="Name" id="auth-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
           )}
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="auth-email">Email</label>
-            <input id="auth-email" className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" ref={mode === 'signin' ? firstInputRef : undefined} />
-          </div>
+          <FormInput label="Email" id="auth-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" ref={mode === 'signin' ? firstInputRef : undefined} />
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="auth-password">Password</label>
-            <input id="auth-password" className="input" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
-          </div>
+          <FormInput label="Password" id="auth-password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
 
           {mode === 'register' && (
-            <div className="form-group">
-              <label className="form-label">I am a…</label>
-              <div className="role-picker">
-                <button type="button" className={`role-option ${role === 'STUDENT' ? 'is-selected' : ''}`} onClick={() => setRole('STUDENT')}>
-                  <strong>🎓 Student / Fresh grad</strong>
-                  <span>Browse jobs, apply, get AI recommendations</span>
-                </button>
-                <button type="button" className={`role-option ${role === 'EMPLOYER' ? 'is-selected' : ''}`} onClick={() => setRole('EMPLOYER')}>
-                  <strong>🏢 Employer</strong>
-                  <span>Post jobs and review applicants</span>
-                </button>
-              </div>
-            </div>
+            <FormSelect label="I am a…" id="auth-role" value={role} onChange={(e) => setRole(e.target.value as 'STUDENT' | 'EMPLOYER')} options={[
+              { value: 'STUDENT', label: 'Student / Fresh grad' },
+              { value: 'EMPLOYER', label: 'Employer' },
+            ]} />
           )}
 
           {error && <div className="message message--error" role="alert">{error}</div>}

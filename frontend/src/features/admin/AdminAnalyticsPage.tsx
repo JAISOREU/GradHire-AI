@@ -2,8 +2,8 @@ import { AdminListPage } from '../../components/AdminListPage';
 
 export const AdminAnalyticsPage = () => (
   <div className="page fade-in">
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Analytics</h1>
-    <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Platform analytics and insights.</p>
+    <h1 className="page-title page-title--admin">Analytics</h1>
+    <p className="card__subtitle card__subtitle card__subtitle--mt">Platform analytics and insights.</p>
     <AdminListPage
       items={[]}
       renderItem={() => null}
@@ -14,3 +14,6 @@ export const AdminAnalyticsPage = () => (
     />
   </div>
 );
+
+
+

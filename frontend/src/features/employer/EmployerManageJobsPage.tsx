@@ -20,7 +20,7 @@ export const EmployerManageJobsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Manage jobs</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Edit, close, or archive your listings.</p>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Edit, close, or archive your listings.</p>
 
       <div className="list-container">
         {loading ? (
@@ -50,3 +50,5 @@ export const EmployerManageJobsPage = () => {
     </div>
   );
 };
+
+

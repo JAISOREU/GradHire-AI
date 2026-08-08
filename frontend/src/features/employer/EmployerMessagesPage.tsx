@@ -9,8 +9,8 @@ export const EmployerMessagesPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Messages</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Conversations with candidates.</p>
+      <h1 className="page-title">Messages</h1>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Conversations with candidates.</p>
 
       <div className="list" style={{ marginTop: '1.25rem' }}>
         {loading ? (
@@ -32,3 +32,6 @@ export const EmployerMessagesPage = () => {
     </div>
   );
 };
+
+
+

@@ -1,12 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { useAsync } from '../../core/hooks/useAsync';
-import { Badge, resolveBadgeKind } from '../../components/Badge';
+import { useAuth } from '../../core/auth/AuthContext';
+import { roleHomePath } from '../../core/utils/navigation';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
-import { useAuth } from '../../core/auth/AuthContext';
-import { roleHomePath } from '../../core/utils/navigation';
+import { PageHeader } from '../../components/PageHeader';
 
 export const JobDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,14 +20,9 @@ export const JobDetailPage = () => {
     <div className="page fade-in">
       <Link to="/jobs" className="back-link">← Back to jobs</Link>
       <div className="card section--mt">
-        <h1 className="page-title">{job.title}</h1>
-        <div className="list-item__meta">
-          <span>{job.company}</span>
-          <span>{job.location}</span>
-          <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
-        </div>
+        <PageHeader title={job.title} subtitle={`${job.company} · ${job.location}`} />
 
-        <div className="match-score section--mt" role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-label={`Match score ${job.matchScore}%`}>
+        <div className="match-score section--mt" role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${Math.min(job.matchScore, 100)}% match score`} aria-label={`Match score ${job.matchScore}%`}>
           <div className="match-score__top">
             <span>Match score</span>
             <strong>{job.matchScore}%</strong>

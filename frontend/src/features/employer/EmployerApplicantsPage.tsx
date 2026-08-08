@@ -9,8 +9,8 @@ export const EmployerApplicantsPage = () => {
 
   return (
     <div className="page fade-in">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Applicants</h1>
-      <p className="card__subtitle" style={{ marginTop: '0.25rem' }}>Review candidates who applied to your jobs.</p>
+      <h1 className="page-title">Applicants</h1>
+      <p className="card__subtitle card__subtitle card__subtitle--mt">Review candidates who applied to your jobs.</p>
 
       <div className="list" style={{ marginTop: '1.25rem' }}>
         {loading ? (
@@ -20,7 +20,7 @@ export const EmployerApplicantsPage = () => {
             <article key={app.id} className="list-item">
               <div className="list-item__head">
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>{app.job?.title ?? 'Unknown'}</h3>
+                  <h3 className="card__title">{app.job?.title ?? 'Unknown'}</h3>
                   <div className="list-item__meta">
                     <span>Application</span>
                     <Badge kind={resolveBadgeKind(app.status)}>{app.status}</Badge>
@@ -36,3 +36,7 @@ export const EmployerApplicantsPage = () => {
     </div>
   );
 };
+
+
+
+
