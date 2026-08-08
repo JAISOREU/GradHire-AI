@@ -141,3 +141,14 @@
 - [x] Expand notification preferences (recommendations, messages, interviews, weekly digest)
 - [x] Add email delivery retry logic with exponential backoff
 - [x] Upgrade password hashing from bcryptjs to Argon2id
+
+### Phase 16 — Production Hardening (in progress)
+- [x] Add class-validator DTOs for all major endpoints
+- [x] Add global exception filter with sanitized error responses
+- [x] Add image upload rejection to resume parser
+- [x] Add Sentry error tracking initialization
+- [x] Add 5 critical E2E tests (register/login, job/apply, resume upload, messaging, AI recommendations)
+- [ ] Add OpenAPI/Swagger spec
+- [ ] Add Redis caching for job listings
+- [ ] Add request tracing (x-correlation-id)
+- [ ] Add frontend error boundaries + Sentry

@@ -7,6 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import helmet from 'helmet';
 import * as Sentry from '@sentry/node';
+import { setupSwagger } from './docs/swagger.config';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -67,6 +68,10 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  if (process.env.NODE_ENV !== 'production') {
+    setupSwagger(app);
+  }
 
   const server = app.listen(3000);
 
