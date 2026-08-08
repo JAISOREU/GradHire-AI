@@ -150,5 +150,5 @@
 - [x] Add 5 critical E2E tests (register/login, job/apply, resume upload, messaging, AI recommendations)
 - [x] Add OpenAPI/Swagger spec for all endpoints
 - [x] Add Redis caching for job listings
-- [ ] Add request tracing (x-correlation-id)
+- [x] Add request tracing (x-correlation-id)
 - [ ] Add frontend error boundaries + Sentry
