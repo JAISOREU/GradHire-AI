@@ -173,7 +173,7 @@ export class AppService implements OnModuleInit {
           this.prisma.message.count({ where }),
         ]);
         return applyPagination(
-          messages.map((m) => ({
+          messages.map((m: { id: string; senderId: string; recipientId: string; body: string; createdAt: Date; read: boolean }) => ({
             id: m.id,
             from: m.senderId,
             to: m.recipientId,
@@ -208,7 +208,7 @@ export class AppService implements OnModuleInit {
           this.prisma.savedJob.count({ where }),
         ]);
         return applyPagination(
-          saved.map((s) => ({
+          saved.map((s: { id: string; job: { id: string; title: string; company: string; location: string; type: string }; createdAt: Date }) => ({
             id: s.id,
             job: { ...s.job, type: String(s.job.type) },
             savedAt: s.createdAt.toISOString(),
@@ -232,7 +232,7 @@ export class AppService implements OnModuleInit {
         });
         if (dbJobs.length > 0) {
           return this.computeMatchScores(
-            dbJobs.map((j) => ({ ...j, id: String(j.id), type: String(j.type), matchScore: 0 })),
+            dbJobs.map((j: { id: string; title: string; company: string; location: string; type: string }) => ({ ...j, id: String(j.id), type: String(j.type), matchScore: 0 })),
             typeFilter,
           );
         }
@@ -280,3 +280,4 @@ export class AppService implements OnModuleInit {
       .sort((a, b) => b.matchScore - a.matchScore);
   }
 }
+  

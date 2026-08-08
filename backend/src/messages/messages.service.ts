@@ -24,7 +24,7 @@ export class MessagesService {
     ]);
 
     return applyPagination(
-      messages.map((m) => ({
+      messages.map((m: { id: string; senderId: string; recipientId: string; body: string; createdAt: Date; read: boolean }) => ({
         id: m.id,
         from: m.senderId,
         to: m.recipientId,

@@ -87,7 +87,7 @@ export class ApplicationsService {
       }),
       this.prisma.application.count({ where }),
     ]);
-    const items = apps.map((a) => ({
+    const items = apps.map((a: { id: string; status: string; createdAt: Date; job: { title: string; company: string; location: string; type: string } }) => ({
       id: a.id,
       status: a.status,
       createdAt: a.createdAt,
@@ -115,7 +115,7 @@ export class ApplicationsService {
       }),
       this.prisma.application.count({ where }),
     ]);
-    const items = apps.map((a) => ({
+    const items = apps.map((a: { id: string; status: string; createdAt: Date; job: { title: string; company: string; location: string; type: string }; student: { profile: { id: string; name: string; focus: string } | null } }) => ({
       id: a.id,
       status: a.status,
       createdAt: a.createdAt,
