@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
-import argon2 from 'argon2';
+import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma.service';
 import { EmailService } from '../email/email.service';
@@ -41,7 +41,7 @@ export class AuthService {
     if (body.role === 'ADMIN') {
       throw new ConflictException('This endpoint cannot register ADMIN users');
     }
-    const passwordHash = await argon2.hash(body.password, { type: argon2.argon2id, memoryCost: 65536, timeCost: 3, parallelism: 1 });
+    const passwordHash = await bcrypt.hash(body.password, 12);
 
     try {
       const user = await this.prisma.user.create({
@@ -82,9 +82,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    try {
-      await argon2.verify(user.passwordHash, body.password);
-    } catch {
+    const valid = await bcrypt.compare(body.password, user.passwordHash);
+    if (!valid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -160,7 +159,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
-    const passwordHash = await argon2.hash(newPassword, { type: argon2.argon2id, memoryCost: 65536, timeCost: 3, parallelism: 1 });
+    const passwordHash = await bcrypt.hash(newPassword, 12);
     await this.prisma.user.update({
       where: { id: user.id },
       data: { passwordHash, resetToken: null, resetTokenExpires: null },
