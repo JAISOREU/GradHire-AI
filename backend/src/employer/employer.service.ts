@@ -170,7 +170,7 @@ export class EmployerService {
       this.prisma.application.count({ where }),
     ]);
 
-    const items = applications.map((a) => ({
+    const items = applications.map((a: { id: string; job: { title: string; company: string; location: string; type: string }; student: { profile: { name: string } | null; email: string }; createdAt: Date }) => ({
       id: a.id,
       job: a.job,
       candidate: a.student.profile?.name ?? a.student.email,
