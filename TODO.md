@@ -148,7 +148,7 @@
 - [x] Add image upload rejection to resume parser
 - [x] Add Sentry error tracking initialization
 - [x] Add 5 critical E2E tests (register/login, job/apply, resume upload, messaging, AI recommendations)
-- [ ] Add OpenAPI/Swagger spec
-- [ ] Add Redis caching for job listings
+- [x] Add OpenAPI/Swagger spec for all endpoints
+- [x] Add Redis caching for job listings
 - [ ] Add request tracing (x-correlation-id)
 - [ ] Add frontend error boundaries + Sentry
