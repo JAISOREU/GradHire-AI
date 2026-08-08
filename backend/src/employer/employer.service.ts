@@ -17,7 +17,7 @@ export class EmployerService {
 
   async createJob(
     user: AuthUser,
-    body: { title: string; company: string; location: string; type: string; description?: string; salaryMin?: number; salaryMax?: number },
+    body: { title: string; company: string; location: string; type?: string; description?: string; salaryMin?: number; salaryMax?: number },
   ) {
     this.requireEmployer(user);
 

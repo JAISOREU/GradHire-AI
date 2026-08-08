@@ -4,9 +4,10 @@ import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../prisma.service';
 import { AuthModule } from '../auth/auth.module';
 import { EmailModule } from '../email/email.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, EmailModule],
+  imports: [AuthModule, EmailModule, NotificationsModule],
   controllers: [ApplicationsController],
   providers: [ApplicationsService, PrismaService],
   exports: [ApplicationsService],

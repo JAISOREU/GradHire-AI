@@ -4,6 +4,9 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthUser } from './auth/auth.service';
 import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
+import { UpdateProfileDto } from './common/dto/profile.dto';
+import { ApplyDto } from './common/dto/application.dto';
+import { CreateJobDto } from './common/dto/job.dto';
 import { normalizePagination } from './common/pagination';
 
 @Controller()
@@ -41,7 +44,7 @@ export class AppController {
 
   @UseGuards(AuthGuard)
   @Put('students/me')
-  async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: { name: string; focus: string }): Promise<{ id: string; name: string; focus: string; summary: string }> {
+  async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto): Promise<{ id: string; name: string; focus: string; summary: string }> {
     return this.appService.saveStudentProfile(req.user.id, body);
   }
 

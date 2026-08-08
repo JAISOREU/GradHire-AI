@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { ApplicationsService } from './applications.service';
+import { ApplyDto } from '../common/dto/application.dto';
 import { normalizePagination } from '../common/pagination';
 
 @Controller('applications')
@@ -11,7 +12,7 @@ export class ApplicationsController {
   constructor(private readonly applications: ApplicationsService) {}
 
   @Post()
-  async apply(@Req() req: Request & { user: AuthUser }, @Body() body: { jobId: string }) {
+  async apply(@Req() req: Request & { user: AuthUser }, @Body() body: ApplyDto) {
     return this.applications.apply(req.user, body.jobId);
   }
 

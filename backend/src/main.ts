@@ -3,7 +3,16 @@ import { AppModule } from './app.module';
 import { LoggingMiddleware } from './common/logging.middleware';
 import { auditLoggingMiddleware } from './audit/audit.middleware';
 import { PrismaService } from './prisma.service';
+import { ValidationPipe } from '@nestjs/common';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import helmet from 'helmet';
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV ?? 'development',
+  tracesSampleRate: 0.1,
+});
 
 function parseCorsOrigins(): string[] {
   const raw = process.env.CORS_ORIGIN;
@@ -47,6 +56,17 @@ async function bootstrap() {
 
   app.enableCors({ origin: parseCorsOrigins(), credentials: true });
   app.setGlobalPrefix('api/v1');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   const server = app.listen(3000);
 

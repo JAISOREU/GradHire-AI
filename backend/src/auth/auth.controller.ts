@@ -2,25 +2,30 @@ import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Quer
 import { AuthService, AuthUser } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { Request } from 'express';
+import { RegisterDto } from '../common/dto/auth.dto';
+import { LoginDto } from '../common/dto/auth.dto';
+import { RefreshTokenDto } from '../common/dto/auth.dto';
+import { ForgotPasswordDto } from '../common/dto/auth.dto';
+import { ResetPasswordDto } from '../common/dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('register')
-  async register(@Body() body: { email: string; password: string; name?: string; role?: string }) {
+  async register(@Body() body: RegisterDto) {
     return this.auth.register(body);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
+  async login(@Body() body: LoginDto) {
     return this.auth.login(body);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refresh(@Body() body: { token: string }) {
+  async refresh(@Body() body: RefreshTokenDto) {
     return this.auth.refresh(body.token);
   }
 
@@ -38,18 +43,12 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body('email') email: string) {
-    if (!email) {
-      throw new BadRequestException('Email is required');
-    }
-    return this.auth.requestPasswordReset(email);
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.auth.requestPasswordReset(body.email);
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() body: { token: string; password: string }) {
-    if (!body.token || !body.password) {
-      throw new BadRequestException('Token and password are required');
-    }
+  async resetPassword(@Body() body: ResetPasswordDto) {
     return this.auth.resetPassword(body.token, body.password);
   }
 
