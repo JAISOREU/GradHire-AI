@@ -30,6 +30,13 @@ export class ResumesService {
     const isPdf = mime === 'application/pdf' || name.endsWith('.pdf');
     const isDocx = mime.includes('word') || mime.includes('officedocument') || name.endsWith('.doc') || name.endsWith('.docx');
     const isTxt = mime === 'text/plain' || name.endsWith('.txt');
+    const isImage = mime.startsWith('image/') || /\.(png|jpg|jpeg|gif|bmp|webp|tiff?)$/.test(name);
+
+    if (isImage) {
+      throw new BadRequestException(
+        'Image files are not supported. Please upload a PDF, DOCX, or TXT resume.',
+      );
+    }
 
     if (!isPdf && !isDocx && !isTxt) {
       throw new BadRequestException(

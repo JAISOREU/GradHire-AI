@@ -76,21 +76,26 @@ class MatchRequest(BaseModel):
 @app.post("/recommendations")
 def get_recommendations(payload: RecommendRequest) -> dict:
     warm_up_embeddings()
-    query_embedding = model.encode(payload.focus, convert_to_numpy=True)
-    scores = cosine_similarity([query_embedding], job_embeddings)[0]
-    ranked = sorted(zip(job_ids, scores), key=lambda x: x[1], reverse=True)[: payload.top_k]
-    results = []
-    for jid, score in ranked:
-        results.append(
-            {
-                "id": jid,
-                "title": JOB_TITLES[jid],
-                "type": JOB_TYPES[jid],
-                "score": round(float(score), 4),
-                "description": JOB_DESCRIPTIONS[jid],
-            }
-        )
-    return {"recommendations": results}
+    if not payload.focus or not isinstance(payload.focus, str):
+        return {"recommendations": [], "error": "Invalid focus text"}
+    try:
+        query_embedding = model.encode(payload.focus, convert_to_numpy=True)
+        scores = cosine_similarity([query_embedding], job_embeddings)[0]
+        ranked = sorted(zip(job_ids, scores), key=lambda x: x[1], reverse=True)[: payload.top_k]
+        results = []
+        for jid, score in ranked:
+            results.append(
+                {
+                    "id": jid,
+                    "title": JOB_TITLES[jid],
+                    "type": JOB_TYPES[jid],
+                    "score": round(float(score), 4),
+                    "description": JOB_DESCRIPTIONS[jid],
+                }
+            )
+        return {"recommendations": results}
+    except Exception as exc:
+        return {"recommendations": [], "error": str(exc)}
 
 
 @app.post("/embed")
