@@ -21,7 +21,7 @@ function createMockPrisma() {
 
 test('Performance - health check responds quickly', async () => {
   const prisma = createMockPrisma();
-  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any);
+  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
   const start = Date.now();
   for (let i = 0; i < 100; i++) {
@@ -33,7 +33,7 @@ test('Performance - health check responds quickly', async () => {
 
 test('Performance - jobs listing responds quickly', async () => {
   const prisma = createMockPrisma();
-  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any);
+  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
   const start = Date.now();
   for (let i = 0; i < 100; i++) {

@@ -18,7 +18,7 @@ function createMockPrisma() {
 
 test('Security - AppService handles missing database gracefully', async () => {
   const prisma = createMockPrisma();
-  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any);
+  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
   const health = service.getHealth();
   assert.strictEqual(health.status, 'ok');
@@ -27,7 +27,7 @@ test('Security - AppService handles missing database gracefully', async () => {
 
 test('Security - jobs endpoint does not leak internal errors', async () => {
   const prisma = createMockPrisma();
-  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any);
+  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
   const jobs = await service.getJobs();
   assert.ok(Array.isArray(jobs.items));
@@ -35,7 +35,7 @@ test('Security - jobs endpoint does not leak internal errors', async () => {
 
 test('Security - saved jobs endpoint does not leak internal errors', async () => {
   const prisma = createMockPrisma();
-  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any);
+  const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
   const saved = await service.listSavedJobs('student-1');
   assert.ok(Array.isArray(saved.items));

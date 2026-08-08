@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/com
 import { PrismaService } from './prisma.service';
 import { AiService, AiRecommendation } from './ai/ai.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from './common/pagination';
+import { CacheService } from './cache/cache.service';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -15,7 +16,7 @@ export class AppService implements OnModuleInit {
     summary: 'Interested in product engineering and AI-powered workflows.',
   };
 
-  constructor(private readonly prisma: PrismaService, private readonly ai: AiService) {}
+  constructor(private readonly prisma: PrismaService, private readonly ai: AiService, private readonly cache: CacheService) {}
 
   async onModuleInit() {
     try {
@@ -38,11 +39,19 @@ export class AppService implements OnModuleInit {
 
   async getJobs(type?: string, pagination?: PaginationParams): Promise<PaginatedResponse<{ id: string; title: string; company: string; location: string; type: string; matchScore: number }>> {
     const { page = 1, limit = 20 } = pagination ?? {};
+    const cacheKey = `jobs:${type ?? 'all'}:${page}:${limit}`;
+    const cached = await this.cache.get<PaginatedResponse<{ id: string; title: string; company: string; location: string; type: string; matchScore: number }>>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const scored = await this.loadJobs(type);
     const total = scored.length;
     const start = (page - 1) * limit;
     const items = scored.slice(start, start + limit);
-    return applyPagination(items, total, page, limit);
+    const result = applyPagination(items, total, page, limit);
+    await this.cache.set(cacheKey, result, 30);
+    return result;
   }
 
   async getAiRecommendations(focus: string, topK = 5): Promise<AiRecommendation[]> {

@@ -63,7 +63,8 @@ describe('AppService', () => {
   beforeEach(() => {
     const prisma = createMockPrisma();
     const ai = { getRecommendations: async () => [] } as any;
-    service = new AppService(prisma, ai);
+    const cache = { get: async () => null, set: async () => {} } as any;
+    service = new AppService(prisma, ai, cache);
   });
 
   it('getHealth returns service metadata', () => {
