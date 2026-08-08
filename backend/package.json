@@ -1,0 +1,51 @@
+{
+  "name": "gradture-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:dev": "node -r ts-node/register src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "set JWT_SECRET=test-secret-for-unit-tests-only && node -r ts-node/register --test src/**/*.spec.ts",
+    "migrate": "prisma migrate deploy",
+    "migrate:dev": "prisma migrate dev",
+    "seed": "ts-node prisma/seed.ts",
+    "db:push": "prisma db push"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1105.0",
+    "@nestjs/axios": "^4.0.1",
+    "@nestjs/common": "^10.4.22",
+    "@nestjs/core": "^10.4.22",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/platform-express": "^10.4.22",
+    "@nestjs/platform-socket.io": "^10.4.22",
+    "@nestjs/throttler": "^6.5.0",
+    "@nestjs/websockets": "^10.4.22",
+    "@prisma/client": "^6.16.2",
+    "@types/argon2": "^0.14.1",
+    "argon2": "^0.45.1",
+    "axios": "^1.19.0",
+    "bcryptjs": "^3.0.3",
+    "helmet": "^8.3.0",
+    "nodemailer": "^9.0.5",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "pino-pretty": "^13.1.3",
+    "prom-client": "^15.1.3",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.0.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.4.22",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.10.1",
+    "@types/nodemailer": "^8.0.1",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}

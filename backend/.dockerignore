@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.gitignore
+README.md
+*.log
+coverage
+.nyc_output
+prisma/migrations
+.env
+.env.*
+.DS_Store
+Thumbs.db

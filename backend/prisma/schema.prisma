@@ -1,0 +1,211 @@
+// Gradture AI — Prisma schema (matches docs/03_Database_Design.md)
+// Core entities: users, profiles, jobs, applications, resumes, recommendations, audit_logs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  EMPLOYER
+  ADMIN
+}
+
+enum JobType {
+  HIRING
+  INTERNSHIP
+}
+
+model User {
+  id                     String         @id @default(cuid())
+  email                  String         @unique
+  passwordHash           String
+  role                   Role           @default(STUDENT)
+  emailVerified          Boolean        @default(false)
+  emailVerificationToken String?        @unique
+  resetToken             String?        @unique
+  resetTokenExpires      DateTime?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  profile                Profile?
+  jobs                   Job[]
+  applications           Application[]
+  resumes                Resume[]
+  notifications          Notification[]
+  emailEvents            EmailEvent[]
+  auditLogs              AuditLog[]
+  sentMessages           Message[]      @relation("SentMessages")
+  receivedMessages       Message[]      @relation("ReceivedMessages")
+  savedJobs              SavedJob[]
+  settings               Settings?
+}
+
+model Profile {
+  id         String  @id @default(cuid())
+  userId     String  @unique
+  name       String
+  focus      String
+  summary    String?
+  skills     String[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Job {
+  id          String        @id @default(cuid())
+  employerId  String
+  companyId   String?
+  title       String
+  company     String
+  location    String
+  type        JobType       @default(HIRING)
+  salaryMin   Int?
+  salaryMax   Int?
+  description String?
+  status      String        @default("OPEN")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  employer    User          @relation(fields: [employerId], references: [id])
+  companyRef Company?      @relation(fields: [companyId], references: [id])
+  applications Application[]
+  recommendations Recommendation[]
+  savedJobs   SavedJob[]
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  studentId String
+  jobId     String
+  status    String   @default("APPLIED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   User     @relation(fields: [studentId], references: [id])
+  job       Job      @relation(fields: [jobId], references: [id])
+  notification Notification?
+  emailEvent  EmailEvent?
+
+  @@unique([studentId, jobId])
+}
+
+model Resume {
+  id         String        @id @default(cuid())
+  userId     String
+  fileName   String
+  fileUrl    String
+  parsedText String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User          @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id            String        @id @default(cuid())
+  recipientId   String
+  applicationId String?       @unique
+  message       String
+  read          Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  recipient     User          @relation(fields: [recipientId], references: [id])
+  application   Application?  @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId, read])
+}
+
+model EmailEvent {
+  id             String   @id @default(cuid())
+  applicationId  String?  @unique
+  recipientId    String
+  recipientEmail String
+  subject        String
+  body           String?
+  status         String   @default("PENDING")
+  sentAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  recipient      User     @relation(fields: [recipientId], references: [id])
+  application    Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+}
+
+model Recommendation {
+  id           String   @id @default(cuid())
+  studentId    String
+  jobId        String
+  score        Float
+  explanation  String?
+  createdAt    DateTime @default(now())
+  job          Job      @relation(fields: [jobId], references: [id])
+
+  @@index([studentId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  recipientId String
+  body        String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
+
+  @@index([senderId, recipientId])
+}
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  job       Job      @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
+  @@index([userId])
+}
+
+model Settings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  emailNotifications  Boolean  @default(true)
+  applicationAlerts   Boolean  @default(true)
+  recommendationAlerts Boolean @default(true)
+  messageAlerts       Boolean  @default(true)
+  interviewAlerts     Boolean  @default(true)
+  weeklyDigest        Boolean  @default(false)
+  defaultFocus        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  industry    String?
+  location    String?
+  description String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  jobs        Job[]
+}
+

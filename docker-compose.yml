@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - gradhire
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://gradhire:gradhire@postgres:5432/gradhire
+      - JWT_SECRET=change-me-in-production
+      - AI_SERVICE_URL=http://ai-service:8000
+      - SMTP_HOST=smtp.example.com
+      - SMTP_PORT=587
+      - SMTP_USER=gradhire@example.com
+      - SMTP_PASS=change-me-in-production
+      - SMTP_FROM=GradHire AI <gradhire@example.com>
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gradhire
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=change-me-in-production
+    networks:
+      - gradhire
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=gradhire
+      - POSTGRES_PASSWORD=gradhire
+      - POSTGRES_DB=gradhire
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradhire"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gradhire
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gradhire
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  gradhire:
+    driver: bridge

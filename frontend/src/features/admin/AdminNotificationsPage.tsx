@@ -1,0 +1,33 @@
+import { useAsync } from '../../core/hooks/useAsync';
+import { adminApi } from '../../core/api/endpoints/admin';
+import { AdminListPage } from '../../components/AdminListPage';
+
+export const AdminNotificationsPage = () => {
+  const { data: notifications, loading } = useAsync(() => adminApi.notifications(), []);
+
+  return (
+    <div className="page fade-in">
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Notifications</h1>
+      <AdminListPage
+        items={notifications ?? []}
+        renderItem={(n) => (
+          <div className="list-item">
+            <div className="list-item__head">
+              <div>
+                <h3 className="list-item__title" style={{ fontSize: '1rem', fontWeight: 600 }}>{n.message}</h3>
+                <div className="list-item__meta">
+                  <span>{n.recipient?.email}</span>
+                  <span>{new Date(n.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        loading={loading}
+        emptyIcon="🔔"
+        emptyTitle="No notifications"
+        emptyText="No notifications found."
+      />
+    </div>
+  );
+};

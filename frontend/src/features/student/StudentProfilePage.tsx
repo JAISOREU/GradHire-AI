@@ -1,0 +1,61 @@
+import { FormEvent, useEffect, useState } from 'react';
+import { studentsApi } from '../../core/api/endpoints/students';
+import { useAuth } from '../../core/auth/AuthContext';
+import { useAsync } from '../../core/hooks/useAsync';
+import { Button } from '../../components/Button';
+import { Card } from '../../components/Card';
+import { FormInput, FormTextarea } from '../../components/FormField';
+
+export const StudentProfilePage = () => {
+  const { user } = useAuth();
+  const { data: profile, loading } = useAsync(() => studentsApi.getProfile(), []);
+  const [name, setName] = useState(user?.name ?? '');
+  const [focus, setFocus] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name);
+      setFocus(profile.focus);
+    }
+  }, [profile]);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setMessage('');
+    try {
+      const updated = await studentsApi.updateProfile({ name: name || 'Student', focus });
+      setMessage(`Saved profile for ${updated.name}.`);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Failed to save.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="page fade-in"><div className="loading-state"><span className="spinner" aria-hidden="true" /><span>Loading profile…</span></div></div>;
+  }
+
+  return (
+    <div className="page fade-in">
+      <h1 className="page-title">Student profile</h1>
+      <p className="card__subtitle card__subtitle--mt">Keep your details up to date for better AI matches.</p>
+
+      <div className="form-container">
+        <Card title="Profile details">
+          <form onSubmit={handleSubmit} className="stack">
+            <FormInput label="Name" id="student-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+            <FormTextarea label="Focus area" id="student-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="e.g. Full-stack development and AI products" />
+            <div>
+              <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save changes'}</Button>
+            </div>
+            {message && <div className="message message--info" role="status">{message}</div>}
+          </form>
+        </Card>
+      </div>
+    </div>
+  );
+};
