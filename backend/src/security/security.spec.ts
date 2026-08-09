@@ -4,14 +4,22 @@ import { AppService } from '../app.service';
 import { PrismaService } from '../prisma.service';
 
 function createMockPrisma() {
+  const mockJobs = [
+    { id: '1', title: 'Software Engineer Intern', company: 'Northwind Labs', location: 'Remote', type: 'INTERNSHIP', experienceLevel: 'ENTRY_LEVEL', workplaceType: 'REMOTE', country: null, city: null, salaryMin: null, salaryMax: null, currency: 'PHP', salaryUndisclosed: false, requiredSkills: [], applicationDeadline: null, views: 0, createdAt: new Date(), companyRef: null },
+  ];
   return {
     $queryRaw: async () => { throw new Error('DB unavailable'); },
-    job: { findMany: async () => [] },
-    company: { findMany: async () => [] },
-    application: { findMany: async () => [] },
-    notification: { findMany: async () => [] },
-    user: { findMany: async () => [] },
+    job: { 
+      findMany: async () => mockJobs,
+      count: async () => mockJobs.length,
+    },
+    company: { findMany: async () => [], count: async () => 0 },
+    application: { findMany: async () => [], count: async () => 0 },
+    notification: { findMany: async () => [], count: async () => 0 },
+    user: { findMany: async () => [], findFirst: async () => ({ id: 'student-001' }) },
     settings: { findFirst: async () => null },
+    savedJob: { findMany: async () => [], count: async () => 0 },
+    message: { findMany: async () => [], count: async () => 0 },
     $disconnect: async () => {},
   };
 }

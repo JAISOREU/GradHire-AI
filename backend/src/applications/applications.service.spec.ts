@@ -91,7 +91,7 @@ test('apply creates an application, notification and email event', async () => {
 
   const result = await service.apply(student as never, 'job-1', {});
 
-  assert.equal(result.status, 'APPLIED');
+  assert.equal(result.status, 'SUBMITTED');
   assert.equal(applications.length, 1);
   assert.equal(notifications.calls.length, 1);
   assert.equal(notifications.calls[0].recipientId, 'emp-1');
