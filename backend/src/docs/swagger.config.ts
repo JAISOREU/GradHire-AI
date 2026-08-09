@@ -1,8 +1,8 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export const swaggerConfig = new DocumentBuilder()
-  .setTitle('GradHire AI API')
-  .setDescription('Backend API for the GradHire AI platform')
+  .setTitle('Gradture AI API')
+  .setDescription('Backend API for the Gradture AI platform')
   .setVersion('0.1.0')
   .addBearerAuth()
   .addTag('auth', 'Authentication endpoints')

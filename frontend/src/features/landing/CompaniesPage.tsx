@@ -10,7 +10,7 @@ export const CompaniesPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Featured companies" subtitle="Explore organizations hiring on GradHire." />
+      <PageHeader title="Featured companies" subtitle="Explore organizations hiring on Gradture." />
 
       <div className="list-container">
         {loading ? (

@@ -1,7 +1,7 @@
 # Document 00 — Project Charter
 
 ## Purpose
-This document defines the strategic intent of the GradHire AI platform and establishes the business and technical context for the project.
+This document defines the strategic intent of the Gradture AI platform and establishes the business and technical context for the project.
 
 ## Problem Statement
 Students and employers need a faster, more intelligent hiring experience. The platform should simplify job discovery, improve candidate matching, and reduce manual screening effort through AI-assisted workflows.

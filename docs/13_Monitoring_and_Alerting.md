@@ -1,7 +1,7 @@
 # Monitoring and Alerting Runbook
 
 ## Overview
-This runbook covers monitoring, alerting, and incident response for the GradHire AI platform.
+This runbook covers monitoring, alerting, and incident response for the Gradture AI platform.
 
 ## Metrics
 

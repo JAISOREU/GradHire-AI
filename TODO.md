@@ -1,4 +1,4 @@
-# GradHire AI — Clean Architecture & Role Separation Refactor
+# Gradture AI — Clean Architecture & Role Separation Refactor
 
 ## Guiding Principles
 - Clean Architecture, SOLID, feature-based folder structure.
@@ -162,7 +162,9 @@
 - [x] Create notification when message is sent
 - [x] Fix Playwright multipart form upload for resume E2E test
 - [x] Fix E2E test email uniqueness and notifications endpoint
-- [ ] Push fixes to GitHub
+- [x] Push fixes to GitHub
+- [x] Fix Railway healthcheck path to `/api/v1/health`
+- [x] Fix backend docker-entrypoint to use `prisma migrate deploy` instead of `prisma db push`
 - [ ] Run PostgreSQL migrations on production database
 - [ ] Deploy backend to Railway
 - [ ] Deploy AI service to Railway

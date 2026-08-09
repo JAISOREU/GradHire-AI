@@ -43,7 +43,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
       <div className="app-header__inner">
         <div className="brand">
           <AnimatedLogo size={32} showText={false} />
-          <span>GradHire AI</span>
+          <span>Gradture AI</span>
         </div>
 
         {user ? (

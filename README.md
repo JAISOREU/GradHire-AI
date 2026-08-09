@@ -1,6 +1,6 @@
-# GradHire AI
+# Gradture AI
 
-This repository contains the initial SDLC-driven blueprint for the GradHire AI platform.
+This repository contains the initial SDLC-driven blueprint for the Gradture AI platform.
 
 ## Documentation Set
 

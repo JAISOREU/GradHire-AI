@@ -18,7 +18,7 @@ export const PublicLayout = () => {
         <div className="app-header__inner">
           <Link to="/" className="brand">
             <AnimatedLogo size={32} showText={false} />
-            <span>GradHire AI</span>
+            <span>Gradture AI</span>
           </Link>
           <button
             type="button"
@@ -67,7 +67,7 @@ export const PublicLayout = () => {
       </main>
 
       <footer className="app-footer">
-        GradHire AI — connecting fresh grads with opportunities.
+        Gradture AI — connecting fresh grads with opportunities.
       </footer>
     </div>
   );

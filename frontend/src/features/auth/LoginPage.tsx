@@ -29,7 +29,7 @@ export const LoginPage = () => {
     <div className="auth-page fade-in">
       <div className="auth-card">
         <h2>Welcome back</h2>
-        <p className="card__subtitle">Sign in to your GradHire account.</p>
+        <p className="card__subtitle">Sign in to your Gradture account.</p>
         <form onSubmit={handleSubmit} className="stack mt-4">
           <FormInput label="Email" id="login-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
           <FormInput label="Password" id="login-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Your password" error={touched.password ? errors.password : undefined} />

@@ -1,7 +1,7 @@
 # Document 01 — Software Requirements Specification
 
 ## 1. Introduction
-The GradHire AI platform provides a digital experience for students and employers to discover opportunities, manage profiles, and receive AI-assisted job recommendations.
+The Gradture AI platform provides a digital experience for students and employers to discover opportunities, manage profiles, and receive AI-assisted job recommendations.
 
 ## 2. Overall Description
 The system will consist of a web application with a backend service, AI matching service, and supporting infrastructure. It will be implemented using a modular architecture that can evolve over time.

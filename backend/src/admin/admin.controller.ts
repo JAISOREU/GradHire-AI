@@ -112,7 +112,7 @@ export class AdminController {
   @Get('settings')
   async settings() {
     return {
-      platformName: 'GradHire AI',
+      platformName: 'Gradture AI',
       maintenanceMode: false,
       registrationOpen: true,
     };
