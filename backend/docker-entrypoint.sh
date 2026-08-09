@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "Syncing database schema..."
-/app/node_modules/.bin/prisma db push --accept-data-loss
+echo "Running database migrations..."
+/app/node_modules/.bin/prisma migrate deploy
 
 echo "Starting backend server..."
 npm start

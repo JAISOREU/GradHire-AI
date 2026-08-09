@@ -25,5 +25,6 @@
   ],
   "env": {
     "VITE_API_URL": "https://your-backend-url.com/api/v1"
-  }
+  },
+  "regions": ["iad1"]
 }
