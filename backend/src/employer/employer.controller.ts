@@ -3,8 +3,8 @@ import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthUser } from '../auth/auth.service';
 import { EmployerService } from './employer.service';
-import { CreateJobDto } from '../common/dto/job.dto';
-import { UpdateProfileDto } from '../common/dto/profile.dto';
+import { CreateJobDto, UpdateJobDto } from '../common/dto/job.dto';
+import { UpdateEmployerProfileDto } from '../common/dto/profile.dto';
 import { normalizePagination } from '../common/pagination';
 
 @UseGuards(AuthGuard)
@@ -18,7 +18,7 @@ export class EmployerController {
   }
 
   @Put('profile')
-  async updateProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto) {
+  async updateProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateEmployerProfileDto) {
     return this.employer.updateEmployerProfile(req.user, body);
   }
 
@@ -28,7 +28,7 @@ export class EmployerController {
   }
 
   @Put('jobs/:id')
-  async updateJob(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Body() body: Partial<CreateJobDto>) {
+  async updateJob(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Body() body: UpdateJobDto) {
     return this.employer.updateJob(req.user, id, body);
   }
 

@@ -55,7 +55,7 @@ export class NotificationsService {
       this.prisma.notification.count({ where }),
     ]);
 
-    const items = notifications.map((n: { id: string; message: string; read: boolean; createdAt: Date; application: { job: { title: string; company: string } } | null }) => ({
+    const items = notifications.map((n) => ({
       id: n.id,
       message: n.message,
       read: n.read,

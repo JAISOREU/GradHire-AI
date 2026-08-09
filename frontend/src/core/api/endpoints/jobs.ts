@@ -1,26 +1,62 @@
 import { api } from '../client';
-import type { AiRecommendation, EmployerJob, Job, JobType } from '../../types';
+import type { AiRecommendation, EmployerJob, ExperienceLevel, Job, JobType, PaginatedResponse, WorkplaceType } from '../../types';
+
+const parsePaginatedJobs = async <T>(url: string): Promise<PaginatedResponse<T>> => {
+  const data = await api<PaginatedResponse<T>>(url, { requiresAuth: false });
+  return data ?? { items: [], total: 0, page: 1, limit: 20 };
+};
 
 export const jobsApi = {
-  list: async (type?: JobType | '', page = 1, limit = 20): Promise<Job[]> => {
-    const query = new URLSearchParams();
-    if (type) query.set('type', type);
-    query.set('page', String(page));
-    query.set('limit', String(limit));
-    const data = await api<{ items: Job[] }>(`/api/v1/jobs?${query.toString()}`, { requiresAuth: false });
+  list: async (type: JobType | '' = '', page = 1, limit = 20): Promise<Job[]> => {
+    const data = await parsePaginatedJobs<Job>(`/api/v1/jobs?type=${encodeURIComponent(type)}&page=${page}&limit=${limit}`);
     return data.items ?? [];
+  },
+
+  listPaginated: async (filters?: {
+    type?: JobType | '';
+    experienceLevel?: ExperienceLevel | '';
+    workplaceType?: WorkplaceType | '';
+    country?: string;
+    city?: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    freshGraduateFriendly?: boolean;
+    internship?: boolean;
+    search?: string;
+    sort?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<PaginatedResponse<Job>> => {
+    const query = new URLSearchParams();
+    if (filters?.type) query.set('type', filters.type);
+    if (filters?.experienceLevel) query.set('experienceLevel', filters.experienceLevel);
+    if (filters?.workplaceType) query.set('workplaceType', filters.workplaceType);
+    if (filters?.country) query.set('country', filters.country);
+    if (filters?.city) query.set('city', filters.city);
+    if (filters?.salaryMin !== undefined) query.set('salaryMin', String(filters.salaryMin));
+    if (filters?.salaryMax !== undefined) query.set('salaryMax', String(filters.salaryMax));
+    if (filters?.freshGraduateFriendly !== undefined) query.set('freshGraduateFriendly', String(filters.freshGraduateFriendly));
+    if (filters?.internship !== undefined) query.set('internship', String(filters.internship));
+    if (filters?.search) query.set('search', filters.search);
+    if (filters?.sort) query.set('sort', filters.sort);
+    query.set('page', String(filters?.page ?? 1));
+    query.set('limit', String(filters?.limit ?? 20));
+    return parsePaginatedJobs<Job>(`/api/v1/jobs?${query.toString()}`);
   },
 
   listForEmployer: (page = 1, limit = 20): Promise<EmployerJob[]> =>
     api<{ items: EmployerJob[] }>(`/api/v1/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
 
+  listForEmployerPaginated: (page = 1, limit = 20): Promise<PaginatedResponse<EmployerJob>> =>
+    parsePaginatedJobs<EmployerJob>(`/api/v1/jobs?page=${page}&limit=${limit}`),
+
   getById: (id: string): Promise<Job> =>
     api<Job>(`/api/v1/jobs/${id}`, { requiresAuth: false }),
 
-  create: (payload: { title: string; company: string; location: string; type: string; description?: string }) =>
+  create: (payload: Partial<Job>) =>
     api<EmployerJob>('/api/v1/employer/jobs', { method: 'POST', json: payload }),
 
-  update: (id: string, payload: Partial<{ title: string; company: string; location: string; type: string; description?: string }>) =>
+  update: (id: string, payload: Partial<Job>) =>
     api<EmployerJob>(`/api/v1/employer/jobs/${id}`, { method: 'PUT', json: payload }),
 
   archive: (id: string) =>

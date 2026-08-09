@@ -46,7 +46,7 @@ export const RegisterPage = () => {
               <span>Post jobs and review applicants</span>
             </button>
           </div>
-          <FormInput label="Name (optional)" id="reg-name" value={values.name} onChange={(e) => handleChange('name', e.target.value)} onBlur={() => handleBlur('name')} placeholder="Your name" error={touched.name ? errors.name : undefined} />
+           <FormInput label="Name (optional)" id="reg-name" value={values.name} onChange={(e) => handleChange('name', e.target.value.trim())} onBlur={() => handleBlur('name')} placeholder="Your name" error={touched.name ? errors.name : undefined} />
           <FormInput label="Email" id="reg-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
           <FormInput label="Password" id="reg-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="At least 6 characters" hint="Use at least 6 characters" error={touched.password ? errors.password : undefined} />
           {formError && <div className="message message--error" role="alert">{formError}</div>}

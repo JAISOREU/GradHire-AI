@@ -1,7 +1,7 @@
 import { Injectable, Logger, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { PrismaService, ApplicationStatus } from '@prisma/client';
 import { AuthUser } from '../auth/auth.service';
-import { PaginationParams, PaginatedResponse, applyPagination, normalizePagination } from '../common/pagination';
+import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
 import { EmailService } from '../email/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -11,7 +11,7 @@ export class ApplicationsService {
 
   constructor(private readonly prisma: PrismaService, private readonly email: EmailService, private readonly notifications: NotificationsService) {}
 
-  async apply(user: AuthUser, jobId: string): Promise<Record<string, unknown>> {
+  async apply(user: AuthUser, jobId: string, body: { coverLetter?: string; resumeId?: string }): Promise<Record<string, unknown>> {
     this.requireRole(user, 'STUDENT');
 
     const job = await this.prisma.job.findUnique({ where: { id: jobId } });
@@ -26,16 +26,37 @@ export class ApplicationsService {
       throw new BadRequestException('You have already applied to this job');
     }
 
+    const resume = body.resumeId ? await this.prisma.resume.findUnique({ where: { id: body.resumeId } }) : null;
+
     const application = await this.prisma.application.create({
       data: {
         studentId: user.id,
         jobId,
-        status: 'APPLIED',
+        status: 'SUBMITTED',
+        coverLetter: body.coverLetter ?? null,
+        resumeVersionId: resume?.id ?? null,
+        resumeSnapshot: resume ? JSON.stringify({ fileName: resume.fileName, fileUrl: resume.fileUrl }) : null,
+        statusHistory: {
+          create: {
+            newStatus: 'SUBMITTED',
+            actorId: user.id,
+            actorRole: 'STUDENT',
+            message: 'Application submitted',
+          },
+        },
+        events: {
+          create: {
+            actorId: user.id,
+            actorRole: 'STUDENT',
+            action: 'APPLICATION_SUBMITTED',
+            metadata: { jobId, jobTitle: job.title },
+          },
+        },
       },
+      include: { statusHistory: true, events: true },
     });
 
-    const message = `New application received for "${job.title}" at ${job.company}.`;
-    await this.notifications.create(job.employerId, message, application.id);
+    await this.notifications.create(job.employerId, `New application received for "${job.title}" at ${job.company}`, application.id);
 
     const employer = await this.prisma.user.findUnique({
       where: { id: job.employerId },
@@ -75,7 +96,7 @@ export class ApplicationsService {
     };
   }
 
-  async getForStudent(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getMyApplications(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
     this.requireRole(user, 'STUDENT');
     const { page = 1, limit = 20 } = pagination ?? {};
     const where = { studentId: user.id };
@@ -83,7 +104,22 @@ export class ApplicationsService {
       this.prisma.application.findMany({
         where,
         include: {
-          job: { select: { id: true, title: true, company: true, location: true, type: true } },
+          job: {
+            select: {
+              id: true,
+              title: true,
+              company: true,
+              location: true,
+              type: true,
+              workplaceType: true,
+              salaryMin: true,
+              salaryMax: true,
+              currency: true,
+              salaryUndisclosed: true,
+              status: true,
+            },
+          },
+          statusHistory: { orderBy: { createdAt: 'desc' }, take: 1 },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
@@ -91,28 +127,79 @@ export class ApplicationsService {
       }),
       this.prisma.application.count({ where }),
     ]);
-    const items = apps.map((a: { id: string; status: string; createdAt: Date; jobId: string; job: { title: string; company: string; location: string; type: string } }) => ({
+
+    const items = apps.map((a) => ({
       id: a.id,
-      jobId: a.jobId,
       status: a.status,
-      createdAt: a.createdAt,
+      submittedAt: a.createdAt,
+      lastUpdated: a.lastStatusChangeAt,
       job: a.job,
+      lastEvent: a.statusHistory?.[0],
     }));
+
     return applyPagination(items, total, page, limit);
   }
 
-  async getForEmployer(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
-    this.requireRole(user, 'EMPLOYER');
+  async getById(user: AuthUser, applicationId: string): Promise<Record<string, unknown>> {
+    const application = await this.prisma.application.findUnique({
+      where: { id: applicationId },
+      include: {
+        job: true,
+        statusHistory: { orderBy: { createdAt: 'desc' } },
+        events: { orderBy: { createdAt: 'desc' } },
+        documents: true,
+        answers: { include: { question: true } },
+        interview: true,
+      },
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    const isStudent = application.studentId === user.id;
+    const isEmployer = application.job.employerId === user.id;
+
+    if (!isStudent && !isEmployer) {
+      throw new ForbiddenException('You do not have access to this application');
+    }
+
+    if (isEmployer && !application.viewedAt) {
+      await this.prisma.application.update({
+        where: { id: applicationId },
+        data: { viewedAt: new Date() },
+      });
+      await this.prisma.applicationEvent.create({
+        data: {
+          applicationId,
+          actorId: user.id,
+          actorRole: 'EMPLOYER',
+          action: 'EMPLOYER_VIEWED_APPLICATION',
+        },
+      });
+    }
+
+    return {
+      ...application,
+      job: { ...application.job, type: String(application.job.type) },
+    };
+  }
+
+  async getForJob(user: AuthUser, jobId: string, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+    const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+    if (!job || job.employerId !== user.id) {
+      throw new ForbiddenException('You can only view applications for your own jobs');
+    }
+
     const { page = 1, limit = 20 } = pagination ?? {};
-    const where = { job: { employerId: user.id } };
+    const where = { jobId };
     const [apps, total] = await Promise.all([
       this.prisma.application.findMany({
         where,
         include: {
-          job: { select: { id: true, title: true, company: true, location: true, type: true } },
-          student: {
-            include: { profile: { select: { id: true, name: true, focus: true } } },
-          },
+          student: { include: { profile: { select: { id: true, name: true, focus: true, skills: true } } } },
+          statusHistory: { orderBy: { createdAt: 'desc' }, take: 1 },
+          interview: true,
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
@@ -120,30 +207,107 @@ export class ApplicationsService {
       }),
       this.prisma.application.count({ where }),
     ]);
-    const items = apps.map((a: { id: string; status: string; createdAt: Date; job: { title: string; company: string; location: string; type: string }; student: { profile: { id: string; name: string; focus: string } | null } }) => ({
+
+    const items = apps.map((a) => ({
       id: a.id,
       status: a.status,
-      createdAt: a.createdAt,
-      job: a.job,
-      student: a.student.profile
-        ? { id: a.student.profile.id, name: a.student.profile.name, focus: a.student.profile.focus }
-        : null,
+      submittedAt: a.createdAt,
+      viewedAt: a.viewedAt,
+      student: a.student,
+      lastEvent: a.statusHistory?.[0],
+      interview: a.interview,
     }));
+
     return applyPagination(items, total, page, limit);
+  }
+
+  async updateStatus(user: AuthUser, applicationId: string, body: { status: ApplicationStatus; message?: string }): Promise<Record<string, unknown>> {
+    const application = await this.prisma.application.findUnique({
+      where: { id: applicationId },
+      include: { job: true },
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    if (application.job.employerId !== user.id) {
+      throw new ForbiddenException('Only the employer can update application status');
+    }
+
+    const previousStatus = application.status;
+
+    const updated = await this.prisma.application.update({
+      where: { id: applicationId },
+      data: {
+        status: body.status,
+        lastStatusChangeAt: new Date(),
+        ...(body.status === 'REJECTED' ? { rejectedAt: new Date() } : {}),
+        ...(body.status === 'HIRED' ? { hiredAt: new Date() } : {}),
+        statusHistory: {
+          create: {
+            previousStatus,
+            newStatus: body.status,
+            actorId: user.id,
+            actorRole: 'EMPLOYER',
+            message: body.message ?? null,
+          },
+        },
+        events: {
+          create: {
+            actorId: user.id,
+            actorRole: 'EMPLOYER',
+            action: `STATUS_CHANGED_${body.status}`,
+            metadata: { previousStatus, newStatus: body.status, message: body.message },
+          },
+        },
+      },
+      include: { statusHistory: true },
+    });
+
+    await this.notifications.create(application.studentId, `Your application for "${application.job.title}" has been updated to ${body.status}`, applicationId);
+
+    return { id: updated.id, status: updated.status, previousStatus };
   }
 
   async withdraw(user: AuthUser, applicationId: string): Promise<{ id: string; status: string }> {
     this.requireRole(user, 'STUDENT');
     const application = await this.prisma.application.findUnique({
       where: { id: applicationId },
+      include: { job: true },
     });
     if (!application || application.studentId !== user.id) {
       throw new ForbiddenException('You can only withdraw your own applications');
     }
+
     const updated = await this.prisma.application.update({
       where: { id: applicationId },
-      data: { status: 'WITHDRAWN' },
+      data: {
+        status: 'WITHDRAWN',
+        withdrawnAt: new Date(),
+        lastStatusChangeAt: new Date(),
+        statusHistory: {
+          create: {
+            previousStatus: application.status,
+            newStatus: 'WITHDRAWN',
+            actorId: user.id,
+            actorRole: 'STUDENT',
+            message: 'Application withdrawn by candidate',
+          },
+        },
+        events: {
+          create: {
+            actorId: user.id,
+            actorRole: 'STUDENT',
+            action: 'APPLICATION_WITHDRAWN',
+            metadata: { previousStatus: application.status },
+          },
+        },
+      },
     });
+
+    await this.notifications.create(application.job.employerId, `A candidate withdrew their application for "${application.job.title}"`, applicationId);
+
     return { id: updated.id, status: updated.status };
   }
 
@@ -153,4 +317,3 @@ export class ApplicationsService {
     }
   }
 }
-

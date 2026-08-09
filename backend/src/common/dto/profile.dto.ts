@@ -14,3 +14,35 @@ export class UpdateProfileDto {
   @IsNotEmpty({ message: 'Focus is required' })
   focus!: string;
 }
+
+export class UpdateEmployerProfileDto {
+  @ApiProperty({ example: 'Acme Corp' })
+  @IsString()
+  @IsNotEmpty({ message: 'Company name is required' })
+  companyName!: string;
+
+  @ApiProperty({ required: false, example: 'Technology' })
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @ApiProperty({ required: false, example: 'Manila, Philippines' })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiProperty({ required: false, example: 'We build great products.' })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiProperty({ required: false, example: 'https://acme.com' })
+  @IsOptional()
+  @IsString()
+  website?: string;
+
+  @ApiProperty({ required: false, example: '+63 900 000 0000' })
+  @IsOptional()
+  @IsString()
+  phone?: string;
+}

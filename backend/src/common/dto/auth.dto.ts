@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -13,15 +14,15 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Password is required' })
   password!: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, example: 'John Doe' })
   @IsOptional()
   @IsString()
   name?: string;
 
-  @ApiProperty({ required: false, enum: ['STUDENT', 'EMPLOYER', 'ADMIN'] })
+  @ApiProperty({ required: false, enum: Role })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(Role, { message: 'Role must be STUDENT, EMPLOYER, or ADMIN' })
+  role?: Role;
 }
 
 export class LoginDto {

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { AppRoutes } from './routing/AppRoutes';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SocketProvider } from './core/websocket/SocketContext';
+import { ThemeProvider } from './core/theme/ThemeContext';
 
 const App = () => {
   useEffect(() => {
@@ -22,11 +23,13 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <SocketProvider>
-        <AppRoutes />
-      </SocketProvider>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <SocketProvider>
+          <AppRoutes />
+        </SocketProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 };
 

@@ -14,7 +14,7 @@ export class AdminController {
       this.prisma.user.count(),
       this.prisma.user.count({ where: { role: 'EMPLOYER' } }),
       this.prisma.user.count({ where: { role: 'STUDENT' } }),
-      this.prisma.job.count({ where: { status: 'OPEN' } }),
+      this.prisma.job.count({ where: { status: 'PUBLISHED' } }),
       this.prisma.application.count(),
       this.prisma.notification.count({ where: { read: false } }),
     ]);
@@ -35,7 +35,7 @@ export class AdminController {
     const [users, total] = await Promise.all([
       this.prisma.user.findMany({
         select: { id: true, email: true, role: true, createdAt: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -50,7 +50,7 @@ export class AdminController {
     const [jobs, total] = await Promise.all([
       this.prisma.job.findMany({
         include: { employer: { select: { email: true } } },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -68,7 +68,7 @@ export class AdminController {
           student: { select: { email: true } },
           job: { select: { title: true, company: true } },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),

@@ -5,8 +5,7 @@ import { AuthUser } from './auth/auth.service';
 import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
 import { UpdateProfileDto } from './common/dto/profile.dto';
-import { ApplyDto } from './common/dto/application.dto';
-import { CreateJobDto } from './common/dto/job.dto';
+import { JobQueryDto } from './common/dto/job.dto';
 import { normalizePagination } from './common/pagination';
 
 @Controller()
@@ -19,13 +18,12 @@ export class AppController {
   }
 
   @Get('jobs')
-  async getJobs(@Query('type') type?: string, @Query() query?: Record<string, unknown>) {
-    const pagination = query ? normalizePagination(query) : undefined;
-    return this.appService.getJobs(type, pagination);
+  async getJobs(@Query() query: JobQueryDto) {
+    return this.appService.getJobs(query);
   }
 
   @Get('jobs/:id')
-  async getJobById(@Param('id') id: string): Promise<{ id: string; title: string; company: string; location: string; type: string; matchScore: number; description?: string; salaryMin?: number | null; salaryMax?: number | null; createdAt?: string }> {
+  async getJobById(@Param('id') id: string) {
     return this.appService.getJobById(id);
   }
 
@@ -38,13 +36,13 @@ export class AppController {
 
   @UseGuards(AuthGuard)
   @Get('students/me')
-  async getStudentProfile(@Req() req: Request & { user: AuthUser }): Promise<{ id: string; name: string; focus: string; summary?: string }> {
+  async getStudentProfile(@Req() req: Request & { user: AuthUser }) {
     return this.appService.getStudentProfile(req.user.id);
   }
 
   @UseGuards(AuthGuard)
   @Put('students/me')
-  async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto): Promise<{ id: string; name: string; focus: string; summary: string }> {
+  async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto) {
     return this.appService.saveStudentProfile(req.user.id, body);
   }
 

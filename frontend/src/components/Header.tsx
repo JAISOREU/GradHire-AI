@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { AuthUser } from '../core/types';
 import { Button } from './Button';
 import { AnimatedLogo } from './AnimatedLogo';
+import { ThemeToggle } from './ThemeToggle';
 
 type HeaderProps = {
   user: AuthUser | null;
@@ -55,14 +56,18 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
               <span className="header-user__name">{displayName}</span>
               <span className="header-user__role">{user.role}</span>
             </div>
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={onLogout} aria-label="Log out">
               Log out
             </Button>
           </div>
         ) : (
-          <Button variant="primary" size="sm" onClick={onSignIn}>
-            Sign in
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button variant="primary" size="sm" onClick={onSignIn}>
+              Sign in
+            </Button>
+          </div>
         )}
       </div>
     </header>

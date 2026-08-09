@@ -20,9 +20,12 @@ import { StorageModule } from './storage/storage.module';
 import { EmailModule } from './email/email.module';
 import { NotificationsGatewayModule } from './websockets/notifications.gateway.module';
 import { MessagesModule } from './messages/messages.module';
+import { ScreeningModule } from './screening/screening.module';
+import { InterviewsModule } from './interviews/interviews.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule],
+  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule, ScreeningModule, InterviewsModule, AnalyticsModule],
   controllers: [AppController, MetricsController],
   providers: [AppService, HealthService, MetricsService],
 })
