@@ -3,6 +3,7 @@ import { useAuth } from '../core/auth/AuthContext';
 import { Button } from '../components/Button';
 import { SkipLink } from '../components/SkipLink';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { AnimatedLogo } from '../components/AnimatedLogo';
 import { useState } from 'react';
 import { roleHomePath } from '../core/utils/navigation';
 
@@ -16,7 +17,7 @@ export const PublicLayout = () => {
       <header className="app-header">
         <div className="app-header__inner">
           <Link to="/" className="brand">
-            <span className="brand__mark">G</span>
+            <AnimatedLogo size={32} showText={false} />
             <span>GradHire AI</span>
           </Link>
           <button

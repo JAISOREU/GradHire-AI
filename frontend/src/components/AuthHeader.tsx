@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from './Button';
 import { Icon } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
+import { AnimatedLogo } from './AnimatedLogo';
 import type { NavItem } from '../core/utils/navigation';
 
 type AuthHeaderProps = {
@@ -83,7 +84,7 @@ export const AuthHeader = ({ title, user, links, onToggleSidebar, onLogout, side
             <Icon name="menu" size={22} />
           </Button>
           <Link to="/" className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-            <span className="brand__mark">G</span>
+            <AnimatedLogo size={32} showText={false} />
             <span>{title}</span>
           </Link>
         </div>

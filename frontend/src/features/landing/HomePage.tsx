@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/Button';
-import { MorphingText } from '../../components/MorphingText';
+import { AnimatedLogo } from '../../components/AnimatedLogo';
 
 const FEATURES = [
   { icon: '🤖', title: 'AI-guided matches', text: 'Get career recommendations tailored to your focus area.' },
@@ -13,10 +13,8 @@ export const HomePage = () => (
   <div className="page fade-in">
     <section className="hero-wrapper hero-glow">
       <div className="app-hero">
-        <div className="text-3d">
-          <MorphingText text="GradHire AI" as="span" />
-        </div>
-        <p className="hero-subtitle morph-word" style={{ animationDelay: '0.3s' }}>
+        <AnimatedLogo size={64} showText={true} />
+        <p className="hero-subtitle" style={{ animationDelay: '0.3s' }}>
           Build a stronger profile and let AI connect you with the right opportunities.
         </p>
         <div className="hero-actions" style={{ animationDelay: '0.5s' }}>

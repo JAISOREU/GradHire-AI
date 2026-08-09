@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Smoke tests', () => {
   test('homepage loads', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.text-3d, h1')).toContainText('GradHire AI');
+    await expect(page.locator('.animated-logo__text, .text-3d, h1')).toContainText('Gradture AI');
   });
 
   test('jobs page loads', async ({ page }) => {

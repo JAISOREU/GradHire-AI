@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { AuthUser } from '../core/types';
 import { Button } from './Button';
+import { AnimatedLogo } from './AnimatedLogo';
 
 type HeaderProps = {
   user: AuthUser | null;
@@ -41,7 +42,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
     <header ref={headerRef} className="app-header">
       <div className="app-header__inner">
         <div className="brand">
-          <span className="brand__mark">G</span>
+          <AnimatedLogo size={32} showText={false} />
           <span>GradHire AI</span>
         </div>
 
