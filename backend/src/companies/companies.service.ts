@@ -25,7 +25,7 @@ export class CompaniesService {
       where: {
         OR: [{ id: idOrName }, { name: idOrName }],
       },
-      include: { jobs: { where: { status: 'OPEN' } } },
+      include: { jobs: { where: { status: 'PUBLISHED' } } },
     });
     if (!company) {
       throw new NotFoundException('Company not found');

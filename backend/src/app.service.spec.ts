@@ -97,7 +97,7 @@ describe('AppService', () => {
   it('getJobs prioritizes data-related roles for a data focus', async () => {
     await service.saveStudentProfile('student-001', { name: 'Test', focus: 'Data analytics and dashboards' });
 
-    const jobs = await service.getJobs() as PaginatedResponse<{ id: string; title: string; matchScore: number }>;
+    const jobs = await service.getJobs({}) as PaginatedResponse<{ id: string; title: string; matchScore: number }>;
     assert.ok(jobs.items.length > 0);
     assert.ok(
       jobs.items.some((job) => /data|analytics|engineer/i.test(job.title)),
@@ -109,7 +109,7 @@ describe('AppService', () => {
   it('getJobs prioritizes AI-related roles for an AI focus', async () => {
     await service.saveStudentProfile('student-001', { name: 'Test', focus: 'AI and machine learning' });
 
-    const jobs = await service.getJobs() as PaginatedResponse<{ id: string; title: string; matchScore: number }>;
+    const jobs = await service.getJobs({}) as PaginatedResponse<{ id: string; title: string; matchScore: number }>;
     assert.ok(jobs.items.length > 0);
     assert.ok(
       jobs.items.some((job) => /ai|engineer/i.test(job.title)),
@@ -118,17 +118,17 @@ describe('AppService', () => {
   });
 
   it('getJobs filters by job type when a type query is provided', async () => {
-    const internships = await service.getJobs('INTERNSHIP') as PaginatedResponse<{ id: string; title: string; type: string }>;
+    const internships = await service.getJobs({ type: 'INTERNSHIP' }) as PaginatedResponse<{ id: string; title: string; type: string }>;
     assert.ok(internships.items.length > 0);
     assert.ok(internships.items.every((job) => job.type === 'INTERNSHIP'));
 
-    const hiring = await service.getJobs('HIRING') as PaginatedResponse<{ id: string; title: string; type: string }>;
+    const hiring = await service.getJobs({ type: 'HIRING' }) as PaginatedResponse<{ id: string; title: string; type: string }>;
     assert.ok(hiring.items.length > 0);
     assert.ok(hiring.items.every((job) => job.type === 'HIRING'));
   });
 
   it('getJobs returns jobs with a type field', async () => {
-    const jobs = await service.getJobs() as PaginatedResponse<{ id: string; title: string; type: string }>;
+    const jobs = await service.getJobs({}) as PaginatedResponse<{ id: string; title: string; type: string }>;
     assert.ok(jobs.items.length > 0);
     assert.ok(jobs.items.every((job) => typeof job.type === 'string'));
   });

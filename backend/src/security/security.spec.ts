@@ -29,7 +29,7 @@ test('Security - jobs endpoint does not leak internal errors', async () => {
   const prisma = createMockPrisma();
   const service = new AppService(prisma as unknown as PrismaService, { getRecommendations: async () => [] } as any, { get: async () => null, set: async () => {} } as any);
 
-  const jobs = await service.getJobs();
+  const jobs = await service.getJobs({});
   assert.ok(Array.isArray(jobs.items));
 });
 

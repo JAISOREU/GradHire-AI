@@ -89,7 +89,7 @@ test('apply creates an application, notification and email event', async () => {
 
   const service = new ApplicationsService(prisma as never, createMockEmail(), mockNotifications);
 
-  const result = await service.apply(student as never, 'job-1');
+  const result = await service.apply(student as never, 'job-1', {});
 
   assert.equal(result.status, 'APPLIED');
   assert.equal(applications.length, 1);
@@ -103,29 +103,29 @@ test('apply rejects duplicate applications', async () => {
   const { prisma } = createMockPrisma();
   const service = new ApplicationsService(prisma as never, createMockEmail(), createMockNotifications());
 
-  await service.apply(student as never, 'job-1');
-  await assert.rejects(() => service.apply(student as never, 'job-1'), BadRequestException);
+  await service.apply(student as never, 'job-1', {});
+  await assert.rejects(() => service.apply(student as never, 'job-1', {}), BadRequestException);
 });
 
 test('apply requires STUDENT role', async () => {
   const { prisma } = createMockPrisma();
   const service = new ApplicationsService(prisma as never, createMockEmail(), createMockNotifications());
 
-  await assert.rejects(() => service.apply(employer as never, 'job-1'), ForbiddenException);
+  await assert.rejects(() => service.apply(employer as never, 'job-1', {}), ForbiddenException);
 });
 
 test('apply throws NotFound when job is missing', async () => {
   const { prisma } = createMockPrisma();
   const service = new ApplicationsService(prisma as never, createMockEmail(), createMockNotifications());
 
-  await assert.rejects(() => service.apply(student as never, 'missing-job'), NotFoundException);
+  await assert.rejects(() => service.apply(student as never, 'missing-job', {}), NotFoundException);
 });
 
 test('withdraw only allows the owning student', async () => {
   const { prisma } = createMockPrisma();
   const service = new ApplicationsService(prisma as never, createMockEmail(), createMockNotifications());
 
-  const created = await service.apply(student as never, 'job-1');
+  const created = await service.apply(student as never, 'job-1', {});
   await assert.rejects(
     () => service.withdraw({ ...student, id: 'other-student' } as never, created.id as string),
     ForbiddenException,

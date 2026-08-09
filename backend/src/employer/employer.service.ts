@@ -111,7 +111,7 @@ export class EmployerService {
 
     if (body.requirements?.length) {
       await this.prisma.jobRequirement.createMany({
-        data: body.requirements.map((r, i) => ({ jobId: job.id, type: r.type, description: r.description, order: i })),
+        data: body.requirements.map((r, i) => ({ jobId: job.id, type: r.type as any, description: r.description, order: i })),
       });
     }
 
@@ -272,7 +272,7 @@ export class EmployerService {
           student: { include: { profile: { select: { id: true, name: true, focus: true } } } },
           interview: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -285,7 +285,7 @@ export class EmployerService {
       candidate: (a.student as { profile: { name: string } | null })?.profile?.name ?? (a.student as { email: string }).email,
       interview: a.interview,
       status: a.status,
-      createdAt: a.createdAt,
+      createdAt: (a as any).createdAt,
     }));
     return applyPagination(items, total, page, limit);
   }

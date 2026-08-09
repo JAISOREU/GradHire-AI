@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PrismaService, ApplicationStatus } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+import { ApplicationStatus } from '@prisma/client';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
 import { EmailService } from '../email/email.service';
@@ -92,7 +93,7 @@ export class ApplicationsService {
       id: application.id,
       jobId,
       status: application.status,
-      createdAt: application.createdAt,
+      createdAt: (application as any).createdAt,
     };
   }
 
@@ -119,22 +120,22 @@ export class ApplicationsService {
               status: true,
             },
           },
-          statusHistory: { orderBy: { createdAt: 'desc' }, take: 1 },
+          statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),
       this.prisma.application.count({ where }),
     ]);
 
-    const items = apps.map((a) => ({
+    const items = apps.map((a: Record<string, unknown>) => ({
       id: a.id,
       status: a.status,
       submittedAt: a.createdAt,
       lastUpdated: a.lastStatusChangeAt,
       job: a.job,
-      lastEvent: a.statusHistory?.[0],
+      lastEvent: (a.statusHistory as any)?.[0],
     }));
 
     return applyPagination(items, total, page, limit);
@@ -198,23 +199,23 @@ export class ApplicationsService {
         where,
         include: {
           student: { include: { profile: { select: { id: true, name: true, focus: true, skills: true } } } },
-          statusHistory: { orderBy: { createdAt: 'desc' }, take: 1 },
+          statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
           interview: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' } as any,
         skip: (page - 1) * limit,
         take: limit,
       }),
       this.prisma.application.count({ where }),
     ]);
 
-    const items = apps.map((a) => ({
+    const items = apps.map((a: Record<string, unknown>) => ({
       id: a.id,
       status: a.status,
       submittedAt: a.createdAt,
       viewedAt: a.viewedAt,
       student: a.student,
-      lastEvent: a.statusHistory?.[0],
+      lastEvent: (a.statusHistory as any)?.[0],
       interview: a.interview,
     }));
 

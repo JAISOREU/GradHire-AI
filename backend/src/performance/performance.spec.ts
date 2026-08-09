@@ -37,7 +37,7 @@ test('Performance - jobs listing responds quickly', async () => {
 
   const start = Date.now();
   for (let i = 0; i < 100; i++) {
-    await service.getJobs();
+    await service.getJobs({});
   }
   const avg = (Date.now() - start) / 100;
   assert.ok(avg < 10, `Jobs listing avg ${avg}ms exceeded 10ms threshold`);
