@@ -1,18 +1,25 @@
 import { useTheme } from '../core/theme/ThemeContext';
-import { Button } from './Button';
 
 export const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <button
+      type="button"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '0.75rem',
+        lineHeight: 1,
+        padding: '0.125rem',
+        color: 'var(--color-text-tertiary)',
+      }}
     >
-      {theme === 'light' ? '🌙' : '☀️'}
-    </Button>
+      {theme === 'light' ? 'Dark' : 'Light'}
+    </button>
   );
 };
