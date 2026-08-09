@@ -2434,8 +2434,8 @@ input[type='file']::file-selector-button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
   border-radius: var(--radius-full);
@@ -2445,17 +2445,17 @@ input[type='file']::file-selector-button:hover {
   transition: background var(--transition-slow), color var(--transition-slow), box-shadow var(--transition-base), transform var(--transition-fast);
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.25);
 }
 
 .theme-toggle:hover {
   transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
 }
 
 .theme-toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-soft), 0 2px 8px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 0 3px var(--color-primary-soft), 0 1px 4px rgba(245, 158, 11, 0.25);
 }
 
 .theme-toggle:active {
@@ -2466,11 +2466,11 @@ input[type='file']::file-selector-button:hover {
 .theme-toggle[aria-pressed='true'] {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #e2e8f0;
-  box-shadow: 0 2px 12px rgba(30, 41, 59, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 8px rgba(30, 41, 59, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .theme-toggle[aria-pressed='true']:hover {
-  box-shadow: 0 4px 20px rgba(30, 41, 59, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 14px rgba(30, 41, 59, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .theme-toggle__bg {
@@ -2496,15 +2496,17 @@ input[type='file']::file-selector-button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   transition: transform var(--transition-slow), opacity var(--transition-base);
 }
 
 .theme-toggle__svg {
   display: block;
+  width: 16px;
+  height: 16px;
   transition: transform var(--transition-slow), opacity var(--transition-base);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 .theme-toggle:hover .theme-toggle__svg {
@@ -2532,31 +2534,31 @@ input[type='file']::file-selector-button:hover {
 
 .theme-toggle__star {
   position: absolute;
-  width: 3px;
-  height: 3px;
+  width: 2px;
+  height: 2px;
   background: #fff;
   border-radius: var(--radius-full);
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
   animation: twinkle 1.5s ease-in-out infinite;
 }
 
 .theme-toggle__star--1 {
-  top: 8px;
-  right: 10px;
+  top: 6px;
+  right: 7px;
   animation-delay: 0s;
 }
 
 .theme-toggle__star--2 {
-  bottom: 10px;
-  left: 8px;
+  bottom: 7px;
+  left: 6px;
   animation-delay: 0.5s;
 }
 
 .theme-toggle__star--3 {
   top: 50%;
-  left: 6px;
-  width: 2px;
-  height: 2px;
+  left: 5px;
+  width: 1.5px;
+  height: 1.5px;
   animation-delay: 1s;
 }
 
@@ -2583,18 +2585,33 @@ input[type='file']::file-selector-button:hover {
 /* Responsive */
 @media (max-width: 640px) {
   .theme-toggle {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 
   .theme-toggle__icon-wrap {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
 
   .theme-toggle__svg {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .theme-toggle__star--1 {
+    top: 5px;
+    right: 5px;
+  }
+
+  .theme-toggle__star--2 {
+    bottom: 5px;
+    left: 5px;
+  }
+
+  .theme-toggle__star--3 {
+    top: 50%;
+    left: 4px;
   }
 }
 
