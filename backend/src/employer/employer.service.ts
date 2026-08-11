@@ -3,12 +3,13 @@ import { PrismaService } from '../prisma.service';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
 import { CreateJobDto, UpdateJobDto } from '../common/dto/job.dto';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class EmployerService {
   private readonly logger = new Logger(EmployerService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly cache: CacheService) {}
 
   private requireEmployer(user: AuthUser): void {
     if (user.role !== 'EMPLOYER') {
@@ -122,6 +123,8 @@ export class EmployerService {
       });
     }
 
+    await this.cache.invalidate('jobs:*');
+
     return job;
   }
 
@@ -174,6 +177,8 @@ export class EmployerService {
       data.publishedAt = new Date();
     }
 
+    await this.cache.invalidate('jobs:*');
+
     return this.prisma.job.update({ where: { id: jobId }, data: data as any });
   }
 
@@ -184,6 +189,8 @@ export class EmployerService {
     if (!job || job.employerId !== user.id) {
       throw new NotFoundException('Job not found');
     }
+
+    await this.cache.invalidate('jobs:*');
 
     await this.prisma.job.update({ where: { id: jobId }, data: { status: 'ARCHIVED' } });
     return { message: 'Job archived successfully' };
@@ -249,16 +256,25 @@ export class EmployerService {
       } as any,
     });
 
-    const [totalApplications, awaitingReview, shortlisted, interviewing, offers, hired, rejected, withdrawn] = await Promise.all([
-      this.prisma.application.count({ where: { job: { employerId: user.id } } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'UNDER_REVIEW' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'SHORTLISTED' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'INTERVIEW' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'OFFER' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'HIRED' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'REJECTED' } }),
-      this.prisma.application.count({ where: { job: { employerId: user.id }, status: 'WITHDRAWN' } }),
-    ]);
+    const grouped = await this.prisma.application.groupBy({
+      by: ['status'],
+      where: { job: { employerId: user.id } },
+      _count: { status: true },
+    });
+
+    const counts: Record<string, number> = {};
+    for (const row of grouped) {
+      counts[row.status] = row._count.status;
+    }
+
+    const totalApplications = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    const awaitingReview = counts['UNDER_REVIEW'] ?? 0;
+    const shortlisted = counts['SHORTLISTED'] ?? 0;
+    const interviewing = counts['INTERVIEW'] ?? 0;
+    const offers = counts['OFFER'] ?? 0;
+    const hired = counts['HIRED'] ?? 0;
+    const rejected = counts['REJECTED'] ?? 0;
+    const withdrawn = counts['WITHDRAWN'] ?? 0;
 
     return {
       activeJobs,
