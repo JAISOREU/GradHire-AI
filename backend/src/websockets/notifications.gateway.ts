@@ -5,7 +5,16 @@ import { Logger, BadRequestException } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? ['http://localhost:5173'],
+    origin: (() => {
+      const raw = process.env.CORS_ORIGIN;
+      if (!raw) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('CORS_ORIGIN environment variable is required in production');
+        }
+        return ['http://localhost:5173', 'http://localhost:3000'];
+      }
+      return raw.split(',').map((o) => o.trim()).filter(Boolean);
+    })(),
     credentials: true,
   },
 })

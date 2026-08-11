@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { WorkAuthorizationStatus } from '@prisma/client';
 import { AiService, AiRecommendation } from './ai/ai.service';
@@ -20,6 +20,12 @@ export class AppService implements OnModuleInit {
 
   constructor(private readonly prisma: PrismaService, private readonly ai: AiService, private readonly cache: CacheService) {}
 
+  private assertDbAvailable(): void {
+    if (!this.dbAvailable && process.env.NODE_ENV === 'production') {
+      throw new ServiceUnavailableException('Database connection failed');
+    }
+  }
+
   async onModuleInit() {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
@@ -30,6 +36,9 @@ export class AppService implements OnModuleInit {
       this.dbAvailable = false;
       console.error('[AppService] PostgreSQL check failed:', message);
       this.logger.warn('PostgreSQL unavailable — falling back to in-memory storage');
+      if (process.env.NODE_ENV === 'production') {
+        throw new ServiceUnavailableException('Database connection failed');
+      }
     }
   }
 
@@ -124,6 +133,7 @@ export class AppService implements OnModuleInit {
   }
 
   async getJobById(id: string, requesterId?: string): Promise<Record<string, unknown>> {
+    this.assertDbAvailable();
     if (this.dbAvailable) {
       try {
         const dbJob = await this.prisma.job.findUnique({
@@ -166,6 +176,7 @@ export class AppService implements OnModuleInit {
   }
 
   async getStudentProfile(userId: string): Promise<Record<string, unknown>> {
+    this.assertDbAvailable();
     if (this.dbAvailable) {
       try {
         const dbProfile = await this.prisma.profile.findFirst({
@@ -209,6 +220,7 @@ export class AppService implements OnModuleInit {
   }
 
   async saveStudentProfile(userId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
+    this.assertDbAvailable();
     const summary = typeof body.focus === 'string' ? `Focused on ${body.focus.toLowerCase()}.` : '';
     const requiredFields = ['name', 'focus', 'skills', 'education', 'experience', 'phone', 'location', 'workAuthorization', 'degree', 'fieldOfStudy'] as const;
     const profileCompleted = requiredFields.every((field) => {
@@ -312,6 +324,7 @@ export class AppService implements OnModuleInit {
   }
 
   async listMessages(userId: string, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+    this.assertDbAvailable();
     const { page = 1, limit = 20 } = pagination ?? {};
     if (this.dbAvailable) {
       try {
@@ -346,6 +359,7 @@ export class AppService implements OnModuleInit {
   }
 
   async listSavedJobs(userId: string, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+    this.assertDbAvailable();
     const { page = 1, limit = 20 } = pagination ?? {};
     if (this.dbAvailable) {
       try {

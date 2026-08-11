@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IStorageService, UploadedFile } from './storage.service';
-import { join, dirname } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { promises as fs } from 'node:fs';
 
 @Injectable()
@@ -12,8 +12,20 @@ export class LocalStorageService implements IStorageService {
     this.basePath = process.env.STORAGE_LOCAL_PATH ?? './uploads';
   }
 
+  private sanitizeKey(key: string): string {
+    const cleaned = basename(key).replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (cleaned !== key && !key.startsWith(this.basePath)) {
+      throw new Error('Invalid storage key');
+    }
+    const resolved = join(this.basePath, cleaned);
+    if (!resolved.startsWith(join(process.cwd(), this.basePath))) {
+      throw new Error('Storage path traversal detected');
+    }
+    return resolved;
+  }
+
   async upload(file: UploadedFile, key: string): Promise<string> {
-    const fullPath = join(this.basePath, key);
+    const fullPath = this.sanitizeKey(key);
     const dir = dirname(fullPath);
 
     await fs.mkdir(dir, { recursive: true });
@@ -24,7 +36,7 @@ export class LocalStorageService implements IStorageService {
   }
 
   async remove(key: string): Promise<void> {
-    const fullPath = join(this.basePath, key);
+    const fullPath = this.sanitizeKey(key);
     try {
       await fs.unlink(fullPath);
     } catch {

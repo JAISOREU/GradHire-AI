@@ -1,12 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
+import { AuthGuard } from '../auth/auth.guard';
+import { AuthUser } from '../auth/auth.service';
 import { MetricsService } from './metrics.service';
 
 @Controller('metrics')
+@UseGuards(AuthGuard)
 export class MetricsController {
   constructor(private readonly metrics: MetricsService) {}
 
   @Get()
-  async getMetrics() {
+  async getMetrics(@Req() req: Request & { user: AuthUser }) {
     return this.metrics.getMetrics();
   }
 }
