@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
 import { KPICard } from '../../components/KPICard';
+import { getRoleLabel } from '../../core/utils/roleLabels';
 import { DashboardSection } from '../../components/DashboardSection';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
@@ -83,7 +84,7 @@ export const AdminDashboardPage = () => {
         className="section--mt"
       >
         <div className="status-strip status-strip--3">
-          <KPICard label="Students" value={stats.students} icon="🎓" />
+          <KPICard label={getRoleLabel('STUDENT')} value={stats.students} icon="🎓" />
           <KPICard label="Employers" value={stats.employers} icon="🏢" />
           <KPICard label="Total users" value={stats.users} icon="👥" />
         </div>

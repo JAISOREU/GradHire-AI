@@ -8,7 +8,9 @@ const parsePaginatedJobs = async <T>(url: string): Promise<PaginatedResponse<T>>
 
 export const jobsApi = {
   list: async (type: JobType | '' = '', page = 1, limit = 20): Promise<Job[]> => {
-    const data = await parsePaginatedJobs<Job>(`/api/v1/jobs?type=${encodeURIComponent(type)}&page=${page}&limit=${limit}`);
+    const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (type) query.set('type', type);
+    const data = await parsePaginatedJobs<Job>(`/api/v1/jobs?${query.toString()}`);
     return data.items ?? [];
   },
 

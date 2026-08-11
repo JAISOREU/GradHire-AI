@@ -13,6 +13,7 @@ type AuthContextValue = {
   register: (email: string, password: string, role: AuthUser['role'], name?: string) => Promise<AuthUser>;
   applyAuth: (data: AuthResponse) => void;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -53,6 +54,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setStatus('unauthenticated');
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const { user } = await authApi.me();
+      setUser(user);
+    } catch {
+      clearStoredToken();
+      setUser(null);
+      setStatus('unauthenticated');
+    }
+  }, []);
+
   // Restore session on mount.
   useEffect(() => {
     const token = getStoredToken();
@@ -81,8 +93,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       register,
       applyAuth,
       logout,
+      refreshUser,
     }),
-    [user, status, login, register, applyAuth, logout],
+    [user, status, login, register, applyAuth, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

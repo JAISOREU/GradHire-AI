@@ -56,7 +56,7 @@ export class MessagesService {
     this.gateway.server.to(`user:${recipientId}`).emit('message', payload);
     this.gateway.server.to(`user:${senderId}`).emit('message', payload);
 
-    await this.notifications.create(recipientId, `New message: ${body.slice(0, 100)}`, undefined);
+    await this.notifications.create(recipientId, `New message: ${body.slice(0, 100)}`, undefined, 'MESSAGE');
 
     return payload;
   }

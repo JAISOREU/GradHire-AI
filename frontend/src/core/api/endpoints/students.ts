@@ -1,9 +1,19 @@
 import { api } from '../client';
 import type { Application, StudentProfile, StudentSettings } from '../../types';
 
+export const usersApi = {
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api<{ avatarUrl: string }>('/api/v1/users/me/avatar', { method: 'POST', formData: form });
+  },
+  deleteAvatar: () => api<void>('/api/v1/users/me/avatar', { method: 'DELETE' }),
+  getAvatar: () => api<{ avatarUrl: string }>('/api/v1/users/me/avatar'),
+};
+
 export const studentsApi = {
   getProfile: () => api<StudentProfile>('/api/v1/students/me'),
-  updateProfile: (payload: { name: string; focus: string }) =>
+  updateProfile: (payload: Partial<StudentProfile>) =>
     api<StudentProfile>('/api/v1/students/me', { method: 'PUT', json: payload }),
   listApplications: (page = 1, limit = 20): Promise<Application[]> =>
     api<{ items: Application[] }>(`/api/v1/applications/me?page=${page}&limit=${limit}`).then((r) => r.items ?? []),

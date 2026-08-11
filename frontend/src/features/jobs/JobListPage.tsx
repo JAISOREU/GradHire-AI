@@ -52,15 +52,6 @@ export const JobListPage = () => {
                   </div>
                   <span className="list-item__action">View →</span>
                 </div>
-                <div className="match-score" role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${Math.min(job.matchScore, 100)}% match score`} aria-label={`Match score ${job.matchScore}%`}>
-                  <div className="match-score__top">
-                    <span>Match score</span>
-                    <strong>{job.matchScore}%</strong>
-                  </div>
-                  <div className="match-score__track">
-                    <div className="match-score__fill" style={{ width: `${Math.min(job.matchScore, 100)}%` }} />
-                  </div>
-                </div>
               </Link>
             ))}
           </div>

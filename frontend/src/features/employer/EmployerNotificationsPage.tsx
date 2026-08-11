@@ -11,15 +11,15 @@ export const EmployerNotificationsPage = () => {
       <h1 className="page-title">Notifications</h1>
       <p className="card__subtitle card__subtitle card__subtitle--mt">Updates on applicants and your postings.</p>
 
-      <div className="list" style={{ marginTop: '1.25rem' }}>
+      <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading notifications…" />
         ) : notifications && notifications.length > 0 ? (
           notifications.map((n) => (
             <article key={n.id} className="list-item">
-              <p style={{ fontSize: '0.95rem' }}>{n.message}</p>
+              <p className="text-base">{n.message}</p>
               {n.job && (
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '0.35rem' }}>
+                <p className="text-sm text-muted mt-1">
                   {n.job.title} at {n.job.company}
                 </p>
               )}

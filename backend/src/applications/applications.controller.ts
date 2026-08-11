@@ -22,6 +22,12 @@ export class ApplicationsController {
     return this.applications.getMyApplications(req.user, pagination);
   }
 
+  @Get('employer/all')
+  async allForEmployer(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
+    const pagination = query ? normalizePagination(query) : undefined;
+    return this.applications.listForEmployer(req.user, pagination);
+  }
+
   @Get(':id')
   async getById(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.applications.getById(req.user, id);

@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { WorkAuthorizationStatus } from '@prisma/client';
 import { AiService, AiRecommendation } from './ai/ai.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from './common/pagination';
 import { CacheService } from './cache/cache.service';
@@ -122,7 +123,7 @@ export class AppService implements OnModuleInit {
     return result;
   }
 
-  async getJobById(id: string): Promise<Record<string, unknown>> {
+  async getJobById(id: string, requesterId?: string): Promise<Record<string, unknown>> {
     if (this.dbAvailable) {
       try {
         const dbJob = await this.prisma.job.findUnique({
@@ -138,9 +139,16 @@ export class AppService implements OnModuleInit {
           },
         });
         if (dbJob) {
+          const isOwner = requesterId && dbJob.employerId === requesterId;
+          if (dbJob.status !== 'PUBLISHED' && !isOwner) {
+            throw new NotFoundException('Job not found');
+          }
           return { ...dbJob, type: String(dbJob.type), experienceLevel: String(dbJob.experienceLevel), workplaceType: String(dbJob.workplaceType) };
         }
-      } catch {
+      } catch (error: unknown) {
+        if (error instanceof NotFoundException) {
+          throw error;
+        }
         this.logger.warn('DB read failed — falling back to in-memory job lookup');
       }
     }
@@ -157,7 +165,7 @@ export class AppService implements OnModuleInit {
     return this.ai.getRecommendations(focus, topK);
   }
 
-  async getStudentProfile(userId: string): Promise<{ id: string; name: string; focus: string; summary: string }> {
+  async getStudentProfile(userId: string): Promise<Record<string, unknown>> {
     if (this.dbAvailable) {
       try {
         const dbProfile = await this.prisma.profile.findFirst({
@@ -170,6 +178,27 @@ export class AppService implements OnModuleInit {
             name: dbProfile.name,
             focus: dbProfile.focus,
             summary: dbProfile.summary ?? '',
+            skills: dbProfile.skills ?? [],
+            education: dbProfile.education ?? '',
+            experience: dbProfile.experience ?? '',
+            phone: dbProfile.phone ?? '',
+            location: dbProfile.location ?? '',
+            website: dbProfile.website ?? '',
+            linkedin: dbProfile.linkedin ?? '',
+            github: dbProfile.github ?? '',
+            portfolio: dbProfile.portfolio ?? '',
+            expectedSalary: dbProfile.expectedSalary ?? null,
+            availability: dbProfile.availability ?? '',
+            workAuthorization: dbProfile.workAuthorization ?? '',
+            authorizedCountries: dbProfile.authorizedCountries ?? [],
+            needsVisaSponsorship: dbProfile.needsVisaSponsorship ?? false,
+            studentFriendly: dbProfile.studentFriendly ?? false,
+            freshGraduate: dbProfile.freshGraduate ?? false,
+            graduationYear: dbProfile.graduationYear ?? null,
+            degree: dbProfile.degree ?? '',
+            fieldOfStudy: dbProfile.fieldOfStudy ?? '',
+            internshipAccepted: dbProfile.internshipAccepted ?? false,
+            profileCompleted: dbProfile.profileCompleted ?? false,
           };
         }
       } catch {
@@ -179,23 +208,100 @@ export class AppService implements OnModuleInit {
     return this.profile;
   }
 
-  async saveStudentProfile(userId: string, body: { name: string; focus: string }): Promise<{ id: string; name: string; focus: string; summary: string }> {
-    const summary = `Focused on ${body.focus.toLowerCase()}.`;
+  async saveStudentProfile(userId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
+    const summary = typeof body.focus === 'string' ? `Focused on ${body.focus.toLowerCase()}.` : '';
 
     if (this.dbAvailable) {
       try {
         const saved = await this.prisma.profile.upsert({
           where: { userId },
-          update: { name: body.name, focus: body.focus, summary },
-          create: { userId, name: body.name, focus: body.focus, summary, skills: [] },
+          update: {
+            name: body.name as string,
+            focus: body.focus as string,
+            summary,
+            skills: (body.skills as string[]) ?? [],
+            education: body.education as string | undefined,
+            experience: body.experience as string | undefined,
+            phone: body.phone as string | undefined,
+            location: body.location as string | undefined,
+            website: body.website as string | undefined,
+            linkedin: body.linkedin as string | undefined,
+            github: body.github as string | undefined,
+            portfolio: body.portfolio as string | undefined,
+            expectedSalary: body.expectedSalary as string | undefined,
+            availability: body.availability as string | undefined,
+            workAuthorization: body.workAuthorization as WorkAuthorizationStatus | undefined,
+            authorizedCountries: (body.authorizedCountries as string[]) ?? [],
+            needsVisaSponsorship: body.needsVisaSponsorship as boolean | undefined,
+            studentFriendly: body.studentFriendly as boolean | undefined,
+            freshGraduate: body.freshGraduate as boolean | undefined,
+            graduationYear: body.graduationYear as string | undefined,
+            degree: body.degree as string | undefined,
+            fieldOfStudy: body.fieldOfStudy as string | undefined,
+            internshipAccepted: body.internshipAccepted as boolean | undefined,
+            profileCompleted: body.profileCompleted as boolean | undefined,
+          },
+          create: {
+            userId,
+            name: body.name as string,
+            focus: body.focus as string,
+            summary,
+            skills: (body.skills as string[]) ?? [],
+            education: body.education as string | undefined,
+            experience: body.experience as string | undefined,
+            phone: body.phone as string | undefined,
+            location: body.location as string | undefined,
+            website: body.website as string | undefined,
+            linkedin: body.linkedin as string | undefined,
+            github: body.github as string | undefined,
+            portfolio: body.portfolio as string | undefined,
+            expectedSalary: body.expectedSalary as string | undefined,
+            availability: body.availability as string | undefined,
+            workAuthorization: body.workAuthorization as WorkAuthorizationStatus | undefined,
+            authorizedCountries: (body.authorizedCountries as string[]) ?? [],
+            needsVisaSponsorship: body.needsVisaSponsorship as boolean | undefined,
+            studentFriendly: body.studentFriendly as boolean | undefined,
+            freshGraduate: body.freshGraduate as boolean | undefined,
+            graduationYear: body.graduationYear as string | undefined,
+            degree: body.degree as string | undefined,
+            fieldOfStudy: body.fieldOfStudy as string | undefined,
+            internshipAccepted: body.internshipAccepted as boolean | undefined,
+            profileCompleted: body.profileCompleted as boolean | undefined,
+          },
         });
-        return { id: saved.id, name: saved.name, focus: saved.focus, summary: saved.summary ?? '' };
+        return {
+          id: saved.id,
+          name: saved.name,
+          focus: saved.focus,
+          summary: saved.summary ?? '',
+          skills: saved.skills ?? [],
+          education: saved.education ?? '',
+          experience: saved.experience ?? '',
+          phone: saved.phone ?? '',
+          location: saved.location ?? '',
+          website: saved.website ?? '',
+          linkedin: saved.linkedin ?? '',
+          github: saved.github ?? '',
+          portfolio: saved.portfolio ?? '',
+          expectedSalary: saved.expectedSalary ?? null,
+          availability: saved.availability ?? '',
+          workAuthorization: saved.workAuthorization ?? '',
+          authorizedCountries: saved.authorizedCountries ?? [],
+          needsVisaSponsorship: saved.needsVisaSponsorship ?? false,
+          studentFriendly: saved.studentFriendly ?? false,
+          freshGraduate: saved.freshGraduate ?? false,
+          graduationYear: saved.graduationYear ?? null,
+          degree: saved.degree ?? '',
+          fieldOfStudy: saved.fieldOfStudy ?? '',
+          internshipAccepted: saved.internshipAccepted ?? false,
+          profileCompleted: saved.profileCompleted ?? false,
+        };
       } catch {
         this.logger.warn('DB write failed — saving to memory instead');
       }
     }
 
-    this.profile = { ...this.profile, name: body.name, focus: body.focus, summary };
+    this.profile = { ...this.profile, name: body.name as string, focus: body.focus as string, summary };
     return this.profile;
   }
 

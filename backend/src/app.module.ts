@@ -23,9 +23,10 @@ import { MessagesModule } from './messages/messages.module';
 import { ScreeningModule } from './screening/screening.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule, ScreeningModule, InterviewsModule, AnalyticsModule],
+  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule, ScreeningModule, InterviewsModule, AnalyticsModule, UsersModule],
   controllers: [AppController, MetricsController],
   providers: [AppService, HealthService, MetricsService],
 })

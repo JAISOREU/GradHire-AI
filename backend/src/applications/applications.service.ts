@@ -20,6 +20,10 @@ export class ApplicationsService {
       throw new NotFoundException('Job not found');
     }
 
+    if (job.status !== 'PUBLISHED') {
+      throw new BadRequestException('This job is not open for applications');
+    }
+
     const existing = await this.prisma.application.findUnique({
       where: { studentId_jobId: { studentId: user.id, jobId } },
     });
@@ -57,7 +61,7 @@ export class ApplicationsService {
       include: { statusHistory: true, events: true },
     });
 
-    await this.notifications.create(job.employerId, `New application received for "${job.title}" at ${job.company}`, application.id);
+    await this.notifications.create(job.employerId, `New application received for "${job.title}" at ${job.company}`, application.id, 'APPLICATION');
 
     const employer = await this.prisma.user.findUnique({
       where: { id: job.employerId },
@@ -69,8 +73,8 @@ export class ApplicationsService {
         const emailResult = await this.email.send({
           to: employer.email,
           subject: `New application: ${job.title} at ${job.company}`,
-          text: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
-          html: `<p>A student applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via Gradture AI.</p>`,
+          text: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
+          html: `<p>A candidate applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via Gradture AI.</p>`,
         });
 
         await this.prisma.emailEvent.create({
@@ -79,7 +83,7 @@ export class ApplicationsService {
             recipientId: job.employerId,
             recipientEmail: employer.email,
             subject: `New application: ${job.title} at ${job.company}`,
-            body: `A student applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
+            body: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
             status: emailResult.status,
             sentAt: emailResult.status === 'SENT' ? new Date() : null,
           },
@@ -122,7 +126,7 @@ export class ApplicationsService {
           },
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
         },
-        orderBy: { createdAt: 'desc' } as any,
+        orderBy: { id: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -202,7 +206,7 @@ export class ApplicationsService {
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
           interview: true,
         },
-        orderBy: { createdAt: 'desc' } as any,
+        orderBy: { id: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -222,6 +226,18 @@ export class ApplicationsService {
     return applyPagination(items, total, page, limit);
   }
 
+  private readonly ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+    SUBMITTED: ['UNDER_REVIEW', 'SHORTLISTED', 'REJECTED', 'WITHDRAWN'],
+    UNDER_REVIEW: ['SHORTLISTED', 'REJECTED', 'WITHDRAWN'],
+    SHORTLISTED: ['INTERVIEW', 'ASSESSMENT', 'REJECTED', 'WITHDRAWN'],
+    INTERVIEW: ['ASSESSMENT', 'OFFER', 'REJECTED', 'WITHDRAWN'],
+    ASSESSMENT: ['OFFER', 'REJECTED', 'WITHDRAWN'],
+    OFFER: ['HIRED', 'REJECTED', 'WITHDRAWN'],
+    HIRED: [],
+    REJECTED: [],
+    WITHDRAWN: [],
+  };
+
   async updateStatus(user: AuthUser, applicationId: string, body: { status: ApplicationStatus; message?: string }): Promise<Record<string, unknown>> {
     const application = await this.prisma.application.findUnique({
       where: { id: applicationId },
@@ -237,6 +253,10 @@ export class ApplicationsService {
     }
 
     const previousStatus = application.status;
+    const allowed = this.ALLOWED_TRANSITIONS[previousStatus] ?? [];
+    if (!allowed.includes(body.status)) {
+      throw new BadRequestException(`Cannot transition from ${previousStatus} to ${body.status}`);
+    }
 
     const updated = await this.prisma.application.update({
       where: { id: applicationId },
@@ -266,7 +286,7 @@ export class ApplicationsService {
       include: { statusHistory: true },
     });
 
-    await this.notifications.create(application.studentId, `Your application for "${application.job.title}" has been updated to ${body.status}`, applicationId);
+    await this.notifications.create(application.studentId, `Your application for "${application.job.title}" has been updated to ${body.status}`, applicationId, 'APPLICATION');
 
     return { id: updated.id, status: updated.status, previousStatus };
   }
@@ -279,6 +299,10 @@ export class ApplicationsService {
     });
     if (!application || application.studentId !== user.id) {
       throw new ForbiddenException('You can only withdraw your own applications');
+    }
+
+    if (['HIRED', 'REJECTED', 'WITHDRAWN'].includes(application.status)) {
+      throw new BadRequestException(`Cannot withdraw an application with status ${application.status}`);
     }
 
     const updated = await this.prisma.application.update({
@@ -307,9 +331,51 @@ export class ApplicationsService {
       },
     });
 
-    await this.notifications.create(application.job.employerId, `A candidate withdrew their application for "${application.job.title}"`, applicationId);
+    await this.notifications.create(application.job.employerId, `A candidate withdrew their application for "${application.job.title}"`, applicationId, 'APPLICATION');
 
     return { id: updated.id, status: updated.status };
+  }
+
+  async listForEmployer(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+    const employerJobs = await this.prisma.job.findMany({
+      where: { employerId: user.id },
+      select: { id: true },
+    });
+    const jobIds = employerJobs.map((j) => j.id);
+    if (jobIds.length === 0) {
+      return { items: [], total: 0, page: pagination?.page ?? 1, limit: pagination?.limit ?? 20, totalPages: 1 };
+    }
+
+    const { page = 1, limit = 20 } = pagination ?? {};
+    const where = { jobId: { in: jobIds } };
+    const [apps, total] = await Promise.all([
+      this.prisma.application.findMany({
+        where,
+        include: {
+          student: { include: { profile: { select: { id: true, name: true, focus: true, skills: true } } } },
+          job: { select: { id: true, title: true, company: true } },
+          statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
+          interview: true,
+        },
+        orderBy: { createdAt: 'desc' } as any,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.application.count({ where }),
+    ]);
+
+    const items = apps.map((a: Record<string, unknown>) => ({
+      id: a.id,
+      status: a.status,
+      submittedAt: a.createdAt,
+      viewedAt: a.viewedAt,
+      student: a.student,
+      job: a.job,
+      lastEvent: (a.statusHistory as any)?.[0],
+      interview: a.interview,
+    }));
+
+    return applyPagination(items, total, page, limit);
   }
 
   private requireRole(user: AuthUser, role: string): void {

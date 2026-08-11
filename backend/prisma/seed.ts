@@ -10,12 +10,12 @@ async function main() {
       email: 'employer@demo.gradhire.ai',
       passwordHash: 'demo-hash',
       role: 'EMPLOYER',
-      profile: {
+      employerProfile: {
         create: {
-          name: 'Demo Employer',
-          focus: 'Hiring',
-          summary: 'Demo employer account',
-          skills: [],
+          companyName: 'Acme Corp',
+          industry: 'Technology',
+          location: 'San Francisco, CA',
+          description: 'Demo employer account',
         },
       },
     },
@@ -61,8 +61,13 @@ async function main() {
       company: 'Acme Corp',
       location: 'San Francisco, CA',
       type: 'HIRING',
+      experienceLevel: 'ENTRY_LEVEL',
+      workplaceType: 'ONSITE',
       description: 'Build awesome products.',
-      status: 'OPEN',
+      responsibilities: 'Develop and maintain web applications.',
+      requiredQualifications: 'Bachelor degree in Computer Science or related field.',
+      requiredSkills: ['TypeScript', 'React', 'Node.js'],
+      status: 'PUBLISHED',
     },
   });
 

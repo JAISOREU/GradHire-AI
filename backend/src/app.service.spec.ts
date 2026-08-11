@@ -116,13 +116,13 @@ describe('AppService', () => {
   });
 
   it('saveStudentProfile persists the submitted name and focus', async () => {
-    const updated = await service.saveStudentProfile('student-001', { name: 'Jordan Lee', focus: 'Data analytics' });
+    const updated = await service.saveStudentProfile('student-001', { name: 'Jordan Lee', focus: 'Data analytics' }) as Record<string, unknown>;
 
     assert.equal(updated.name, 'Jordan Lee');
     assert.equal(updated.focus, 'Data analytics');
-    assert.ok(updated.summary.includes('data analytics'));
+    assert.ok(String(updated.summary).includes('data analytics'));
 
-    const profile = await service.getStudentProfile('student-001');
+    const profile = await service.getStudentProfile('student-001') as Record<string, unknown>;
     assert.equal(profile.name, 'Jordan Lee');
   });
 

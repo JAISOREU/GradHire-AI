@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import type { NavItem } from '../core/utils/navigation';
+import type { NavItem, NavSection } from '../core/utils/navigation';
 import { Icon } from './Icon';
 
 type SidebarProps = {
+  sections?: NavSection[];
   items?: NavItem[];
-  sections?: { label?: string; items: NavItem[] }[];
   title: string;
   footer?: React.ReactNode;
   className?: string;
@@ -12,10 +12,10 @@ type SidebarProps = {
   onToggle?: () => void;
 };
 
-export const Sidebar = ({ items, sections, title, footer, className, collapsed, onToggle }: SidebarProps) => (
-  <aside className={`sidebar ${className ?? ''} ${collapsed ? 'is-collapsed' : ''}`}>
+export const Sidebar = ({ sections, items, title, footer, className, collapsed, onToggle }: SidebarProps) => (
+  <aside className={`sidebar ${className ?? ''} ${collapsed ? 'is-collapsed' : ''}`} aria-label={title}>
     <div className="sidebar__head">
-      {!collapsed && <span className="sidebar__head-text">{title}</span>}
+      <span className="sidebar__head-text">{title}</span>
       {onToggle && (
         <button
           type="button"
@@ -26,20 +26,22 @@ export const Sidebar = ({ items, sections, title, footer, className, collapsed, 
         />
       )}
     </div>
-    <nav className="sidebar__nav" aria-label={title}>
+    <nav className="sidebar__nav" aria-label={`${title} navigation`}>
       {sections
         ? sections.map((section, idx) => (
             <div key={idx}>
-              {section.label && !collapsed && <div className="sidebar__section">{section.label}</div>}
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) => `sidebar__link ${isActive ? 'is-active' : ''}`}
-                  title={collapsed ? item.label : undefined}
+                  data-tooltip={item.label}
+                  aria-label={item.label}
+                  title={item.label}
                 >
-                  <span className="sidebar__icon" aria-hidden="true"><Icon name={item.icon as any} size={18} /></span>
-                  {!collapsed && <span className="sidebar__label">{item.label}</span>}
+                  <span className="sidebar__icon" aria-hidden="true">
+                    <Icon name={item.icon as any} size={22} />
+                  </span>
                 </NavLink>
               ))}
             </div>
@@ -49,13 +51,16 @@ export const Sidebar = ({ items, sections, title, footer, className, collapsed, 
               key={item.to}
               to={item.to}
               className={({ isActive }) => `sidebar__link ${isActive ? 'is-active' : ''}`}
-              title={collapsed ? item.label : undefined}
+              data-tooltip={item.label}
+              aria-label={item.label}
+              title={item.label}
             >
-              <span className="sidebar__icon" aria-hidden="true"><Icon name={item.icon as any} size={18} /></span>
-              {!collapsed && <span className="sidebar__label">{item.label}</span>}
+              <span className="sidebar__icon" aria-hidden="true">
+                <Icon name={item.icon as any} size={22} />
+              </span>
             </NavLink>
           ))}
     </nav>
-    {footer && !collapsed && <div className="sidebar__footer">{footer}</div>}
+    {footer && <div className="sidebar__footer">{footer}</div>}
   </aside>
 );

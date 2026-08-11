@@ -24,6 +24,8 @@ export type AuthUser = {
   id: string;
   email: string;
   role: string;
+  name?: string;
+  avatarUrl?: string;
 };
 
 @Injectable()
@@ -56,13 +58,21 @@ export class AuthService {
                   focus: '',
                   summary: '',
                   skills: [],
+                  authorizedCountries: [],
                 },
               }
             : undefined,
         },
+        include: { profile: true, employerProfile: true },
       });
 
-      return this.buildAuthResponse({ id: user.id, email: user.email, role: user.role });
+      return this.buildAuthResponse({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.profile?.name || user.employerProfile?.companyName,
+        avatarUrl: user.avatarUrl ?? undefined,
+      });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes('Unique constraint') || message.includes('unique')) {
@@ -76,6 +86,7 @@ export class AuthService {
   async login(body: { email: string; password: string }): Promise<{ accessToken: string; user: AuthUser }> {
     const user = await this.prisma.user.findUnique({
       where: { email: body.email.toLowerCase() },
+      select: { id: true, email: true, role: true, passwordHash: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
     });
 
     if (!user) {
@@ -87,11 +98,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.buildAuthResponse({ id: user.id, email: user.email, role: user.role });
+    return this.buildAuthResponse({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.profile?.name || user.employerProfile?.companyName,
+      avatarUrl: user.avatarUrl ?? undefined,
+    });
   }
 
   private buildAuthResponse(user: AuthUser): { accessToken: string; user: AuthUser } {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name, avatarUrl: user.avatarUrl };
     return {
       accessToken: this.jwt.sign(payload, { secret: JWT_SECRET, expiresIn: JWT_EXPIRES_IN }),
       user,
@@ -100,8 +117,21 @@ export class AuthService {
 
   async validateToken(token: string): Promise<AuthUser> {
     try {
-      const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
-      return { id: payload.sub, email: payload.email, role: payload.role };
+      const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+      });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.profile?.name || user.employerProfile?.companyName || payload.name,
+        avatarUrl: (user.avatarUrl || payload.avatarUrl) ?? undefined,
+      };
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
@@ -114,12 +144,21 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+    });
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
-    return this.buildAuthResponse({ id: user.id, email: user.email, role: user.role });
+    return this.buildAuthResponse({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.profile?.name || user.employerProfile?.companyName,
+      avatarUrl: user.avatarUrl ?? undefined,
+    });
   }
 
   async requestPasswordReset(email: string): Promise<{ message: string }> {

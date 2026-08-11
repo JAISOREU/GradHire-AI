@@ -11,7 +11,7 @@ export const EmployerInterviewsPage = () => {
       <h1 className="page-title">Interview scheduling</h1>
       <p className="card__subtitle card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
 
-      <div className="list" style={{ marginTop: '1.25rem' }}>
+      <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading interviews…" />
         ) : interviews && interviews.length > 0 ? (

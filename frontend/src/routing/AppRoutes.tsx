@@ -28,14 +28,13 @@ import { AdminFeatureFlagsPage } from '../features/admin/AdminFeatureFlagsPage';
 import { AdminBackupsPage } from '../features/admin/AdminBackupsPage';
 import { AdminSecurityPage } from '../features/admin/AdminSecurityPage';
 import { AdminDeveloperToolsPage } from '../features/admin/AdminDeveloperToolsPage';
-import { AdminProfilePage } from '../features/admin/AdminProfilePage';
 import { AdminLayout } from '../layouts/AdminLayout';
+import { AccountPage } from '../features/account/AccountPage';
 import { JobListPage } from '../features/jobs/JobListPage';
 import { JobDetailPage } from '../features/jobs/JobDetailPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { StudentDashboardPage } from '../features/student/StudentDashboardPage';
-import { StudentProfilePage } from '../features/student/StudentProfilePage';
 import { StudentResumePage } from '../features/student/StudentResumePage';
 import { StudentApplicationsPage } from '../features/student/StudentApplicationsPage';
 import { StudentSavedJobsPage } from '../features/student/StudentSavedJobsPage';
@@ -45,7 +44,6 @@ import { StudentNotificationsPage } from '../features/student/StudentNotificatio
 import { StudentMessagesPage } from '../features/student/StudentMessagesPage';
 import { StudentSettingsPage } from '../features/student/StudentSettingsPage';
 import { EmployerDashboardPage } from '../features/employer/EmployerDashboardPage';
-import { EmployerCompanyProfilePage } from '../features/employer/EmployerCompanyProfilePage';
 import { EmployerPostJobPage } from '../features/employer/EmployerPostJobPage';
 import { EmployerManageJobsPage } from '../features/employer/EmployerManageJobsPage';
 import { EmployerApplicantsPage } from '../features/employer/EmployerApplicantsPage';
@@ -53,6 +51,7 @@ import { EmployerInterviewsPage } from '../features/employer/EmployerInterviewsP
 import { EmployerMessagesPage } from '../features/employer/EmployerMessagesPage';
 import { EmployerAnalyticsPage } from '../features/employer/EmployerAnalyticsPage';
 import { EmployerNotificationsPage } from '../features/employer/EmployerNotificationsPage';
+import { EmployerCompanyProfilePage } from '../features/employer/EmployerCompanyProfilePage';
 import { EmployerSettingsPage } from '../features/employer/EmployerSettingsPage';
 
 const Page = ({ children }: { children: React.ReactNode }) => <PageTransition>{children}</PageTransition>;
@@ -75,7 +74,7 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute role="STUDENT" />}>
       <Route element={<StudentLayout />}>
         <Route path="/student/dashboard" element={<Page><StudentDashboardPage /></Page>} />
-        <Route path="/student/profile" element={<Page><StudentProfilePage /></Page>} />
+        <Route path="/student/account" element={<Page><AccountPage /></Page>} />
         <Route path="/student/resume" element={<Page><StudentResumePage /></Page>} />
         <Route path="/student/applications" element={<Page><StudentApplicationsPage /></Page>} />
         <Route path="/student/saved" element={<Page><StudentSavedJobsPage /></Page>} />
@@ -91,8 +90,9 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute role="EMPLOYER" />}>
       <Route element={<EmployerLayout />}>
         <Route path="/employer/dashboard" element={<Page><EmployerDashboardPage /></Page>} />
-        <Route path="/employer/company" element={<Page><EmployerCompanyProfilePage /></Page>} />
+        <Route path="/employer/account" element={<Page><AccountPage /></Page>} />
         <Route path="/employer/post-job" element={<Page><EmployerPostJobPage /></Page>} />
+        <Route path="/employer/company-profile" element={<Page><EmployerCompanyProfilePage /></Page>} />
         <Route path="/employer/jobs" element={<Page><EmployerManageJobsPage /></Page>} />
         <Route path="/employer/applicants" element={<Page><EmployerApplicantsPage /></Page>} />
         <Route path="/employer/interviews" element={<Page><EmployerInterviewsPage /></Page>} />
@@ -107,6 +107,7 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute role="ADMIN" />}>
       <Route element={<AdminLayout />}>
         <Route path="/admin/dashboard" element={<Page><AdminDashboardPage /></Page>} />
+        <Route path="/admin/account" element={<Page><AccountPage /></Page>} />
         <Route path="/admin/users" element={<Page><AdminUsersPage /></Page>} />
         <Route path="/admin/jobs" element={<Page><AdminJobsPage /></Page>} />
         <Route path="/admin/applications" element={<Page><AdminApplicationsPage /></Page>} />
@@ -125,7 +126,6 @@ export const AppRoutes = () => (
         <Route path="/admin/backups" element={<Page><AdminBackupsPage /></Page>} />
         <Route path="/admin/security" element={<Page><AdminSecurityPage /></Page>} />
         <Route path="/admin/developer-tools" element={<Page><AdminDeveloperToolsPage /></Page>} />
-        <Route path="/admin/profile" element={<Page><AdminProfilePage /></Page>} />
       </Route>
     </Route>
 

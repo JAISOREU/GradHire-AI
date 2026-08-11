@@ -23,7 +23,7 @@ export const CompanyDetailPage = () => {
           <div className="card section--mt">
             <PageHeader title={company.name} subtitle={`${company.industry} · ${company.location}`} />
             {company.description && (
-              <p className="card__subtitle section--mt" style={{ whiteSpace: 'pre-wrap' }}>{company.description}</p>
+              <p className="card__subtitle section--mt text-pre-wrap">{company.description}</p>
             )}
           </div>
 

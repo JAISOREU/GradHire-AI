@@ -11,7 +11,7 @@ function createMockPrisma() {
   const notifications: Array<Record<string, unknown>> = [];
   const emailEvents: Array<Record<string, unknown>> = [];
   const jobs: Array<Record<string, unknown>> = [
-    { id: 'job-1', title: 'Data Analyst', company: 'Cedar AI', employerId: 'emp-1' },
+    { id: 'job-1', title: 'Data Analyst', company: 'Cedar AI', employerId: 'emp-1', status: 'PUBLISHED' },
   ];
 
   const prisma = {

@@ -23,15 +23,16 @@ export class AppController {
   }
 
   @Get('jobs/:id')
-  async getJobById(@Param('id') id: string) {
-    return this.appService.getJobById(id);
+  async getJobById(@Param('id') id: string, @Req() req?: Request & { user: AuthUser }) {
+    const requesterId = req?.user?.id;
+    return this.appService.getJobById(id, requesterId);
   }
 
   @UseGuards(AuthGuard)
   @Get('recommendations/ai')
   async getAiRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK = 5) {
     const profile = await this.appService.getStudentProfile(req.user.id);
-    return this.appService.getAiRecommendations(profile.focus, Number(topK));
+    return this.appService.getAiRecommendations((profile.focus as string) || '', Number(topK));
   }
 
   @UseGuards(AuthGuard)
@@ -43,7 +44,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Put('students/me')
   async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto) {
-    return this.appService.saveStudentProfile(req.user.id, body);
+    return this.appService.saveStudentProfile(req.user.id, body as unknown as Record<string, unknown>);
   }
 
   @UseGuards(AuthGuard)

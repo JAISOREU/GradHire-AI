@@ -6,7 +6,7 @@
     "start": "node dist/main.js",
     "start:dev": "node -r ts-node/register src/main.ts",
     "build": "tsc -p tsconfig.json",
-    "test": "set JWT_SECRET=test-secret-for-unit-tests-only && node -r ts-node/register --test src/**/*.spec.ts",
+    "test": "cross-env JWT_SECRET=test-secret-for-unit-tests-only node -r ts-node/register --test src/**/*.spec.ts",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "seed": "ts-node prisma/seed.ts",
@@ -48,8 +48,10 @@
   "devDependencies": {
     "@nestjs/testing": "^10.4.22",
     "@types/bcryptjs": "^2.4.6",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.10.1",
     "@types/supertest": "^7.2.1",
+    "cross-env": "^10.1.0",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"

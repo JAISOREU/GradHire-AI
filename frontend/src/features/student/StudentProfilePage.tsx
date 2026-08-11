@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { studentsApi } from '../../core/api/endpoints/students';
+import { getRoleLabel } from '../../core/utils/roleLabels';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
@@ -27,7 +28,7 @@ export const StudentProfilePage = () => {
     setSubmitting(true);
     setMessage('');
     try {
-      const updated = await studentsApi.updateProfile({ name: name || 'Student', focus });
+      const updated = await studentsApi.updateProfile({ name: name || getRoleLabel('STUDENT'), focus });
       setMessage(`Saved profile for ${updated.name}.`);
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to save.');
@@ -42,13 +43,13 @@ export const StudentProfilePage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Student profile" subtitle="Keep your details up to date for better AI matches." />
+      <PageHeader title={`${getRoleLabel('STUDENT')} profile`} subtitle="Keep your details up to date for better AI matches." />
 
       <div className="form-container">
         <Card title="Profile details">
           <form onSubmit={handleSubmit} className="stack">
-            <FormInput label="Name" id="student-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-            <FormTextarea label="Focus area" id="student-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="e.g. Full-stack development and AI products" />
+            <FormInput label="Name" id="talent-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+            <FormTextarea label="Focus area" id="talent-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="e.g. Full-stack development and AI products" />
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save changes'}</Button>
             </div>

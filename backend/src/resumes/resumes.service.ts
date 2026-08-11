@@ -21,7 +21,7 @@ export class ResumesService {
     profile: { id: string; name: string; focus: string; summary: string | null; skills: string[] };
   }> {
     if (user.role !== 'STUDENT') {
-      throw new BadRequestException('Only students can upload resumes');
+      throw new BadRequestException('Only talent can upload resumes');
     }
 
     // Validate file type
@@ -67,7 +67,8 @@ export class ResumesService {
     const parsed = parseResumeText(rawText);
 
     // Store the resume record
-    const storageKey = `resumes/${user.id}/${Date.now()}-${file.originalname}`;
+    const sanitized = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.{2,}/g, '_');
+    const storageKey = `resumes/${user.id}/${Date.now()}-${sanitized}`;
     const fileUrl = await this.storage.upload(file, storageKey);
 
     const resume = await this.prisma.resume.create({
@@ -80,7 +81,7 @@ export class ResumesService {
     });
 
     // Upsert the profile with parsed data
-    const nameValue = parsed.name ?? 'Student';
+    const nameValue = parsed.name ?? 'Talent';
     const focusValue = parsed.focus;
     const summaryValue = parsed.summary;
     const skillsValue = parsed.skills;

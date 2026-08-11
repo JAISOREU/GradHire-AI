@@ -2,6 +2,8 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
 import { FormInput, FormSelect } from './FormField';
+import { api, ApiError } from '../core/api/client';
+import { getRoleLabel } from '../core/utils/roleLabels';
 
 type Mode = 'signin' | 'register';
 
@@ -10,19 +12,6 @@ type AuthModalProps = {
   onClose: () => void;
   onSuccess: (data: AuthResponse) => void;
   triggerRef?: React.Ref<HTMLButtonElement>;
-};
-
-const api = async (path: string, body: unknown): Promise<AuthResponse> => {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data?.message ?? 'Request failed');
-  }
-  return data as AuthResponse;
 };
 
 export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalProps) => {
@@ -93,11 +82,15 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
     try {
       const data =
         mode === 'signin'
-          ? await api('/api/v1/auth/login', { email, password })
-          : await api('/api/v1/auth/register', { email, password, name: name || undefined, role });
+          ? await api<AuthResponse>('/api/v1/auth/login', { json: { email, password }, requiresAuth: false })
+          : await api<AuthResponse>('/api/v1/auth/register', { json: { email, password, name: name || undefined, role }, requiresAuth: false });
       onSuccess(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError('Something went wrong');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -141,12 +134,12 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
 
           <FormInput label="Email" id="auth-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" ref={mode === 'signin' ? firstInputRef : undefined} />
 
-          <FormInput label="Password" id="auth-password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
+          <FormInput label="Password" id="auth-password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
 
           {mode === 'register' && (
             <FormSelect label="I am a…" id="auth-role" value={role} onChange={(e) => setRole(e.target.value as 'STUDENT' | 'EMPLOYER')} options={[
-              { value: 'STUDENT', label: 'Student / Fresh grad' },
-              { value: 'EMPLOYER', label: 'Employer' },
+              { value: 'STUDENT', label: getRoleLabel('STUDENT') },
+              { value: 'EMPLOYER', label: getRoleLabel('EMPLOYER') },
             ]} />
           )}
 

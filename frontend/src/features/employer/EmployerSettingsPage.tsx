@@ -39,14 +39,14 @@ export const EmployerSettingsPage = () => {
       <h1 className="page-title">Settings</h1>
       <p className="card__subtitle card__subtitle card__subtitle--mt">Manage your account preferences.</p>
 
-      <div style={{ marginTop: '1.25rem', maxWidth: '560px' }}>
+      <div className="form-container mt-4">
         <Card title="Account preferences">
           <form onSubmit={handleSubmit} className="stack">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 600 }}>Application alerts</label>
-              <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+              <p className="form-label">Application alerts</p>
+              <label className="form-checkbox">
                 <input type="checkbox" checked={applicationAlerts} onChange={(e) => setApplicationAlerts(e.target.checked)} />
-                Email me when a candidate applies
+                <span>Email me when a candidate applies</span>
               </label>
             </div>
             <div>

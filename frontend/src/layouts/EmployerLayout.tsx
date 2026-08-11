@@ -4,7 +4,9 @@ import { Sidebar } from '../components/Sidebar';
 import { AuthHeader } from '../components/AuthHeader';
 import { SkipLink } from '../components/SkipLink';
 import { useState } from 'react';
-import { EMPLOYER_SIDEBAR_NAV, EMPLOYER_HEADER_ACTIONS, initialsOf } from '../core/utils/navigation';
+import { EMPLOYER_SIDEBAR_NAV } from '../core/utils/navigation';
+import { getRoleLabel } from '../core/utils/roleLabels';
+import { Avatar } from '../components/Avatar';
 
 export const EmployerLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -29,17 +31,17 @@ export const EmployerLayout = () => {
     <div className="auth-layout">
       <SkipLink />
       <Sidebar
-        title="Employer"
+        title={getRoleLabel('EMPLOYER')}
         sections={EMPLOYER_SIDEBAR_NAV}
         collapsed={collapsed}
         onToggle={toggleCollapsed}
         className={sidebarOpen ? 'is-open' : ''}
         footer={
           <div className="sidebar-user">
-            <div className="header-avatar">{initialsOf(user.email)}</div>
+            <Avatar src={user.avatarUrl} name={user.name || user.email} size="sm" />
             <div className="sidebar-user__meta">
               <span className="sidebar-user__name">{user.email}</span>
-              <span className="sidebar-user__role">Employer</span>
+              <span className="sidebar-user__role">{getRoleLabel('EMPLOYER')}</span>
             </div>
           </div>
         }
@@ -47,9 +49,8 @@ export const EmployerLayout = () => {
       <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
       <div className="auth-main">
         <AuthHeader
-          title="Employer"
-          user={{ email: user.email, name: user.name, role: 'Employer' }}
-          links={EMPLOYER_HEADER_ACTIONS}
+          title={getRoleLabel('EMPLOYER')}
+          user={{ email: user.email, name: user.name, role: 'EMPLOYER', avatarUrl: user.avatarUrl }}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onLogout={async () => {
             await logout();

@@ -3,7 +3,7 @@ import type { Application, EmployerJob, EmployerSettings, Interview } from '../.
 
 export const employersApi = {
   getProfile: () => api<EmployerJob>('/api/v1/employer/profile'),
-  updateProfile: (payload: { name: string; industry?: string; location?: string; description?: string }) =>
+  updateProfile: (payload: { name: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) =>
     api<EmployerJob>('/api/v1/employer/profile', { method: 'PUT', json: payload }),
   listJobs: (page = 1, limit = 20): Promise<EmployerJob[]> =>
     api<{ items: EmployerJob[] }>(`/api/v1/employer/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),

@@ -1,5 +1,7 @@
-import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards, Request } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { AdminGuard } from '../auth/admin.guard';
+import { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma.service';
 import { normalizePagination, PaginatedResponse, applyPagination } from '../common/pagination';
 
@@ -116,5 +118,17 @@ export class AdminController {
       maintenanceMode: false,
       registrationOpen: true,
     };
+  }
+
+  @Get('profile')
+  async profile(@Req() req: Request & { user: AuthUser }) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, email: true, role: true, createdAt: true, updatedAt: true },
+    });
+    if (!user) {
+      throw new NotFoundException('Admin not found');
+    }
+    return user;
   }
 }

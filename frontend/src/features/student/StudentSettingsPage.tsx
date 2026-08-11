@@ -64,34 +64,34 @@ export const StudentSettingsPage = () => {
         <Card title="Notification preferences">
           <form onSubmit={handleSubmit} className="stack">
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 600 }}>Email notifications</label>
-              <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+              <p className="form-label">Email notifications</p>
+              <label className="form-checkbox">
                 <input type="checkbox" checked={emailNotifications} onChange={(e) => setEmailNotifications(e.target.checked)} />
-                Receive email notifications
+                <span>Receive email notifications</span>
               </label>
             </div>
             <div className="form-group">
-              <label className="form-label" style={{ fontWeight: 600 }}>Alerts</label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+              <p className="form-label">Alerts</p>
+              <div className="form-checkbox-stack">
+                <label className="form-checkbox">
                   <input type="checkbox" checked={applicationAlerts} onChange={(e) => setApplicationAlerts(e.target.checked)} />
-                  Application status updates
+                  <span>Application status updates</span>
                 </label>
-                <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                <label className="form-checkbox">
                   <input type="checkbox" checked={recommendationAlerts} onChange={(e) => setRecommendationAlerts(e.target.checked)} />
-                  New job recommendations
+                  <span>New job recommendations</span>
                 </label>
-                <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                <label className="form-checkbox">
                   <input type="checkbox" checked={messageAlerts} onChange={(e) => setMessageAlerts(e.target.checked)} />
-                  New messages
+                  <span>New messages</span>
                 </label>
-                <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                <label className="form-checkbox">
                   <input type="checkbox" checked={interviewAlerts} onChange={(e) => setInterviewAlerts(e.target.checked)} />
-                  Interview invitations
+                  <span>Interview invitations</span>
                 </label>
-                <label style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                <label className="form-checkbox">
                   <input type="checkbox" checked={weeklyDigest} onChange={(e) => setWeeklyDigest(e.target.checked)} />
-                  Weekly digest email
+                  <span>Weekly digest email</span>
                 </label>
               </div>
             </div>

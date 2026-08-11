@@ -43,14 +43,23 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const body = json !== undefined ? JSON.stringify(json) : formData;
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
-  const res = await fetch(path, {
-    ...rest,
-    method: requestMethod,
-    headers: finalHeaders,
-    body: body as BodyInit | undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      ...rest,
+      method: requestMethod,
+      headers: finalHeaders,
+      body: body as BodyInit | undefined,
+    });
+  } catch {
+    throw new ApiError('Network error. Please check your connection and try again.', 0);
+  }
 
-  // Attempt to parse JSON, but tolerate empty responses.
+  if (res.status === 401) {
+    clearStoredToken();
+    window.location.href = '/login';
+  }
+
   const data = res.status === 204 ? null : await res.json().catch(() => null);
 
   if (!res.ok) {

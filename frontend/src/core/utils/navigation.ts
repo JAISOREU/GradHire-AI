@@ -23,8 +23,8 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Profile',
     items: [
+      { to: '/student/account', label: 'Account', icon: 'profile' },
       { to: '/student/saved', label: 'Saved Jobs', icon: 'saved' },
-      { to: '/student/profile', label: 'Profile', icon: 'profile' },
       { to: '/student/settings', label: 'Settings', icon: 'settings' },
     ],
   },
@@ -52,9 +52,15 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
     ],
   },
   {
+    label: 'Company',
+    items: [
+      { to: '/employer/company-profile', label: 'Company Profile', icon: 'company' },
+    ],
+  },
+  {
     label: 'Account',
     items: [
-      { to: '/employer/company', label: 'Company', icon: 'company' },
+      { to: '/employer/account', label: 'Account', icon: 'profile' },
       { to: '/employer/settings', label: 'Settings', icon: 'settings' },
     ],
   },
@@ -92,7 +98,7 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
 ];
 
 export const ADMIN_HEADER_ACTIONS: NavItem[] = [
-  { to: '/admin/profile', label: 'Profile', icon: 'profile' },
+  { to: '/admin/account', label: 'Profile', icon: 'profile' },
   { to: '/admin/developer-tools', label: 'Dev Tools', icon: 'developer' },
 ];
 

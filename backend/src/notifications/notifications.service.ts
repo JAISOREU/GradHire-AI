@@ -8,9 +8,9 @@ import { NotificationsGateway } from '../websockets/notifications.gateway';
 export class NotificationsService {
   constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway) {}
 
-  async create(recipientId: string, message: string, applicationId?: string) {
+  async create(recipientId: string, message: string, applicationId?: string, type = 'GENERIC') {
     const notification = await this.prisma.notification.create({
-      data: { recipientId, message, applicationId: applicationId ?? null, read: false },
+      data: { recipientId, message, applicationId: applicationId ?? null, read: false, type },
       include: {
         application: {
           include: {

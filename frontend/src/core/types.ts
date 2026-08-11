@@ -260,6 +260,7 @@ export type AuthUser = {
   email: string;
   role: UserRole;
   name?: string;
+  avatarUrl?: string;
 };
 
 export type AuthResponse = {

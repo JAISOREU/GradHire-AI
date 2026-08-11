@@ -3,6 +3,7 @@ import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { studentsApi } from '../../core/api/endpoints/students';
+import { savedJobsApi } from '../../core/api/endpoints/employers';
 import { KPICard } from '../../components/KPICard';
 import { DashboardSection } from '../../components/DashboardSection';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
@@ -13,11 +14,13 @@ import { PageHeader } from '../../components/PageHeader';
 
 export const StudentDashboardPage = () => {
   const { user } = useAuth();
-  const { data: jobs, loading: jobsLoading } = useAsync(() => jobsApi.list(''), []);
-  const { data: profile } = useAsync(() => studentsApi.getProfile(), []);
-  const { data: applications, loading: appsLoading } = useAsync(() => studentsApi.listApplications(), []);
+  const { data: jobs, loading: jobsLoading, error: jobsError } = useAsync(() => jobsApi.list(''), []);
+  const { data: profile, error: profileError } = useAsync(() => studentsApi.getProfile(), []);
+  const { data: applications, loading: appsLoading, error: appsError } = useAsync(() => studentsApi.listApplications(), []);
+  const { data: savedJobs } = useAsync(() => savedJobsApi.listMine<{ id: string }>(), []);
 
   const appCount = applications?.length ?? 0;
+  const savedCount = savedJobs?.length ?? 0;
   const profileComplete = profile?.focus ? Math.min(100, Math.round((profile.focus.split(' ').filter(Boolean).length / 5) * 100)) : 0;
   const matchCount = jobs?.length ?? 0;
 
@@ -29,6 +32,11 @@ export const StudentDashboardPage = () => {
       />
 
       <div className="status-strip status-strip--4 section--mt">
+        {(jobsError || appsError || profileError) && (
+          <div className="message message--error" role="alert">
+            Some dashboard data failed to load. Please refresh the page.
+          </div>
+        )}
         <KPICard
           label="Applications"
           value={appCount}
@@ -44,7 +52,7 @@ export const StudentDashboardPage = () => {
           icon="🎯"
           trend={{ direction: profileComplete >= 80 ? 'up' : 'neutral', value: profileComplete >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
           action={
-            <Link to="/student/profile"><Button variant="ghost" size="sm">Update</Button></Link>
+            <Link to="/student/account"><Button variant="ghost" size="sm">Update</Button></Link>
           }
         />
         <KPICard
@@ -58,9 +66,9 @@ export const StudentDashboardPage = () => {
         />
         <KPICard
           label="Saved Jobs"
-          value="0"
+          value={savedCount}
           icon="🔖"
-          trend={{ direction: 'neutral', value: '0 active', label: 'saved' }}
+          trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
           action={
             <Link to="/student/saved"><Button variant="ghost" size="sm">Browse</Button></Link>
           }
@@ -82,7 +90,7 @@ export const StudentDashboardPage = () => {
             <div key={app.id} className="list-item">
               <div className="list-item__head">
                 <div>
-                  <h3 className="list-item__title">{app.job?.title ?? 'Unknown'} <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>at {app.job?.company ?? 'Unknown'}</span></h3>
+                   <h3 className="list-item__title">{app.job?.title ?? 'Unknown'} <span className="text-muted">at {app.job?.company ?? 'Unknown'}</span></h3>
                   <div className="list-item__meta">
                     <Badge kind={resolveBadgeKind(app.status)}>{app.status}</Badge>
                     <span>{new Date(app.createdAt).toLocaleDateString()}</span>
@@ -110,7 +118,7 @@ export const StudentDashboardPage = () => {
           jobs.slice(0, 3).map((job) => (
             <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
               <div className="list-item__head">
-                <div>
+                 <div>
                   <h3 className="list-item__title">{job.title}</h3>
                   <div className="list-item__meta">
                     <span>{job.company}</span>
@@ -118,15 +126,11 @@ export const StudentDashboardPage = () => {
                     <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
                   </div>
                 </div>
-                <div className="match-score" style={{ minWidth: 120 }} role="progressbar" aria-valuenow={Math.min(job.matchScore, 100)} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${Math.min(job.matchScore, 100)}% match`} aria-label={`Match score ${job.matchScore}%`}>
-                  <div className="match-score__top"><span>Match</span><strong>{Math.min(job.matchScore, 100)}%</strong></div>
-                  <div className="match-score__track"><div className="match-score__fill" style={{ width: `${Math.min(job.matchScore, 100)}%` }} /></div>
-                </div>
               </div>
             </Link>
           ))
         ) : (
-          <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see AI-matched jobs." action={<Link to="/student/profile"><Button size="sm">Update profile</Button></Link>} />
+          <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see AI-matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
         )}
       </DashboardSection>
     </div>

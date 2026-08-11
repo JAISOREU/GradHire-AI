@@ -12,17 +12,17 @@ export const EmployerMessagesPage = () => {
       <h1 className="page-title">Messages</h1>
       <p className="card__subtitle card__subtitle card__subtitle--mt">Conversations with candidates.</p>
 
-      <div className="list" style={{ marginTop: '1.25rem' }}>
+      <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading messages…" />
         ) : messages && messages.length > 0 ? (
           messages.map((m) => (
             <article key={m.id} className="list-item">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="flex justify-between items-center">
                 <strong>{m.from}</strong>
-                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-faint)' }}>{new Date(m.createdAt).toLocaleString()}</span>
+                <span className="text-xs text-faint">{new Date(m.createdAt).toLocaleString()}</span>
               </div>
-              <p className="card__subtitle" style={{ marginTop: '0.5rem' }}>{m.body}</p>
+              <p className="card__subtitle mt-2">{m.body}</p>
             </article>
           ))
         ) : (
