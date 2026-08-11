@@ -4,9 +4,19 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function getOrCreateUser() {
+  let user = await prisma.user.findFirst({ select: { id: true } });
+  if (!user) {
+    user = await prisma.user.create({
+      data: { email: 'test-' + Date.now() + '@example.com', passwordHash: 'test', role: 'STUDENT' },
+      select: { id: true },
+    });
+  }
+  return user.id;
+}
+
 test('SettingsService integration - creates default settings', async () => {
-  const user = await prisma.user.findFirst({ select: { id: true } });
-  const userId = user?.id ?? 'test-user';
+  const userId = await getOrCreateUser();
 
   await prisma.settings.deleteMany({ where: { userId } }).catch(() => undefined);
 
@@ -23,8 +33,7 @@ test('SettingsService integration - creates default settings', async () => {
 });
 
 test('SettingsService integration - updates settings', async () => {
-  const user = await prisma.user.findFirst({ select: { id: true } });
-  const userId = user?.id ?? 'test-user';
+  const userId = await getOrCreateUser();
 
   await prisma.settings.deleteMany({ where: { userId } }).catch(() => undefined);
 

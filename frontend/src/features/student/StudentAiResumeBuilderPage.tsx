@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { studentsApi } from '../../core/api/endpoints/students';
+import { api } from '../../core/api/client';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -8,7 +9,6 @@ import { categorize } from '../../core/utils/categorize';
 import { PageHeader } from '../../components/PageHeader';
 
 type Recommendation = {
-  title: string;
   tag: string;
   icon: string;
 };
@@ -27,13 +27,11 @@ export const StudentAiResumeBuilderPage = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/ai/recommendations', {
+      const data = await api<{ recommendations?: string[] }>('/ai/recommendations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ focus: profile.focus }),
+        json: { focus: profile.focus },
+        requiresAuth: false,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message ?? 'Failed to generate recommendations');
       const items = (data.recommendations ?? []).map((title: string) => categorize(title));
       setRecommendations(items);
     } catch (err) {
@@ -67,12 +65,12 @@ export const StudentAiResumeBuilderPage = () => {
             {recommendations.length > 0 && (
               <div className="recommendation-list section--mt">
                 <h3 className="card__title">Suggested roles</h3>
-                {recommendations.map((rec) => (
-                  <div key={rec.title} className="recommendation-item">
+                {recommendations.map((rec, idx) => (
+                  <div key={`${rec.tag}-${idx}`} className="recommendation-item">
                     <div className="recommendation-item__icon">{rec.icon}</div>
                     <div className="recommendation-item__body">
-                      <div className="recommendation-item__title">{rec.title}</div>
-                      <div className="recommendation-item__tag">{rec.tag}</div>
+                      <div className="recommendation-item__title">{rec.tag}</div>
+                      <div className="recommendation-item__tag">{rec.tag} role</div>
                     </div>
                   </div>
                 ))}

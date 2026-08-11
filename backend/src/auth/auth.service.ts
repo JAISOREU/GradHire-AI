@@ -18,7 +18,7 @@ const JWT_SECRET = (() => {
   }
   return secret;
 })();
-const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '7d') as JwtSignOptions['expiresIn'];
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '15m') as JwtSignOptions['expiresIn'];
 
 export type AuthUser = {
   id: string;
@@ -169,10 +169,11 @@ export class AuthService {
 
     const token = randomUUID();
     const expires = new Date(Date.now() + 1000 * 60 * 60);
+    const tokenHash = await bcrypt.hash(token, 12);
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { resetToken: token, resetTokenExpires: expires },
+      data: { resetTokenHash: tokenHash, resetTokenExpires: expires },
     });
 
     const resetUrl = `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/reset-password?token=${token}`;
@@ -187,41 +188,51 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        resetToken: token,
-        resetTokenExpires: { gte: new Date() },
-      },
+    const users = await this.prisma.user.findMany({
+      where: { resetTokenExpires: { gte: new Date() } },
     });
 
-    if (!user) {
+    let matchedUser = null;
+    for (const user of users) {
+      if (user.resetTokenHash && await bcrypt.compare(token, user.resetTokenHash)) {
+        matchedUser = user;
+        break;
+      }
+    }
+
+    if (!matchedUser) {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
     await this.prisma.user.update({
-      where: { id: user.id },
-      data: { passwordHash, resetToken: null, resetTokenExpires: null },
+      where: { id: matchedUser.id },
+      data: { passwordHash, resetTokenHash: null, resetTokenExpires: null },
     });
 
     return { message: 'Password reset successfully' };
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        emailVerificationToken: token,
-        emailVerified: false,
-      },
+    const users = await this.prisma.user.findMany({
+      where: { emailVerified: false },
     });
 
-    if (!user) {
+    let matchedUser = null;
+    for (const user of users) {
+      if (user.emailVerificationToken && user.emailVerificationExpires && user.emailVerificationExpires >= new Date() && user.emailVerificationToken === token) {
+        matchedUser = user;
+        break;
+      }
+    }
+
+    if (!matchedUser) {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
     await this.prisma.user.update({
-      where: { id: user.id },
-      data: { emailVerified: true, emailVerificationToken: null },
+      where: { id: matchedUser.id },
+      data: { emailVerified: true, emailVerificationToken: null, emailVerificationExpires: null },
     });
 
     return { message: 'Email verified successfully' };
@@ -237,11 +248,12 @@ export class AuthService {
     }
 
     const token = randomUUID();
+    const expires = new Date(Date.now() + 1000 * 60 * 60 * 24);
     const verifyUrl = `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/verify-email?token=${token}`;
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { emailVerificationToken: token },
+      data: { emailVerificationToken: token, emailVerificationExpires: expires },
     });
 
     await this.email.send({

@@ -337,17 +337,8 @@ export class ApplicationsService {
   }
 
   async listForEmployer(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
-    const employerJobs = await this.prisma.job.findMany({
-      where: { employerId: user.id },
-      select: { id: true },
-    });
-    const jobIds = employerJobs.map((j) => j.id);
-    if (jobIds.length === 0) {
-      return { items: [], total: 0, page: pagination?.page ?? 1, limit: pagination?.limit ?? 20, totalPages: 1 };
-    }
-
     const { page = 1, limit = 20 } = pagination ?? {};
-    const where = { jobId: { in: jobIds } };
+    const where = { job: { employerId: user.id } };
     const [apps, total] = await Promise.all([
       this.prisma.application.findMany({
         where,
@@ -357,7 +348,7 @@ export class ApplicationsService {
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
           interview: true,
         },
-        orderBy: { createdAt: 'desc' } as any,
+        orderBy: { submittedAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -367,7 +358,7 @@ export class ApplicationsService {
     const items = apps.map((a: Record<string, unknown>) => ({
       id: a.id,
       status: a.status,
-      submittedAt: a.createdAt,
+      submittedAt: a.submittedAt,
       viewedAt: a.viewedAt,
       student: a.student,
       job: a.job,

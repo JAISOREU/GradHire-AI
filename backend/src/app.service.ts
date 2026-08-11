@@ -210,6 +210,12 @@ export class AppService implements OnModuleInit {
 
   async saveStudentProfile(userId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
     const summary = typeof body.focus === 'string' ? `Focused on ${body.focus.toLowerCase()}.` : '';
+    const requiredFields = ['name', 'focus', 'skills', 'education', 'experience', 'phone', 'location', 'workAuthorization', 'degree', 'fieldOfStudy'] as const;
+    const profileCompleted = requiredFields.every((field) => {
+      const value = body[field];
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== null && value !== undefined && value !== '';
+    });
 
     if (this.dbAvailable) {
       try {
@@ -239,7 +245,7 @@ export class AppService implements OnModuleInit {
             degree: body.degree as string | undefined,
             fieldOfStudy: body.fieldOfStudy as string | undefined,
             internshipAccepted: body.internshipAccepted as boolean | undefined,
-            profileCompleted: body.profileCompleted as boolean | undefined,
+            profileCompleted,
           },
           create: {
             userId,
@@ -266,7 +272,7 @@ export class AppService implements OnModuleInit {
             degree: body.degree as string | undefined,
             fieldOfStudy: body.fieldOfStudy as string | undefined,
             internshipAccepted: body.internshipAccepted as boolean | undefined,
-            profileCompleted: body.profileCompleted as boolean | undefined,
+            profileCompleted,
           },
         });
         return {

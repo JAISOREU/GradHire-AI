@@ -19,6 +19,13 @@ export class EmployerService {
   async createJob(user: AuthUser, body: CreateJobDto) {
     this.requireEmployer(user);
 
+    if (body.companyId) {
+      const company = await this.prisma.company.findUnique({ where: { id: body.companyId } });
+      if (!company) {
+        throw new BadRequestException('Invalid company');
+      }
+    }
+
     const data: Record<string, unknown> = {
       employerId: user.id,
       title: body.title,
@@ -126,6 +133,13 @@ export class EmployerService {
       throw new NotFoundException('Job not found');
     }
 
+    if (body.companyId) {
+      const company = await this.prisma.company.findUnique({ where: { id: body.companyId } });
+      if (!company) {
+        throw new BadRequestException('Invalid company');
+      }
+    }
+
     const data: Record<string, unknown> = {};
     const fields: (keyof UpdateJobDto)[] = [
       'title', 'company', 'department', 'type', 'experienceLevel', 'positions',
@@ -231,7 +245,7 @@ export class EmployerService {
     const applicationsToday = await this.prisma.application.count({
       where: {
         job: { employerId: user.id },
-        createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+        submittedAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
       } as any,
     });
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi, usersApi } from '../../core/api/endpoints/students';
+import { resumesApi } from '../../core/api/endpoints/resumes';
 import { employersApi } from '../../core/api/endpoints/employers';
 import { getRoleLabel } from '../../core/utils/roleLabels';
 import { Button } from '../../components/Button';
@@ -13,6 +14,7 @@ import { Badge } from '../../components/Badge';
 import { Icon } from '../../components/Icon';
 import { Avatar } from '../../components/Avatar';
 import type { UserRole } from '../../core/types';
+import type { Resume } from '../../core/types';
 
 const VISIBILITY_OPTIONS = [
   { value: 'visible', label: 'Visible to employers', description: 'Employers can find you in search and view your profile.' },
@@ -96,31 +98,60 @@ function TalentVisibility({ profile, onUpdate }: { profile: Record<string, unkno
 }
 
 function ResumeSection() {
+  const { data: resumes, loading, reload } = useAsync<Resume[]>(() => resumesApi.listMine(), []);
+
   return (
     <Card title="Resume" subtitle="Manage your uploaded resumes." className="section--mt">
       <div className="list">
-        <article className="list-item">
-          <div className="list-item__head">
-            <div>
-              <h3 className="list-item__title">Curriculum Vitae - Jireh Tregueros.pdf</h3>
-              <div className="list-item__meta">
-                <span>Added Aug 6, 2026</span>
-                <span className="text-muted">PDF · 245 KB</span>
+        {loading ? (
+          <Skeleton variant="table" lines={2} />
+        ) : resumes && resumes.length > 0 ? (
+          resumes.map((resume) => (
+            <article key={resume.id} className="list-item">
+              <div className="list-item__head">
+                <div>
+                  <h3 className="list-item__title">{resume.fileName}</h3>
+                  <div className="list-item__meta">
+                    <span>{new Date(resume.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm">View</Button>
+                  <Button variant="ghost" size="sm">Download</Button>
+                  <Button variant="ghost" size="sm" className="text-danger">Delete</Button>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm">View</Button>
-              <Button variant="ghost" size="sm">Download</Button>
-              <Button variant="ghost" size="sm">Replace</Button>
-              <Button variant="ghost" size="sm" className="text-danger">Delete</Button>
-            </div>
-          </div>
-        </article>
+            </article>
+          ))
+        ) : (
+          <div className="text-sm text-secondary">No resumes uploaded yet.</div>
+        )}
       </div>
       <div className="mt-4">
-        <Button variant="secondary" size="sm">
+        <label className="btn btn--secondary btn--sm">
           <Icon name="upload" size={16} /> Upload new resume
-        </Button>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const maxSize = 5 * 1024 * 1024;
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+                if (file.size > maxSize) {
+                  alert('File size must be under 5 MB.');
+                  return;
+                }
+                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt)$/i)) {
+                  alert('Invalid file type. Please upload PDF, DOC, DOCX, or TXT.');
+                  return;
+                }
+                resumesApi.upload(file).then(() => reload());
+              }
+            }}
+          />
+        </label>
       </div>
     </Card>
   );
@@ -418,15 +449,30 @@ export const AccountPage = () => {
             <div className="flex gap-2">
               <label className="btn btn--secondary btn--sm">
                 {user?.avatarUrl ? 'Change photo' : 'Add profile photo'}
-                <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    usersApi.uploadAvatar(file).then(() => {
-                      reloadProfile();
-                      refreshUser();
-                    });
-                  }
-                }} />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  hidden
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const maxSize = 5 * 1024 * 1024;
+                      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                      if (!allowedTypes.includes(file.type)) {
+                        alert('Invalid file type. Please upload JPEG, PNG, or WebP.');
+                        return;
+                      }
+                      if (file.size > maxSize) {
+                        alert('File size must be under 5 MB.');
+                        return;
+                      }
+                      usersApi.uploadAvatar(file).then(() => {
+                        reloadProfile();
+                        refreshUser();
+                      }).catch(() => alert('Failed to upload avatar. Please try again.'));
+                    }
+                  }}
+                />
               </label>
               {user?.avatarUrl && (
                 <Button variant="ghost" size="sm" className="text-danger" onClick={() => usersApi.deleteAvatar().then(() => {

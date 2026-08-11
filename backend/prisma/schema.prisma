@@ -149,7 +149,8 @@ model User {
   role                   Role           @default(STUDENT)
   emailVerified          Boolean        @default(false)
   emailVerificationToken String?        @unique
-  resetToken             String?        @unique
+  emailVerificationExpires DateTime?
+  resetTokenHash         String?        @unique
   resetTokenExpires      DateTime?
   avatarUrl              String?
   createdAt              DateTime       @default(now())
@@ -172,6 +173,8 @@ model User {
   settings               Settings?
   jobViews               JobView[]
   recommendations        Recommendation[]
+
+  @@index([role])
 }
 
 model Profile {
@@ -332,7 +335,7 @@ model Job {
   autoCloseAfterDeadline Boolean @default(true)
 
   // Relationships
-  employer          User             @relation(fields: [employerId], references: [id])
+  employer          User             @relation(fields: [employerId], references: [id], onDelete: Cascade)
   companyRef        Company?         @relation(fields: [companyId], references: [id])
   applications      Application[]
   recommendations   Recommendation[]
@@ -347,6 +350,13 @@ model Job {
 
   @@index([employerId, status])
   @@index([status, createdAt])
+  @@index([type, status, createdAt])
+  @@index([experienceLevel, status])
+  @@index([workplaceType, status])
+  @@index([country, city, status])
+  @@index([salaryMin, status])
+  @@index([acceptsFreshGraduates, status])
+  @@index([acceptsStudents, status])
 }
 
 // ============================================================
@@ -462,10 +472,12 @@ model Application {
   withdrawnAt          DateTime?
   rejectedAt           DateTime?
   hiredAt              DateTime?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   // Relationships
-  student              User              @relation(fields: [studentId], references: [id])
-  job                  Job               @relation(fields: [jobId], references: [id])
+  student              User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job                  Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   statusHistory        ApplicationStatusHistory[]
   events               ApplicationEvent[]
   documents            ApplicationDocument[]
@@ -691,10 +703,11 @@ model Recommendation {
   explanation String?
   createdAt DateTime @default(now())
 
-  job       Job      @relation(fields: [jobId], references: [id])
-  student   User     @relation(fields: [studentId], references: [id])
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
+  @@index([jobId])
 }
 
 // ============================================================
@@ -728,6 +741,7 @@ model Message {
   recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
 
   @@index([senderId, recipientId])
+  @@index([recipientId])
 }
 
 // ============================================================
