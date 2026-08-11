@@ -3,7 +3,7 @@ import type { JobAnalytics } from '../../types';
 
 export const analyticsApi = {
   getJobAnalytics: (jobId: string): Promise<JobAnalytics> =>
-    api<JobAnalytics>(`/api/v1/jobs/${jobId}/analytics`),
+    api<JobAnalytics>(`/api/v1/analytics/jobs/${jobId}`),
 
   getEmployerDashboard: async (): Promise<{
     activeJobs: number;
