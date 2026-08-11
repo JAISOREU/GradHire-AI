@@ -17,8 +17,8 @@ export class MessagesController {
   }
 
   @Post()
-  async send(@Req() req: Request & { user: AuthUser }, @Body() body: { to: string; body: string }) {
-    return this.messages.create(req.user.id, body.to, body.body);
+  async send(@Req() req: Request & { user: AuthUser }, @Body() payload: { to: string; body: string }) {
+    return this.messages.create(req.user.id, payload.to, payload.body);
   }
 
   @Put(':id/read')
