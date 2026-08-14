@@ -35,10 +35,7 @@ export class AppService implements OnModuleInit {
       const message = error instanceof Error ? error.message : String(error);
       this.dbAvailable = false;
       console.error('[AppService] PostgreSQL check failed:', message);
-      this.logger.warn('PostgreSQL unavailable — falling back to in-memory storage');
-      if (process.env.NODE_ENV === 'production') {
-        throw new ServiceUnavailableException('Database connection failed');
-      }
+      this.logger.warn('PostgreSQL unavailable — app will start but database-dependent features may fail');
     }
   }
 
