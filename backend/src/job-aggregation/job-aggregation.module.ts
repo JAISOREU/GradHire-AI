@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JobAggregationController } from './job-aggregation.controller';
 import { JobAggregationService } from './job-aggregation.service';
 import { JobSourceService } from './sources/job-source.service';
