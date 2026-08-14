@@ -2,6 +2,7 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, OnGat
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { Logger, BadRequestException } from '@nestjs/common';
+import * as Sentry from '@sentry/nestjs';
 
 @WebSocketGateway({
   cors: {
@@ -26,24 +27,26 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   constructor(private readonly jwt: JwtService) {}
 
   async handleConnection(client: Socket) {
-    try {
-      const token = client.handshake.auth.token as string | undefined;
-      if (!token) {
-        this.logger.warn(`Socket ${client.id} rejected: no token`);
+    await Sentry.withIsolationScope(async () => {
+      try {
+        const token = client.handshake.auth.token as string | undefined;
+        if (!token) {
+          this.logger.warn(`Socket ${client.id} rejected: no token`);
+          client.disconnect();
+          return;
+        }
+
+        const payload = this.jwt.verify(token, { secret: process.env.JWT_SECRET as string });
+        const userId = payload.sub as string;
+
+        client.data.userId = userId;
+        client.join(`user:${userId}`);
+        this.logger.debug(`Socket ${client.id} connected for user ${userId}`);
+      } catch {
+        this.logger.warn(`Socket ${client.id} rejected: invalid token`);
         client.disconnect();
-        return;
       }
-
-      const payload = this.jwt.verify(token, { secret: process.env.JWT_SECRET as string });
-      const userId = payload.sub as string;
-
-      client.data.userId = userId;
-      client.join(`user:${userId}`);
-      this.logger.debug(`Socket ${client.id} connected for user ${userId}`);
-    } catch {
-      this.logger.warn(`Socket ${client.id} rejected: invalid token`);
-      client.disconnect();
-    }
+    });
   }
 
   handleDisconnect(client: Socket) {
@@ -54,7 +57,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   @SubscribeMessage('join')
   handleJoin(@ConnectedSocket() client: Socket, @MessageBody() data: { userId: string }) {
     if (data.userId !== client.data.userId) {
-      throw new BadRequestException('Cannot join another user\'s room');
+      throw new BadRequestException("Cannot join another user's room");
     }
     client.join(`user:${data.userId}`);
     this.logger.debug(`Socket ${client.id} joined room user:${data.userId}`);
@@ -64,7 +67,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   @SubscribeMessage('leave')
   handleLeave(@ConnectedSocket() client: Socket, @MessageBody() data: { userId: string }) {
     if (data.userId !== client.data.userId) {
-      throw new BadRequestException('Cannot leave another user\'s room');
+      throw new BadRequestException("Cannot leave another user's room");
     }
     client.leave(`user:${data.userId}`);
     this.logger.debug(`Socket ${client.id} left room user:${data.userId}`);

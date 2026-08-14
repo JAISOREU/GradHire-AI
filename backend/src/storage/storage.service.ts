@@ -8,4 +8,5 @@ export interface UploadedFile {
 export interface IStorageService {
   upload(file: UploadedFile, key: string): Promise<string>;
   remove(key: string): Promise<void>;
+  get(key: string): Promise<Buffer | null>;
 }

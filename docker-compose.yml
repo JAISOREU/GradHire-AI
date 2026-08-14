@@ -21,14 +21,14 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=postgresql://gradhire:gradhire@postgres:5432/gradhire
-      - JWT_SECRET=change-me-in-production
+      - DATABASE_URL=postgresql://gradhire:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/gradhire
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
       - AI_SERVICE_URL=http://ai-service:8000
-      - SMTP_HOST=smtp.example.com
-      - SMTP_PORT=587
-      - SMTP_USER=gradhire@example.com
-      - SMTP_PASS=change-me-in-production
-      - SMTP_FROM=GradHire AI <gradhire@example.com>
+      - SMTP_HOST=${SMTP_HOST:-smtp.example.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-gradhire@example.com}
+      - SMTP_PASS=${SMTP_PASS:-change-me-in-production}
+      - SMTP_FROM=${SMTP_FROM:-GradHire AI <gradhire@example.com>}
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +42,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=change-me-in-production
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-change-me-in-production}
     networks:
       - gradhire
 
@@ -52,7 +52,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_USER=gradhire
-      - POSTGRES_PASSWORD=gradhire
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-gradhire}
       - POSTGRES_DB=gradhire
     volumes:
       - postgres_data:/var/lib/postgresql/data

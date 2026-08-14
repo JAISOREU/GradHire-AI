@@ -4,3 +4,4 @@ pydantic==2.9.0
 sentence-transformers==3.0.1
 numpy==1.26.4
 scikit-learn==1.5.2
+torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu

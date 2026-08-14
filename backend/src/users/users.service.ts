@@ -117,7 +117,7 @@ export class UsersService {
     }
 
     const mimeType = this.getMimeType(user.avatarUrl);
-    const stream = createReadStream(user.avatarUrl);
+    const stream = await this.storage.get(user.avatarUrl);
 
     return { stream, contentType: mimeType };
   }

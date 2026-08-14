@@ -37,6 +37,6 @@ export class UsersController {
     }
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Cache-Control', 'public, max-age=86400');
-    result.stream.pipe(res);
+    res.send(result.stream);
   }
 }

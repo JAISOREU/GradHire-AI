@@ -1,3 +1,4 @@
+import './instrument';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -7,16 +8,9 @@ import { PrismaService } from './prisma.service';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import helmet from 'helmet';
-import * as Sentry from '@sentry/node';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.NODE_ENV ?? 'development',
-  tracesSampleRate: 0.1,
-});
 
 function parseCorsOrigins(): string[] {
   const raw = process.env.CORS_ORIGIN;
@@ -72,7 +66,9 @@ async function bootstrap() {
 
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  const server = app.listen(3000);
+  const port = parseInt(process.env.PORT || '3000', 10);
+
+  const server = app.listen(port);
 
   return server;
 }

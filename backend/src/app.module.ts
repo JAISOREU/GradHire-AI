@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
@@ -26,8 +28,38 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule, AiModule, AuthModule, ApplicationsModule, NotificationsModule, ResumesModule, EmployerModule, SettingsModule, CompaniesModule, AdminModule, RateLimitModule, StorageModule, EmailModule, NotificationsGatewayModule, MessagesModule, ScreeningModule, InterviewsModule, AnalyticsModule, UsersModule],
+  imports: [
+    SentryModule.forRoot(),
+    PrismaModule,
+    CacheModule,
+    AiModule,
+    AuthModule,
+    ApplicationsModule,
+    NotificationsModule,
+    ResumesModule,
+    EmployerModule,
+    SettingsModule,
+    CompaniesModule,
+    AdminModule,
+    RateLimitModule,
+    StorageModule,
+    EmailModule,
+    NotificationsGatewayModule,
+    MessagesModule,
+    ScreeningModule,
+    InterviewsModule,
+    AnalyticsModule,
+    UsersModule,
+  ],
   controllers: [AppController, MetricsController],
-  providers: [AppService, HealthService, MetricsService],
+  providers: [
+    AppService,
+    HealthService,
+    MetricsService,
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
+  ],
 })
 export class AppModule {}

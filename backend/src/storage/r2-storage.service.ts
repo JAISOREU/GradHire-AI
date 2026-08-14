@@ -3,20 +3,31 @@ import { IStorageService, UploadedFile } from './storage.service';
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 
 @Injectable()
-export class S3StorageService implements IStorageService {
-  private readonly logger = new Logger(S3StorageService.name);
+export class R2StorageService implements IStorageService {
+  private readonly logger = new Logger(R2StorageService.name);
   private readonly client: S3Client;
   private readonly bucket: string;
 
   constructor() {
-    this.bucket = process.env.S3_BUCKET ?? 'gradhire-uploads';
+    this.bucket = process.env.R2_BUCKET ?? 'gradhire-uploads';
+    const accountId = process.env.R2_ACCOUNT_ID;
+    const accessKeyId = process.env.R2_ACCESS_KEY;
+    const secretAccessKey = process.env.R2_SECRET_KEY;
+
+    if (!accountId || !accessKeyId || !secretAccessKey) {
+      throw new Error('R2_ACCOUNT_ID, R2_ACCESS_KEY, and R2_SECRET_KEY must be configured');
+    }
+
+    const endpoint = process.env.R2_ENDPOINT ?? `https://${accountId}.r2.cloudflarestorage.com`;
+
     this.client = new S3Client({
-      region: process.env.S3_REGION ?? 'us-east-1',
-      endpoint: process.env.S3_ENDPOINT,
+      region: 'auto',
+      endpoint,
       credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY ?? '',
-        secretAccessKey: process.env.S3_SECRET_KEY ?? '',
+        accessKeyId,
+        secretAccessKey,
       },
+      forcePathStyle: true,
     });
   }
 
@@ -27,11 +38,10 @@ export class S3StorageService implements IStorageService {
         Key: key,
         Body: file.buffer,
         ContentType: file.mimetype,
-        ACL: 'private',
       }),
     );
 
-    this.logger.debug({ key, bucket: this.bucket }, 'File uploaded to S3');
+    this.logger.debug({ key, bucket: this.bucket }, 'File uploaded to R2');
     return key;
   }
 
@@ -53,7 +63,7 @@ export class S3StorageService implements IStorageService {
         }),
       );
       const chunks: Uint8Array[] = [];
-      for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+      for await (const chunk of (response.Body as AsyncIterable<Uint8Array>)) {
         chunks.push(chunk);
       }
       return Buffer.concat(chunks);

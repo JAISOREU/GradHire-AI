@@ -1,6 +1,7 @@
 /** Base API client — single abstraction over fetch with token injection and error normalization. */
 
 const TOKEN_KEY = 'gradture_token';
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export const getStoredToken = (): string | null => localStorage.getItem(TOKEN_KEY);
 
@@ -43,9 +44,11 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const body = json !== undefined ? JSON.stringify(json) : formData;
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
+  const url = API_BASE ? `${API_BASE}${path}` : path;
+
   let res: Response;
   try {
-    res = await fetch(path, {
+    res = await fetch(url, {
       ...rest,
       method: requestMethod,
       headers: finalHeaders,

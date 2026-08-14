@@ -5,14 +5,18 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "buildCommand": "npm run build"
       }
     }
   ],
   "routes": [
     {
-      "src": "/ai/(.*)",
-      "dest": "https://your-ai-service-url.com/$1"
+      "src": "/api/(.*)",
+      "dest": "https://api.gradture.ai/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
     },
     {
       "src": "/(.*)",
@@ -20,7 +24,29 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://your-backend-url.com/api/v1"
+    "VITE_API_URL": "https://api.gradture.ai/api/v1"
   },
-  "regions": ["iad1"]
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ]
 }

@@ -43,4 +43,13 @@ export class LocalStorageService implements IStorageService {
       // ignore missing files
     }
   }
+
+  async get(key: string): Promise<Buffer | null> {
+    const fullPath = this.sanitizeKey(key);
+    try {
+      return await fs.readFile(fullPath);
+    } catch {
+      return null;
+    }
+  }
 }

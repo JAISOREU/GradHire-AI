@@ -28,7 +28,7 @@ FRONTEND_URL=https://staging.gradture.ai
 SMTP_HOST=smtp.mailtrap.io
 SMTP_PORT=587
 SMTP_USER=your-user
-SMTP_PASSWORD=your-password
+SMTP_PASS=your-password
 SMTP_FROM=noreply@staging.gradture.ai
 ```
 
@@ -45,7 +45,7 @@ AWS_SECRET_ACCESS_KEY=your-secret
 ```
 REDIS_URL=redis://localhost:6379
 SENTRY_DSN=https://...
-AI_API_URL=http://localhost:8000
+AI_SERVICE_URL=http://localhost:8000
 ```
 
 ## Database Setup
@@ -53,7 +53,7 @@ AI_API_URL=http://localhost:8000
 ```bash
 cd backend
 npm install
-npx prisma db push
+npx prisma migrate deploy
 npm run seed  # optional
 ```
 
