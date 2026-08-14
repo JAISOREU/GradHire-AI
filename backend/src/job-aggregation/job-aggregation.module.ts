@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JobAggregationController } from './job-aggregation.controller';
 import { JobAggregationService } from './job-aggregation.service';
@@ -16,9 +15,10 @@ import { ExpirationWorker } from './workers/expiration.worker';
 import { PrismaModule } from '../prisma.module';
 import { CacheModule } from '../cache/cache.module';
 import { AiModule } from '../ai/ai.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule, AiModule, ScheduleModule.forRoot(), HttpModule],
+  imports: [PrismaModule, CacheModule, AiModule, ScheduleModule.forRoot(), AuthModule],
   controllers: [JobAggregationController],
   providers: [
     JobAggregationService,
