@@ -1,7 +1,7 @@
 /** Base API client — single abstraction over fetch with token injection and error normalization. */
 
 const TOKEN_KEY = 'gradture_token';
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '') ?? '';
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export const getStoredToken = (): string | null => localStorage.getItem(TOKEN_KEY);
 
@@ -69,7 +69,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
     const message =
       (data as { message?: string } | null)?.message ??
       'Request failed. Please try again.';
-    throw new ApiError(message, res.status);
+    throw new ApiError(`${message} (${res.status} ${res.statusText}) ${url}`, res.status);
   }
 
   return data as T;

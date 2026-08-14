@@ -118,7 +118,7 @@ In Railway backend service → **"Variables"** tab, add:
 | `POSTGRES_DB` | `gradhire` | Database name |
 | `JWT_SECRET` | (your new 64-char hex) | Generated in Step 1 |
 | `JWT_EXPIRES_IN` | `7d` | Token expiration |
-| `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai` | Your Vercel domains |
+| `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai,https://grad-hire-ai.vercel.app` | Your Vercel domains |
 | `FRONTEND_URL` | `https://gradture.ai` | Primary frontend URL |
 | `RESEND_API_KEY` | (your new Resend key) | From Step 1 |
 | `SMTP_FROM` | `GradHire AI <noreply@gradture.ai>` | Sender email |
@@ -194,11 +194,11 @@ In Vercel → **"Environment Variables"** tab, add:
 
 | Variable | Value | Environment |
 |----------|-------|-------------|
-| `VITE_API_URL` | `https://your-backend-url.up.railway.app/api/v1` | Production, Preview, Development |
+| `VITE_API_URL` | `https://gradhire-ai-production.up.railway.app` | Production, Preview, Development |
 | `VITE_SENTRY_DSN` | (your Sentry DSN, optional) | Production |
 | `VITE_APP_VERSION` | `1.0.0` | Production |
 
-**Important:** `VITE_API_URL` must point to your actual Railway backend URL (from Step 5.6). Replace `your-backend-url.up.railway.app` with your actual Railway domain.
+**Important:** `VITE_API_URL` must point to your actual Railway backend URL. Replace with your actual Railway domain if different.
 
 **Never add backend secrets to Vercel:** No `JWT_SECRET`, `DATABASE_URL`, `RESEND_API_KEY`, `R2_*`, etc.
 
@@ -252,13 +252,13 @@ Once DNS propagates and custom domains work:
 
 #### Railway:
 ```
-CORS_ORIGIN=https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai
+CORS_ORIGIN=https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai,https://grad-hire-ai.vercel.app
 FRONTEND_URL=https://gradture.ai
 ```
 
 #### Vercel:
 ```
-VITE_API_URL=https://api.gradture.ai/api/v1
+VITE_API_URL=https://gradhire-ai-production.up.railway.app
 ```
 
 **Redeploy both services** after updating environment variables.
