@@ -1,4 +1,14 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://api.gradture.ai/api/$1"
+    },
+    {
+      "source": "/((?!api/|assets/|_vercel|favicon.ico).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -69,7 +69,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
     const message =
       (data as { message?: string } | null)?.message ??
       'Request failed. Please try again.';
-    throw new ApiError(`${message} (${res.status} ${res.statusText}) ${url}`, res.status);
+    throw new ApiError(message, res.status);
   }
 
   return data as T;
