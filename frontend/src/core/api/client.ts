@@ -1,7 +1,7 @@
 /** Base API client — single abstraction over fetch with token injection and error normalization. */
 
 const TOKEN_KEY = 'gradture_token';
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '') ?? '';
 
 export const getStoredToken = (): string | null => localStorage.getItem(TOKEN_KEY);
 
