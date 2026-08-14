@@ -18,28 +18,32 @@ export class ApiConnector implements JobSourceConnector {
 
     const data = response.data;
     const items = this.extractItems(data, source.configuration);
+    const fieldMapping = (source.configuration?.fieldMapping as Record<string, string> | undefined) ?? {};
 
-    return items.map((item: any, index: number) => ({
-      title: item.title ?? item.name ?? `Untitled ${index}`,
-      company: item.company ?? item.employer ?? 'Unknown',
-      description: this.stripHtml(item.description ?? item.summary ?? item.content ?? ''),
-      requirements: this.splitList(item.requirements),
-      skills: this.splitList(item.skills),
-      employmentType: item.employmentType ?? item.jobType ?? item.type,
-      workplaceType: item.workplaceType,
-      location: item.location ?? item.address,
-      country: item.country,
-      city: item.city,
-      salaryMin: item.salaryMin ? Number(item.salaryMin) : undefined,
-      salaryMax: item.salaryMax ? Number(item.salaryMax) : undefined,
-      salaryCurrency: item.salaryCurrency,
-      salaryFrequency: item.salaryFrequency,
-      experienceLevel: item.experienceLevel,
-      benefits: this.splitList(item.benefits),
-      applicationDeadline: item.applicationDeadline,
-      sourceUrl: item.url ?? item.link ?? source.baseUrl,
-      originalPostingDate: item.publishedAt ?? item.createdAt,
-    })).filter((job: RawJobPosting) => Boolean(job.title));
+    return items.map((item: any, index: number) => {
+      const mapped = this.applyFieldMapping(item, fieldMapping);
+      return {
+        title: mapped.title ?? item.title ?? item.name ?? `Untitled ${index}`,
+        company: mapped.company ?? item.company ?? item.employer ?? 'Unknown',
+        description: this.stripHtml(mapped.description ?? item.description ?? item.summary ?? item.content ?? ''),
+        requirements: this.splitList(mapped.requirements ?? item.requirements),
+        skills: this.splitList(mapped.skills ?? item.skills),
+        employmentType: mapped.employmentType ?? item.employmentType ?? item.jobType ?? item.type,
+        workplaceType: mapped.workplaceType ?? item.workplaceType,
+        location: mapped.location ?? item.location ?? item.address,
+        country: mapped.country ?? item.country,
+        city: mapped.city ?? item.city,
+        salaryMin: this.parseNumber(mapped.salaryMin ?? item.salaryMin),
+        salaryMax: this.parseNumber(mapped.salaryMax ?? item.salaryMax),
+        salaryCurrency: mapped.salaryCurrency ?? item.salaryCurrency,
+        salaryFrequency: mapped.salaryFrequency ?? item.salaryFrequency,
+        experienceLevel: mapped.experienceLevel ?? item.experienceLevel,
+        benefits: this.splitList(mapped.benefits ?? item.benefits),
+        applicationDeadline: mapped.applicationDeadline ?? item.applicationDeadline,
+        sourceUrl: mapped.sourceUrl ?? item.url ?? item.link ?? source.baseUrl,
+        originalPostingDate: mapped.originalPostingDate ?? item.publishedAt ?? item.createdAt,
+      };
+    }).filter((job: RawJobPosting) => Boolean(job.title));
   }
 
   async fetchJob(url: string): Promise<RawJobPosting> {
@@ -59,6 +63,19 @@ export class ApiConnector implements JobSourceConnector {
     if (Array.isArray(current)) return current;
     if (current && typeof current === 'object') return [current];
     return [];
+  }
+
+  private applyFieldMapping(item: any, mapping: Record<string, string>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    for (const [target, source] of Object.entries(mapping)) {
+      const parts = source.split('.');
+      let current: any = item;
+      for (const part of parts) {
+        current = current?.[part];
+      }
+      result[target] = current;
+    }
+    return result;
   }
 
   private normalizeApiItem(item: any, url: string): RawJobPosting {
@@ -81,5 +98,12 @@ export class ApiConnector implements JobSourceConnector {
       .split(/[,;|]/)
       .map((v) => v.trim())
       .filter(Boolean);
+  }
+
+  private parseNumber(value: any): number | undefined {
+    if (!value) return undefined;
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return Math.max(0, Math.floor(parsed));
+    return undefined;
   }
 }

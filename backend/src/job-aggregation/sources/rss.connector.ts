@@ -17,50 +17,57 @@ export class RssConnector implements JobSourceConnector {
     );
 
     const xml = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
-    return this.parseRssFeed(xml, source.baseUrl);
+    const fieldMapping = (source.configuration?.fieldMapping as Record<string, string> | undefined) ?? {};
+    return this.parseRssFeed(xml, source.baseUrl, fieldMapping);
   }
 
   async fetchJob(url: string): Promise<RawJobPosting> {
     const response = await firstValueFrom(this.http.get(url, { timeout: 10000 }));
     const xml = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
-    const items = this.parseRssFeed(xml, url);
+    const items = this.parseRssFeed(xml, url, {});
     return items[0] ?? { title: 'Untitled', company: 'Unknown', description: '', sourceUrl: url };
   }
 
-  private parseRssFeed(xml: string, baseUrl: string): RawJobPosting[] {
+  private parseRssFeed(xml: string, baseUrl: string, fieldMapping: Record<string, string>): RawJobPosting[] {
     const items: RawJobPosting[] = [];
     const itemRegex = /<item[^>]*>([\s\S]*?)<\/item>/gi;
     let match;
 
     while ((match = itemRegex.exec(xml)) !== null) {
       const itemXml = match[1];
-      const title = this.extractTag(itemXml, 'title');
-      const description = this.extractTag(itemXml, 'description') ?? this.extractTag(itemXml, 'summary');
-      const link = this.extractTag(itemXml, 'link');
-      const company = this.extractTag(itemXml, 'company') ?? this.extractTag(itemXml, 'employer') ?? this.inferCompany(baseUrl);
+      const raw: Record<string, string | undefined> = {};
+
+      for (const [target, tag] of Object.entries(fieldMapping)) {
+        raw[target] = this.extractTag(itemXml, tag);
+      }
+
+      const title = (raw.title ?? this.extractTag(itemXml, 'title') ?? '') as string;
+      const description = raw.description ?? this.extractTag(itemXml, 'description') ?? this.extractTag(itemXml, 'summary');
+      const link = (raw.sourceUrl ?? this.extractTag(itemXml, 'link') ?? baseUrl) as string;
+      const company = (raw.company ?? this.extractTag(itemXml, 'company') ?? this.extractTag(itemXml, 'employer') ?? this.inferCompany(baseUrl)) as string;
 
       if (!title) continue;
 
       items.push({
-        title,
-        company,
+        title: title,
+        company: company,
         description: this.stripHtml(description ?? ''),
-        requirements: this.splitList(this.extractTag(itemXml, 'requirements')),
-        skills: this.splitList(this.extractTag(itemXml, 'skills')),
-        employmentType: this.extractTag(itemXml, 'employmentType') ?? this.extractTag(itemXml, 'jobType'),
-        workplaceType: this.extractTag(itemXml, 'workplaceType'),
-        location: this.extractTag(itemXml, 'location') ?? this.extractTag(itemXml, 'city'),
-        country: this.extractTag(itemXml, 'country'),
-        city: this.extractTag(itemXml, 'city'),
-        salaryMin: this.parseNumber(this.extractTag(itemXml, 'salaryMin')),
-        salaryMax: this.parseNumber(this.extractTag(itemXml, 'salaryMax')),
-        salaryCurrency: this.extractTag(itemXml, 'salaryCurrency'),
-        salaryFrequency: this.extractTag(itemXml, 'salaryFrequency'),
-        experienceLevel: this.extractTag(itemXml, 'experienceLevel'),
-        benefits: this.splitList(this.extractTag(itemXml, 'benefits')),
-        applicationDeadline: this.extractTag(itemXml, 'applicationDeadline'),
-        sourceUrl: link ?? baseUrl,
-        originalPostingDate: this.extractTag(itemXml, 'pubDate') ?? this.extractTag(itemXml, 'publishedAt'),
+        requirements: this.splitList(raw.requirements ?? this.extractTag(itemXml, 'requirements')),
+        skills: this.splitList(raw.skills ?? this.extractTag(itemXml, 'skills')),
+        employmentType: raw.employmentType ?? this.extractTag(itemXml, 'employmentType') ?? this.extractTag(itemXml, 'jobType'),
+        workplaceType: raw.workplaceType ?? this.extractTag(itemXml, 'workplaceType'),
+        location: raw.location ?? this.extractTag(itemXml, 'location') ?? this.extractTag(itemXml, 'city'),
+        country: raw.country ?? this.extractTag(itemXml, 'country'),
+        city: raw.city ?? this.extractTag(itemXml, 'city'),
+        salaryMin: this.parseNumber(raw.salaryMin ?? this.extractTag(itemXml, 'salaryMin')),
+        salaryMax: this.parseNumber(raw.salaryMax ?? this.extractTag(itemXml, 'salaryMax')),
+        salaryCurrency: raw.salaryCurrency ?? this.extractTag(itemXml, 'salaryCurrency'),
+        salaryFrequency: raw.salaryFrequency ?? this.extractTag(itemXml, 'salaryFrequency'),
+        experienceLevel: raw.experienceLevel ?? this.extractTag(itemXml, 'experienceLevel'),
+        benefits: this.splitList(raw.benefits ?? this.extractTag(itemXml, 'benefits')),
+        applicationDeadline: raw.applicationDeadline ?? this.extractTag(itemXml, 'applicationDeadline'),
+        sourceUrl: link,
+        originalPostingDate: raw.originalPostingDate ?? this.extractTag(itemXml, 'pubDate') ?? this.extractTag(itemXml, 'publishedAt'),
       });
     }
 

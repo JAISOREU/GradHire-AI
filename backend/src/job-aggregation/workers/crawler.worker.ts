@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { JobAggregationService } from '../job-aggregation.service';
 import { JobSourceService } from '../sources/job-source.service';
 
@@ -14,6 +15,7 @@ export class CrawlerWorker {
     this.enabled = process.env.JOB_AGGREGATION_ENABLED === 'true';
   }
 
+  @Cron(process.env.JOB_AGGREGATION_INTERVAL || '0 */6 * * *')
   async runScheduledCrawl(): Promise<void> {
     if (!this.enabled) {
       this.logger.debug('Job aggregation disabled, skipping scheduled crawl');

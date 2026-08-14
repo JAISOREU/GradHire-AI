@@ -14,21 +14,26 @@ export class CareerPageConnector implements JobSourceConnector {
     const timeout = (source.configuration?.timeout as number | undefined) ?? 10000;
     const response = await firstValueFrom(this.http.get(source.baseUrl, { timeout, headers: { Accept: 'text/html' } }));
     const html = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
-    return this.parseCareerPage(html, source.baseUrl);
+    const selectors = (source.configuration?.selectors as Record<string, string> | undefined) ?? {};
+    return this.parseCareerPage(html, source.baseUrl, selectors);
   }
 
   async fetchJob(url: string): Promise<RawJobPosting> {
     const response = await firstValueFrom(this.http.get(url, { timeout: 10000 }));
     const html = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
-    return this.parseCareerPage(html, url)[0] ?? { title: 'Untitled', company: 'Unknown', description: '', sourceUrl: url };
+    const items = this.parseCareerPage(html, url, {});
+    return items[0] ?? { title: 'Untitled', company: 'Unknown', description: '', sourceUrl: url };
   }
 
-  private parseCareerPage(html: string, baseUrl: string): RawJobPosting[] {
+  private parseCareerPage(html: string, baseUrl: string, selectors: Record<string, string>): RawJobPosting[] {
     const jobs: RawJobPosting[] = [];
-    const titleRegex = /<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi;
+    const titleSelector = selectors.titleSelector ?? 'h1, h2, h3, h4, h5, h6';
+    const titleRegex = new RegExp(`<(${titleSelector.replace(/h[1-6]/g, 'h[1-6]').split(', ').join('|').replace(/[^a-zA-Z0-9|]/g, '')})[^>]*>(.*?)<\/${titleSelector}>`, 'gi');
+    
+    const headingRegex = /<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi;
     let match;
 
-    while ((match = titleRegex.exec(html)) !== null) {
+    while ((match = headingRegex.exec(html)) !== null) {
       const title = this.stripHtml(match[1] ?? '').trim();
       if (!title || title.length < 5) continue;
 

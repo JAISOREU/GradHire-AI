@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JobAggregationController } from './job-aggregation.controller';
 import { JobAggregationService } from './job-aggregation.service';
 import { JobSourceService } from './sources/job-source.service';
@@ -16,7 +17,7 @@ import { CacheModule } from '../cache/cache.module';
 import { AiModule } from '../ai/ai.module';
 
 @Module({
-  imports: [PrismaModule, CacheModule, AiModule],
+  imports: [PrismaModule, CacheModule, AiModule, ScheduleModule.forRoot()],
   controllers: [JobAggregationController],
   providers: [
     JobAggregationService,
