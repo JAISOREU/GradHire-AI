@@ -1,7 +1,14 @@
 import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { PrismaService } from '../prisma.service';
 import { JobSourceService } from './sources/job-source.service';
-import { CreateJobSourceDto } from './dto/create-job-source.dto';
+import { RssConnector, ApiConnector, CareerPageConnector } from './sources';
+import { JobNormalizer } from './normalizer';
+import { DuplicateDetector } from './duplicates';
+import { AiExtractionService } from './ai-extraction.service';
+import { SanitizationService } from './sanitization.service';
+import { AggregationStatus, JobSourceType } from '@prisma/client';
 
 export interface AggregationDashboard {
   sources: { total: number; active: number; disabled: number };
@@ -24,6 +31,11 @@ export class JobAggregationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly sourceService: JobSourceService,
+    private readonly normalizer: JobNormalizer,
+    private readonly duplicateDetector: DuplicateDetector,
+    private readonly aiExtraction: AiExtractionService,
+    private readonly sanitization: SanitizationService,
+    private readonly http: HttpService,
   ) {}
 
   async getDashboard(): Promise<AggregationDashboard> {
@@ -98,8 +110,36 @@ export class JobAggregationService {
     if (!source) {
       throw new NotFoundException('Source not found');
     }
-    this.logger.log(`Crawl triggered for source: ${source.name}`);
-    return { message: 'Crawl queued', source: source.name };
+
+    this.logger.log(`Starting crawl for source: ${source.name}`);
+    const connector = this.getConnector(source.sourceType);
+
+    try {
+      const rawJobs = await connector.discoverJobs({ id: source.id, baseUrl: source.baseUrl, configuration: (source.configuration as Record<string, unknown>) ?? {} });
+      let discovered = rawJobs.length;
+      let imported = 0;
+
+      for (const raw of rawJobs) {
+        try {
+          await this.processRawJob(raw, source);
+          imported++;
+        } catch (error) {
+          this.logger.warn(`Failed to process job from ${source.name}: ${error}`);
+        }
+      }
+
+      await this.sourceService.update(id, {
+        lastCrawledAt: new Date(),
+        status: 'ACTIVE',
+      });
+
+      this.logger.log(`Crawl completed for ${source.name}: ${discovered} discovered, ${imported} imported`);
+      return { message: 'Crawl completed', discovered, imported };
+    } catch (error) {
+      await this.sourceService.update(id, { status: 'ERROR' });
+      this.logger.error(`Crawl failed for ${source.name}: ${error}`);
+      throw new BadRequestException(`Crawl failed: ${error}`);
+    }
   }
 
   async listAggregatedJobs(page: number, limit: number) {
@@ -245,5 +285,115 @@ export class JobAggregationService {
     }
 
     return { expired: expired.length };
+  }
+
+  private getConnector(sourceType: JobSourceType) {
+    switch (sourceType) {
+      case 'RSS':
+        return new RssConnector(this.http);
+      case 'API':
+        return new ApiConnector(this.http);
+      case 'CAREER_PAGE':
+        return new CareerPageConnector(this.http);
+      default:
+        throw new BadRequestException(`Unsupported source type: ${sourceType}`);
+    }
+  }
+
+  private async processRawJob(raw: any, source: any): Promise<void> {
+    const sanitized = this.sanitization.sanitize(raw);
+
+    const existing = await this.duplicateDetector.findDuplicates(
+      sanitized.sourceUrl,
+      sanitized.company,
+      sanitized.title,
+      sanitized.location ?? 'Unknown',
+    );
+
+    if (existing.length > 0) {
+      this.logger.debug(`Duplicate detected for ${sanitized.title} from ${sanitized.sourceUrl}`);
+      return;
+    }
+
+    const aiResult = await this.aiExtraction.extractJobData(sanitized);
+    const normalized = this.normalizer.normalize({
+      ...sanitized,
+      ...aiResult,
+    });
+
+    const confidence = Object.values(normalized.confidence).map((c) => c.confidence);
+    const avgConfidence = confidence.length > 0 ? confidence.reduce((a, b) => a + b, 0) / confidence.length : 0;
+
+    const contentHash = this.duplicateDetector.computeContentHash(normalized.normalizedTitle, normalized.normalizedCompany, normalized.description);
+
+    const duplicateCheck = await this.duplicateDetector.findDuplicates(
+      sanitized.sourceUrl,
+      normalized.normalizedCompany,
+      normalized.normalizedTitle,
+      normalized.normalizedLocation,
+      contentHash,
+    );
+
+    if (duplicateCheck.length > 0) {
+      this.logger.debug(`Duplicate detected after normalization for ${normalized.normalizedTitle}`);
+      return;
+    }
+
+    const aggregationStatus: AggregationStatus = avgConfidence >= 0.9 ? 'AGGREGATED' : avgConfidence >= 0.7 ? 'PENDING_REVIEW' : 'REJECTED';
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    const job = await this.prisma.job.create({
+      data: {
+        title: normalized.normalizedTitle,
+        company: normalized.normalizedCompany,
+        type: normalized.normalizedEmploymentType ? (normalized.normalizedEmploymentType as any) : 'HIRING',
+        experienceLevel: normalized.normalizedExperienceLevel ? (normalized.normalizedExperienceLevel as any) : 'ENTRY_LEVEL',
+        description: normalized.description,
+        requiredQualifications: normalized.requirements?.join('\n') ?? '',
+        responsibilities: normalized.responsibilities?.join('\n') ?? '',
+        requiredSkills: normalized.skills ?? [],
+        preferredSkills: [],
+        status: aggregationStatus === 'AGGREGATED' ? 'PUBLISHED' : 'DRAFT',
+        origin: 'AGGREGATED_EXTERNAL',
+        sourceType: source.sourceType,
+        sourceName: source.name,
+        sourceJobId: sanitized.sourceUrl,
+        sourceUrl: sanitized.sourceUrl,
+        externalCompanyName: normalized.normalizedCompany,
+        aggregatedAt: new Date(),
+        lastVerifiedAt: new Date(),
+        expiresAt,
+        aggregationStatus,
+        aggregationConfidence: avgConfidence,
+        contentHash,
+        employerId: 'system',
+        workplaceType: normalized.normalizedWorkplaceType ? (normalized.normalizedWorkplaceType as any) : 'ONSITE',
+        salaryMin: normalized.salaryMin,
+        salaryMax: normalized.salaryMax,
+        currency: normalized.salaryCurrency ?? 'PHP',
+        salaryType: normalized.salaryFrequency ? (normalized.salaryFrequency as any) : 'ANNUAL',
+        applicationDeadline: normalized.applicationDeadline ? new Date(normalized.applicationDeadline) : undefined,
+      },
+    });
+
+    await this.prisma.aggregatedJob.create({
+      data: {
+        jobId: job.id,
+        sourceType: source.sourceType,
+        sourceName: source.name,
+        sourceJobId: sanitized.sourceUrl,
+        sourceUrl: sanitized.sourceUrl,
+        externalCompanyName: normalized.normalizedCompany,
+        aggregatedAt: new Date(),
+        lastVerifiedAt: new Date(),
+        expiresAt,
+        aggregationStatus,
+        aggregationConfidence: avgConfidence,
+        contentHash,
+        originalPostingDate: sanitized.originalPostingDate ? new Date(sanitized.originalPostingDate) : undefined,
+      },
+    });
   }
 }

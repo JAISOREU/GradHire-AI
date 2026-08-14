@@ -11,22 +11,67 @@ export class CareerPageConnector implements JobSourceConnector {
   constructor(private readonly http: HttpService) {}
 
   async discoverJobs(source: { id: string; baseUrl: string; configuration?: Record<string, unknown> }): Promise<RawJobPosting[]> {
-    this.logger.warn(`Career page discovery not yet implemented for source ${source.id}`);
-    return [];
+    const timeout = (source.configuration?.timeout as number | undefined) ?? 10000;
+    const response = await firstValueFrom(this.http.get(source.baseUrl, { timeout, headers: { Accept: 'text/html' } }));
+    const html = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
+    return this.parseCareerPage(html, source.baseUrl);
   }
 
   async fetchJob(url: string): Promise<RawJobPosting> {
     const response = await firstValueFrom(this.http.get(url, { timeout: 10000 }));
-    const html = response.data;
-    return this.parseCareerPage(html, url);
+    const html = typeof response.data === 'string' ? response.data : response.data?.toString?.() ?? '';
+    return this.parseCareerPage(html, url)[0] ?? { title: 'Untitled', company: 'Unknown', description: '', sourceUrl: url };
   }
 
-  private parseCareerPage(_html: string, url: string): RawJobPosting {
-    return {
-      title: 'Untitled',
-      company: 'Unknown',
-      description: '',
-      sourceUrl: url,
-    };
+  private parseCareerPage(html: string, baseUrl: string): RawJobPosting[] {
+    const jobs: RawJobPosting[] = [];
+    const titleRegex = /<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi;
+    let match;
+
+    while ((match = titleRegex.exec(html)) !== null) {
+      const title = this.stripHtml(match[1] ?? '').trim();
+      if (!title || title.length < 5) continue;
+
+      const start = match.index;
+      const nextHeading = html.indexOf('<h', start + 1);
+      const snippet = html.slice(start, nextHeading === -1 ? undefined : nextHeading);
+      const description = this.stripHtml(snippet).trim();
+
+      jobs.push({
+        title,
+        company: this.inferCompany(baseUrl),
+        description: description.slice(0, 5000),
+        sourceUrl: baseUrl,
+      });
+    }
+
+    if (jobs.length === 0) {
+      jobs.push({
+        title: this.extractPageTitle(html) ?? 'Untitled',
+        company: this.inferCompany(baseUrl),
+        description: this.stripHtml(html).slice(0, 5000),
+        sourceUrl: baseUrl,
+      });
+    }
+
+    return jobs;
+  }
+
+  private extractPageTitle(html: string): string | undefined {
+    const match = html.match(/<title>(.*?)<\/title>/i);
+    return match?.[1]?.trim();
+  }
+
+  private inferCompany(url: string): string {
+    try {
+      const hostname = new URL(url).hostname;
+      return hostname.replace(/^www\./, '').split('.')[0] ?? 'Unknown';
+    } catch {
+      return 'Unknown';
+    }
+  }
+
+  private stripHtml(html: string): string {
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 }
