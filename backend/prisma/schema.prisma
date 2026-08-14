@@ -138,6 +138,27 @@ enum WorkAuthorizationStatus {
   NOT_AUTHORIZED
 }
 
+enum JobOrigin {
+  DIRECT_EMPLOYER
+  AGGREGATED_EXTERNAL
+}
+
+enum AggregationStatus {
+  AGGREGATED
+  VERIFIED
+  PENDING_REVIEW
+  REJECTED
+  EXPIRED
+}
+
+enum JobSourceType {
+  RSS
+  API
+  CAREER_PAGE
+  JOB_BOARD
+  OTHER
+}
+
 // ============================================================
 // User & Profiles
 // ============================================================
@@ -276,6 +297,21 @@ model Job {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
+  // Aggregation
+  origin           JobOrigin     @default(DIRECT_EMPLOYER)
+  sourceType       JobSourceType?
+  sourceName       String?
+  sourceJobId      String?
+  sourceUrl        String?
+  externalCompanyName String?
+  externalCompanyLogo String?
+  aggregatedAt     DateTime?
+  lastVerifiedAt   DateTime?
+  expiresAt        DateTime?
+  aggregationStatus AggregationStatus?
+  aggregationConfidence Float?
+  contentHash      String?
+
   // Work arrangement
   workplaceType    WorkplaceType
   remoteScope      RemoteScope?
@@ -347,6 +383,7 @@ model Job {
   analytics         JobAnalytics?
   location          JobLocation?
   skills            JobSkill[]
+  aggregatedJob     AggregatedJob?
 
   @@index([employerId, status])
   @@index([status, createdAt])
@@ -357,6 +394,13 @@ model Job {
   @@index([salaryMin, status])
   @@index([acceptsFreshGraduates, status])
   @@index([acceptsStudents, status])
+  @@index([origin])
+  @@index([sourceType])
+  @@index([sourceJobId])
+  @@index([sourceUrl])
+  @@index([contentHash])
+  @@index([aggregationStatus])
+  @@index([expiresAt])
 }
 
 // ============================================================
@@ -779,4 +823,62 @@ model Settings {
   updatedAt             DateTime @updatedAt
 
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// Job Source (for aggregation)
+// ============================================================
+
+model JobSource {
+  id               String        @id @default(cuid())
+  name             String        @unique
+  baseUrl          String
+  sourceType       JobSourceType
+  enabled          Boolean       @default(true)
+  crawlFrequency   String?       @default("6h")
+  lastCrawledAt    DateTime?
+  status           String        @default("ACTIVE")
+  configuration    Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  aggregatedJobs   AggregatedJob[]
+
+  @@index([sourceType])
+  @@index([enabled])
+}
+
+// ============================================================
+// Aggregated Job (extends Job with external source metadata)
+// ============================================================
+
+model AggregatedJob {
+  id                     String           @id @default(cuid())
+  jobId                  String           @unique
+  sourceType             JobSourceType
+  sourceName             String
+  sourceJobId            String?
+  sourceUrl              String
+  externalCompanyName    String?
+  externalCompanyLogo    String?
+  aggregatedAt           DateTime         @default(now())
+  lastVerifiedAt         DateTime?
+  expiresAt              DateTime?
+  aggregationStatus      AggregationStatus @default(PENDING_REVIEW)
+  aggregationConfidence  Float?
+  contentHash            String?
+  originalPostingDate    DateTime?
+  duplicateOfId          String?
+
+  job                    Job              @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  source                 JobSource        @relation(fields: [sourceName], references: [name])
+  duplicateOf            AggregatedJob?   @relation("DuplicateGroup", fields: [duplicateOfId], references: [id])
+  duplicates             AggregatedJob[]  @relation("DuplicateGroup")
+
+  @@index([sourceType])
+  @@index([sourceJobId])
+  @@index([sourceUrl])
+  @@index([contentHash])
+  @@index([aggregationStatus])
+  @@index([expiresAt])
 }

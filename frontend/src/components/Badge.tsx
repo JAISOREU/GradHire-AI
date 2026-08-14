@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type BadgeKind = 'hiring' | 'internship' | 'applied' | 'withdrawn' | 'open' | 'closed' | 'archived';
+export type BadgeKind = 'hiring' | 'internship' | 'applied' | 'withdrawn' | 'open' | 'closed' | 'archived' | 'warning';
 
 type BadgeProps = {
   kind: BadgeKind;
@@ -15,6 +15,7 @@ const KIND_LABELS: Record<BadgeKind, string> = {
   open: 'Open',
   closed: 'Closed',
   archived: 'Archived',
+  warning: 'Warning',
 };
 
 /** Resolve a badge kind from a raw status/type string. */

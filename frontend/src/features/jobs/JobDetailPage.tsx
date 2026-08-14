@@ -39,6 +39,19 @@ export const JobDetailPage = () => {
       <div className="card section--mt">
         <PageHeader title={job.title} subtitle={`${job.company} · ${job.location}`} />
 
+        {job.origin === 'AGGREGATED_EXTERNAL' && (
+          <div className="message message--info section--mt">
+            <strong>External job</strong> — this posting was discovered from an external source.
+            {job.sourceName && <div>Source: {job.sourceName}</div>}
+            {job.sourceUrl && (
+              <div>
+                <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer">View Original Posting ↗</a>
+              </div>
+            )}
+            {job.lastVerifiedAt && <div>Last verified: {new Date(job.lastVerifiedAt).toLocaleString()}</div>}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4 section--mt">
           <div>
             <span className="text-secondary text-sm">Type</span>

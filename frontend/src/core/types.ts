@@ -105,6 +105,16 @@ export type Job = {
   requirements?: JobRequirement[];
   screeningQuestions?: ScreeningQuestion[];
   analytics?: JobAnalytics | null;
+  origin?: 'DIRECT_EMPLOYER' | 'AGGREGATED_EXTERNAL';
+  sourceName?: string;
+  sourceUrl?: string;
+  externalCompanyName?: string;
+  externalCompanyLogo?: string;
+  aggregatedAt?: string;
+  lastVerifiedAt?: string;
+  expiresAt?: string;
+  aggregationStatus?: string;
+  aggregationConfidence?: number;
 };
 
 export type RecommendationResponse = {

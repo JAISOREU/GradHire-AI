@@ -48,6 +48,9 @@ export const JobListPage = () => {
                       <span>{job.company}</span>
                       <span>{job.location}</span>
                       <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
+                      {job.origin === 'AGGREGATED_EXTERNAL' && (
+                        <Badge kind="warning">Aggregated</Badge>
+                      )}
                     </div>
                   </div>
                   <span className="list-item__action">View →</span>

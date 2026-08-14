@@ -54,8 +54,9 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
       headers: finalHeaders,
       body: body as BodyInit | undefined,
     });
-  } catch {
-    throw new ApiError('Network error. Please check your connection and try again.', 0);
+  } catch (networkError) {
+    const reason = networkError instanceof Error ? networkError.message : String(networkError);
+    throw new ApiError(`Network error: ${reason}. Please check your connection and try again.`, 0);
   }
 
   if (res.status === 401) {

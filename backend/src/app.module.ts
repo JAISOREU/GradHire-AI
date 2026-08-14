@@ -26,6 +26,7 @@ import { ScreeningModule } from './screening/screening.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { UsersModule } from './users/users.module';
+import { JobAggregationModule } from './job-aggregation/job-aggregation.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { UsersModule } from './users/users.module';
     InterviewsModule,
     AnalyticsModule,
     UsersModule,
+    JobAggregationModule,
   ],
   controllers: [AppController, MetricsController],
   providers: [

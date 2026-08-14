@@ -28,6 +28,9 @@ import { AdminFeatureFlagsPage } from '../features/admin/AdminFeatureFlagsPage';
 import { AdminBackupsPage } from '../features/admin/AdminBackupsPage';
 import { AdminSecurityPage } from '../features/admin/AdminSecurityPage';
 import { AdminDeveloperToolsPage } from '../features/admin/AdminDeveloperToolsPage';
+import { AdminJobAggregationDashboardPage } from '../features/admin/AdminJobAggregationDashboardPage';
+import { AdminJobAggregationSourcesPage } from '../features/admin/AdminJobAggregationSourcesPage';
+import { AdminJobAggregationJobsPage } from '../features/admin/AdminJobAggregationJobsPage';
 import { AdminLayout } from '../layouts/AdminLayout';
 import { AccountPage } from '../features/account/AccountPage';
 import { JobListPage } from '../features/jobs/JobListPage';
@@ -126,6 +129,9 @@ export const AppRoutes = () => (
         <Route path="/admin/backups" element={<Page><AdminBackupsPage /></Page>} />
         <Route path="/admin/security" element={<Page><AdminSecurityPage /></Page>} />
         <Route path="/admin/developer-tools" element={<Page><AdminDeveloperToolsPage /></Page>} />
+        <Route path="/admin/job-aggregation" element={<Page><AdminJobAggregationDashboardPage /></Page>} />
+        <Route path="/admin/job-aggregation/sources" element={<Page><AdminJobAggregationSourcesPage /></Page>} />
+        <Route path="/admin/job-aggregation/jobs" element={<Page><AdminJobAggregationJobsPage /></Page>} />
       </Route>
     </Route>
 
