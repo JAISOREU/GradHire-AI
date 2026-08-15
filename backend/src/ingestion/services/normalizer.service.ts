@@ -50,7 +50,84 @@ export class NormalizerService {
       enriched.sourceUrl = raw.sourceUrl;
     }
 
+    enriched.description = this.sanitizeDescription(enriched.description);
+
     return enriched;
+  }
+
+  private sanitizeDescription(input: string): string {
+    let text = input || '';
+
+    text = text.replace(/<script[\s\S]*?<\/script>/gi, ' ');
+    text = text.replace(/<style[\s\S]*?<\/style>/gi, ' ');
+    text = text.replace(/<[^>]+>/g, ' ');
+    text = text.replace(/&nbsp;/g, ' ');
+    text = text.replace(/&lt;/g, '<');
+    text = text.replace(/&gt;/g, '>');
+    text = text.replace(/&amp;/g, '&');
+    text = text.replace(/&quot;/g, '"');
+    text = text.replace(/&#39;/g, "'");
+    text = text.replace(/&#x[0-9a-fA-F]+;|&#\d+;/g, ' ');
+
+    const boilerplatePatterns = [
+      /cookie\s*(policy|notice|consent).*?/gi,
+      /privacy\s*policy.*?/gi,
+      /terms\s*(of\s*use|service).*?/gi,
+      /all\s*rights\s*reserved.*?/gi,
+      /powered\s*by.*?/gi,
+      /subscribe\s*to.*?/gi,
+      /follow\s*us\s*(on|at).*?/gi,
+      /share\s*this\s*job.*?/gi,
+      /back\s*to\s*(top|search).*?/gi,
+      /home\s*page\s*of.*?/gi,
+      /site\s*map.*?/gi,
+      /click\s*here\s*(to|for).*?/gi,
+      /read\s*more.*?/gi,
+      /view\s*all\s*jobs.*?/gi,
+      /browse\s*jobs.*?/gi,
+      /sign\s*in\s*or\s*register.*?/gi,
+      /login\s*(here|to|required).*?/gi,
+      /create\s*alert.*?/gi,
+      /save\s*(this\s*)?job.*?/gi,
+      /email\s*me\s*jobs.*?/gi,
+      /similar\s*jobs.*?/gi,
+      /related\s*jobs.*?/gi,
+      /you\s*may\s*also\s*be\s*interested.*?/gi,
+      /recommended\s*for\s*you.*?/gi,
+      /sponsored\s*listing.*?/gi,
+      /advertisement.*?/gi,
+      /google\s*(ads|analytics|tag\s*manager).*?/gi,
+      /facebook\s*pixel.*?/gi,
+      /linkedin\s*tracking.*?/gi,
+      /utm_\w+=[^&\s]+/gi,
+      /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
+      /\[?https?:\/\/[^\s\]\)]+/gi,
+      /\[?email\s*(protected|redacted)[^\s]*\]?/gi,
+      /\[?phone\s*(number|protected|redacted)[^\s]*\]?/gi,
+    ];
+
+    for (const pattern of boilerplatePatterns) {
+      text = text.replace(pattern, ' ');
+    }
+
+    const lines = text.split(/\n+/).map((line) => line.trim()).filter((line) => line.length > 0);
+    const uniqueLines = lines.filter((line, index, self) => {
+      const normalized = line.toLowerCase().replace(/\s+/g, ' ').trim();
+      return index === self.findIndex((l) => l.toLowerCase().replace(/\s+/g, ' ').trim() === normalized);
+    });
+
+    text = uniqueLines.join('\n\n');
+
+    text = text.replace(/[ \t]+/g, ' ');
+    text = text.replace(/\n{3,}/g, '\n\n');
+    text = text.trim();
+
+    const maxLength = 8000;
+    if (text.length > maxLength) {
+      text = text.slice(0, maxLength).trim() + '...';
+    }
+
+    return text;
   }
 
   private providerNormalize(parserType: JobSourceParserType, raw: RawJobItem): NormalizedJob {

@@ -6,7 +6,6 @@ import { SkipLink } from '../components/SkipLink';
 import { useState } from 'react';
 import { ADMIN_SIDEBAR_NAV } from '../core/utils/navigation';
 import { getRoleLabel } from '../core/utils/roleLabels';
-import { Avatar } from '../components/Avatar';
 
 export const AdminLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -38,9 +37,8 @@ export const AdminLayout = () => {
         className={sidebarOpen ? 'is-open' : ''}
         footer={
           <div className="sidebar-user">
-            <Avatar src={user.avatarUrl} name={user.name || user.email} size="sm" />
             <div className="sidebar-user__meta">
-              <span className="sidebar-user__name">{user.email}</span>
+              <span className="sidebar-user__name">{user.name || user.email}</span>
               <span className="sidebar-user__role">{getRoleLabel('ADMIN')}</span>
             </div>
           </div>

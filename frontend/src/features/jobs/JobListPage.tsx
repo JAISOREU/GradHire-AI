@@ -229,9 +229,6 @@ export const JobListPage = () => {
                         </div>
                       )}
                     </div>
-                    <span className="list-item__action">
-                      <Link to={`/jobs/${job.id}`} className="btn btn--sm">View Job</Link>
-                    </span>
                   </div>
                 </article>
               );
