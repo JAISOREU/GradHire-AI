@@ -407,3 +407,7 @@ If you encounter issues:
 ---
 
 *Last updated: 2026-08-15 — production deployment verified*
+
+---
+
+*Commit: ab2d512 — redeploy trigger*
