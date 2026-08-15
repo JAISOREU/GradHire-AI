@@ -24,7 +24,7 @@
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/throttler": "^6.5.0",
     "@nestjs/websockets": "^10.4.22",
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.19.3",
     "@sentry/nestjs": "^10.70.0",
     "@types/express": "^5.0.6",
     "@types/nodemailer": "^8.0.1",

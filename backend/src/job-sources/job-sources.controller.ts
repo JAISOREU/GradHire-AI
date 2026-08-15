@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { JobSourcesService } from './job-sources.service';
@@ -57,6 +57,7 @@ export class JobSourcesController {
   }
 
   @Post(':id/test')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Test job source connectivity' })
   async test(@Param('id') id: string) {
     const source = await this.jobSourcesService.findOne(id);
@@ -64,6 +65,7 @@ export class JobSourcesController {
   }
 
   @Post(':id/sync')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Manually trigger sync for a job source' })
   async sync(@Param('id') id: string) {
     const source = await this.jobSourcesService.findOne(id);
@@ -74,7 +76,7 @@ export class JobSourcesController {
   @Get(':id/runs')
   @ApiOperation({ summary: 'Get recent ingestion runs for a source' })
   async getRuns(@Param('id') id: string, @Query('limit') limit?: number) {
-    return this.jobSourcesService.findRuns(id, limit ?? 20);
+    return this.jobSourcesService.findRuns(id, typeof limit === 'number' ? limit : 20);
   }
 
   @Get(':id/health')

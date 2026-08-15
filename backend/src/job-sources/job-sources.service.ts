@@ -73,10 +73,11 @@ export class JobSourcesService {
 
   async findRuns(id: string, limit = 20): Promise<JobSourceRun[]> {
     await this.findOne(id);
+    const safeLimit = Number.isInteger(limit) ? limit : 20;
     return this.prisma.jobSourceRun.findMany({
       where: { sourceId: id },
       orderBy: { createdAt: 'desc' },
-      take: limit,
+      take: safeLimit,
     });
   }
 
