@@ -47,7 +47,7 @@ Replace `YourSecureAdminPassword123!` with a strong password.
 In **Railway → PostgreSQL → Query**:
 
 ```sql
-INSERT INTO "User" (id, email, password_hash, role, email_verified, created_at, updated_at)
+INSERT INTO "User" (id, email, "passwordHash", role, email_verified, created_at, updated_at)
 VALUES (
   gen_random_uuid()::text,
   'admin@gradture.ai',
