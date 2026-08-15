@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { JobSourcesService } from './job-sources.service';
 import { CreateJobSourceDto, UpdateJobSourceDto, TestJobSourceDto } from './dto/job-source.dto';
@@ -9,7 +10,7 @@ import { ModuleRef } from '@nestjs/core';
 @ApiTags('admin/job-sources')
 @ApiBearerAuth()
 @Controller('admin/job-sources')
-@UseGuards(AdminGuard)
+@UseGuards(AuthGuard, AdminGuard)
 export class JobSourcesController {
   constructor(
     private readonly jobSourcesService: JobSourcesService,

@@ -1,12 +1,13 @@
 import { Controller, Get, Query, Req, UseGuards, Request } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma.service';
 import { normalizePagination, PaginatedResponse, applyPagination } from '../common/pagination';
 
 @Controller('admin')
-@UseGuards(AdminGuard)
+@UseGuards(AuthGuard, AdminGuard)
 export class AdminController {
   constructor(private readonly prisma: PrismaService) {}
 
