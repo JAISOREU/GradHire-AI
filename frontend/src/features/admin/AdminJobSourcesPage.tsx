@@ -185,34 +185,34 @@ export const AdminJobSourcesPage = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Source Type</label>
-                <select className="input" value={form.sourceType} onChange={(e) => setForm({ ...form, sourceType: e.target.value as JobSourceType })}>
-                  <option value="API">API</option>
-                  <option value="RSS">RSS</option>
-                  <option value="JSON">JSON</option>
-                  <option value="HTML">HTML</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Parser Type</label>
-                <select className="input" value={form.parserType} onChange={(e) => setForm({ ...form, parserType: e.target.value as JobSourceParserType })}>
-                  <option value="GENERIC">Generic</option>
-                  <option value="GREENHOUSE">Greenhouse</option>
-                  <option value="LEVER">Lever</option>
-                  <option value="ASHBY">Ashby</option>
-                  <option value="SMARTRECRUITERS">SmartRecruiters</option>
-                  <option value="ADZUNA">Adzuna</option>
-                  <option value="USAJOBS">USAJOBS</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Auth Type</label>
-                <select className="input" value={form.authenticationType} onChange={(e) => setForm({ ...form, authenticationType: e.target.value as JobSourceAuthType })}>
-                  <option value="NONE">None</option>
-                  <option value="API_KEY">API Key</option>
-                  <option value="OAUTH">OAuth</option>
-                  <option value="BASIC">Basic</option>
-                </select>
-              </div>
+                 <select className="select" value={form.sourceType} onChange={(e) => setForm({ ...form, sourceType: e.target.value as JobSourceType })}>
+                   <option value="API">API</option>
+                   <option value="RSS">RSS</option>
+                   <option value="JSON">JSON</option>
+                   <option value="HTML">HTML</option>
+                 </select>
+               </div>
+               <div>
+                 <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Parser Type</label>
+                 <select className="select" value={form.parserType} onChange={(e) => setForm({ ...form, parserType: e.target.value as JobSourceParserType })}>
+                   <option value="GENERIC">Generic</option>
+                   <option value="GREENHOUSE">Greenhouse</option>
+                   <option value="LEVER">Lever</option>
+                   <option value="ASHBY">Ashby</option>
+                   <option value="SMARTRECRUITERS">SmartRecruiters</option>
+                   <option value="ADZUNA">Adzuna</option>
+                   <option value="USAJOBS">USAJOBS</option>
+                 </select>
+               </div>
+               <div>
+                 <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Auth Type</label>
+                 <select className="select" value={form.authenticationType} onChange={(e) => setForm({ ...form, authenticationType: e.target.value as JobSourceAuthType })}>
+                   <option value="NONE">None</option>
+                   <option value="API_KEY">API Key</option>
+                   <option value="OAUTH">OAuth</option>
+                   <option value="BASIC">Basic</option>
+                 </select>
+               </div>
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Base URL</label>

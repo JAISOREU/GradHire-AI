@@ -32,6 +32,14 @@ export class AppController {
   @Get('recommendations/ai')
   async getAiRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK = 5) {
     const profile = await this.appService.getStudentProfile(req.user.id);
+    const education = String(profile.education ?? '').trim();
+    const skills = Array.isArray(profile.skills) ? profile.skills.filter((s: unknown) => String(s).trim()) : [];
+    const experience = String(profile.experience ?? '').trim();
+
+    if (!education || !skills.length || !experience) {
+      return [];
+    }
+
     return this.appService.getAiRecommendations((profile.focus as string) || '', Number(topK));
   }
 

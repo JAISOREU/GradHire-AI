@@ -17,7 +17,8 @@ const formatSalary = (job: Job) => {
     return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()} — ${job.salaryMax.toLocaleString()}`;
   }
   if (job.salaryMin != null) return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()}+`;
-  return null;
+  if (job.negotiable) return 'Negotiable';
+  return 'Negotiable';
 };
 
 export const JobDetailPage = () => {

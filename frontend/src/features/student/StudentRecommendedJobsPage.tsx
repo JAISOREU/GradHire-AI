@@ -1,17 +1,23 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { recommendationsApi } from '../../core/api/endpoints/jobs';
-import { jobsApi } from '../../core/api/endpoints/jobs';
+import { studentsApi } from '../../core/api/endpoints/students';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { LoadingState } from '../../components/LoadingState';
 import { EmptyState } from '../../components/EmptyState';
 import { Link } from 'react-router-dom';
+import { Button } from '../../components/Button';
 import { PageHeader } from '../../components/PageHeader';
 
 export const StudentRecommendedJobsPage = () => {
   const { data: aiJobs, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
-  const { data: allJobs } = useAsync(() => jobsApi.list(''), []);
+  const { data: profile } = useAsync(() => studentsApi.getProfile(), []);
 
-  const jobs = aiJobs && aiJobs.length > 0
+  const education = String(profile?.education ?? '').trim();
+  const skills = Array.isArray(profile?.skills) ? profile!.skills.filter((s) => String(s).trim()) : [];
+  const experience = String(profile?.experience ?? '').trim();
+  const profileComplete = Boolean(education && skills.length > 0 && experience);
+
+  const recommendations = aiJobs && aiJobs.length > 0
     ? aiJobs.map((rec) => ({
         id: rec.id,
         title: rec.title,
@@ -21,20 +27,20 @@ export const StudentRecommendedJobsPage = () => {
         matchScore: Math.round(rec.score * 100),
         description: rec.description,
       }))
-    : (allJobs ?? [])
-        .slice()
-        .sort((a, b) => b.matchScore - a.matchScore)
-        .slice(0, 6);
+    : [];
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Recommended jobs" subtitle="AI-matched roles based on your focus area." />
+      <PageHeader
+        title="Recommended jobs"
+        subtitle={profileComplete ? 'AI-matched roles based on your profile.' : 'Complete your profile to unlock personalized recommendations.'}
+      />
 
       <div className="list-container">
-        {aiLoading ? (
+        {aiLoading && profileComplete ? (
           <LoadingState label="Loading recommendations…" />
-        ) : jobs && jobs.length > 0 ? (
-          jobs.map((job) => (
+        ) : recommendations.length > 0 ? (
+          recommendations.map((job) => (
             <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
               <div className="list-item__head">
                 <div>
@@ -52,8 +58,15 @@ export const StudentRecommendedJobsPage = () => {
               </div>
             </Link>
           ))
+        ) : profileComplete ? (
+          <EmptyState icon="✨" title="No recommendations yet" text="Complete your profile to get AI-matched roles." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
         ) : (
-          <EmptyState icon="✨" title="No recommendations yet" text="Complete your profile to get AI-matched roles." />
+          <EmptyState
+            icon="🎯"
+            title="Complete your profile to receive personalized job recommendations"
+            text="Add your education, skills, and experience so we can match you with the right opportunities."
+            action={<Link to="/student/account"><Button size="sm">Complete profile</Button></Link>}
+          />
         )}
       </div>
     </div>

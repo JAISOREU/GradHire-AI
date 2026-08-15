@@ -21,8 +21,9 @@ export const StudentDashboardPage = () => {
 
   const appCount = applications?.length ?? 0;
   const savedCount = savedJobs?.length ?? 0;
-  const profileComplete = profile?.focus ? Math.min(100, Math.round((profile.focus.split(' ').filter(Boolean).length / 5) * 100)) : 0;
-  const matchCount = jobs?.length ?? 0;
+  const focusWords = profile?.focus ? profile.focus.split(' ').filter(Boolean).length : 0;
+  const profileCompletePct = Math.min(100, Math.round((focusWords / 5) * 100));
+  const hasRecommendationAccess = focusWords >= 5 && (profile?.skills?.length ?? 0) > 0 && Boolean(profile?.experience?.trim());
 
   return (
     <div className="page fade-in pc-density">
@@ -48,18 +49,18 @@ export const StudentDashboardPage = () => {
         />
         <KPICard
           label="Profile"
-          value={`${profileComplete}%`}
+          value={`${profileCompletePct}%`}
           icon="🎯"
-          trend={{ direction: profileComplete >= 80 ? 'up' : 'neutral', value: profileComplete >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
+          trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
           action={
             <Link to="/student/account"><Button variant="ghost" size="sm">Update</Button></Link>
           }
         />
         <KPICard
           label="AI Matches"
-          value={matchCount}
+          value={hasRecommendationAccess ? 'Available' : 'Locked'}
           icon="✨"
-          trend={{ direction: 'up', value: `${matchCount} new`, label: 'today' }}
+          trend={{ direction: hasRecommendationAccess ? 'up' : 'neutral', value: hasRecommendationAccess ? 'Active' : 'Complete profile', label: 'recommendations' }}
           action={
             <Link to="/student/recommended"><Button variant="ghost" size="sm">Explore</Button></Link>
           }
@@ -105,32 +106,41 @@ export const StudentDashboardPage = () => {
       </DashboardSection>
 
       <DashboardSection
-        title="Top matches for you"
-        subtitle="AI-ranked roles based on your profile."
+        title={hasRecommendationAccess ? "Top matches for you" : "Unlock AI recommendations"}
+        subtitle={hasRecommendationAccess ? "AI-ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
         action={
-          <Link to="/jobs"><Button variant="ghost" size="sm">View all →</Button></Link>
+          <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm">{hasRecommendationAccess ? 'View all →' : 'Complete profile'}</Button></Link>
         }
         className="section--mt"
       >
-        {jobsLoading ? (
-          <Skeleton variant="table" lines={3} />
-        ) : jobs && jobs.length > 0 ? (
-          jobs.slice(0, 3).map((job) => (
-            <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
-              <div className="list-item__head">
-                 <div>
-                  <h3 className="list-item__title">{job.title}</h3>
-                  <div className="list-item__meta">
-                    <span>{job.company}</span>
-                    <span>{job.location}</span>
-                    <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
+        {hasRecommendationAccess ? (
+          jobsLoading ? (
+            <Skeleton variant="table" lines={3} />
+          ) : jobs && jobs.length > 0 ? (
+            jobs.slice(0, 3).map((job) => (
+              <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
+                <div className="list-item__head">
+                  <div>
+                    <h3 className="list-item__title">{job.title}</h3>
+                    <div className="list-item__meta">
+                      <span>{job.company}</span>
+                      <span>{job.location}</span>
+                      <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))
+              </Link>
+            ))
+          ) : (
+            <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see AI-matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
+          )
         ) : (
-          <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see AI-matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
+          <EmptyState
+            icon="🎯"
+            title="Complete your profile to receive personalized job recommendations"
+            text="Add your education, skills, and experience so we can match you with the right opportunities."
+            action={<Link to="/student/account"><Button size="sm">Complete profile</Button></Link>}
+          />
         )}
       </DashboardSection>
     </div>

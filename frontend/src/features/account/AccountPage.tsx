@@ -79,12 +79,12 @@ function TalentVisibility({ profile, onUpdate }: { profile: Record<string, unkno
     <Card title="Profile visibility" subtitle="Control who can see your profile." className="section--mt">
       <div className="form-group">
         <label className="form-label">Employer discoverability</label>
-        <select
-          value={visibility}
-          onChange={(e) => handleChange(e.target.value)}
-          disabled={saving}
-          className="form-select"
-        >
+           <select
+            value={visibility}
+            onChange={(e) => handleChange(e.target.value)}
+            disabled={saving}
+            className="select"
+          >
           {VISIBILITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -533,14 +533,14 @@ export const AccountPage = () => {
           <Card title="Company visibility" subtitle="Control who can see your company profile." className="section--mt">
             <div className="form-group">
               <label className="form-label">Profile visibility</label>
-              <select className="form-select" defaultValue="visible">
-                <option value="visible">Visible to talent</option>
-                <option value="hidden">Hidden from talent</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Recruiter visibility</label>
-              <select className="form-select" defaultValue="visible">
+               <select className="select" defaultValue="visible">
+                 <option value="visible">Visible to talent</option>
+                 <option value="hidden">Hidden from talent</option>
+               </select>
+             </div>
+             <div className="form-group">
+               <label className="form-label">Recruiter visibility</label>
+               <select className="select" defaultValue="visible">
                 <option value="visible">Visible to recruiters</option>
                 <option value="hidden">Hidden from recruiters</option>
               </select>

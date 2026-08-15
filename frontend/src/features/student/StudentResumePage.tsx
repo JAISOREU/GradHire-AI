@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { resumesApi } from '../../core/api/endpoints/resumes';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
@@ -11,6 +11,7 @@ export const StudentResumePage = () => {
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
   const { data: resumes, loading, reload } = useAsync(() => resumesApi.listMine(), []);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,6 +33,10 @@ export const StudentResumePage = () => {
     }
   };
 
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="page fade-in">
       <PageHeader title="Resume" subtitle="Upload your resume to auto-fill your profile and refresh your matches." />
@@ -39,10 +44,19 @@ export const StudentResumePage = () => {
       <div className="form-container">
         <Card title="Upload resume">
           <div className="stack">
-            <input type="file" accept=".pdf,.doc,.docx,.txt" onChange={handleUpload} disabled={uploading} />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.txt"
+              onChange={handleUpload}
+              disabled={uploading}
+              style={{ display: 'none' }}
+            />
+            <Button variant="secondary" onClick={triggerUpload} disabled={uploading}>
+              Upload &amp; parse
+            </Button>
             {uploading && <div className="loading-state"><span className="spinner" aria-hidden="true" /><span>Parsing…</span></div>}
             {message && <div className="message message--info">{message}</div>}
-            <Button variant="secondary" disabled={uploading}>Upload &amp; parse</Button>
           </div>
         </Card>
       </div>

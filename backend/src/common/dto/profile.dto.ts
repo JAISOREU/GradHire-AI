@@ -2,17 +2,15 @@ import { IsBoolean, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-va
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProfileDto {
-  @ApiProperty({ example: 'Ava Chen' })
+  @ApiProperty({ required: false, example: 'Ava Chen' })
+  @IsOptional()
   @IsString()
-  @MinLength(2, { message: 'Name must be at least 2 characters' })
-  @IsNotEmpty({ message: 'Name is required' })
-  name!: string;
+  name?: string;
 
-  @ApiProperty({ example: 'Full-stack development and AI products' })
+  @ApiProperty({ required: false, example: 'Full-stack development and AI products' })
+  @IsOptional()
   @IsString()
-  @MinLength(2, { message: 'Focus must be at least 2 characters' })
-  @IsNotEmpty({ message: 'Focus is required' })
-  focus!: string;
+  focus?: string;
 
   @ApiProperty({ required: false, example: ' Passionate about building scalable systems.' })
   @IsOptional()

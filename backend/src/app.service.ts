@@ -245,60 +245,42 @@ export class AppService implements OnModuleInit {
 
     if (this.dbAvailable) {
       try {
+        const existing = await this.prisma.profile.findFirst({ where: { userId } });
+        const merged: Record<string, unknown> = {
+          name: (body.name as string) || existing?.name || '',
+          focus: (body.focus as string) || existing?.focus || '',
+          summary: (summary != null ? summary : existing?.summary) ?? '',
+          skills: (body.skills as string[]) ?? existing?.skills ?? [],
+          education: (body.education as string) ?? existing?.education ?? undefined,
+          experience: (body.experience as string) ?? existing?.experience ?? undefined,
+          phone: (body.phone as string) ?? existing?.phone ?? undefined,
+          location: (body.location as string) ?? existing?.location ?? undefined,
+          website: (body.website as string) ?? existing?.website ?? undefined,
+          linkedin: (body.linkedin as string) ?? existing?.linkedin ?? undefined,
+          github: (body.github as string) ?? existing?.github ?? undefined,
+          portfolio: (body.portfolio as string) ?? existing?.portfolio ?? undefined,
+          expectedSalary: (body.expectedSalary as string) ?? existing?.expectedSalary ?? undefined,
+          availability: (body.availability as string) ?? existing?.availability ?? undefined,
+          workAuthorization: (body.workAuthorization as WorkAuthorizationStatus) ?? existing?.workAuthorization ?? undefined,
+          authorizedCountries: (body.authorizedCountries as string[]) ?? existing?.authorizedCountries ?? [],
+          needsVisaSponsorship: (body.needsVisaSponsorship as boolean) ?? existing?.needsVisaSponsorship ?? false,
+          studentFriendly: (body.studentFriendly as boolean) ?? existing?.studentFriendly ?? false,
+          freshGraduate: (body.freshGraduate as boolean) ?? existing?.freshGraduate ?? false,
+          graduationYear: (body.graduationYear as string) ?? existing?.graduationYear ?? undefined,
+          degree: (body.degree as string) ?? existing?.degree ?? undefined,
+          fieldOfStudy: (body.fieldOfStudy as string) ?? existing?.fieldOfStudy ?? undefined,
+          internshipAccepted: (body.internshipAccepted as boolean) ?? existing?.internshipAccepted ?? false,
+          profileCompleted,
+        };
+
         const saved = await this.prisma.profile.upsert({
           where: { userId },
-          update: {
-            name: body.name as string,
-            focus: body.focus as string,
-            summary,
-            skills: (body.skills as string[]) ?? [],
-            education: body.education as string | undefined,
-            experience: body.experience as string | undefined,
-            phone: body.phone as string | undefined,
-            location: body.location as string | undefined,
-            website: body.website as string | undefined,
-            linkedin: body.linkedin as string | undefined,
-            github: body.github as string | undefined,
-            portfolio: body.portfolio as string | undefined,
-            expectedSalary: body.expectedSalary as string | undefined,
-            availability: body.availability as string | undefined,
-            workAuthorization: body.workAuthorization as WorkAuthorizationStatus | undefined,
-            authorizedCountries: (body.authorizedCountries as string[]) ?? [],
-            needsVisaSponsorship: body.needsVisaSponsorship as boolean | undefined,
-            studentFriendly: body.studentFriendly as boolean | undefined,
-            freshGraduate: body.freshGraduate as boolean | undefined,
-            graduationYear: body.graduationYear as string | undefined,
-            degree: body.degree as string | undefined,
-            fieldOfStudy: body.fieldOfStudy as string | undefined,
-            internshipAccepted: body.internshipAccepted as boolean | undefined,
-            profileCompleted,
-          },
+          update: merged,
           create: {
             userId,
-            name: body.name as string,
-            focus: body.focus as string,
-            summary,
-            skills: (body.skills as string[]) ?? [],
-            education: body.education as string | undefined,
-            experience: body.experience as string | undefined,
-            phone: body.phone as string | undefined,
-            location: body.location as string | undefined,
-            website: body.website as string | undefined,
-            linkedin: body.linkedin as string | undefined,
-            github: body.github as string | undefined,
-            portfolio: body.portfolio as string | undefined,
-            expectedSalary: body.expectedSalary as string | undefined,
-            availability: body.availability as string | undefined,
-            workAuthorization: body.workAuthorization as WorkAuthorizationStatus | undefined,
-            authorizedCountries: (body.authorizedCountries as string[]) ?? [],
-            needsVisaSponsorship: body.needsVisaSponsorship as boolean | undefined,
-            studentFriendly: body.studentFriendly as boolean | undefined,
-            freshGraduate: body.freshGraduate as boolean | undefined,
-            graduationYear: body.graduationYear as string | undefined,
-            degree: body.degree as string | undefined,
-            fieldOfStudy: body.fieldOfStudy as string | undefined,
-            internshipAccepted: body.internshipAccepted as boolean | undefined,
-            profileCompleted,
+            name: (merged.name as string) || '',
+            focus: (merged.focus as string) || '',
+            ...merged,
           },
         });
         return {
@@ -333,7 +315,12 @@ export class AppService implements OnModuleInit {
       }
     }
 
-    this.profile = { ...this.profile, name: body.name as string, focus: body.focus as string, summary };
+    this.profile = {
+      ...this.profile,
+      name: (body.name as string) ?? this.profile.name,
+      focus: (body.focus as string) ?? this.profile.focus,
+      summary: summary ?? this.profile.summary,
+    };
     return this.profile;
   }
 
