@@ -101,20 +101,16 @@ export type Job = {
   internshipAccepted?: boolean;
   applicantCountVisible?: boolean;
   autoCloseAfterDeadline?: boolean;
+  isExternal?: boolean;
+  applicationUrl?: string | null;
+  sourceName?: string | null;
+  sourceUrl?: string | null;
+  sourceJobId?: string | null;
+  importedAt?: string | null;
   benefits?: JobBenefit[];
   requirements?: JobRequirement[];
   screeningQuestions?: ScreeningQuestion[];
   analytics?: JobAnalytics | null;
-  origin?: 'DIRECT_EMPLOYER' | 'AGGREGATED_EXTERNAL';
-  sourceName?: string;
-  sourceUrl?: string;
-  externalCompanyName?: string;
-  externalCompanyLogo?: string;
-  aggregatedAt?: string;
-  lastVerifiedAt?: string;
-  expiresAt?: string;
-  aggregationStatus?: string;
-  aggregationConfidence?: number;
 };
 
 export type RecommendationResponse = {
@@ -516,4 +512,47 @@ export type EmployerJob = {
   requirements?: JobRequirement[];
   screeningQuestions?: ScreeningQuestion[];
   analytics?: JobAnalytics | null;
+};
+
+export type JobSourceType = 'API' | 'RSS' | 'JSON' | 'HTML';
+export type JobSourceStatus = 'ACTIVE' | 'PAUSED' | 'ERROR' | 'RATE_LIMITED';
+export type IngestionJobStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
+export type ImportedJobStatus = 'IMPORTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'EXPIRED' | 'ARCHIVED';
+
+export type JobSource = {
+  id: string;
+  name: string;
+  company: string;
+  sourceType: JobSourceType;
+  baseUrl: string;
+  feedUrl: string;
+  enabled: boolean;
+  crawlInterval: number;
+  lastRunAt?: string;
+  lastSuccessAt?: string;
+  lastFailureAt?: string;
+  failureCount: number;
+  status: JobSourceStatus;
+  fieldMapping?: Record<string, string>;
+  rateLimit?: number;
+  attribution?: string;
+  config?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type JobSourceRun = {
+  id: string;
+  sourceId: string;
+  status: IngestionJobStatus;
+  startedAt?: string;
+  finishedAt?: string;
+  discovered: number;
+  imported: number;
+  updated: number;
+  duplicates: number;
+  rejected: number;
+  errors?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
 };

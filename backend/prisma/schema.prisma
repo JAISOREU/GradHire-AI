@@ -11,6 +11,41 @@ datasource db {
 }
 
 // ============================================================
+// Enums — Job Ingestion
+// ============================================================
+
+enum JobSourceStatus {
+  ACTIVE
+  PAUSED
+  ERROR
+  RATE_LIMITED
+}
+
+enum JobSourceType {
+  API
+  RSS
+  JSON
+  HTML
+}
+
+enum IngestionJobStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  PARTIAL
+  FAILED
+}
+
+enum ImportedJobStatus {
+  IMPORTED
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  EXPIRED
+  ARCHIVED
+}
+
+// ============================================================
 // Enums
 // ============================================================
 
@@ -136,27 +171,6 @@ enum WorkAuthorizationStatus {
   STUDENT_VISA
   NEEDS_SPONSORSHIP
   NOT_AUTHORIZED
-}
-
-enum JobOrigin {
-  DIRECT_EMPLOYER
-  AGGREGATED_EXTERNAL
-}
-
-enum AggregationStatus {
-  AGGREGATED
-  VERIFIED
-  PENDING_REVIEW
-  REJECTED
-  EXPIRED
-}
-
-enum JobSourceType {
-  RSS
-  API
-  CAREER_PAGE
-  JOB_BOARD
-  OTHER
 }
 
 // ============================================================
@@ -297,21 +311,6 @@ model Job {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  // Aggregation
-  origin           JobOrigin     @default(DIRECT_EMPLOYER)
-  sourceType       JobSourceType?
-  sourceName       String?
-  sourceJobId      String?
-  sourceUrl        String?
-  externalCompanyName String?
-  externalCompanyLogo String?
-  aggregatedAt     DateTime?
-  lastVerifiedAt   DateTime?
-  expiresAt        DateTime?
-  aggregationStatus AggregationStatus?
-  aggregationConfidence Float?
-  contentHash      String?
-
   // Work arrangement
   workplaceType    WorkplaceType
   remoteScope      RemoteScope?
@@ -383,7 +382,14 @@ model Job {
   analytics         JobAnalytics?
   location          JobLocation?
   skills            JobSkill[]
-  aggregatedJob     AggregatedJob?
+
+  // External / imported job tracking
+  isExternal      Boolean   @default(false)
+  applicationUrl  String?
+  sourceName      String?
+  sourceUrl       String?
+  sourceJobId     String?
+  importedAt      DateTime?
 
   @@index([employerId, status])
   @@index([status, createdAt])
@@ -394,13 +400,6 @@ model Job {
   @@index([salaryMin, status])
   @@index([acceptsFreshGraduates, status])
   @@index([acceptsStudents, status])
-  @@index([origin])
-  @@index([sourceType])
-  @@index([sourceJobId])
-  @@index([sourceUrl])
-  @@index([contentHash])
-  @@index([aggregationStatus])
-  @@index([expiresAt])
 }
 
 // ============================================================
@@ -826,59 +825,82 @@ model Settings {
 }
 
 // ============================================================
-// Job Source (for aggregation)
+// Job Sources (external job feeds)
 // ============================================================
 
 model JobSource {
-  id               String        @id @default(cuid())
-  name             String        @unique
-  baseUrl          String
-  sourceType       JobSourceType
-  enabled          Boolean       @default(true)
-  crawlFrequency   String?       @default("6h")
-  lastCrawledAt    DateTime?
-  status           String        @default("ACTIVE")
-  configuration    Json?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id              String           @id @default(cuid())
+  name            String
+  company         String
+  sourceType      JobSourceType
+  baseUrl         String
+  feedUrl         String
+  enabled         Boolean          @default(true)
+  crawlInterval   Int              @default(60)
+  lastRunAt       DateTime?
+  lastSuccessAt   DateTime?
+  lastFailureAt   DateTime?
+  failureCount    Int              @default(0)
+  status          JobSourceStatus  @default(ACTIVE)
+  fieldMapping    Json?
+  rateLimit       Int?
+  attribution     String?
+  config          Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
-  aggregatedJobs   AggregatedJob[]
+  runs            JobSourceRun[]
+  jobs            JobSourceJob[]
 
+  @@index([status, enabled])
   @@index([sourceType])
-  @@index([enabled])
 }
 
-// ============================================================
-// Aggregated Job (extends Job with external source metadata)
-// ============================================================
+model JobSourceRun {
+  id                String            @id @default(cuid())
+  sourceId          String
+  status            IngestionJobStatus @default(PENDING)
+  startedAt         DateTime?
+  finishedAt        DateTime?
+  discovered        Int              @default(0)
+  imported          Int              @default(0)
+  updated           Int              @default(0)
+  duplicates        Int              @default(0)
+  rejected          Int              @default(0)
+  errors            Json?
+  metadata          Json?
+  createdAt         DateTime         @default(now())
 
-model AggregatedJob {
-  id                     String           @id @default(cuid())
-  jobId                  String           @unique
-  sourceType             JobSourceType
-  sourceName             String
-  sourceJobId            String?
-  sourceUrl              String
-  externalCompanyName    String?
-  externalCompanyLogo    String?
-  aggregatedAt           DateTime         @default(now())
-  lastVerifiedAt         DateTime?
-  expiresAt              DateTime?
-  aggregationStatus      AggregationStatus @default(PENDING_REVIEW)
-  aggregationConfidence  Float?
-  contentHash            String?
-  originalPostingDate    DateTime?
-  duplicateOfId          String?
+  source            JobSource         @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  jobs              JobSourceJob[]
 
-  job                    Job              @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  source                 JobSource        @relation(fields: [sourceName], references: [name])
-  duplicateOf            AggregatedJob?   @relation("DuplicateGroup", fields: [duplicateOfId], references: [id])
-  duplicates             AggregatedJob[]  @relation("DuplicateGroup")
+  @@index([sourceId, createdAt])
+}
 
-  @@index([sourceType])
-  @@index([sourceJobId])
-  @@index([sourceUrl])
-  @@index([contentHash])
-  @@index([aggregationStatus])
-  @@index([expiresAt])
+model JobSourceJob {
+  id              String           @id @default(cuid())
+  sourceId        String
+  sourceJobId     String
+  runId           String?
+  jobId           String?
+  fingerprint     String
+  status          ImportedJobStatus @default(IMPORTED)
+  rawData         Json?
+  normalizedData  Json?
+  rejectionReason String?
+  applicationUrl  String
+  sourceUrl       String
+  postedAt        DateTime?
+  expiresAt       DateTime?
+  importedAt      DateTime?        @default(now())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  source          JobSource        @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  run             JobSourceRun?    @relation(fields: [runId], references: [id], onDelete: SetNull)
+
+  @@unique([sourceId, sourceJobId])
+  @@index([fingerprint])
+  @@index([status])
+  @@index([sourceId, status])
 }

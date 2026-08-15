@@ -39,19 +39,6 @@ export const JobDetailPage = () => {
       <div className="card section--mt">
         <PageHeader title={job.title} subtitle={`${job.company} · ${job.location}`} />
 
-        {job.origin === 'AGGREGATED_EXTERNAL' && (
-          <div className="message message--info section--mt">
-            <strong>External job</strong> — this posting was discovered from an external source.
-            {job.sourceName && <div>Source: {job.sourceName}</div>}
-            {job.sourceUrl && (
-              <div>
-                <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer">View Original Posting ↗</a>
-              </div>
-            )}
-            {job.lastVerifiedAt && <div>Last verified: {new Date(job.lastVerifiedAt).toLocaleString()}</div>}
-          </div>
-        )}
-
         <div className="grid grid-cols-2 gap-4 section--mt">
           <div>
             <span className="text-secondary text-sm">Type</span>
@@ -100,7 +87,11 @@ export const JobDetailPage = () => {
         )}
 
         <div className="section--mt">
-          {isAuthenticated && user && user.role === 'STUDENT' ? (
+          {job.isExternal && job.applicationUrl ? (
+            <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
+              <Button>Apply on {job.sourceName || 'external site'}</Button>
+            </a>
+          ) : isAuthenticated && user && user.role === 'STUDENT' ? (
             applied ? (
               <Button disabled>Applied</Button>
             ) : job.status === 'PUBLISHED' ? (

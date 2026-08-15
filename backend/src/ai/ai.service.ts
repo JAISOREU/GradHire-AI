@@ -17,6 +17,22 @@ export interface RecommendationMetrics {
   total_requests: number;
 }
 
+export interface NormalizedJobResponse {
+  title: string;
+  company: string;
+  description: string;
+  type: string;
+  workplaceType: string;
+  experienceLevel: string;
+  requiredSkills: string[];
+  preferredSkills: string[];
+  country?: string;
+  city?: string;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  currency?: string;
+}
+
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
@@ -42,6 +58,17 @@ export class AiService {
     try {
       const response = await firstValueFrom(this.http.get(`${this.baseUrl}/metrics`));
       return response.data;
+    } catch {
+      return null;
+    }
+  }
+
+  async normalizeJob(prompt: string): Promise<NormalizedJobResponse | null> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.baseUrl}/normalize-job`, { prompt }),
+      );
+      return response.data ?? null;
     } catch {
       return null;
     }

@@ -89,11 +89,9 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
     ],
   },
   {
-    label: 'Job Aggregation',
+    label: 'Ingestion',
     items: [
-      { to: '/admin/job-aggregation', label: 'Aggregation Dashboard', icon: 'dashboard' },
-      { to: '/admin/job-aggregation/sources', label: 'Sources', icon: 'settings' },
-      { to: '/admin/job-aggregation/jobs', label: 'Discovered Jobs', icon: 'jobs' },
+      { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' },
     ],
   },
   {
