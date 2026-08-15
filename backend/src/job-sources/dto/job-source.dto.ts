@@ -56,6 +56,10 @@ export class CreateJobSourceDto {
   @ApiProperty({ required: false, type: Object })
   @IsOptional()
   fieldMapping?: Record<string, string>;
+
+  @ApiProperty({ required: false, type: Boolean })
+  @IsOptional()
+  enabled?: boolean;
 }
 
 export class UpdateJobSourceDto {

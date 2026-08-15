@@ -54,6 +54,7 @@ export const AdminJobSourcesPage = () => {
     enabled: true,
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, { success: boolean; message: string; discovered: number }>>({});
 
@@ -87,6 +88,11 @@ export const AdminJobSourcesPage = () => {
   };
 
   const handleSave = async () => {
+    setError(null);
+    if (!form.name || !form.company || !form.baseUrl || !form.feedUrl || !form.sourceType) {
+      setError('Please fill in all required fields: Name, Company, Base URL, Feed URL, Source Type.');
+      return;
+    }
     setSaving(true);
     try {
       if (editingId) {
@@ -97,6 +103,8 @@ export const AdminJobSourcesPage = () => {
       }
       resetForm();
       reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save job source');
     } finally {
       setSaving(false);
     }
@@ -161,6 +169,11 @@ export const AdminJobSourcesPage = () => {
       {showForm && (
         <div className="card" style={{ marginBottom: '1rem', padding: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.75rem', maxWidth: '600px' }}>
+            {error && (
+              <div style={{ padding: '0.75rem', background: '#fef2f2', color: '#991b1b', borderRadius: '0.25rem' }}>
+                {error}
+              </div>
+            )}
             <div>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Name</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -219,7 +232,7 @@ export const AdminJobSourcesPage = () => {
                 <input className="input" type="number" value={form.rateLimit} onChange={(e) => setForm({ ...form, rateLimit: Number(e.target.value) })} />
               </div>
             </div>
-            <button className="btn btn--primary" onClick={handleSave} disabled={saving || !form.name || !form.feedUrl}>
+            <button className="btn btn--primary" onClick={handleSave} disabled={saving || !form.name || !form.company || !form.baseUrl || !form.feedUrl || !form.sourceType}>
               {saving ? 'Saving...' : editingId ? 'Update' : 'Save'}
             </button>
           </div>
