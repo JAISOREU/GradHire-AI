@@ -403,3 +403,7 @@ If you encounter issues:
 3. Check browser DevTools console/network
 4. Verify environment variables in both dashboards
 5. Test endpoints directly with `curl`
+
+---
+
+*Last updated: 2026-08-15 — production deployment verified*
