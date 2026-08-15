@@ -4,9 +4,19 @@ set -e
 echo "Waiting for database to be ready..."
 ATTEMPTS=0
 MAX_ATTEMPTS=60
-until /app/node_modules/.bin/prisma db execute --stdin <<'SQL' > /dev/null 2>&1; do
-  SELECT 1;
-SQL
+until node -e "
+const { PrismaClient } = require('@prisma/client');
+const p = new PrismaClient();
+p.\$connect()
+  .then(() => {
+    console.log('DB_OK');
+    process.exit(0);
+  })
+  .catch((e) => {
+    console.log('DB_NOT_READY:', e.message);
+    process.exit(1);
+  });
+" > /dev/null 2>&1; do
   ATTEMPTS=$((ATTEMPTS + 1))
   if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
     echo "Database did not become ready in time"
