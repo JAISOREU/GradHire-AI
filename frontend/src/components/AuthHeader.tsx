@@ -165,7 +165,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           >
             <Icon name="menu" size={22} />
           </Button>
-          <Link to="/" className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center' }}>
+          <Link to="/" className="brand-link" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center' }}>
             <span className="header-logo__mark" aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
@@ -190,7 +190,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           </Link>
         </div>
 
-        <div className="header-user" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
+        <div className="header-user" style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
           <span style={themeStyle}>
             <ThemeToggle />
           </span>

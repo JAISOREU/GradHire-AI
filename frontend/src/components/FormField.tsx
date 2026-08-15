@@ -35,7 +35,7 @@ export const FormField = ({ label, id, error, hint, required, children }: FormFi
     <div className="form-group">
       <label className="form-label" htmlFor={id}>
         {label}
-        {required && <span aria-hidden="true"> *</span>}
+        {required && <span className="required" aria-hidden="true"> *</span>}
       </label>
       {children}
       {error && <div id={errorId} className="form-error" role="alert">{error}</div>}

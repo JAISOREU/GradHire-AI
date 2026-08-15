@@ -80,11 +80,12 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
   };
 
   const navStyle: React.CSSProperties = {
-    flex: morph.navFlex,
+    flex: `${morph.navFlex} ${morph.navFlex} 0px`,
     opacity: morph.navOpacity,
     paddingLeft: `${morph.navPadding}px`,
     paddingRight: `${morph.navPadding}px`,
     gap: `${morph.navGap}px`,
+    minWidth: 0,
     transition: 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
     overflow: 'hidden',
   };
@@ -144,7 +145,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
             </Button>
           </div>
         ) : (
-          <div className="flex items-center" style={{ ...userGroupStyle, opacity: 1 }}>
+          <div className="header-user" style={{ ...userGroupStyle, opacity: 1 }}>
             <span style={themeStyle}>
               <ThemeToggle />
             </span>

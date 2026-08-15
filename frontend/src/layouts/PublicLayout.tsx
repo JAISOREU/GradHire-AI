@@ -125,6 +125,7 @@ export const PublicLayout = () => {
             onClick={() => setMobileNavOpen((prev) => !prev)}
             aria-label="Toggle navigation"
             aria-expanded={mobileNavOpen}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-2)', fontSize: '1.25rem', lineHeight: 1 }}
           >
             ☰
           </button>

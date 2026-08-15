@@ -51,7 +51,7 @@ INSERT INTO "User" (id, email, "passwordHash", role, "emailVerified", "createdAt
 VALUES (
   gen_random_uuid()::text,
   'admin@gradture.ai',
-  '$2a$10$YOUR_BCRYPT_HASH_HERE',
+  '\$2a\$10\$YOUR_BCRYPT_HASH_HERE',
   'ADMIN',
   true,
   NOW(),
@@ -95,6 +95,8 @@ In the admin panel at https://grad-hire-ai.vercel.app/admin/job-sources:
 | Name | `Example Careers API` | Internal name |
 | Company | `Example Corp` | Source owner |
 | Source Type | `API` | API, RSS, JSON, or HTML |
+| Parser Type | `GENERIC` | Generic, Greenhouse, Lever, Ashby, etc. |
+| Auth Type | `NONE` | None, API Key, OAuth, Basic |
 | Base URL | `https://api.example.com` | Source website |
 | Feed URL / API URL | `https://api.example.com/jobs` | Actual jobs endpoint |
 | Crawl Interval | `60` | Minutes between runs |
@@ -148,7 +150,10 @@ If the test fails:
 ## Step 6 — Verify Imported Jobs Appear Publicly
 
 1. Open https://grad-hire-ai.vercel.app/jobs
-2. Imported external jobs should appear in the listings
+2. Imported external jobs should appear in the listings with:
+   - **External Job** badge
+   - Source attribution (e.g., "Source: Cloudstaff")
+   - Direct "Apply on [Source]" link
 3. Click an imported job to view details
 4. For external jobs, the **Apply** button should read:
    - `Apply on <source name>` or `Apply on external site`
@@ -302,18 +307,18 @@ After completing all manual steps, verify every item:
 - [ ] https://www.gradture.ai redirects to https://gradture.ai
 - [ ] `/register` loads and submits
 - [ ] `/login` loads and submits
-- [ ] `/jobs` lists jobs
-- [ ] `/jobs/:id` shows job details
-- [ ] External jobs show "Apply on external site" button
+- [ ] `/jobs` lists jobs with filters (search, category, location, workplace, experience)
+- [ ] `/jobs/:id` shows job details with external job metadata
+- [ ] External jobs show "External Job" badge and "Apply on [Source]" button
 - [ ] Clicking external apply opens original URL in new tab
 - [ ] `/admin/job-sources` loads for ADMIN users
 - [ ] SPA refresh works on all routes (no 404)
 
 ### Database
-- [ ] `_prisma_migrations` shows all 3 migrations as applied
-- [ ] `JobSource` table exists
+- [ ] `_prisma_migrations` shows all migrations as applied
+- [ ] `JobSource` table exists with parserType, authenticationType, healthStatus
 - [ ] `JobSourceRun` table exists
-- [ ] `JobSourceJob` table exists
+- [ ] `JobSourceJob` table exists with jobId foreign key
 - [ ] `Job` table has `isExternal`, `applicationUrl`, `sourceName`, `sourceUrl`, `sourceJobId`, `importedAt`
 
 ### Email
@@ -331,7 +336,7 @@ After completing all manual steps, verify every item:
 
 ---
 
-## Step 11 — Create Production Admin User via Setup Flow
+## Step 11 — Production Admin User via Setup Flow
 
 If the application has an admin setup endpoint (e.g., `/api/v1/admin/setup`), use it instead of direct SQL:
 
@@ -359,6 +364,7 @@ Check the backend code for the actual setup endpoint path and required headers b
 3. **Job ingestion is opt-in**: No jobs are ingested until you create and enable a `JobSource`.
 4. **External application tracking**: Internal application flow (`Application` table) is separate from external job redirects. External jobs do not create internal application records unless you explicitly build that feature.
 5. **Rate limits**: Respect source rate limits. The `rateLimit` field in `JobSource` is enforced by the scheduler concurrency limit, not per-source throttling.
+6. **Migration safety**: The deployment includes a corrective idempotent migration (`20260816000000_recover_job_ingestion_state`) that safely reconciles Railway database state without data loss. The docker entrypoint auto-resolves the previously failed migration before running `prisma migrate deploy`.
 
 ---
 
@@ -386,6 +392,7 @@ Check the backend code for the actual setup endpoint path and required headers b
 - Use `prisma migrate deploy` only
 - If migration is stuck, check `_prisma_migrations` table
 - If enum already exists, use `prisma migrate resolve --rolled-back <name>` then redeploy
+- The entrypoint will auto-resolve the known failed migration from previous deployments
 
 ### Job ingestion not working
 - Verify `JobSource` exists and `enabled = true`
@@ -406,8 +413,6 @@ If you encounter issues:
 
 ---
 
-*Last updated: 2026-08-15 — production deployment verified*
+*Last updated: 2026-08-16 — production deployment verified*
 
----
-
-*Commit: ab2d512 — redeploy trigger*
+*Commit: 90845ae — production-ready job ingestion pipeline with migration safety*

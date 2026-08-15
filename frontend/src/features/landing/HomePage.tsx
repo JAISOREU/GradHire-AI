@@ -9,6 +9,9 @@ export const HomePage = () => (
     <section className="hero-wrapper hero-glow">
       <div className="app-hero">
         <AnimatedLogo size={64} showText={true} />
+        <h1 className="hero-title">
+          Find the career you always wanted
+        </h1>
         <p className="hero-subtitle">
           Build a stronger profile and let AI connect you with the right opportunities.
         </p>
@@ -23,10 +26,10 @@ export const HomePage = () => (
 
     <HowItWorks />
 
-    <section className="section">
-      <div className="card cta-section text-center">
-        <h2 className="section-title">Ready to get started?</h2>
-        <p className="card__subtitle">
+    <section className="section section--cta">
+      <div className="cta-card">
+        <h2 className="cta-card__title">Ready to get started?</h2>
+        <p className="cta-card__subtitle">
           Join talent and employers already using Gradture AI.
         </p>
         <div className="hero-actions">

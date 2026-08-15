@@ -28,13 +28,15 @@ export const LoginPage = () => {
   return (
     <div className="auth-page fade-in">
       <div className="auth-card">
-        <h2>Welcome back</h2>
-        <p className="card__subtitle">Sign in to your Gradture account.</p>
+        <div className="auth-card__header">
+          <h2>Welcome back</h2>
+          <p className="card__subtitle">Sign in to your Gradture account.</p>
+        </div>
         <form onSubmit={handleSubmit} className="stack mt-4">
           <FormInput label="Email" id="login-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
           <FormInput label="Password" id="login-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Your password" error={touched.password ? errors.password : undefined} />
           {formError && <div className="message message--error" role="alert">{formError}</div>}
-          <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Signing in…' : 'Sign in'}</Button>
+          <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Signing in…' : 'Sign in'}</Button>
         </form>
         <p className="auth-card__foot">
           Don&apos;t have an account? <Link to="/register">Create one</Link>

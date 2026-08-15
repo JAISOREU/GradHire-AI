@@ -14,8 +14,10 @@ export const Button = ({ variant = 'primary', size = 'md', loading = false, clas
   const classes = `btn btn--${variant} btn--${size} ${className}`.trim();
   return (
     <button className={classes} disabled={disabled || loading} {...rest}>
-      {loading && <span className="spinner" aria-hidden="true" style={{ width: '1em', height: '1em', borderWidth: '2px' }} />}
-      <span style={{ opacity: loading ? 0.7 : 1 }}>{children}</span>
+      <span className="btn__content">
+        {loading && <span className="spinner spinner--sm" aria-hidden="true" />}
+        <span className="btn__label" style={{ opacity: loading ? 0.7 : 1 }}>{children}</span>
+      </span>
     </button>
   );
 };

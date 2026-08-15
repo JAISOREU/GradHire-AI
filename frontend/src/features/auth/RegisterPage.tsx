@@ -34,8 +34,10 @@ export const RegisterPage = () => {
   return (
     <div className="auth-page fade-in">
       <div className="auth-card">
-        <h2>Create your account</h2>
-        <p className="card__subtitle">Join as talent or an employer.</p>
+        <div className="auth-card__header">
+          <h2>Create your account</h2>
+          <p className="card__subtitle">Join as talent or an employer.</p>
+        </div>
         <form onSubmit={handleSubmit} className="stack mt-4">
           <div className="role-picker">
             <button type="button" className={`role-option ${selectedRole === 'STUDENT' ? 'is-selected' : ''}`} onClick={() => { setSelectedRole('STUDENT'); handleChange('role', 'STUDENT'); }}>
@@ -48,10 +50,10 @@ export const RegisterPage = () => {
             </button>
           </div>
            <FormInput label="Name (optional)" id="reg-name" value={values.name} onChange={(e) => handleChange('name', e.target.value.trim())} onBlur={() => handleBlur('name')} placeholder="Your name" error={touched.name ? errors.name : undefined} />
-          <FormInput label="Email" id="reg-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
+           <FormInput label="Email" id="reg-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
            <FormInput label="Password" id="reg-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="At least 8 characters" hint="Use at least 8 characters" error={touched.password ? errors.password : undefined} />
           {formError && <div className="message message--error" role="alert">{formError}</div>}
-          <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating…' : 'Create account'}</Button>
+          <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Creating…' : 'Create account'}</Button>
         </form>
         <p className="auth-card__foot">
           Already have an account? <Link to="/login">Sign in</Link>
