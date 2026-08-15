@@ -2,6 +2,9 @@ import { api } from '../client';
 import type { PaginatedResponse } from '../../types';
 
 export type JobSourceType = 'API' | 'RSS' | 'JSON' | 'HTML';
+export type JobSourceParserType = 'GENERIC' | 'GREENHOUSE' | 'LEVER' | 'ASHBY' | 'SMARTRECRUITERS' | 'ADZUNA' | 'USAJOBS';
+export type JobSourceAuthType = 'NONE' | 'API_KEY' | 'OAUTH' | 'BASIC';
+export type JobSourceHealthStatus = 'HEALTHY' | 'DEGRADED' | 'FAILING' | 'DISABLED' | 'NEVER_TESTED';
 export type JobSourceStatus = 'ACTIVE' | 'PAUSED' | 'ERROR' | 'RATE_LIMITED';
 export type IngestionJobStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
 export type ImportedJobStatus = 'IMPORTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'EXPIRED' | 'ARCHIVED';
@@ -24,6 +27,10 @@ export type JobSource = {
   rateLimit?: number;
   attribution?: string;
   config?: Record<string, unknown>;
+  parserType?: JobSourceParserType;
+  authenticationType?: JobSourceAuthType;
+  lastError?: string;
+  healthStatus?: JobSourceHealthStatus;
   createdAt: string;
   updatedAt: string;
 };
@@ -44,6 +51,31 @@ export type JobSourceRun = {
   createdAt: string;
 };
 
+export type JobSourceHealth = {
+  sourceId: string;
+  status: JobSourceStatus;
+  enabled: boolean;
+  healthStatus: JobSourceHealthStatus;
+  parserType?: JobSourceParserType;
+  authenticationType?: JobSourceAuthType;
+  lastRunAt?: string;
+  lastSuccessAt?: string;
+  lastFailureAt?: string;
+  failureCount: number;
+  lastError?: string;
+  recentRuns: number;
+  successRate: number;
+  timeSinceLastRun?: number | null;
+  nextRunAt?: string | null;
+};
+
+export type TestSourceResult = {
+  success: boolean;
+  message: string;
+  discovered: number;
+  error?: string;
+};
+
 export const jobSourcesApi = {
   list: (page = 1, limit = 20) =>
     api<PaginatedResponse<JobSource>>(`/api/v1/admin/job-sources?page=${page}&limit=${limit}`),
@@ -60,7 +92,7 @@ export const jobSourcesApi = {
     api<void>(`/api/v1/admin/job-sources/${id}`, { method: 'DELETE' }),
 
   test: (id: string) =>
-    api<{ message: string; sourceId: string; name: string; status: string }>(`/api/v1/admin/job-sources/${id}/test`, { method: 'POST' }),
+    api<TestSourceResult>(`/api/v1/admin/job-sources/${id}/test`, { method: 'POST' }),
 
   sync: (id: string) =>
     api<{ message: string; sourceId: string }>(`/api/v1/admin/job-sources/${id}/sync`, { method: 'POST' }),
@@ -72,5 +104,5 @@ export const jobSourcesApi = {
     api<JobSourceRun[]>(`/api/v1/admin/job-sources/${id}/runs`),
 
   getHealth: (id: string) =>
-    api<{ sourceId: string; status: string; enabled: boolean; lastRunAt?: string; lastSuccessAt?: string; lastFailureAt?: string; failureCount: number; recentRuns: number; successRate: number }>(`/api/v1/admin/job-sources/${id}/health`),
+    api<JobSourceHealth>(`/api/v1/admin/job-sources/${id}/health`),
 };

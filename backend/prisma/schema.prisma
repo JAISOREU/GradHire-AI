@@ -45,6 +45,31 @@ enum ImportedJobStatus {
   ARCHIVED
 }
 
+enum JobSourceParserType {
+  GENERIC
+  GREENHOUSE
+  LEVER
+  ASHBY
+  SMARTRECRUITERS
+  ADZUNA
+  USAJOBS
+}
+
+enum JobSourceAuthType {
+  NONE
+  API_KEY
+  OAUTH
+  BASIC
+}
+
+enum JobSourceHealthStatus {
+  HEALTHY
+  DEGRADED
+  FAILING
+  DISABLED
+  NEVER_TESTED
+}
+
 // ============================================================
 // Enums
 // ============================================================
@@ -846,6 +871,10 @@ model JobSource {
   rateLimit       Int?
   attribution     String?
   config          Json?
+  parserType         JobSourceParserType? @default(GENERIC)
+  authenticationType JobSourceAuthType?   @default(NONE)
+  lastError          String?
+  healthStatus       JobSourceHealthStatus @default(NEVER_TESTED)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 

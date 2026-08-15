@@ -6,15 +6,21 @@ import { ApiSourceAdapter } from '../adapters/api-source.adapter';
 import { RssSourceAdapter } from '../adapters/rss-source.adapter';
 import { JsonSourceAdapter } from '../adapters/json-source.adapter';
 import { HtmlSourceAdapter } from '../adapters/html-source.adapter';
+import { GreenhouseAdapter } from '../adapters/greenhouse.adapter';
+import { LeverAdapter } from '../adapters/lever.adapter';
+import { AshbyAdapter } from '../adapters/ashby.adapter';
+import { SmartRecruitersAdapter } from '../adapters/smartrecruiters.adapter';
+import { AdzunaAdapter } from '../adapters/adzuna.adapter';
+import { UsaJobsAdapter } from '../adapters/usajobs.adapter';
 import { NormalizerService } from './normalizer.service';
 import { DeduplicationService } from './deduplication.service';
 import { QualityService } from './quality.service';
-import { Job, JobSource, JobSourceRun, JobSourceJob, ImportedJobStatus, IngestionJobStatus } from '@prisma/client';
+import { Job, JobSource, JobSourceRun, JobSourceJob, ImportedJobStatus, IngestionJobStatus, JobSourceParserType, JobSourceHealthStatus } from '@prisma/client';
 
 @Injectable()
 export class PipelineService {
   private readonly logger = new Logger(PipelineService.name);
-  private readonly adapters: Record<string, SourceAdapter>;
+  private readonly adapters: Record<JobSourceParserType, SourceAdapter>;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -26,12 +32,21 @@ export class PipelineService {
     rssAdapter: RssSourceAdapter,
     jsonAdapter: JsonSourceAdapter,
     htmlAdapter: HtmlSourceAdapter,
+    greenhouseAdapter: GreenhouseAdapter,
+    leverAdapter: LeverAdapter,
+    ashbyAdapter: AshbyAdapter,
+    smartRecruitersAdapter: SmartRecruitersAdapter,
+    adzunaAdapter: AdzunaAdapter,
+    usajobsAdapter: UsaJobsAdapter,
   ) {
     this.adapters = {
-      API: apiAdapter,
-      RSS: rssAdapter,
-      JSON: jsonAdapter,
-      HTML: htmlAdapter,
+      GENERIC: apiAdapter,
+      GREENHOUSE: greenhouseAdapter,
+      LEVER: leverAdapter,
+      ASHBY: ashbyAdapter,
+      SMARTRECRUITERS: smartRecruitersAdapter,
+      ADZUNA: adzunaAdapter,
+      USAJOBS: usajobsAdapter,
     };
   }
 
@@ -52,9 +67,9 @@ export class PipelineService {
     const errors: Record<string, string> = {};
 
     try {
-      const adapter = this.adapters[source.sourceType];
+      const adapter = this.adapters[source.parserType ?? 'GENERIC'];
       if (!adapter) {
-        throw new Error(`Unsupported source type: ${source.sourceType}`);
+        throw new Error(`Unsupported parser type: ${source.parserType}`);
       }
 
       let rawJobs: RawJobItem[];
@@ -62,7 +77,6 @@ export class PipelineService {
         rawJobs = await adapter.fetch({
           feedUrl: source.feedUrl,
           config: (source.config ?? undefined) as Record<string, unknown> | undefined,
-          rateLimit: source.rateLimit ?? undefined,
         });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -74,14 +88,25 @@ export class PipelineService {
 
       for (const raw of rawJobs) {
         try {
-          const fp = this.dedup.fingerprint({
+          const sourceJobId = raw.externalId;
+          let fp = this.dedup.fingerprint({
             title: raw.title,
             company: raw.company,
             description: raw.description,
             applicationUrl: raw.applicationUrl,
           });
 
-          const existing = await this.dedup.findExisting(source.id, fp);
+          const existing = sourceJobId
+            ? await this.prisma.jobSourceJob.findFirst({
+                where: { sourceId: source.id, sourceJobId },
+              })
+            : await this.prisma.jobSourceJob.findFirst({
+                where: { sourceId: source.id, fingerprint: fp },
+              });
+
+          if (existing?.fingerprint) {
+            fp = existing.fingerprint;
+          }
 
           const normalized = await this.normalizer.normalize(source, raw);
           const quality = this.quality.validate(raw as any, normalized as any);
@@ -92,7 +117,7 @@ export class PipelineService {
               data: {
                 sourceId: source.id,
                 runId: run.id,
-                sourceJobId: raw.externalId,
+                sourceJobId,
                 fingerprint: fp,
                 status: 'REJECTED',
                 rejectionReason: quality.reasons.join('; '),
@@ -198,7 +223,7 @@ export class PipelineService {
             data: {
               sourceId: source.id,
               runId: run.id,
-              sourceJobId: raw.externalId,
+              sourceJobId,
               jobId: job.id,
               fingerprint: fp,
               status: 'PUBLISHED',
@@ -247,10 +272,58 @@ export class PipelineService {
         lastSuccessAt: finalStatus === 'SUCCESS' || finalStatus === 'PARTIAL' ? new Date() : source.lastSuccessAt,
         lastFailureAt: finalStatus === 'FAILED' ? new Date() : source.lastFailureAt,
         failureCount: finalStatus === 'FAILED' ? source.failureCount + 1 : 0,
+        lastError: finalStatus === 'FAILED' ? (errors.run ?? errors.fetch ?? 'Unknown error') : null,
         status: finalStatus === 'FAILED' ? 'ERROR' : source.status,
+        healthStatus: this.computeHealthStatus(finalStatus, source),
       },
     });
 
     return run;
+  }
+
+  async testSource(source: JobSource): Promise<{ success: boolean; message: string; discovered: number; error?: string }> {
+    try {
+      const adapter = this.adapters[source.parserType ?? 'GENERIC'];
+      if (!adapter) {
+        return { success: false, message: `Unsupported parser type: ${source.parserType}`, discovered: 0 };
+      }
+
+      const rawJobs = await adapter.fetch({
+        feedUrl: source.feedUrl,
+        config: (source.config ?? undefined) as Record<string, unknown> | undefined,
+      });
+
+      await this.prisma.jobSource.update({
+        where: { id: source.id },
+        data: {
+          lastSuccessAt: new Date(),
+          lastError: null,
+          failureCount: 0,
+          healthStatus: 'HEALTHY',
+          status: 'ACTIVE',
+        },
+      });
+
+      return { success: true, message: `Discovered ${rawJobs.length} jobs`, discovered: rawJobs.length };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await this.prisma.jobSource.update({
+        where: { id: source.id },
+        data: {
+          lastError: msg,
+          failureCount: { increment: 1 },
+          healthStatus: 'FAILING',
+        },
+      });
+      return { success: false, message: msg, discovered: 0, error: msg };
+    }
+  }
+
+  private computeHealthStatus(finalStatus: IngestionJobStatus, source: JobSource): JobSourceHealthStatus {
+    if (!source.enabled) return 'DISABLED';
+    if (source.lastSuccessAt && source.failureCount === 0) return 'HEALTHY';
+    if (source.failureCount >= 3) return 'FAILING';
+    if (finalStatus === 'PARTIAL') return 'DEGRADED';
+    return 'NEVER_TESTED';
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateJobSourceDto, UpdateJobSourceDto } from './dto/job-source.dto';
-import { JobSource, JobSourceRun, JobSourceJob, JobSourceStatus, IngestionJobStatus } from '@prisma/client';
+import { JobSource, JobSourceRun, JobSourceStatus, IngestionJobStatus, JobSourceParserType } from '@prisma/client';
 
 @Injectable()
 export class JobSourcesService {
@@ -38,6 +38,8 @@ export class JobSourcesService {
         attribution: dto.attribution,
         config: dto.config as any,
         fieldMapping: dto.fieldMapping as any,
+        parserType: (dto.parserType as JobSourceParserType | undefined) ?? 'GENERIC',
+        authenticationType: (dto.authenticationType as any | undefined) ?? 'NONE',
       },
     });
   }
@@ -58,6 +60,8 @@ export class JobSourcesService {
         attribution: dto.attribution,
         config: dto.config as any,
         fieldMapping: dto.fieldMapping as any,
+        parserType: (dto.parserType as JobSourceParserType | undefined),
+        authenticationType: (dto.authenticationType as any | undefined),
       },
     });
   }
@@ -88,16 +92,33 @@ export class JobSourcesService {
       ? recentRuns.filter((r) => r.status === 'SUCCESS' || r.status === 'PARTIAL').length / recentRuns.length
       : 0;
 
+    const healthStatus = source.healthStatus ?? 'NEVER_TESTED';
+    const lastRun = source.lastRunAt ? new Date(source.lastRunAt).toISOString() : null;
+    const timeSinceLastRun = lastRun ? Date.now() - new Date(lastRun).getTime() : null;
+
+    let nextRunAt: string | null = null;
+    if (lastRun) {
+      const backoff = this.calculateBackoff(source);
+      const interval = (source.crawlInterval ?? 60) * 60_000 + backoff * 60_000;
+      nextRunAt = new Date(new Date(lastRun).getTime() + interval).toISOString();
+    }
+
     return {
       sourceId: id,
       status: source.status,
       enabled: source.enabled,
-      lastRunAt: source.lastRunAt,
-      lastSuccessAt: source.lastSuccessAt,
-      lastFailureAt: source.lastFailureAt,
+      healthStatus,
+      parserType: source.parserType,
+      authenticationType: source.authenticationType,
+      lastRunAt: lastRun,
+      lastSuccessAt: source.lastSuccessAt ? new Date(source.lastSuccessAt).toISOString() : null,
+      lastFailureAt: source.lastFailureAt ? new Date(source.lastFailureAt).toISOString() : null,
       failureCount: source.failureCount,
+      lastError: source.lastError,
       recentRuns: recentRuns.length,
       successRate,
+      timeSinceLastRun,
+      nextRunAt,
     };
   }
 
@@ -111,5 +132,11 @@ export class JobSourcesService {
         ...safeExtra,
       } as any,
     });
+  }
+
+  private calculateBackoff(source: JobSource): number {
+    const failures = source.failureCount ?? 0;
+    if (failures === 0) return 0;
+    return Math.min(2 ** failures * 5, 480);
   }
 }

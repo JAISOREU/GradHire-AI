@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { JobSourcesModule } from '../job-sources/job-sources.module';
 import { PrismaModule } from '../prisma.module';
@@ -12,13 +12,22 @@ import { ApiSourceAdapter } from './adapters/api-source.adapter';
 import { RssSourceAdapter } from './adapters/rss-source.adapter';
 import { JsonSourceAdapter } from './adapters/json-source.adapter';
 import { HtmlSourceAdapter } from './adapters/html-source.adapter';
+import { GreenhouseAdapter } from './adapters/greenhouse.adapter';
+import { LeverAdapter } from './adapters/lever.adapter';
+import { AshbyAdapter } from './adapters/ashby.adapter';
+import { SmartRecruitersAdapter } from './adapters/smartrecruiters.adapter';
+import { AdzunaAdapter } from './adapters/adzuna.adapter';
+import { UsaJobsAdapter } from './adapters/usajobs.adapter';
+
+export const PIPELINE_SERVICE = 'PIPELINE_SERVICE';
 
 @Module({
-  imports: [PrismaModule, JobSourcesModule, AiModule, HttpModule],
+  imports: [PrismaModule, forwardRef(() => JobSourcesModule), AiModule, HttpModule],
   controllers: [],
   providers: [
     SchedulerService,
     PipelineService,
+    { provide: PIPELINE_SERVICE, useExisting: PipelineService },
     NormalizerService,
     DeduplicationService,
     QualityService,
@@ -26,7 +35,13 @@ import { HtmlSourceAdapter } from './adapters/html-source.adapter';
     RssSourceAdapter,
     JsonSourceAdapter,
     HtmlSourceAdapter,
+    GreenhouseAdapter,
+    LeverAdapter,
+    AshbyAdapter,
+    SmartRecruitersAdapter,
+    AdzunaAdapter,
+    UsaJobsAdapter,
   ],
-  exports: [PipelineService, SchedulerService],
+  exports: [PipelineService, SchedulerService, { provide: PIPELINE_SERVICE, useExisting: PipelineService }],
 })
 export class IngestionModule {}

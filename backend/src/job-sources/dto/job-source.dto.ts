@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { JobSourceType } from '@prisma/client';
+import { JobSourceType, JobSourceParserType, JobSourceAuthType } from '@prisma/client';
 
 export class CreateJobSourceDto {
   @ApiProperty({ example: 'LinkedIn Jobs' })
@@ -14,6 +14,15 @@ export class CreateJobSourceDto {
   @ApiProperty({ enum: JobSourceType })
   @IsEnum(JobSourceType, { message: 'Invalid source type' })
   sourceType!: JobSourceType;
+
+  @ApiProperty({ enum: JobSourceParserType })
+  @IsEnum(JobSourceParserType, { message: 'Invalid parser type' })
+  parserType!: JobSourceParserType;
+
+  @ApiProperty({ enum: JobSourceAuthType })
+  @IsEnum(JobSourceAuthType, { message: 'Invalid auth type' })
+  @IsOptional()
+  authenticationType?: JobSourceAuthType;
 
   @ApiProperty({ example: 'https://www.linkedin.com' })
   @IsString()
@@ -64,6 +73,16 @@ export class UpdateJobSourceDto {
   @IsOptional()
   @IsEnum(JobSourceType, { message: 'Invalid source type' })
   sourceType?: JobSourceType;
+
+  @ApiProperty({ required: false, enum: JobSourceParserType })
+  @IsOptional()
+  @IsEnum(JobSourceParserType, { message: 'Invalid parser type' })
+  parserType?: JobSourceParserType;
+
+  @ApiProperty({ required: false, enum: JobSourceAuthType })
+  @IsOptional()
+  @IsEnum(JobSourceAuthType, { message: 'Invalid auth type' })
+  authenticationType?: JobSourceAuthType;
 
   @ApiProperty({ required: false })
   @IsOptional()

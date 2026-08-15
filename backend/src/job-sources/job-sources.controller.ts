@@ -4,13 +4,17 @@ import { JobSourcesService } from './job-sources.service';
 import { CreateJobSourceDto, UpdateJobSourceDto, TestJobSourceDto } from './dto/job-source.dto';
 import { PaginatedResponse, normalizePagination, applyPagination } from '../common/pagination';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ModuleRef } from '@nestjs/core';
 
 @ApiTags('admin/job-sources')
 @ApiBearerAuth()
 @Controller('admin/job-sources')
 @UseGuards(AdminGuard)
 export class JobSourcesController {
-  constructor(private readonly jobSourcesService: JobSourcesService) {}
+  constructor(
+    private readonly jobSourcesService: JobSourcesService,
+    private readonly moduleRef: ModuleRef,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'List all job sources' })
@@ -54,13 +58,17 @@ export class JobSourcesController {
   @Post(':id/test')
   @ApiOperation({ summary: 'Test job source connectivity' })
   async test(@Param('id') id: string) {
+    const pipeline = (await this.moduleRef.resolve('PIPELINE_SERVICE')) as any;
     const source = await this.jobSourcesService.findOne(id);
-    return { message: 'Test triggered', sourceId: source.id, name: source.name, status: source.status };
+    return pipeline.testSource(source);
   }
 
   @Post(':id/sync')
   @ApiOperation({ summary: 'Manually trigger sync for a job source' })
   async sync(@Param('id') id: string) {
+    const pipeline = (await this.moduleRef.resolve('PIPELINE_SERVICE')) as any;
+    const source = await this.jobSourcesService.findOne(id);
+    pipeline.runForSource(source).catch((err: unknown) => console.error(`Manual sync failed for source ${id}:`, err instanceof Error ? err.message : String(err)));
     return { message: 'Sync queued', sourceId: id };
   }
 
@@ -79,6 +87,12 @@ export class JobSourcesController {
   @Post('sync-all')
   @ApiOperation({ summary: 'Trigger sync for all enabled sources' })
   async syncAll() {
-    return { message: 'Sync queued for all enabled sources' };
+    const pipeline = (await this.moduleRef.resolve('PIPELINE_SERVICE')) as any;
+    const sources = await this.jobSourcesService.findAll();
+    const enabled = sources.filter((s) => s.enabled);
+    enabled.forEach((s) => {
+      pipeline.runForSource(s).catch((err: unknown) => console.error(`Bulk sync failed for source ${s.id}:`, err instanceof Error ? err.message : String(err)));
+    });
+    return { message: 'Sync queued for all enabled sources', count: enabled.length };
   }
 }

@@ -9,6 +9,7 @@ export interface QualityResult {
 @Injectable()
 export class QualityService {
   private readonly logger = new Logger(QualityService.name);
+  private readonly minScore = 0.5;
 
   validate(raw: Record<string, unknown>, normalized: Record<string, unknown>): QualityResult {
     const reasons: string[] = [];
@@ -34,12 +35,12 @@ export class QualityService {
 
     const applicationUrl = String(normalized.applicationUrl ?? raw.applicationUrl ?? '');
     if (!applicationUrl || applicationUrl === '#') {
-      reasons.push('Application URL is missing');
+      reasons.push('Application URL is missing or invalid');
       score -= 0.2;
     }
 
     const finalScore = Math.max(0, Math.min(1, score));
-    const pass = reasons.length === 0;
+    const pass = reasons.length === 0 && finalScore >= this.minScore;
 
     return { pass, score: finalScore, reasons };
   }
