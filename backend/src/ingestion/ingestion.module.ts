@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { JobSourcesModule } from '../job-sources/job-sources.module';
 import { PrismaModule } from '../prisma.module';
 import { AiModule } from '../ai/ai.module';
@@ -13,7 +14,7 @@ import { JsonSourceAdapter } from './adapters/json-source.adapter';
 import { HtmlSourceAdapter } from './adapters/html-source.adapter';
 
 @Module({
-  imports: [PrismaModule, JobSourcesModule, AiModule],
+  imports: [PrismaModule, JobSourcesModule, AiModule, HttpModule],
   controllers: [],
   providers: [
     SchedulerService,
