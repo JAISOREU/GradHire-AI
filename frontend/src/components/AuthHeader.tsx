@@ -5,6 +5,7 @@ import { Icon } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { Avatar } from './Avatar';
+import { roleHomePath } from '../core/utils/navigation';
 
 type AuthHeaderProps = {
   title: string;
@@ -21,8 +22,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const morph = useHeaderMorph(true);
-
-  const rolePrefix = user.role === 'EMPLOYER' ? '/employer' : user.role === 'ADMIN' ? '/admin' : '/student';
+  const homeRoute = roleHomePath(user.role as any);
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -148,7 +148,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       default:
         return [];
     }
-  }, [user.role, rolePrefix]);
+  }, [user.role]);
 
   return (
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
@@ -165,7 +165,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           >
             <Icon name="menu" size={22} />
           </Button>
-          <Link to="/" className="brand-link" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center' }}>
+          <Link to={homeRoute} className="brand-link" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center' }}>
             <span className="header-logo__mark" aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
@@ -206,6 +206,14 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
               <Avatar src={user.avatarUrl} name={displayName} size="sm" />
             </button>
             <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="list">
+              <Link to={homeRoute} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
+                <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
+                <span>Dashboard</span>
+              </Link>
+              <Link to="/" className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
+                <span aria-hidden="true"><Icon name="home" size={18} /></span>
+                <span>Home</span>
+              </Link>
               {roleMenuItems.map((item) => (
                 <Link key={item.to} to={item.to} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
                   {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}

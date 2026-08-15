@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { Button } from '../../components/Button';
+import { Icon } from '../../components/Icon';
 import { AnimatedLogo } from '../../components/AnimatedLogo';
 import { WhyGradture } from './WhyGradture';
 import { HowItWorks } from './HowItWorks';
@@ -16,8 +16,8 @@ export const HomePage = () => (
           Build a stronger profile and let AI connect you with the right opportunities.
         </p>
         <div className="hero-actions">
-          <Link to="/jobs"><Button iconRight="arrow-right">Browse jobs</Button></Link>
-          <Link to="/register"><Button variant="secondary">Create account</Button></Link>
+          <Button to="/jobs" iconRight={<Icon name="arrow-right" size={16} />}>Browse jobs</Button>
+          <Button to="/register" variant="secondary">Create account</Button>
         </div>
       </div>
     </section>
@@ -33,8 +33,8 @@ export const HomePage = () => (
           Join talent and employers already using Gradture AI.
         </p>
         <div className="hero-actions">
-          <Link to="/register"><Button>Create account</Button></Link>
-          <Link to="/jobs"><Button variant="secondary">Browse jobs</Button></Link>
+          <Button to="/register">Create account</Button>
+          <Button to="/jobs" variant="secondary">Browse jobs</Button>
         </div>
       </div>
     </section>

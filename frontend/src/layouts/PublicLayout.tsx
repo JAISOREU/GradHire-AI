@@ -12,6 +12,7 @@ export const PublicLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const morph = useHeaderMorph(true);
+  const homeRoute = roleHomePath(user?.role);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -102,7 +103,7 @@ export const PublicLayout = () => {
       <SkipLink />
       <header ref={headerRef} className={headerClassName} style={headerStyle}>
         <div className="app-header__inner" style={innerStyle}>
-          <Link to="/" className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', ...brandStyle }}>
+          <Link to={homeRoute} className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', ...brandStyle }}>
             <span className="header-logo__mark" aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
@@ -147,7 +148,7 @@ export const PublicLayout = () => {
               <ThemeToggle />
             </span>
             {isAuthenticated && user ? (
-              <Link to={roleHomePath(user.role)}>
+              <Link to={homeRoute}>
                 <Button variant="secondary" size="sm">Go to dashboard</Button>
               </Link>
             ) : (

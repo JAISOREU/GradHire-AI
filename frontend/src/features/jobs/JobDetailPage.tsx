@@ -4,6 +4,7 @@ import { applicationsApi } from '../../core/api/endpoints/applications';
 import { useAsync } from '../../core/hooks/useAsync';
 import { useAuth } from '../../core/auth/AuthContext';
 import { Button } from '../../components/Button';
+import { Icon } from '../../components/Icon';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
@@ -59,7 +60,7 @@ export const JobDetailPage = () => {
               <span>{job.title}</span>
               {isExternal && (
                 <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
-                  External Job
+                  External Listing
                 </span>
               )}
             </div>
@@ -111,7 +112,7 @@ export const JobDetailPage = () => {
         <div className="section--mt">
           {isExternal && job.applicationUrl ? (
             <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
-              <Button>Apply on {job.sourceName || 'external site'}</Button>
+              <Button iconRight={<Icon name="external" size={16} />}>Apply on Original Site</Button>
             </a>
           ) : isAuthenticated && user && user.role === 'STUDENT' ? (
             applied ? (

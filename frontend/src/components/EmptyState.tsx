@@ -3,7 +3,7 @@ import { Icon } from './Icon';
 
 type EmptyStateProps = {
   icon?: string;
-  iconName?: 'search' | 'star' | 'heart' | 'mail' | 'users';
+  iconName?: 'search' | 'jobs' | 'mail' | 'star' | 'heart' | 'users';
   title: string;
   text?: string;
   action?: ReactNode;

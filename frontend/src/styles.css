@@ -2730,7 +2730,6 @@ input[type='file']::file-selector-button:hover {
   gap: var(--space-3);
   text-decoration: none;
   color: inherit;
-  margin-left: -40px;
 }
 
 .animated-logo__mark {
@@ -4157,7 +4156,7 @@ html {
   opacity: 0.6;
   animation: glow-pulse 4s ease-in-out infinite;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 .app-hero {
@@ -4225,31 +4224,14 @@ html {
   animation: page-enter-bg 12s ease-in-out infinite;
 }
 
-.page-enter-active::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: var(--gradient-glow);
-  animation: bg-drift 12s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 0;
-}
-
 @keyframes page-enter-bg {
   0%, 100% { background-color: var(--background); }
   50% { background-color: var(--background-secondary); }
 }
 
-@keyframes bg-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(2%, -1%) scale(1.02); }
-  66% { transform: translate(-1%, 1%) scale(0.98); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-glow,
-  .page-enter-active,
-  .page-enter-active::before {
+  .page-enter-active {
     animation: none;
   }
 }

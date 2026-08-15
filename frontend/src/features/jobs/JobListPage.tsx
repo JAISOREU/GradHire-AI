@@ -53,6 +53,16 @@ const formatTimeAgo = (iso?: string) => {
   return new Date(iso).toLocaleDateString();
 };
 
+const formatSalary = (job: { salaryMin?: number | null; salaryMax?: number | null; currency?: string | null; salaryUndisclosed?: boolean | null; negotiable?: boolean | null }) => {
+  if (job.salaryUndisclosed) return 'Confidential';
+  if (job.salaryMin != null && job.salaryMax != null) {
+    return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()} — ${job.salaryMax.toLocaleString()}`;
+  }
+  if (job.salaryMin != null) return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()}+`;
+  if (job.negotiable) return 'Negotiable';
+  return null;
+};
+
 export const JobListPage = () => {
   const [search, setSearch] = useState('');
   const [type, setType] = useState<JobType | ''>('');
@@ -91,7 +101,7 @@ export const JobListPage = () => {
         title={<MorphingText text="Find the career you always wanted" as="span" />}
       />
 
-      <div className="card" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-5)' }}>
+      <div className="card section--mt" style={{ padding: 'var(--space-5)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
             <input
@@ -166,63 +176,69 @@ export const JobListPage = () => {
           <LoadingState label="Loading opportunities…" />
         ) : jobs.length > 0 ? (
           <div className="list">
-            {jobs.map((job, index) => (
-              <article key={job.id} className={`list-item card--hover mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap', marginBottom: 'var(--space-1)' }}>
-                      <h3 className="list-item__title" style={{ margin: 0 }}>
-                        <Link to={`/jobs/${job.id}`} className="link-reset" style={{ color: 'inherit' }}>
-                          {job.title}
-                        </Link>
-                      </h3>
-                      {job.isExternal && (
-                        <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
-                          External Job
-                        </span>
-                      )}
-                    </div>
-                    <div className="list-item__meta" style={{ flexWrap: 'wrap' }}>
-                      <span>{job.company}</span>
-                      <span>{job.location}</span>
-                      <Badge kind={resolveBadgeKind(job.type)}>
-                        {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
-                      </Badge>
-                      {job.workplaceType && (
-                        <span style={{ color: 'var(--color-text-tertiary)' }}>
-                          {job.workplaceType === 'ONSITE' ? 'Work from office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : 'Remote'}
-                        </span>
-                      )}
-                      {job.experienceLevel && (
-                        <span style={{ color: 'var(--color-text-tertiary)' }}>
-                          {job.experienceLevel.replace(/_/g, ' ').toLowerCase()}
-                        </span>
-                      )}
-                      <span style={{ color: 'var(--color-text-muted)' }}>{formatTimeAgo(job.createdAt)}</span>
-                    </div>
-                    {job.isExternal && job.sourceName && (
-                      <div style={{ marginTop: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
-                        Source: <span style={{ fontWeight: 600 }}>{job.sourceName}</span>
-                        {job.applicationUrl && (
-                          <>
-                            {' · '}
-                            <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                              Apply on {job.sourceName}
-                            </a>
-                          </>
+            {jobs.map((job, index) => {
+              const salary = formatSalary(job);
+              const isExternal = !!job.isExternal;
+              return (
+                <article key={job.id} className={`list-item card--hover mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap', marginBottom: 'var(--space-1)' }}>
+                        <h3 className="list-item__title" style={{ margin: 0 }}>
+                          <Link to={`/jobs/${job.id}`} className="link-reset" style={{ color: 'inherit' }}>
+                            {job.title}
+                          </Link>
+                        </h3>
+                        {isExternal && (
+                          <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
+                            External Listing
+                          </span>
                         )}
                       </div>
-                    )}
+                      <div className="list-item__meta" style={{ flexWrap: 'wrap' }}>
+                        <span>{job.company}</span>
+                        <span>{job.location}</span>
+                        <Badge kind={resolveBadgeKind(job.type)}>
+                          {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
+                        </Badge>
+                        {job.workplaceType && (
+                          <span style={{ color: 'var(--color-text-tertiary)' }}>
+                            {job.workplaceType === 'ONSITE' ? 'Work from office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : 'Remote'}
+                          </span>
+                        )}
+                        {job.experienceLevel && (
+                          <span style={{ color: 'var(--color-text-tertiary)' }}>
+                            {job.experienceLevel.replace(/_/g, ' ').toLowerCase()}
+                          </span>
+                        )}
+                        {salary && (
+                          <span style={{ color: 'var(--color-text-tertiary)' }}>
+                            {salary}
+                          </span>
+                        )}
+                        <span style={{ color: 'var(--color-text-muted)' }}>{formatTimeAgo(job.createdAt)}</span>
+                      </div>
+                      {isExternal && job.sourceName && (
+                        <div style={{ marginTop: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                          <span>Source: <span style={{ fontWeight: 600 }}>{job.sourceName}</span></span>
+                          {job.applicationUrl && (
+                            <Link to={job.applicationUrl} target="_blank" rel="noopener noreferrer" className="btn btn--sm btn--secondary" onClick={(e) => e.stopPropagation()}>
+                              Apply on Original Site
+                            </Link>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <span className="list-item__action">
+                      <Link to={`/jobs/${job.id}`} className="btn btn--sm">View Job</Link>
+                    </span>
                   </div>
-                  <span className="list-item__action">
-                    <Link to={`/jobs/${job.id}`} className="btn btn--sm">View</Link>
-                  </span>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         ) : (
-          <EmptyState icon="💼" title="No jobs found" text="Try adjusting your filters or search terms." />
+          <EmptyState iconName="jobs" title="No jobs found" text="Try adjusting your filters or search terms." />
         )}
       </div>
 
