@@ -8,6 +8,16 @@ import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { useState } from 'react';
+import type { Job } from '../../core/types';
+
+const formatSalary = (job: Job) => {
+  if (job.salaryUndisclosed) return 'Confidential';
+  if (job.salaryMin != null && job.salaryMax != null) {
+    return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()} — ${job.salaryMax.toLocaleString()}`;
+  }
+  if (job.salaryMin != null) return `${job.currency || 'PHP'} ${job.salaryMin.toLocaleString()}+`;
+  return null;
+};
 
 export const JobDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,61 +43,73 @@ export const JobDetailPage = () => {
   if (loading) return <LoadingState label="Loading job…" />;
   if (!job) return <EmptyState icon="🔍" title="Job not found" text="This job may no longer be available." />;
 
+  const salary = formatSalary(job);
+  const isExternal = !!job.isExternal;
+  const workplaceLabel = job.workplaceType === 'ONSITE' ? 'Work From Office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : job.workplaceType === 'REMOTE' ? 'Remote' : job.workplaceType;
+  const experienceLabel = job.experienceLevel ? job.experienceLevel.replace(/_/g, ' ').toLowerCase() : null;
+
   return (
     <div className="page fade-in">
       <Link to="/jobs" className="back-link">← Back to jobs</Link>
+
       <div className="card section--mt">
-        <PageHeader title={job.title} subtitle={`${job.company} · ${job.location}`} />
+        <PageHeader
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+              <span>{job.title}</span>
+              {isExternal && (
+                <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
+                  External Job
+                </span>
+              )}
+            </div>
+          }
+          subtitle={
+            isExternal && job.sourceName
+              ? `${job.company} · ${job.location} · Source: ${job.sourceName}`
+              : `${job.company} · ${job.location}`
+          }
+        />
 
         <div className="grid grid-cols-2 gap-4 section--mt">
-          <div>
-            <span className="text-secondary text-sm">Type</span>
-            <div className="font-medium">{job.type}</div>
-          </div>
-          <div>
-            <span className="text-secondary text-sm">Experience</span>
-            <div className="font-medium">{job.experienceLevel}</div>
-          </div>
-          <div>
-            <span className="text-secondary text-sm">Workplace</span>
-            <div className="font-medium">{job.workplaceType}</div>
-          </div>
+          {experienceLabel && (
+            <div>
+              <span className="text-secondary text-sm">Experience</span>
+              <div className="font-medium">{experienceLabel}</div>
+            </div>
+          )}
+          {workplaceLabel && (
+            <div>
+              <span className="text-secondary text-sm">Workplace</span>
+              <div className="font-medium">{workplaceLabel}</div>
+            </div>
+          )}
+          {salary && (
+            <div>
+              <span className="text-secondary text-sm">Salary</span>
+              <div className="font-medium">{salary}</div>
+            </div>
+          )}
+          {job.sourceJobId && (
+            <div>
+              <span className="text-secondary text-sm">Job Request ID</span>
+              <div className="font-medium">{job.sourceJobId}</div>
+            </div>
+          )}
+          {job.nightShift && (
+            <div>
+              <span className="text-secondary text-sm">Schedule</span>
+              <div className="font-medium">Night Shift</div>
+            </div>
+          )}
           <div>
             <span className="text-secondary text-sm">Status</span>
             <div className="font-medium">{job.status}</div>
           </div>
         </div>
 
-        {job.description && (
-          <div className="section--mt">
-            <h3 className="card__title">Description</h3>
-            <p className="card__subtitle text-pre-wrap">{job.description}</p>
-          </div>
-        )}
-
-        {(job.requiredSkills ?? []).length > 0 && (
-          <div className="section--mt">
-            <h3 className="card__title">Required skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {(job.requiredSkills ?? []).map((skill) => (
-                <span key={skill} className="badge">{skill}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {job.salaryMin !== undefined && job.salaryMin !== null && (
-          <div className="section--mt">
-            <h3 className="card__title">Salary range</h3>
-            <p className="card__subtitle">
-              {job.currency} {job.salaryMin.toLocaleString()} — {job.salaryMax?.toLocaleString() ?? 'Not specified'}
-              {job.negotiable && ' (Negotiable)'}
-            </p>
-          </div>
-        )}
-
         <div className="section--mt">
-          {job.isExternal && job.applicationUrl ? (
+          {isExternal && job.applicationUrl ? (
             <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
               <Button>Apply on {job.sourceName || 'external site'}</Button>
             </a>
@@ -106,6 +128,69 @@ export const JobDetailPage = () => {
           )}
         </div>
       </div>
+
+      {job.description && (
+        <div className="card section--mt">
+          <h3 className="card__title">Job Description</h3>
+          <p className="card__subtitle text-pre-wrap" style={{ whiteSpace: 'pre-wrap' }}>{job.description}</p>
+        </div>
+      )}
+
+      {(job.requiredSkills ?? []).length > 0 && (
+        <div className="card section--mt">
+          <h3 className="card__title">Key Responsibilities</h3>
+          <div className="flex flex-wrap gap-2">
+            {(job.requiredSkills ?? []).map((skill) => (
+              <span key={skill} className="badge">{skill}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(job.preferredSkills ?? []).length > 0 && (
+        <div className="card section--mt">
+          <h3 className="card__title">Qualifications and Requirements</h3>
+          <div className="flex flex-wrap gap-2">
+            {(job.preferredSkills ?? []).map((skill) => (
+              <span key={skill} className="badge badge--muted">{skill}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(job.benefits ?? []).length > 0 && (
+        <div className="card section--mt">
+          <h3 className="card__title">Perks and Benefits</h3>
+          <ul style={{ paddingLeft: 'var(--space-5)', margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            {job.benefits!.map((benefit) => (
+              <li key={benefit.id} style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{benefit.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {job.companyRef?.description && (
+        <div className="card section--mt">
+          <h3 className="card__title">About the Company</h3>
+          <p className="card__subtitle">{job.companyRef.description}</p>
+        </div>
+      )}
+
+      {isExternal && (
+        <div className="card section--mt">
+          <h3 className="card__title">Source</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <span style={{ color: 'var(--color-text-secondary)' }}>
+              {job.sourceName || 'External source'}
+            </span>
+            {job.sourceUrl && (
+              <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm">
+                View Original Posting
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

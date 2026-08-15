@@ -960,6 +960,8 @@ button {
 .badge--open { color: var(--color-success); background: var(--color-success-soft); }
 .badge--closed { color: var(--color-text-muted); background: var(--color-surface-muted); }
 .badge--archived { color: var(--color-warning); background: var(--color-warning-soft); }
+.badge--external { color: var(--color-info); background: var(--color-info-soft); }
+.badge--muted { color: var(--color-text-tertiary); background: var(--color-surface-muted); }
 
 /* ============================================================
    Form System — clean, accessible

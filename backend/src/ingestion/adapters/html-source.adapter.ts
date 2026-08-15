@@ -38,8 +38,9 @@ export class HtmlSourceAdapter implements SourceAdapter {
 
       if (!title) return;
 
+      const idSeed = `${source.feedUrl}|${title}|${company || ''}|${description || ''}`;
       items.push({
-        externalId: `${source.feedUrl}-${items.length}-${Date.now()}`,
+        externalId: this.simpleHash(idSeed),
         title: title || 'Untitled',
         company: company || 'Unknown',
         description: description || '',
@@ -57,5 +58,15 @@ export class HtmlSourceAdapter implements SourceAdapter {
   private toDate(value: string): Date {
     const d = new Date(value);
     return isNaN(d.getTime()) ? new Date() : d;
+  }
+
+  private simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16);
   }
 }

@@ -10,7 +10,7 @@ export interface NormalizedJob {
   description: string;
   type: Job['type'];
   workplaceType: Job['workplaceType'];
-  experienceLevel: Job['experienceLevel'];
+  experienceLevel?: Job['experienceLevel'];
   requiredSkills: string[];
   preferredSkills: string[];
   country?: string;
@@ -91,7 +91,6 @@ export class NormalizerService {
       description: raw.description,
       type,
       workplaceType,
-      experienceLevel: 'ENTRY_LEVEL',
       requiredSkills,
       preferredSkills,
       country: country || undefined,

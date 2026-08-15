@@ -407,6 +407,7 @@ model Job {
   analytics         JobAnalytics?
   location          JobLocation?
   skills            JobSkill[]
+  sourceJobs        JobSourceJob[]
 
   // External / imported job tracking
   isExternal      Boolean   @default(false)
@@ -927,6 +928,7 @@ model JobSourceJob {
 
   source          JobSource        @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   run             JobSourceRun?    @relation(fields: [runId], references: [id], onDelete: SetNull)
+  job             Job?             @relation(fields: [jobId], references: [id], onDelete: SetNull)
 
   @@unique([sourceId, sourceJobId])
   @@index([fingerprint])

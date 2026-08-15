@@ -112,6 +112,12 @@ export class AppService implements OnModuleInit {
           views: true,
           createdAt: true,
           companyRef: { select: { name: true, industry: true, logo: true } },
+          isExternal: true,
+          applicationUrl: true,
+          sourceName: true,
+          sourceUrl: true,
+          sourceJobId: true,
+          importedAt: true,
         },
       }),
       this.prisma.job.count({ where }),
@@ -150,7 +156,18 @@ export class AppService implements OnModuleInit {
           if (dbJob.status !== 'PUBLISHED' && !isOwner) {
             throw new NotFoundException('Job not found');
           }
-          return { ...dbJob, type: String(dbJob.type), experienceLevel: String(dbJob.experienceLevel), workplaceType: String(dbJob.workplaceType) };
+          return {
+            ...dbJob,
+            type: String(dbJob.type),
+            experienceLevel: String(dbJob.experienceLevel),
+            workplaceType: String(dbJob.workplaceType),
+            isExternal: dbJob.isExternal,
+            applicationUrl: dbJob.applicationUrl,
+            sourceName: dbJob.sourceName,
+            sourceUrl: dbJob.sourceUrl,
+            sourceJobId: dbJob.sourceJobId,
+            importedAt: dbJob.importedAt,
+          };
         }
       } catch (error: unknown) {
         if (error instanceof NotFoundException) {

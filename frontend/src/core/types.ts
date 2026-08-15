@@ -107,6 +107,7 @@ export type Job = {
   sourceUrl?: string | null;
   sourceJobId?: string | null;
   importedAt?: string | null;
+  companyRef?: { name?: string; industry?: string; logo?: string; description?: string } | null;
   benefits?: JobBenefit[];
   requirements?: JobRequirement[];
   screeningQuestions?: ScreeningQuestion[];
