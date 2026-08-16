@@ -27,14 +27,22 @@ export class ApiSourceAdapter implements SourceAdapter {
     const mapped = this.mapFields(fieldMap);
 
     return jobs.map((item: Record<string, unknown>) => {
+      const location = mapped.location(item);
+      const rawLocation = location ?? '';
+      const lowerLocation = rawLocation.toLowerCase();
+      const remoteIndicators = ['remote', 'anywhere', 'worldwide', 'work from home', 'wfh'];
+      const isRemote = remoteIndicators.some((indicator) => lowerLocation.includes(indicator));
+      const rawRemote = item.remote ?? item.is_remote ?? item.remoteWork;
+      const isRemoteFlag = rawRemote === true || rawRemote === 'true' || rawRemote === '1';
+
       const raw: RawJobItem = {
         externalId: mapped.externalId(item) ?? `${Date.now()}-${Math.random()}`,
         title: mapped.title(item) ?? 'Untitled',
         company: mapped.company(item) ?? 'Unknown',
         description: mapped.description(item) ?? '',
-        location: mapped.location(item),
+        location: location,
         type: mapped.type(item) ?? 'HIRING',
-        workplaceType: mapped.workplaceType(item) ?? 'ONSITE',
+        workplaceType: isRemote || isRemoteFlag ? 'REMOTE' : (mapped.workplaceType(item) ?? 'ONSITE'),
         salaryMin: mapped.salaryMin(item) ?? null,
         salaryMax: mapped.salaryMax(item) ?? null,
         skills: mapped.skills(item) ?? [],
@@ -113,10 +121,10 @@ export class ApiSourceAdapter implements SourceAdapter {
     return {
       externalId: getString('externalId', ['id', 'job_id', 'externalId']),
       title: getString('title', ['jobTitle', 'name', 'title']),
-      company: getString('company', ['companyName', 'employer', 'company']),
+      company: getString('company', ['company_name', 'companyName', 'employer', 'company']),
       description: getString('description', ['jobDescription', 'summary', 'description']),
-      location: getString('location', ['jobGeo', 'location', 'city']),
-      type: getString('type', ['jobType', 'type', 'employment_type']),
+      location: getString('location', ['candidate_required_location', 'jobGeo', 'location', 'city']),
+      type: getString('type', ['job_type', 'jobType', 'type', 'employment_type']),
       workplaceType: getString('workplaceType', ['jobLocationType', 'workplaceType', 'remote']),
       salaryMin: getNumber('salaryMin', ['minSalary', 'salaryMin', 'salary_min']),
       salaryMax: getNumber('salaryMax', ['maxSalary', 'salaryMax', 'salary_max']),
