@@ -43,6 +43,7 @@ export class AuthService {
     if (body.role === 'ADMIN') {
       throw new ConflictException('This endpoint cannot register ADMIN users');
     }
+    this.validatePasswordComplexity(body.password);
     const passwordHash = await bcrypt.hash(body.password, 12);
 
     try {
@@ -138,16 +139,7 @@ export class AuthService {
   }
 
   async refresh(token: string): Promise<{ accessToken: string; user: AuthUser }> {
-    let payload: { sub: string; email: string; role: string };
-    try {
-      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
-    } catch (err) {
-      try {
-        payload = this.jwt.verify(token, { secret: JWT_SECRET, ignoreExpiration: true }) as { sub: string; email: string; role: string };
-      } catch {
-        throw new UnauthorizedException('Invalid or expired token');
-      }
-    }
+    const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
 
     if (!payload?.sub) {
       throw new UnauthorizedException('Invalid token');
@@ -197,8 +189,13 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    this.validatePasswordComplexity(newPassword);
     const users = await this.prisma.user.findMany({
-      where: { resetTokenExpires: { gte: new Date() } },
+      where: {
+        resetTokenExpires: { gte: new Date() },
+        resetTokenHash: { not: null },
+      },
+      select: { id: true, resetTokenHash: true },
     });
 
     let matchedUser = null;
@@ -224,12 +221,17 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     const users = await this.prisma.user.findMany({
-      where: { emailVerified: false },
+      where: {
+        emailVerified: false,
+        emailVerificationToken: { not: null },
+        emailVerificationExpires: { gte: new Date() },
+      },
+      select: { id: true, emailVerificationToken: true, emailVerificationExpires: true },
     });
 
     let matchedUser = null;
     for (const user of users) {
-      if (user.emailVerificationToken && user.emailVerificationExpires && user.emailVerificationExpires >= new Date() && user.emailVerificationToken === token) {
+      if (user.emailVerificationToken && await bcrypt.compare(token, user.emailVerificationToken)) {
         matchedUser = user;
         break;
       }
@@ -258,11 +260,12 @@ export class AuthService {
 
     const token = randomUUID();
     const expires = new Date(Date.now() + 1000 * 60 * 60 * 24);
+    const tokenHash = await bcrypt.hash(token, 12);
     const verifyUrl = `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/verify-email?token=${token}`;
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { emailVerificationToken: token, emailVerificationExpires: expires },
+      data: { emailVerificationToken: tokenHash, emailVerificationExpires: expires },
     });
 
     await this.email.send({
@@ -273,6 +276,21 @@ export class AuthService {
     });
 
     return { message: 'Verification email sent' };
+  }
+
+  private validatePasswordComplexity(password: string): void {
+    if (password.length < 8) {
+      throw new BadRequestException('Password must be at least 8 characters');
+    }
+    if (!/[A-Z]/.test(password)) {
+      throw new BadRequestException('Password must contain at least one uppercase letter');
+    }
+    if (!/[0-9]/.test(password)) {
+      throw new BadRequestException('Password must contain at least one number');
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      throw new BadRequestException('Password must contain at least one special character');
+    }
   }
 }
 

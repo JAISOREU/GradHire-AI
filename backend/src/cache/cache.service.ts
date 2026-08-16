@@ -11,7 +11,12 @@ export class CacheService {
     const url = process.env.REDIS_URL;
     this.enabled = Boolean(url);
     if (this.enabled && url) {
-      this.client = new Redis(url);
+      const password = process.env.REDIS_PASSWORD;
+      const options: Record<string, unknown> = {};
+      if (password) {
+        options.password = password;
+      }
+      this.client = new Redis(url, options);
       this.logger.log('Redis cache enabled');
     } else {
       this.logger.warn('Redis cache disabled — REDIS_URL not set');
@@ -32,7 +37,14 @@ export class CacheService {
 
   async invalidate(pattern: string): Promise<void> {
     if (!this.enabled || !this.client) return;
-    const keys = await this.client.keys(pattern);
+    const keys: string[] = [];
+    let cursor = '0';
+    do {
+      const result = await this.client.scan(cursor, 'MATCH', pattern, 'COUNT', '100');
+      cursor = result[0];
+      keys.push(...result[1]);
+    } while (cursor !== '0');
+
     if (keys.length > 0) {
       await this.client.del(...keys);
     }

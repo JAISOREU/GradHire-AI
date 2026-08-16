@@ -3,7 +3,7 @@ import { Icon } from './Icon';
 
 export const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('theme');
+    const stored = localStorage.getItem('gradture-theme');
     if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       return true;
     }
@@ -12,7 +12,7 @@ export const ThemeToggle = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('gradture-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
   const toggle = () => setIsDark((prev) => !prev);

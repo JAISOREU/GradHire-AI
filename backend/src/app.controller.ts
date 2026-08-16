@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from './auth/auth.guard';
+import { StudentGuard } from './auth/student.guard';
 import { AuthUser } from './auth/auth.service';
 import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
@@ -28,7 +29,7 @@ export class AppController {
     return this.appService.getJobById(id, requesterId);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Get('recommendations/ai')
   async getAiRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK = 5) {
     const profile = await this.appService.getStudentProfile(req.user.id);
@@ -43,19 +44,19 @@ export class AppController {
     return this.appService.getAiRecommendations((profile.focus as string) || '', Number(topK));
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Get('students/me')
   async getStudentProfile(@Req() req: Request & { user: AuthUser }) {
     return this.appService.getStudentProfile(req.user.id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Put('students/me')
   async saveStudentProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateProfileDto) {
     return this.appService.saveStudentProfile(req.user.id, body as unknown as Record<string, unknown>);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Get('saved-jobs/me')
   async mySavedJobs(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
     const pagination = query ? normalizePagination(query) : undefined;

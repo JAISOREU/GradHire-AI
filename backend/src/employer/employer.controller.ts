@@ -1,13 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { EmployerGuard } from '../auth/employer.guard';
 import { AuthUser } from '../auth/auth.service';
 import { EmployerService } from './employer.service';
 import { CreateJobDto, UpdateJobDto } from '../common/dto/job.dto';
 import { UpdateEmployerProfileDto } from '../common/dto/profile.dto';
 import { normalizePagination } from '../common/pagination';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, EmployerGuard)
 @Controller('employer')
 export class EmployerController {
   constructor(private readonly employer: EmployerService) {}

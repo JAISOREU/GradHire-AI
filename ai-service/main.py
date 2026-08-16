@@ -6,11 +6,14 @@ import numpy as np
 import time
 import json
 import os
-from typing import List
+import asyncpg
+from typing import List, Optional
 
 app = FastAPI(title="Gradture AI Service")
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 JOB_DESCRIPTIONS = {
     "1": "Join our internship program to build real-world software engineering skills.",
@@ -38,20 +41,75 @@ JOB_TYPES = {
 
 job_embeddings = None
 job_ids = []
+job_data = {}
+db_pool = None
+
+
+async def get_db_pool():
+    global db_pool
+    if db_pool is None and DATABASE_URL:
+        try:
+            db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=5)
+        except Exception as exc:
+            print(f"Failed to create database pool: {exc}")
+    return db_pool
+
+
+async def load_jobs_from_db():
+    global job_embeddings, job_ids, job_data
+    pool = await get_db_pool()
+    if not pool:
+        return
+
+    try:
+        rows = await pool.fetch(
+            """
+            SELECT id, title, description, type, company, requiredSkills
+            FROM jobs
+            WHERE status = 'PUBLISHED'
+            """
+        )
+        if rows:
+            job_ids = [str(row["id"]) for row in rows]
+            job_data = {
+                str(row["id"]): {
+                    "title": row["title"],
+                    "description": row["description"] or "",
+                    "type": row["type"],
+                    "company": row["company"],
+                    "requiredSkills": row["requiredSkills"] or [],
+                }
+                for row in rows
+            }
+            texts = [f"{row['title']}: {row['description'] or ''}" for row in rows]
+            job_embeddings = model.encode(texts, convert_to_numpy=True)
+    except Exception as exc:
+        print(f"Failed to load jobs from database: {exc}")
 
 
 def warm_up_embeddings():
     global job_embeddings, job_ids
     if job_embeddings is not None:
         return
-    texts = [f"{JOB_TITLES[jid]}: {JOB_DESCRIPTIONS[jid]}" for jid in JOB_DESCRIPTIONS]
-    job_embeddings = model.encode(texts, convert_to_numpy=True)
-    job_ids = list(JOB_DESCRIPTIONS.keys())
+    if not job_ids:
+        texts = [f"{JOB_TITLES[jid]}: {JOB_DESCRIPTIONS[jid]}" for jid in JOB_DESCRIPTIONS]
+        job_embeddings = model.encode(texts, convert_to_numpy=True)
+        job_ids = list(JOB_DESCRIPTIONS.keys())
 
 
 @app.on_event("startup")
 async def startup():
+    if DATABASE_URL:
+        await get_db_pool()
+        await load_jobs_from_db()
     warm_up_embeddings()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    global db_pool
+    if db_pool:
+        await db_pool.close()
 
 
 @app.get("/health")
@@ -73,6 +131,18 @@ class MatchRequest(BaseModel):
     candidates: List[str]
 
 
+class NormalizeJobRequest(BaseModel):
+    prompt: str
+
+
+@app.post("/normalize-job")
+def normalize_job(payload: NormalizeJobRequest) -> dict:
+    return {
+        "status": "fallback",
+        "message": "AI normalization is not configured. Use provider normalization.",
+    }
+
+
 @app.post("/recommendations")
 def get_recommendations(payload: RecommendRequest) -> dict:
     warm_up_embeddings()
@@ -84,15 +154,26 @@ def get_recommendations(payload: RecommendRequest) -> dict:
         ranked = sorted(zip(job_ids, scores), key=lambda x: x[1], reverse=True)[: payload.top_k]
         results = []
         for jid, score in ranked:
-            results.append(
-                {
-                    "id": jid,
-                    "title": JOB_TITLES[jid],
-                    "type": JOB_TYPES[jid],
-                    "score": round(float(score), 4),
-                    "description": JOB_DESCRIPTIONS[jid],
-                }
-            )
+            if jid in job_data:
+                results.append(
+                    {
+                        "id": jid,
+                        "title": job_data[jid]["title"],
+                        "type": job_data[jid]["type"],
+                        "score": round(float(score), 4),
+                        "description": job_data[jid]["description"],
+                    }
+                )
+            else:
+                results.append(
+                    {
+                        "id": jid,
+                        "title": JOB_TITLES.get(jid, jid),
+                        "type": JOB_TYPES.get(jid, "HIRING"),
+                        "score": round(float(score), 4),
+                        "description": JOB_DESCRIPTIONS.get(jid, ""),
+                    }
+                )
         return {"recommendations": results}
     except Exception as exc:
         return {"recommendations": [], "error": str(exc)}
