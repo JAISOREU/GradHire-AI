@@ -59,10 +59,6 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
     throw new ApiError(`Network error: ${reason}. Please check your connection and try again.`, 0);
   }
 
-  if (res.status === 401) {
-    window.location.href = '/login';
-  }
-
   const data = res.status === 204 ? null : await res.json().catch(() => null);
 
   if (!res.ok) {
