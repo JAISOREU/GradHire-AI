@@ -37,7 +37,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const body = json !== undefined ? JSON.stringify(json) : formData;
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
-  if (requiresAuth && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
     const csrfToken = getCookie('XSRF-TOKEN');
     if (csrfToken) {
       finalHeaders['X-XSRF-TOKEN'] = csrfToken;

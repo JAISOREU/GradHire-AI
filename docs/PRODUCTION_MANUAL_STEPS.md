@@ -276,8 +276,10 @@ After DNS propagates:
 
 | Variable | Updated Value |
 |----------|---------------|
-| `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai` |
+| `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai,https://grad-hire-ai.vercel.app` |
 | `FRONTEND_URL` | `https://gradture.ai` |
+
+**Important:** Include ALL frontend origins in `CORS_ORIGIN`, including Vercel preview/deployment URLs. If you see CORS errors in production, check Railway logs for the allowed origins list.
 
 ### Vercel
 
@@ -367,8 +369,10 @@ Check the backend code for the actual setup endpoint path and required headers b
 6. **Migration safety**: The deployment includes a corrective idempotent migration (`20260816000000_recover_job_ingestion_state`) that safely reconciles Railway database state without data loss. The docker entrypoint auto-resolves the previously failed migration before running `prisma migrate deploy`.
 7. **Security headers**: Helmet is enabled with HSTS, CSP, and other security headers. Do not disable these in production.
 8. **Rate limiting**: Global rate limiting is active (10 req/s, 100 req/min). Auth endpoints have stricter limits (5/min for login/register, 3/min for forgot-password). Avatar endpoints are rate-limited to 30/min to prevent user ID enumeration.
-9. **JWT storage**: Access tokens are currently stored in `localStorage`. This is vulnerable to XSS attacks. For maximum security, consider migrating to httpOnly cookies with `SameSite=strict` and `Secure` flags. This requires adding CSRF protection and is a planned architectural improvement.
-10. **Message spam protection**: Per-user message rate limiting is enforced (20 messages per minute). Combined with global throttling, this prevents spam and phishing campaigns.
+9. **Cookie-based authentication**: The application now uses httpOnly, secure, SameSite=None cookies for JWT storage instead of localStorage. This eliminates XSS risk from token exposure. CSRF protection is implemented via double-submit cookie pattern. Ensure `CORS_ORIGIN` includes all frontend domains and `credentials: true` is enabled.
+10. **Cross-site cookies**: Because the frontend (Vercel) and backend (Railway) are on different domains, cookies use `SameSite=None; Secure`. This requires HTTPS in production. Do NOT use `SameSite=Lax` for cross-site deployments.
+11. **CORS configuration**: If you see CORS errors, check Railway logs for the allowed origins list. Update `CORS_ORIGIN` to include all frontend deployment URLs (e.g., `https://grad-hire-ai.vercel.app`).
+12. **Message spam protection**: Per-user message rate limiting is enforced (20 messages per minute). Combined with global throttling, this prevents spam and phishing campaigns.
 
 ---
 
@@ -387,9 +391,12 @@ Check the backend code for the actual setup endpoint path and required headers b
 - Check Network tab for failed asset loads
 
 ### CORS errors
-- Verify `CORS_ORIGIN` in Railway includes your exact Vercel domain
+- Check Railway logs for the allowed origins list on startup
+- Verify `CORS_ORIGIN` includes your exact frontend domain (e.g., `https://grad-hire-ai.vercel.app`)
 - Verify `VITE_API_URL` uses `https://` in production
 - Check that Railway backend is using HTTPS
+- Ensure cookies are allowed: browser DevTools → Application → Cookies should show `access_token` and `XSRF-TOKEN`
+- If using custom domains, add ALL domains to `CORS_ORIGIN` (gradture.ai, www.gradture.ai, admin.gradture.ai, and any Vercel preview URLs)
 
 ### Migration fails
 - Do NOT run `prisma migrate dev` in production

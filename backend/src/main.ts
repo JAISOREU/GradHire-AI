@@ -22,7 +22,8 @@ function parseCorsOrigins(): string[] {
     }
     return ['http://localhost:5173', 'http://localhost:3000'];
   }
-  return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+  const origins = raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+  return origins;
 }
 
 function getCookieOptions(): Record<string, unknown> {
@@ -30,7 +31,7 @@ function getCookieOptions(): Record<string, unknown> {
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: 'none',
     maxAge: 15 * 60 * 1000,
     path: '/',
   };
@@ -39,6 +40,12 @@ function getCookieOptions(): Record<string, unknown> {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
+
+  const corsOrigins = parseCorsOrigins();
+  console.log(`[CORS] Allowed origins: ${corsOrigins.join(', ')}`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`[CORS] If you see CORS errors in production, ensure CORS_ORIGIN includes your frontend domain (e.g., https://grad-hire-ai.vercel.app)`);
+  }
 
   app.use(cookieParser());
   app.use(new LoggingMiddleware().use.bind(new LoggingMiddleware()));
@@ -49,7 +56,7 @@ async function bootstrap() {
     res.cookie('XSRF-TOKEN', csrfToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
@@ -61,6 +68,12 @@ async function bootstrap() {
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
       return next();
     }
+
+    const publicPaths = ['/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/refresh', '/api/v1/auth/forgot-password', '/api/v1/auth/reset-password', '/api/v1/auth/verify-email'];
+    if (publicPaths.includes(req.path)) {
+      return next();
+    }
+
     const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
     const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
     if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
