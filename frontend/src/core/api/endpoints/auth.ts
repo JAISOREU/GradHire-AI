@@ -18,4 +18,13 @@ export const authApi = {
 
   refresh: () =>
     api<AuthResponse>('/api/v1/auth/refresh', { method: 'POST', requiresAuth: false }),
+
+  forgotPassword: (email: string) =>
+    api<{ message: string }>('/api/v1/auth/forgot-password', { method: 'POST', json: { email }, requiresAuth: false }),
+
+  resetPassword: (token: string, password: string) =>
+    api<{ message: string }>('/api/v1/auth/reset-password', { method: 'POST', json: { token, password }, requiresAuth: false }),
+
+  verifyEmail: (token: string) =>
+    api<{ message: string }>(`/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`, { requiresAuth: false }),
 };

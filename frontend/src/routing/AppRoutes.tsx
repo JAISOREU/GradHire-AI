@@ -36,6 +36,9 @@ import { JobListPage } from '../features/jobs/JobListPage';
 import { JobDetailPage } from '../features/jobs/JobDetailPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
+import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from '../features/auth/ResetPasswordPage';
+import { VerifyEmailPage } from '../features/auth/VerifyEmailPage';
 import { StudentDashboardPage } from '../features/student/StudentDashboardPage';
 import { StudentResumePage } from '../features/student/StudentResumePage';
 import { StudentApplicationsPage } from '../features/student/StudentApplicationsPage';
@@ -70,6 +73,9 @@ export const AppRoutes = () => (
       <Route path="/companies/:id" element={<Page><CompanyDetailPage /></Page>} />
       <Route path="/login" element={<Page><LoginPage /></Page>} />
       <Route path="/register" element={<Page><RegisterPage /></Page>} />
+      <Route path="/forgot-password" element={<Page><ForgotPasswordPage /></Page>} />
+      <Route path="/reset-password" element={<Page><ResetPasswordPage /></Page>} />
+      <Route path="/verify-email" element={<Page><VerifyEmailPage /></Page>} />
     </Route>
 
     {/* Student (protected) */}

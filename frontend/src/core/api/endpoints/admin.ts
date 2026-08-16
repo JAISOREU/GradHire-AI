@@ -18,5 +18,5 @@ export const adminApi = {
 
   auditLogs: () => api<{ id: string; action: string; user: { email: string }; createdAt: string }[]>('/api/v1/admin/audit-logs'),
 
-  notifications: () => api<{ id: string; message: string; recipient: { email: string }; createdAt: string }[]>('/api/v1/admin/notifications'),
+  notifications: () => api<{ id: string; message: string; recipient: { email: string }; read: boolean; createdAt: string }[]>('/api/v1/admin/notifications'),
 };

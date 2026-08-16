@@ -43,6 +43,10 @@ export const messagesApi = {
       return [];
     }
   },
+  send: (to: string, body: string) =>
+    api<{ id: string }>('/api/v1/messages', { method: 'POST', json: { to, body } }),
+  markRead: (id: string) =>
+    api<void>(`/api/v1/messages/${id}/read`, { method: 'PUT' }),
 };
 
 export const savedJobsApi = {

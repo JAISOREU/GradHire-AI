@@ -1,9 +1,20 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
+import { notificationsApi } from '../../core/api/endpoints/notifications';
 import { AdminListPage } from '../../components/AdminListPage';
+import { Button } from '../../components/Button';
 
 export const AdminNotificationsPage = () => {
-  const { data: notifications, loading } = useAsync(() => adminApi.notifications(), []);
+  const { data: notifications, loading, reload } = useAsync(() => adminApi.notifications(), []);
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      await notificationsApi.markRead(id);
+      reload();
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <div className="page fade-in">
@@ -20,6 +31,7 @@ export const AdminNotificationsPage = () => {
                   <span>{new Date(n.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
+              {!n.read && <Button variant="ghost" size="sm" onClick={() => handleMarkRead(n.id)}>Mark read</Button>}
             </div>
           </div>
         )}
