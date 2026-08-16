@@ -22,8 +22,20 @@ function parseCorsOrigins(): string[] {
     }
     return ['http://localhost:5173', 'http://localhost:3000'];
   }
-  const origins = raw.split(',').map((origin) => origin.trim()).filter(Boolean);
-  return origins;
+  return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+}
+
+function createCorsOriginChecker(allowedOrigins: string[]) {
+  return (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) {
+      return callback(null, false);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS] Blocked origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`), false);
+  };
 }
 
 function getCookieOptions(): Record<string, unknown> {
@@ -46,6 +58,11 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'production') {
     console.log(`[CORS] If you see CORS errors in production, ensure CORS_ORIGIN includes your frontend domain (e.g., https://grad-hire-ai.vercel.app)`);
   }
+
+  app.enableCors({
+    origin: createCorsOriginChecker(corsOrigins),
+    credentials: true,
+  });
 
   app.use(cookieParser());
   app.use(new LoggingMiddleware().use.bind(new LoggingMiddleware()));
@@ -104,7 +121,6 @@ async function bootstrap() {
     },
   }));
 
-  app.enableCors({ origin: parseCorsOrigins(), credentials: true });
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
