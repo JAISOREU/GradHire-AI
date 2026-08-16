@@ -11,6 +11,10 @@ function getCookie(name: string): string | null {
   return null;
 }
 
+function getAuthToken(): string | null {
+  return getCookie('access_token');
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -36,6 +40,13 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
 
   const body = json !== undefined ? JSON.stringify(json) : formData;
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
+
+  if (requiresAuth) {
+    const token = getAuthToken();
+    if (token) {
+      finalHeaders['Authorization'] = `Bearer ${token}`;
+    }
+  }
 
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
     const csrfToken = getCookie('XSRF-TOKEN');
@@ -71,6 +82,6 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   return data as T;
 };
 
-export const getStoredToken = (): string | null => null;
+export const getStoredToken = (): string | null => getAuthToken();
 export const setStoredToken = (_token: string): void => {};
 export const clearStoredToken = (): void => {};
