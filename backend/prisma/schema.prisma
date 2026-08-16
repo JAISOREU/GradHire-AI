@@ -198,6 +198,29 @@ enum WorkAuthorizationStatus {
   NOT_AUTHORIZED
 }
 
+enum ProfileVisibility {
+  PUBLIC
+  EMPLOYERS_ONLY
+  PRIVATE
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+  APPRENTICESHIP
+  TEMPORARY
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
 // ============================================================
 // User & Profiles
 // ============================================================
@@ -220,6 +243,14 @@ model User {
   profile                Profile?
   employerProfile        EmployerProfile?
 
+  // Structured profile sections
+  educations             Education[]
+  experiences            Experience[]
+  skills                 Skill[]
+  certifications         Certification[]
+  projects               Project[]
+  careerPreference       CareerPreference?
+
   // Relationships
   jobs                   Job[]
   applications           Application[]
@@ -238,8 +269,8 @@ model User {
 }
 
 model Profile {
-  id               String   @id @default(cuid())
-  userId           String   @unique
+  id               String           @id @default(cuid())
+  userId           String           @unique
   name             String
   focus            String
   summary          String?
@@ -263,11 +294,122 @@ model Profile {
   degree           String?
   fieldOfStudy     String?
   internshipAccepted Boolean @default(false)
+  visibility       ProfileVisibility @default(EMPLOYERS_ONLY)
   profileCompleted Boolean   @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// Structured Profile Sections
+// ============================================================
+
+model Education {
+  id            String   @id @default(cuid())
+  userId        String
+  institution   String
+  degree        String?
+  fieldOfStudy  String?
+  startDate     DateTime
+  endDate       DateTime?
+  currentlyStudying Boolean @default(false)
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Experience {
+  id              String   @id @default(cuid())
+  userId          String
+  jobTitle        String
+  company         String
+  employmentType  EmploymentType?
+  location        String?
+  startDate       DateTime
+  endDate         DateTime?
+  currentlyWorking Boolean @default(false)
+  description     String?
+  skillsUsed      String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Skill {
+  id               String   @id @default(cuid())
+  userId           String
+  name             String
+  category         String?
+  level            SkillLevel @default(BEGINNER)
+  yearsOfExperience Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+  @@index([userId, name])
+}
+
+model Certification {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  issuer      String?
+  issuedAt    DateTime?
+  expiresAt   DateTime?
+  credentialId String?
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  url         String?
+  startDate   DateTime?
+  endDate     DateTime?
+  skillsUsed  String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model CareerPreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  preferredJobTitles    String[]
+  industries            String[]
+  preferredLocations    String[]
+  workArrangement       EmploymentType?
+  salaryExpectation     String?
+  availability          String?
+  workAuthorization     WorkAuthorizationStatus?
+  authorizedCountries   String[]
+  needsVisaSponsorship  Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmployerProfile {
@@ -710,6 +852,8 @@ model Resume {
   userId     String
   fileName   String
   fileUrl    String
+  fileSize   Int?
+  mimeType   String?
   parsedText String?
   isPrimary  Boolean  @default(false)
   createdAt  DateTime @default(now())

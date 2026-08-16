@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
+import { ProfileController } from './profile.controller';
 import { AppService } from './app.service';
 import { HealthService } from './health/health.service';
 import { MetricsController } from './metrics/metrics.controller';
@@ -55,7 +56,7 @@ import { IngestionModule } from './ingestion/ingestion.module';
     JobSourcesModule,
     IngestionModule,
   ],
-  controllers: [AppController, MetricsController],
+  controllers: [AppController, ProfileController, MetricsController],
   providers: [
     AppService,
     HealthService,

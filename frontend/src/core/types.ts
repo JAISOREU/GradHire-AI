@@ -155,7 +155,85 @@ export type StudentProfile = {
   degree?: string;
   fieldOfStudy?: string;
   internshipAccepted?: boolean;
+  visibility?: string;
   profileCompleted?: boolean;
+};
+
+export type Education = {
+  id: string;
+  institution: string;
+  degree?: string;
+  fieldOfStudy?: string;
+  startDate: string;
+  endDate?: string;
+  currentlyStudying: boolean;
+  description?: string;
+};
+
+export type Experience = {
+  id: string;
+  jobTitle: string;
+  company: string;
+  employmentType?: string;
+  location?: string;
+  startDate: string;
+  endDate?: string;
+  currentlyWorking: boolean;
+  description?: string;
+  skillsUsed: string[];
+};
+
+export type Skill = {
+  id: string;
+  name: string;
+  category?: string;
+  level?: string;
+  yearsOfExperience?: number;
+};
+
+export type Certification = {
+  id: string;
+  name: string;
+  issuer?: string;
+  issuedAt?: string;
+  expiresAt?: string;
+  credentialId?: string;
+  url?: string;
+};
+
+export type Project = {
+  id: string;
+  name: string;
+  description?: string;
+  url?: string;
+  startDate?: string;
+  endDate?: string;
+  skillsUsed: string[];
+};
+
+export type CareerPreference = {
+  id: string;
+  preferredJobTitles: string[];
+  industries: string[];
+  preferredLocations: string[];
+  workArrangement?: string;
+  salaryExpectation?: string;
+  availability?: string;
+  workAuthorization?: string;
+  authorizedCountries: string[];
+  needsVisaSponsorship: boolean;
+};
+
+export type ProfileCompleteness = {
+  percentage: number;
+  missing: string[];
+  sections: { key: string; weight: number; filled: boolean }[];
+};
+
+export type AiReadiness = {
+  ready: boolean;
+  missing: string[];
+  checks: { key: string; required: boolean; ready: boolean }[];
 };
 
 export type Profile = StudentProfile;

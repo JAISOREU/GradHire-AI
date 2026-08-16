@@ -325,6 +325,265 @@ export class AppService implements OnModuleInit {
     return this.profile;
   }
 
+  // ============================================================
+  // Structured Profile Sections
+  // ============================================================
+
+  async getEducations(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return [];
+    try {
+      return this.prisma.education.findMany({ where: { userId }, orderBy: { startDate: 'desc' } });
+    } catch {
+      return [];
+    }
+  }
+
+  async createEducation(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    return this.prisma.education.create({ data: { userId, ...data } as any });
+  }
+
+  async updateEducation(userId: string, educationId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.education.findFirst({ where: { id: educationId, userId } });
+    if (!existing) throw new NotFoundException('Education not found');
+    return this.prisma.education.update({ where: { id: educationId }, data: data as any });
+  }
+
+  async deleteEducation(userId: string, educationId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.education.findFirst({ where: { id: educationId, userId } });
+    if (!existing) throw new NotFoundException('Education not found');
+    await this.prisma.education.delete({ where: { id: educationId } });
+    return { success: true };
+  }
+
+  async getExperiences(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return [];
+    try {
+      return this.prisma.experience.findMany({ where: { userId }, orderBy: { startDate: 'desc' } });
+    } catch {
+      return [];
+    }
+  }
+
+  async createExperience(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    return this.prisma.experience.create({ data: { userId, ...data } as any });
+  }
+
+  async updateExperience(userId: string, experienceId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.experience.findFirst({ where: { id: experienceId, userId } });
+    if (!existing) throw new NotFoundException('Experience not found');
+    return this.prisma.experience.update({ where: { id: experienceId }, data: data as any });
+  }
+
+  async deleteExperience(userId: string, experienceId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.experience.findFirst({ where: { id: experienceId, userId } });
+    if (!existing) throw new NotFoundException('Experience not found');
+    await this.prisma.experience.delete({ where: { id: experienceId } });
+    return { success: true };
+  }
+
+  async getSkills(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return [];
+    try {
+      return this.prisma.skill.findMany({ where: { userId }, orderBy: { name: 'asc' } });
+    } catch {
+      return [];
+    }
+  }
+
+  async createSkill(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const name = String(data.name ?? '').trim();
+    if (!name) throw new NotFoundException('Skill name is required');
+    const normalizedName = name.toLowerCase();
+    const existing = await this.prisma.skill.findFirst({ where: { userId, name: { equals: normalizedName, mode: 'insensitive' } } });
+    if (existing) {
+      return this.prisma.skill.update({ where: { id: existing.id }, data: data as any });
+    }
+    return this.prisma.skill.create({ data: { userId, name: normalizedName, ...data } as any });
+  }
+
+  async deleteSkill(userId: string, skillId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.skill.findFirst({ where: { id: skillId, userId } });
+    if (!existing) throw new NotFoundException('Skill not found');
+    await this.prisma.skill.delete({ where: { id: skillId } });
+    return { success: true };
+  }
+
+  async getCertifications(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return [];
+    try {
+      return this.prisma.certification.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    } catch {
+      return [];
+    }
+  }
+
+  async createCertification(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    return this.prisma.certification.create({ data: { userId, ...data } as any });
+  }
+
+  async updateCertification(userId: string, certificationId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.certification.findFirst({ where: { id: certificationId, userId } });
+    if (!existing) throw new NotFoundException('Certification not found');
+    return this.prisma.certification.update({ where: { id: certificationId }, data: data as any });
+  }
+
+  async deleteCertification(userId: string, certificationId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.certification.findFirst({ where: { id: certificationId, userId } });
+    if (!existing) throw new NotFoundException('Certification not found');
+    await this.prisma.certification.delete({ where: { id: certificationId } });
+    return { success: true };
+  }
+
+  async getProjects(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return [];
+    try {
+      return this.prisma.project.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
+    } catch {
+      return [];
+    }
+  }
+
+  async createProject(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    return this.prisma.project.create({ data: { userId, ...data } as any });
+  }
+
+  async updateProject(userId: string, projectId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.project.findFirst({ where: { id: projectId, userId } });
+    if (!existing) throw new NotFoundException('Project not found');
+    return this.prisma.project.update({ where: { id: projectId }, data: data as any });
+  }
+
+  async deleteProject(userId: string, projectId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.project.findFirst({ where: { id: projectId, userId } });
+    if (!existing) throw new NotFoundException('Project not found');
+    await this.prisma.project.delete({ where: { id: projectId } });
+    return { success: true };
+  }
+
+  async getCareerPreference(userId: string) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) return null;
+    try {
+      return this.prisma.careerPreference.findFirst({ where: { userId } });
+    } catch {
+      return null;
+    }
+  }
+
+  async upsertCareerPreference(userId: string, data: Record<string, unknown>) {
+    this.assertDbAvailable();
+    if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
+    const existing = await this.prisma.careerPreference.findFirst({ where: { userId } });
+    if (existing) {
+      return this.prisma.careerPreference.update({ where: { id: existing.id }, data: data as any });
+    }
+    return this.prisma.careerPreference.create({ data: { userId, ...data } as any });
+  }
+
+  async getProfileCompleteness(userId: string) {
+    this.assertDbAvailable();
+    const profile = await this.prisma.profile.findFirst({ where: { userId } });
+    if (!profile) return { percentage: 0, missing: ['profile'] };
+
+    const sections: { key: string; weight: number; filled: boolean }[] = [];
+    const missing: string[] = [];
+
+    const check = (label: string, filled: boolean, weight = 1) => {
+      sections.push({ key: label, weight, filled });
+      if (!filled) missing.push(label);
+    };
+
+    check('Personal Information', Boolean(profile.name && profile.name.trim()));
+    check('Professional Headline', Boolean(profile.focus && profile.focus.trim()));
+    check('About', Boolean(profile.summary && profile.summary.trim()));
+    check('Phone', Boolean(profile.phone && profile.phone.trim()));
+    check('Location', Boolean(profile.location && profile.location.trim()));
+    check('Resume', (await this.prisma.resume.findFirst({ where: { userId } })) !== null, 2);
+    check('Education', (await this.prisma.education.findFirst({ where: { userId } })) !== null, 2);
+    check('Experience', (await this.prisma.experience.findFirst({ where: { userId } })) !== null, 2);
+    check('Skills', (await this.prisma.skill.findFirst({ where: { userId } })) !== null, 2);
+    check('Career Preferences', (await this.prisma.careerPreference.findFirst({ where: { userId } })) !== null);
+
+    const totalWeight = sections.reduce((sum, s) => sum + s.weight, 0);
+    const filledWeight = sections.filter(s => s.filled).reduce((sum, s) => sum + s.weight, 0);
+    const percentage = Math.round((filledWeight / totalWeight) * 100);
+
+    return { percentage, missing, sections };
+  }
+
+  async getAiReadiness(userId: string) {
+    this.assertDbAvailable();
+    const profile = await this.prisma.profile.findFirst({ where: { userId } });
+    if (!profile) {
+      return { ready: false, missing: ['profile'] };
+    }
+
+    const checks: { key: string; required: boolean; ready: boolean }[] = [];
+    const missing: string[] = [];
+
+    const education = await this.prisma.education.findFirst({ where: { userId } });
+    const hasEducation = education !== null;
+    checks.push({ key: 'Education', required: true, ready: hasEducation });
+    if (!hasEducation) missing.push('education');
+
+    const skills = await this.prisma.skill.findFirst({ where: { userId } });
+    const hasSkills = skills !== null;
+    checks.push({ key: 'Skills', required: true, ready: hasSkills });
+    if (!hasSkills) missing.push('skills');
+
+    const experience = await this.prisma.experience.findFirst({ where: { userId } });
+    const hasExperience = experience !== null;
+    checks.push({ key: 'Experience', required: true, ready: hasExperience });
+    if (!hasExperience) missing.push('experience');
+
+    const resume = await this.prisma.resume.findFirst({ where: { userId } });
+    const hasResume = resume !== null;
+    checks.push({ key: 'Resume', required: false, ready: hasResume });
+    if (!hasResume) missing.push('resume');
+
+    const preferences = await this.prisma.careerPreference.findFirst({ where: { userId } });
+    const hasPreferences = preferences !== null;
+    checks.push({ key: 'Career Preferences', required: false, ready: hasPreferences });
+    if (!hasPreferences) missing.push('career_preferences');
+
+    const ready = checks.filter(c => c.required).every(c => c.ready);
+
+    return { ready, missing, checks };
+  }
+
   async listMessages(userId: string, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
     this.assertDbAvailable();
     const { page = 1, limit = 20 } = pagination ?? {};
