@@ -83,8 +83,9 @@ export class AppService implements OnModuleInit {
     }
 
     const orderBy: Record<string, string> = {};
-    if (query.sortBy) {
-      orderBy[query.sortBy] = query.sortOrder ?? 'desc';
+    const sortField = query.sortBy || query.sort;
+    if (sortField) {
+      orderBy[sortField] = query.sortOrder ?? 'desc';
     }
 
     const [jobs, total] = await Promise.all([

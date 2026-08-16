@@ -117,9 +117,16 @@ export class UsersService {
     }
 
     const mimeType = this.getMimeType(user.avatarUrl);
-    const stream = await this.storage.get(user.avatarUrl);
-
-    return { stream, contentType: mimeType };
+    try {
+      const stream = await this.storage.get(user.avatarUrl);
+      if (!stream) {
+        return null;
+      }
+      return { stream, contentType: mimeType };
+    } catch {
+      this.logger.warn(`Failed to serve avatar for user ${userId}: ${user.avatarUrl}`);
+      return null;
+    }
   }
 
   private getMimeType(key: string): string {

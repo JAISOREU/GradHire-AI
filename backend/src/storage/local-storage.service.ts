@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IStorageService, UploadedFile } from './storage.service';
-import { join, dirname, basename } from 'node:path';
+import { join, dirname, resolve, relative, sep } from 'node:path';
 import { promises as fs } from 'node:fs';
 
 @Injectable()
@@ -13,14 +13,17 @@ export class LocalStorageService implements IStorageService {
   }
 
   private sanitizeKey(key: string): string {
-    const cleaned = basename(key).replace(/[^a-zA-Z0-9._-]/g, '_');
-    if (cleaned !== key && !key.startsWith(this.basePath)) {
-      throw new Error('Invalid storage key');
-    }
+    const normalizedKey = key.replace(/\\/g, '/');
+    const cleaned = normalizedKey.replace(/^(\.\.\/)+/, '').replace(/^\//, '');
     const resolved = join(this.basePath, cleaned);
-    if (!resolved.startsWith(join(process.cwd(), this.basePath))) {
+    const absoluteResolved = resolve(resolved);
+    const absoluteBase = resolve(this.basePath);
+
+    const relativePath = relative(absoluteBase, absoluteResolved);
+    if (relativePath.startsWith('..' + sep) || relativePath === '..') {
       throw new Error('Storage path traversal detected');
     }
+
     return resolved;
   }
 

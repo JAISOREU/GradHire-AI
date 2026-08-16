@@ -749,6 +749,11 @@ export class JobQueryDto {
   @IsString()
   sortBy?: string;
 
+  @ApiProperty({ required: false, default: 'createdAt' })
+  @IsOptional()
+  @IsString()
+  sort?: string;
+
   @ApiProperty({ required: false, enum: ['asc', 'desc'], default: 'desc' })
   @IsOptional()
   sortOrder?: 'asc' | 'desc';
