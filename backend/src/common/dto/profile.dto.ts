@@ -117,6 +117,11 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsBoolean()
   profileCompleted?: boolean;
+
+  @ApiProperty({ required: false, example: 'EMPLOYERS_ONLY' })
+  @IsOptional()
+  @IsString()
+  visibility?: string;
 }
 
 export class UpdateEmployerProfileDto {
