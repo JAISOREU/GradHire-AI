@@ -58,8 +58,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { user } = await authApi.me();
       setUser(user);
-    } catch {
-      clearStoredToken();
+      setStatus('authenticated');
+    } catch (err) {
+      const token = getStoredToken();
+      if (token) {
+        try {
+          const data = await authApi.refresh();
+          setStoredToken(data.accessToken);
+          setUser(data.user);
+          setStatus('authenticated');
+          return;
+        } catch {
+          clearStoredToken();
+        }
+      }
       setUser(null);
       setStatus('unauthenticated');
     }

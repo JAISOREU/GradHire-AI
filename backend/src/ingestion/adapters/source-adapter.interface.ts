@@ -13,7 +13,13 @@ export interface RawJobItem {
   workplaceType?: string;
   salaryMin?: number | null;
   salaryMax?: number | null;
+  currency?: string;
   skills?: string[];
+  requiredQualifications?: string;
+  acceptsFreshGraduates?: boolean;
+  acceptsStudents?: boolean;
+  noExperienceRequired?: boolean;
+  internshipAccepted?: boolean;
   postedAt?: Date | string;
   expiresAt?: Date | string;
   applicationUrl: string;

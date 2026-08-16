@@ -20,6 +20,11 @@ export interface NormalizedJob {
   currency?: string;
   applicationUrl: string;
   sourceUrl: string;
+  requiredQualifications?: string;
+  acceptsFreshGraduates?: boolean;
+  acceptsStudents?: boolean;
+  noExperienceRequired?: boolean;
+  internshipAccepted?: boolean;
 }
 
 @Injectable()
@@ -162,6 +167,11 @@ export class NormalizerService {
     const salaryMin = raw.salaryMin ?? null;
     const salaryMax = raw.salaryMax ?? null;
 
+    const currencyRaw = String(raw.currency ?? '');
+    const currency = ['USD', 'EUR', 'GBP', 'PHP', 'SGD', 'AUD', 'CAD', 'JPY', 'CNY', 'INR'].includes(currencyRaw.toUpperCase())
+      ? currencyRaw.toUpperCase()
+      : undefined;
+
     return {
       title: raw.title,
       company: raw.company,
@@ -174,9 +184,14 @@ export class NormalizerService {
       city: city || undefined,
       salaryMin,
       salaryMax,
-      currency: 'PHP',
+      currency,
       applicationUrl: raw.applicationUrl,
       sourceUrl: raw.sourceUrl,
+      requiredQualifications: raw.requiredQualifications || undefined,
+      acceptsFreshGraduates: raw.acceptsFreshGraduates ?? undefined,
+      acceptsStudents: raw.acceptsStudents ?? undefined,
+      noExperienceRequired: raw.noExperienceRequired ?? undefined,
+      internshipAccepted: raw.internshipAccepted ?? undefined,
     };
   }
 
@@ -186,7 +201,7 @@ export class NormalizerService {
       'Return JSON with: title, company, description, type (HIRING|INTERNSHIP|APPRENTICESHIP|CONTRACT|TEMPORARY|FREELANCE|PART_TIME),',
       'workplaceType (REMOTE|HYBRID|ONSITE), experienceLevel (NO_EXPERIENCE|ENTRY_LEVEL|JUNIOR|MID_LEVEL|SENIOR|LEAD|MANAGER),',
       'requiredSkills (string[]), preferredSkills (string[]), country (string?), city (string?), salaryMin (number|null), salaryMax (number|null),',
-      'currency (string, default PHP). Keep description concise but complete.',
+      'currency (ISO 4217 code like USD, EUR, GBP, PHP, etc, or omit if unknown). Keep description concise but complete.',
       'Raw data:',
       JSON.stringify(raw),
     ].join('\n');

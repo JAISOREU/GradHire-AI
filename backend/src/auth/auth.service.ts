@@ -138,7 +138,16 @@ export class AuthService {
   }
 
   async refresh(token: string): Promise<{ accessToken: string; user: AuthUser }> {
-    const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
+    let payload: { sub: string; email: string; role: string };
+    try {
+      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
+    } catch (err) {
+      try {
+        payload = this.jwt.verify(token, { secret: JWT_SECRET, ignoreExpiration: true }) as { sub: string; email: string; role: string };
+      } catch {
+        throw new UnauthorizedException('Invalid or expired token');
+      }
+    }
 
     if (!payload?.sub) {
       throw new UnauthorizedException('Invalid token');

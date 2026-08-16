@@ -17,5 +17,5 @@ export const authApi = {
     api<void>('/api/v1/auth/logout', { method: 'POST', requiresAuth: true }),
 
   refresh: () =>
-    api<AuthResponse>('/api/v1/auth/refresh', { method: 'POST', requiresAuth: true }),
+    api<AuthResponse>('/api/v1/auth/refresh', { method: 'POST', requiresAuth: false }),
 };

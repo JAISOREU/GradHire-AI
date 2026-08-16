@@ -6,6 +6,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { Avatar } from './Avatar';
 import { roleHomePath } from '../core/utils/navigation';
+import type { UserRole } from '../core/types';
 
 type AuthHeaderProps = {
   title: string;
@@ -22,7 +23,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const morph = useHeaderMorph(true);
-  const homeRoute = roleHomePath(user.role as any);
+  const homeRoute = roleHomePath(user.role as UserRole);
 
   useEffect(() => {
     if (!dropdownOpen) return;

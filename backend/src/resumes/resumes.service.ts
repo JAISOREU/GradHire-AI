@@ -6,6 +6,7 @@ import type { UploadedFile } from './resume.types';
 import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
 import { IStorageService } from '../storage/storage.service';
 import { STORAGE_SERVICE } from '../storage/storage.module';
+import { sanitizeDatabaseString, sanitizeFilename } from '../common/utils/sanitize';
 
 @Injectable()
 export class ResumesService {
@@ -66,53 +67,74 @@ export class ResumesService {
     // Parse resume into structured fields
     const parsed = parseResumeText(rawText);
 
-    // Store the resume record
-    const sanitized = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.{2,}/g, '_');
-    const storageKey = `resumes/${user.id}/${Date.now()}-${sanitized}`;
-    const fileUrl = await this.storage.upload(file, storageKey);
+    const safeFileName = sanitizeDatabaseString(file.originalname);
+    const safeStorageKey = sanitizeFilename(file.originalname);
+    const storageKey = `resumes/${user.id}/${Date.now()}-${safeStorageKey}`;
 
-    const resume = await this.prisma.resume.create({
-      data: {
-        userId: user.id,
-        fileName: file.originalname,
-        fileUrl,
-        parsedText: rawText.slice(0, 50_000), // cap at 50 KB
-      },
-    });
+    let fileUrl: string;
+    try {
+      fileUrl = await this.storage.upload(file, storageKey);
+    } catch (err) {
+      this.logger.error('Storage upload failed', err);
+      throw new BadRequestException('Failed to upload resume. Please try again.');
+    }
 
-    // Upsert the profile with parsed data
-    const nameValue = parsed.name ?? 'Talent';
-    const focusValue = parsed.focus;
-    const summaryValue = parsed.summary;
-    const skillsValue = parsed.skills;
+    try {
+      const safeParsedText = sanitizeDatabaseString(rawText.slice(0, 50_000));
 
-    const profile = await this.prisma.profile.upsert({
-      where: { userId: user.id },
-      create: {
-        userId: user.id,
-        name: nameValue,
-        focus: focusValue,
-        summary: summaryValue,
-        skills: skillsValue,
-      },
-      update: {
-        name: nameValue,
-        focus: focusValue,
-        summary: summaryValue,
-        skills: skillsValue,
-      },
-    });
+      const resume = await this.prisma.resume.create({
+        data: {
+          userId: user.id,
+          fileName: safeFileName,
+          fileUrl,
+          mimeType: sanitizeDatabaseString(file.mimetype),
+          fileSize: file.size,
+          parsedText: safeParsedText,
+        },
+      });
 
-    return {
-      resume: { id: resume.id, fileName: resume.fileName, fileUrl: resume.fileUrl },
-      profile: {
-        id: profile.id,
-        name: profile.name,
-        focus: profile.focus,
-        summary: profile.summary,
-        skills: profile.skills,
-      },
-    };
+      // Upsert the profile with parsed data
+      const nameValue = sanitizeDatabaseString(parsed.name ?? 'Talent');
+      const focusValue = sanitizeDatabaseString(parsed.focus ?? '');
+      const summaryValue = parsed.summary ? sanitizeDatabaseString(parsed.summary) : null;
+      const skillsValue = (parsed.skills ?? []).map((s) => sanitizeDatabaseString(s));
+
+      const profile = await this.prisma.profile.upsert({
+        where: { userId: user.id },
+        create: {
+          userId: user.id,
+          name: nameValue,
+          focus: focusValue,
+          summary: summaryValue,
+          skills: skillsValue,
+        },
+        update: {
+          name: nameValue,
+          focus: focusValue,
+          summary: summaryValue,
+          skills: skillsValue,
+        },
+      });
+
+      return {
+        resume: { id: resume.id, fileName: resume.fileName, fileUrl: resume.fileUrl },
+        profile: {
+          id: profile.id,
+          name: profile.name,
+          focus: profile.focus,
+          summary: profile.summary,
+          skills: profile.skills,
+        },
+      };
+    } catch (err) {
+      this.logger.error('Database create failed after storage upload — attempting cleanup', err);
+      try {
+        await this.storage.remove(storageKey);
+      } catch {
+        this.logger.warn(`Failed to cleanup storage after DB failure: ${storageKey}`);
+      }
+      throw err;
+    }
   }
 
   /** List resumes uploaded by the current user. */
