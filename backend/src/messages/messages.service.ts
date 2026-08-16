@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination, normalizePagination } from '../common/pagination';
@@ -8,6 +8,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 @Injectable()
 export class MessagesService {
   private readonly logger = new Logger(MessagesService.name);
+  private readonly MESSAGE_RATE_LIMIT = 20;
+  private readonly MESSAGE_RATE_WINDOW_MS = 60_000;
 
   constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway, private readonly notifications: NotificationsService) {}
 
@@ -40,6 +42,17 @@ export class MessagesService {
   }
 
   async create(senderId: string, recipientId: string, body: string) {
+    const recentCount = await this.prisma.message.count({
+      where: {
+        senderId,
+        createdAt: { gte: new Date(Date.now() - this.MESSAGE_RATE_WINDOW_MS) },
+      },
+    });
+
+    if (recentCount >= this.MESSAGE_RATE_LIMIT) {
+      throw new BadRequestException('You are sending messages too quickly. Please wait a moment before sending another message.');
+    }
+
     const message = await this.prisma.message.create({
       data: { senderId, recipientId, body, read: false },
     });

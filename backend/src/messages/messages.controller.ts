@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Post, Put, Query, Req, UseGuards, Body } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -16,6 +17,7 @@ export class MessagesController {
     return this.messages.listForUser(req.user, pagination);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 20 } })
   @Post()
   async send(@Req() req: Request & { user: AuthUser }, @Body() payload: { to: string; body: string }) {
     return this.messages.create(req.user.id, payload.to, payload.body);

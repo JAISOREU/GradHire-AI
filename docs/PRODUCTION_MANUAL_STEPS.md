@@ -365,6 +365,10 @@ Check the backend code for the actual setup endpoint path and required headers b
 4. **External application tracking**: Internal application flow (`Application` table) is separate from external job redirects. External jobs do not create internal application records unless you explicitly build that feature.
 5. **Rate limits**: Respect source rate limits. The `rateLimit` field in `JobSource` is enforced by the scheduler concurrency limit, not per-source throttling.
 6. **Migration safety**: The deployment includes a corrective idempotent migration (`20260816000000_recover_job_ingestion_state`) that safely reconciles Railway database state without data loss. The docker entrypoint auto-resolves the previously failed migration before running `prisma migrate deploy`.
+7. **Security headers**: Helmet is enabled with HSTS, CSP, and other security headers. Do not disable these in production.
+8. **Rate limiting**: Global rate limiting is active (10 req/s, 100 req/min). Auth endpoints have stricter limits (5/min for login/register, 3/min for forgot-password). Avatar endpoints are rate-limited to 30/min to prevent user ID enumeration.
+9. **JWT storage**: Access tokens are currently stored in `localStorage`. This is vulnerable to XSS attacks. For maximum security, consider migrating to httpOnly cookies with `SameSite=strict` and `Secure` flags. This requires adding CSRF protection and is a planned architectural improvement.
+10. **Message spam protection**: Per-user message rate limiting is enforced (20 messages per minute). Combined with global throttling, this prevents spam and phishing campaigns.
 
 ---
 

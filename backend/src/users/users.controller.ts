@@ -1,4 +1,5 @@
 import { Controller, Get, Delete, Post, Req, UseGuards, UploadedFile, BadRequestException, UseInterceptors, Param, Res, NotFoundException } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/auth.guard';
@@ -31,6 +32,7 @@ export class UsersController {
     return this.users.deleteAvatar(req.user.id);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   @Get('avatar/:id')
   async getPublicAvatar(@Param('id') userId: string, @Res() res: Response) {
     const result = await this.users.serveAvatar(userId);
