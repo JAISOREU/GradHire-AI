@@ -11,6 +11,7 @@ type CardProps = {
   className?: string;
   icon?: ReactNode;
   footer?: ReactNode;
+  id?: string;
   children: ReactNode;
 };
 

@@ -10,6 +10,7 @@ import { PageHeader } from '../../components/PageHeader';
 export const StudentResumePage = () => {
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { data: resumes, loading, reload } = useAsync(() => resumesApi.listMine(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,8 +34,46 @@ export const StudentResumePage = () => {
     }
   };
 
-  const triggerUpload = () => {
-    fileInputRef.current?.click();
+  const handleView = async (id: string) => {
+    try {
+      const resume = await resumesApi.getById(id);
+      if (resume.fileUrl) {
+        window.open(resume.fileUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      setMessage('Unable to open resume. Please try again.');
+    }
+  };
+
+  const handleDownload = async (id: string) => {
+    try {
+      const resume = await resumesApi.getById(id);
+      if (resume.fileUrl) {
+        const a = document.createElement('a');
+        a.href = resume.fileUrl;
+        a.download = resume.fileName;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    } catch {
+      setMessage('Unable to download resume. Please try again.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this resume? This action cannot be undone.')) return;
+    setDeletingId(id);
+    try {
+      await resumesApi.delete(id);
+      setMessage('Resume deleted.');
+      reload();
+    } catch {
+      setMessage('Failed to delete resume. Please try again.');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -52,11 +91,11 @@ export const StudentResumePage = () => {
               disabled={uploading}
               style={{ display: 'none' }}
             />
-            <Button variant="secondary" onClick={triggerUpload} disabled={uploading}>
+            <Button variant="secondary" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
               Upload &amp; parse
             </Button>
             {uploading && <div className="loading-state"><span className="spinner" aria-hidden="true" /><span>Parsing…</span></div>}
-            {message && <div className="message message--info">{message}</div>}
+            {message && <div className={`message ${message.includes('Failed') || message.includes('Unable') ? 'message--error' : 'message--success'}`}>{message}</div>}
           </div>
         </Card>
       </div>
@@ -75,6 +114,13 @@ export const StudentResumePage = () => {
                     <div className="list-item__meta">
                       <span>{new Date(resume.createdAt).toLocaleDateString()}</span>
                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleView(resume.id)}>View</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDownload(resume.id)}>Download</Button>
+                    <Button variant="ghost" size="sm" className="text-danger" onClick={() => handleDelete(resume.id)} disabled={deletingId === resume.id}>
+                      {deletingId === resume.id ? 'Deleting…' : 'Delete'}
+                    </Button>
                   </div>
                 </div>
               </div>

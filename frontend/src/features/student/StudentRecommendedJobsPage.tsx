@@ -10,12 +10,9 @@ import { PageHeader } from '../../components/PageHeader';
 
 export const StudentRecommendedJobsPage = () => {
   const { data: aiJobs, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
-  const { data: profile } = useAsync(() => studentsApi.getProfile(), []);
+  const { data: readiness } = useAsync(() => studentsApi.getAiReadiness(), []);
 
-  const education = String(profile?.education ?? '').trim();
-  const skills = Array.isArray(profile?.skills) ? profile!.skills.filter((s) => String(s).trim()) : [];
-  const experience = String(profile?.experience ?? '').trim();
-  const profileComplete = Boolean(education && skills.length > 0 && experience);
+  const profileComplete = readiness?.ready ?? false;
 
   const recommendations = aiJobs && aiJobs.length > 0
     ? aiJobs.map((rec) => ({

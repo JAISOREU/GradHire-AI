@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from './auth/auth.guard';
+import { StudentGuard } from './auth/student.guard';
 import { AuthUser } from './auth/auth.service';
 import { AppService } from './app.service';
 import { CreateEducationDto, UpdateEducationDto } from './common/dto/education.dto';
@@ -11,7 +12,7 @@ import { CreateProjectDto, UpdateProjectDto } from './common/dto/project.dto';
 import { UpdateCareerPreferenceDto } from './common/dto/career-preference.dto';
 
 @Controller('profile')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, StudentGuard)
 export class ProfileController {
   constructor(private readonly appService: AppService) {}
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi, usersApi } from '../../core/api/endpoints/students';
@@ -13,13 +13,13 @@ import { Skeleton } from '../../components/Skeleton';
 import { Badge } from '../../components/Badge';
 import { Icon } from '../../components/Icon';
 import { Avatar } from '../../components/Avatar';
-import type { UserRole } from '../../core/types';
-import type { Resume } from '../../core/types';
+import { EmptyState } from '../../components/EmptyState';
+import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume } from '../../core/types';
 
 const VISIBILITY_OPTIONS = [
-  { value: 'visible', label: 'Visible to employers', description: 'Employers can find you in search and view your profile.' },
-  { value: 'applying', label: 'Only visible when applying', description: 'Employers see your profile only after you apply.' },
-  { value: 'hidden', label: 'Hidden from employers', description: 'Your profile is not visible to employers at all.' },
+  { value: 'PUBLIC', label: 'Public', description: 'Your profile is visible to everyone.' },
+  { value: 'EMPLOYERS_ONLY', label: 'Employers only', description: 'Verified employers can find you, but your profile is not publicly searchable.' },
+  { value: 'PRIVATE', label: 'Private', description: 'Your profile is only visible to you.' },
 ];
 
 const AVAILABILITY_OPTIONS = [
@@ -29,62 +29,845 @@ const AVAILABILITY_OPTIONS = [
   { value: 'FLEXIBLE', label: 'Flexible' },
 ];
 
-function ProfileCompletion({ profile }: { profile: Record<string, unknown> }) {
-  const fields = [
-    'name', 'focus', 'summary', 'skills', 'education', 'experience',
-    'phone', 'location', 'website', 'linkedin', 'github', 'portfolio',
-    'expectedSalary', 'availability', 'workAuthorization', 'degree', 'fieldOfStudy',
-  ];
-  const filled = fields.filter((f) => {
-    const v = profile[f];
-    if (Array.isArray(v)) return v.length > 0;
-    return v !== null && v !== undefined && v !== '';
-  }).length;
-  const pct = Math.round((filled / fields.length) * 100);
+const EMPLOYMENT_TYPE_OPTIONS = [
+  { value: 'FULL_TIME', label: 'Full-time' },
+  { value: 'PART_TIME', label: 'Part-time' },
+  { value: 'CONTRACT', label: 'Contract' },
+  { value: 'INTERNSHIP', label: 'Internship' },
+  { value: 'FREELANCE', label: 'Freelance' },
+  { value: 'APPRENTICESHIP', label: 'Apprenticeship' },
+  { value: 'TEMPORARY', label: 'Temporary' },
+];
 
+const SKILL_LEVEL_OPTIONS = [
+  { value: 'BEGINNER', label: 'Beginner' },
+  { value: 'INTERMEDIATE', label: 'Intermediate' },
+  { value: 'ADVANCED', label: 'Advanced' },
+  { value: 'EXPERT', label: 'Expert' },
+];
+
+function ProfileCompleteness({ completeness, onSectionClick }: { completeness: ProfileCompleteness | null; onSectionClick?: (section: string) => void }) {
+  if (!completeness) return null;
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-secondary">Profile completeness</span>
-        <span className="text-sm font-semibold text-primary">{pct}%</span>
+        <span className="text-sm font-semibold text-primary">{completeness.percentage}%</span>
       </div>
       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-        <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${completeness.percentage}%` }} />
       </div>
-      <p className="text-xs text-tertiary mt-2">
-        {pct >= 80 ? "You're almost ready to receive better job matches." : 'Complete your profile to receive better job matches.'}
-      </p>
+      {completeness.missing.length > 0 && (
+        <div className="mt-3">
+          <p className="text-xs text-tertiary mb-2">Complete these to improve your profile:</p>
+          <div className="flex flex-wrap gap-2">
+            {completeness.missing.map((item) => (
+              <button key={item} onClick={() => onSectionClick?.(item)} className="text-xs px-2 py-1 rounded-full bg-muted text-secondary hover:bg-primary hover:text-white transition-colors capitalize">
+                {item.replace(/_/g, ' ')}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function TalentVisibility({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
-  const [visibility, setVisibility] = useState('visible');
-  const [saving, setSaving] = useState(false);
+function AiReadiness({ readiness, onSectionClick }: { readiness: AiReadiness | null; onSectionClick?: (section: string) => void }) {
+  if (!readiness) return null;
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-secondary">AI Matching Readiness</span>
+        <Badge kind={readiness.ready ? 'open' : 'hiring'}>{readiness.ready ? 'Ready' : 'Incomplete'}</Badge>
+      </div>
+      <div className="space-y-2">
+        {readiness.checks.map((check) => (
+          <div key={check.key} className="flex items-center justify-between text-sm">
+            <span className={check.ready ? 'text-primary' : 'text-tertiary'}>{check.key}</span>
+            <span>{check.ready ? '✓' : '○'}</span>
+          </div>
+        ))}
+      </div>
+      {!readiness.ready && (
+        <div className="mt-3">
+          <p className="text-xs text-tertiary mb-2">Complete the required fields to unlock personalized job recommendations:</p>
+          <div className="flex flex-wrap gap-2">
+            {readiness.missing.map((item) => (
+              <button key={item} onClick={() => onSectionClick?.(item)} className="text-xs px-2 py-1 rounded-full bg-muted text-secondary hover:bg-primary hover:text-white transition-colors capitalize">
+                {item.replace(/_/g, ' ')}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
-  const handleChange = async (value: string) => {
-    setVisibility(value);
+function SectionHeader({ title, subtitle, onEdit, editing, onSave, onCancel, saving }: any) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <h4 className="card__title">{title}</h4>
+        {subtitle && <p className="card__subtitle">{subtitle}</p>}
+      </div>
+      <div className="flex gap-2">
+        {editing ? (
+          <>
+            <Button variant="secondary" size="sm" onClick={onCancel} disabled={saving}>Cancel</Button>
+            <Button size="sm" onClick={onSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </>
+        ) : (
+          <Button variant="ghost" size="sm" onClick={onEdit}><Icon name="edit" size={16} /> Edit</Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PersonalInfoSection({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ name: '', phone: '', location: '', website: '', linkedin: '', github: '', portfolio: '' });
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (editing) {
+      setForm({
+        name: (profile.name as string) || '',
+        phone: (profile.phone as string) || '',
+        location: (profile.location as string) || '',
+        website: (profile.website as string) || '',
+        linkedin: (profile.linkedin as string) || '',
+        github: (profile.github as string) || '',
+        portfolio: (profile.portfolio as string) || '',
+      });
+    }
+  }, [editing, profile]);
+
+  const save = async () => {
     setSaving(true);
+    setMessage('');
     try {
-      await studentsApi.updateProfile({ ...profile, visibility } as Record<string, string>);
+      await studentsApi.updateProfile(form);
+      setMessage('Saved successfully');
       onUpdate();
+      setEditing(false);
     } catch {
-      setVisibility(visibility);
+      setMessage('Failed to save. Please try again.');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <Card title="Profile visibility" subtitle="Control who can see your profile." className="section--mt">
+    <Card title="Personal Information" subtitle="Your basic contact details." className="section--mt" id="section-personal">
+      {editing ? (
+        <div className="grid grid-cols-2 gap-4">
+          <FormInput label="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          <FormInput label="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <FormInput label="Location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="City, Country" />
+          <FormInput label="Website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+          <FormInput label="LinkedIn" value={form.linkedin} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} />
+          <FormInput label="GitHub" value={form.github} onChange={(e) => setForm({ ...form, github: e.target.value })} />
+          <div className="col-span-2">
+            <FormInput label="Portfolio" value={form.portfolio} onChange={(e) => setForm({ ...form, portfolio: e.target.value })} />
+          </div>
+          {message && <div className={`col-span-2 message ${message.includes('Failed') ? 'message--error' : 'message--success'}`}>{message}</div>}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Full name</label><div className="text-sm font-medium">{(profile.name as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Phone</label><div className="text-sm font-medium">{(profile.phone as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Location</label><div className="text-sm font-medium">{(profile.location as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Website</label><div className="text-sm font-medium">{(profile.website as string) || 'Not set'}</div></div>
+          <div><label className="form-label">LinkedIn</label><div className="text-sm font-medium">{(profile.linkedin as string) || 'Not set'}</div></div>
+          <div><label className="form-label">GitHub</label><div className="text-sm font-medium">{(profile.github as string) || 'Not set'}</div></div>
+          <div className="col-span-2"><label className="form-label">Portfolio</label><div className="text-sm font-medium">{(profile.portfolio as string) || 'Not set'}</div></div>
+        </div>
+      )}
+      <SectionHeader title="" subtitle="" editing={editing} onEdit={() => setEditing(true)} onSave={save} onCancel={() => setEditing(false)} saving={saving} />
+    </Card>
+  );
+}
+
+function HeadlineSection({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [focus, setFocus] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => { if (editing) setFocus((profile.focus as string) || ''); }, [editing, profile]);
+
+  const save = async () => {
+    setSaving(true);
+    setMessage('');
+    try {
+      await studentsApi.updateProfile({ focus });
+      setMessage('Saved successfully');
+      onUpdate();
+      setEditing(false);
+    } catch {
+      setMessage('Failed to save. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card title="Professional Headline" subtitle="A short statement about your career focus." className="section--mt" id="section-headline">
+      {editing ? (
+        <div>
+          <FormTextarea label="Headline" value={focus} onChange={(e) => setFocus(e.target.value)} rows={2} />
+          {message && <div className={`message ${message.includes('Failed') ? 'message--error' : 'message--success'}`}>{message}</div>}
+        </div>
+      ) : (
+        <p className="text-sm text-secondary">{(profile.focus as string) || 'Not set'}</p>
+      )}
+      <SectionHeader title="" subtitle="" editing={editing} onEdit={() => setEditing(true)} onSave={save} onCancel={() => setEditing(false)} saving={saving} />
+    </Card>
+  );
+}
+
+function AboutSection({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => { if (editing) setSummary((profile.summary as string) || ''); }, [editing, profile]);
+
+  const save = async () => {
+    setSaving(true);
+    setMessage('');
+    try {
+      await studentsApi.updateProfile({ summary });
+      setMessage('Saved successfully');
+      onUpdate();
+      setEditing(false);
+    } catch {
+      setMessage('Failed to save. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card title="About" subtitle="Tell employers about yourself." className="section--mt" id="section-about">
+      {editing ? (
+        <div>
+          <FormTextarea label="About" value={summary} onChange={(e) => setSummary(e.target.value)} rows={4} />
+          {message && <div className={`message ${message.includes('Failed') ? 'message--error' : 'message--success'}`}>{message}</div>}
+        </div>
+      ) : (
+        <p className="text-sm text-secondary">{(profile.summary as string) || 'Not provided'}</p>
+      )}
+      <SectionHeader title="" subtitle="" editing={editing} onEdit={() => setEditing(true)} onSave={save} onCancel={() => setEditing(false)} saving={saving} />
+    </Card>
+  );
+}
+
+function EducationSection({ userId: _userId, onSectionClick }: { userId: string; onSectionClick?: (section: string) => void }) {
+  const [items, setItems] = useState<Education[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState({ institution: '', degree: '', fieldOfStudy: '', startDate: '', endDate: '', currentlyStudying: false, description: '' });
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await studentsApi.getEducations();
+      setItems(data);
+    } catch {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  useEffect(() => {
+    if (onSectionClick && editing === null && items.length === 0) {
+      setEditing('new');
+    }
+  }, [onSectionClick, editing, items.length]);
+
+  const startEdit = (item?: Education) => {
+    if (item) {
+      setForm({ institution: item.institution, degree: item.degree || '', fieldOfStudy: item.fieldOfStudy || '', startDate: item.startDate?.slice(0, 10) || '', endDate: item.endDate?.slice(0, 10) || '', currentlyStudying: item.currentlyStudying, description: item.description || '' });
+      setEditing(item.id);
+    } else {
+      setForm({ institution: '', degree: '', fieldOfStudy: '', startDate: '', endDate: '', currentlyStudying: false, description: '' });
+      setEditing('new');
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      if (editing === 'new') {
+        await studentsApi.createEducation(form);
+      } else if (editing) {
+        await studentsApi.updateEducation(editing, form);
+      }
+      setEditing(null);
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    await studentsApi.deleteEducation(id);
+    reload();
+  };
+
+  return (
+    <Card title="Education" subtitle="Add your academic background." className="section--mt" id="section-education">
+      {loading ? <Skeleton variant="table" lines={3} /> : (
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div key={item.id} className="flex items-start justify-between p-3 rounded-lg border">
+              <div>
+                <div className="font-medium text-sm">{item.institution}</div>
+                <div className="text-xs text-secondary">{item.degree} {item.fieldOfStudy ? `· ${item.fieldOfStudy}` : ''}</div>
+                <div className="text-xs text-tertiary mt-1">{new Date(item.startDate).getFullYear()} – {item.currentlyStudying ? 'Present' : (item.endDate ? new Date(item.endDate).getFullYear() : 'Present')}</div>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => startEdit(item)}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-danger" onClick={() => remove(item.id)}>Delete</Button>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && <EmptyState icon="🎓" title="No education added" text="Add your first education entry." />}
+        </div>
+      )}
+      {editing ? (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <FormInput label="Institution" value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })} required />
+          <FormInput label="Degree" value={form.degree} onChange={(e) => setForm({ ...form, degree: e.target.value })} />
+          <FormInput label="Field of Study" value={form.fieldOfStudy} onChange={(e) => setForm({ ...form, fieldOfStudy: e.target.value })} />
+          <FormInput label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
+          <FormInput label="End Date" type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} disabled={form.currentlyStudying} />
+          <div className="flex items-center gap-2 mt-6">
+            <input type="checkbox" id="currentlyStudying" checked={form.currentlyStudying} onChange={(e) => setForm({ ...form, currentlyStudying: e.target.checked })} />
+            <label htmlFor="currentlyStudying" className="text-sm">Currently studying</label>
+          </div>
+          <div className="col-span-2">
+            <FormTextarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
+          </div>
+          <div className="col-span-2 flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4">
+          <Button variant="secondary" size="sm" onClick={() => startEdit()}>+ Add Education</Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function ExperienceSection({ userId: _userId, onSectionClick }: { userId: string; onSectionClick?: (section: string) => void }) {
+  const [items, setItems] = useState<Experience[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState<{ jobTitle: string; company: string; employmentType: string; location: string; startDate: string; endDate: string; currentlyWorking: boolean; description: string; skillsUsed: string[] }>({ jobTitle: '', company: '', employmentType: '', location: '', startDate: '', endDate: '', currentlyWorking: false, description: '', skillsUsed: [] });
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await studentsApi.getExperiences();
+      setItems(data);
+    } catch {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  useEffect(() => {
+    if (onSectionClick && editing === null && items.length === 0) {
+      setEditing('new');
+    }
+  }, [onSectionClick, editing, items.length]);
+
+  const startEdit = (item?: Experience) => {
+    if (item) {
+      setForm({ jobTitle: item.jobTitle, company: item.company, employmentType: item.employmentType || '', location: item.location || '', startDate: item.startDate?.slice(0, 10) || '', endDate: item.endDate?.slice(0, 10) || '', currentlyWorking: item.currentlyWorking, description: item.description || '', skillsUsed: item.skillsUsed });
+      setEditing(item.id);
+    } else {
+      setForm({ jobTitle: '', company: '', employmentType: '', location: '', startDate: '', endDate: '', currentlyWorking: false, description: '', skillsUsed: [] });
+      setEditing('new');
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      if (editing === 'new') {
+        await studentsApi.createExperience(form);
+      } else if (editing) {
+        await studentsApi.updateExperience(editing, form);
+      }
+      setEditing(null);
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    await studentsApi.deleteExperience(id);
+    reload();
+  };
+
+  return (
+    <Card title="Experience" subtitle="Add your work history." className="section--mt" id="section-experience">
+      {loading ? <Skeleton variant="table" lines={3} /> : (
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div key={item.id} className="flex items-start justify-between p-3 rounded-lg border">
+              <div>
+                <div className="font-medium text-sm">{item.jobTitle} at {item.company}</div>
+                <div className="text-xs text-secondary">{item.employmentType} {item.location ? `· ${item.location}` : ''}</div>
+                <div className="text-xs text-tertiary mt-1">{new Date(item.startDate).getFullYear()} – {item.currentlyWorking ? 'Present' : (item.endDate ? new Date(item.endDate).getFullYear() : 'Present')}</div>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => startEdit(item)}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-danger" onClick={() => remove(item.id)}>Delete</Button>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && <EmptyState icon="💼" title="No experience added" text="Add your first work experience." />}
+        </div>
+      )}
+      {editing && (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <FormInput label="Job Title" value={form.jobTitle} onChange={(e) => setForm({ ...form, jobTitle: e.target.value })} required />
+          <FormInput label="Company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} required />
+          <FormSelect label="Employment Type" value={form.employmentType} onChange={(e) => setForm({ ...form, employmentType: e.target.value })} options={EMPLOYMENT_TYPE_OPTIONS} />
+          <FormInput label="Location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+          <FormInput label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
+          <FormInput label="End Date" type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} disabled={form.currentlyWorking} />
+          <div className="flex items-center gap-2 mt-6">
+            <input type="checkbox" id="currentlyWorking" checked={form.currentlyWorking} onChange={(e) => setForm({ ...form, currentlyWorking: e.target.checked })} />
+            <label htmlFor="currentlyWorking" className="text-sm">Currently working here</label>
+          </div>
+          <div className="col-span-2">
+            <FormTextarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+          </div>
+          <div className="col-span-2 flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </div>
+        </div>
+      )}
+      {!editing && (
+        <div className="mt-4">
+          <Button variant="secondary" size="sm" onClick={() => startEdit()}>+ Add Experience</Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function SkillsSection({ userId: _userId, onSectionClick }: { userId: string; onSectionClick?: (section: string) => void }) {
+  const [items, setItems] = useState<Skill[]>([]);
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('');
+  const [level, setLevel] = useState('BEGINNER');
+  const [years, setYears] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await studentsApi.getSkills();
+      setItems(data);
+    } catch {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  useEffect(() => {
+    if (onSectionClick && items.length === 0) {
+      setName('');
+      setCategory('');
+      setLevel('BEGINNER');
+      setYears('');
+    }
+  }, [onSectionClick, items.length]);
+
+  const add = async () => {
+    if (!name.trim()) return;
+    setSaving(true);
+    try {
+      await studentsApi.createSkill({ name: name.trim(), category: category.trim() || undefined, level, yearsOfExperience: years ? Number(years) : undefined });
+      setName('');
+      setCategory('');
+      setLevel('BEGINNER');
+      setYears('');
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    await studentsApi.deleteSkill(id);
+    reload();
+  };
+
+  return (
+    <Card title="Skills" subtitle="Add skills with proficiency levels." className="section--mt" id="section-skills">
+      {loading ? <Skeleton variant="table" lines={3} /> : (
+        <div className="flex flex-wrap gap-2">
+          {items.map((skill) => (
+            <span key={skill.id} className="badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+              {skill.name} {skill.level && <span className="text-xs opacity-75">({skill.level})</span>}
+              <button onClick={() => remove(skill.id)} className="text-danger hover:underline text-xs">×</button>
+            </span>
+          ))}
+          {items.length === 0 && <span className="text-sm text-tertiary">No skills added yet.</span>}
+        </div>
+      )}
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <FormInput label="Skill name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Python" />
+        <FormInput label="Category" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Backend" />
+        <FormSelect label="Proficiency" value={level} onChange={(e) => setLevel(e.target.value)} options={SKILL_LEVEL_OPTIONS} />
+        <FormInput label="Years of Experience" type="number" value={years} onChange={(e) => setYears(e.target.value)} placeholder="e.g. 3" />
+        <div className="col-span-2">
+          <Button variant="secondary" size="sm" onClick={add} disabled={saving || !name.trim()}>{saving ? 'Adding…' : '+ Add Skill'}</Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function CertificationsSection(_props: { onSectionClick?: (section: string) => void }) {
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: '', issuer: '', issuedAt: '', expiresAt: '', credentialId: '', url: '' });
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await studentsApi.getCertifications();
+      setItems(data as any);
+    } catch {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  const startEdit = (item?: any) => {
+    if (item) {
+      setForm({ name: item.name, issuer: item.issuer || '', issuedAt: item.issuedAt?.slice(0, 10) || '', expiresAt: item.expiresAt?.slice(0, 10) || '', credentialId: item.credentialId || '', url: item.url || '' });
+      setEditing(item.id);
+    } else {
+      setForm({ name: '', issuer: '', issuedAt: '', expiresAt: '', credentialId: '', url: '' });
+      setEditing('new');
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      if (editing === 'new') {
+        await studentsApi.createCertification(form);
+      } else if (editing) {
+        await studentsApi.updateCertification(editing, form);
+      }
+      setEditing(null);
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    await studentsApi.deleteCertification(id);
+    reload();
+  };
+
+  return (
+    <Card title="Certifications" subtitle="Add professional certifications and licenses." className="section--mt" id="section-certifications">
+      {loading ? <Skeleton variant="table" lines={3} /> : (
+        <div className="space-y-3">
+          {items.map((item: any) => (
+            <div key={item.id} className="flex items-start justify-between p-3 rounded-lg border">
+              <div>
+                <div className="font-medium text-sm">{item.name}</div>
+                <div className="text-xs text-secondary">{item.issuer} {item.issuedAt ? `· Issued ${new Date(item.issuedAt).getFullYear()}` : ''}</div>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => startEdit(item)}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-danger" onClick={() => remove(item.id)}>Delete</Button>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && <EmptyState icon="🏆" title="No certifications added" text="Add professional certifications to strengthen your profile." />}
+        </div>
+      )}
+      {editing && (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <FormInput label="Certification Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          <FormInput label="Issuer" value={form.issuer} onChange={(e) => setForm({ ...form, issuer: e.target.value })} />
+          <FormInput label="Issued Date" type="date" value={form.issuedAt} onChange={(e) => setForm({ ...form, issuedAt: e.target.value })} />
+          <FormInput label="Expires Date" type="date" value={form.expiresAt} onChange={(e) => setForm({ ...form, expiresAt: e.target.value })} />
+          <FormInput label="Credential ID" value={form.credentialId} onChange={(e) => setForm({ ...form, credentialId: e.target.value })} />
+          <FormInput label="URL" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+          <div className="col-span-2 flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </div>
+        </div>
+      )}
+      {!editing && (
+        <div className="mt-4">
+          <Button variant="secondary" size="sm" onClick={() => startEdit()}>+ Add Certification</Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function ProjectsSection(_props: { onSectionClick?: (section: string) => void }) {
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: '', description: '', url: '', startDate: '', endDate: '', skillsUsed: [] });
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await studentsApi.getProjects();
+      setItems(data as any);
+    } catch {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  const startEdit = (item?: any) => {
+    if (item) {
+      setForm({ name: item.name, description: item.description || '', url: item.url || '', startDate: item.startDate?.slice(0, 10) || '', endDate: item.endDate?.slice(0, 10) || '', skillsUsed: item.skillsUsed || [] });
+      setEditing(item.id);
+    } else {
+      setForm({ name: '', description: '', url: '', startDate: '', endDate: '', skillsUsed: [] });
+      setEditing('new');
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      if (editing === 'new') {
+        await studentsApi.createProject(form);
+      } else if (editing) {
+        await studentsApi.updateProject(editing, form);
+      }
+      setEditing(null);
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    await studentsApi.deleteProject(id);
+    reload();
+  };
+
+  return (
+    <Card title="Projects" subtitle="Showcase your personal or academic projects." className="section--mt" id="section-projects">
+      {loading ? <Skeleton variant="table" lines={3} /> : (
+        <div className="space-y-3">
+          {items.map((item: any) => (
+            <div key={item.id} className="flex items-start justify-between p-3 rounded-lg border">
+              <div>
+                <div className="font-medium text-sm">{item.name}</div>
+                <div className="text-xs text-secondary">{item.description}</div>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => startEdit(item)}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-danger" onClick={() => remove(item.id)}>Delete</Button>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && <EmptyState icon="🚀" title="No projects added" text="Add projects to demonstrate your skills." />}
+        </div>
+      )}
+      {editing && (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <FormInput label="Project Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          </div>
+          <div className="col-span-2">
+            <FormTextarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
+          </div>
+          <FormInput label="Project URL" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+          <FormInput label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
+          <FormInput label="End Date" type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
+          <div className="col-span-2 flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </div>
+        </div>
+      )}
+      {!editing && (
+        <div className="mt-4">
+          <Button variant="secondary" size="sm" onClick={() => startEdit()}>+ Add Project</Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CareerPreferencesSection({ onSectionClick }: { onSectionClick?: (section: string) => void }) {
+  const [prefs, setPrefs] = useState<CareerPreference | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ preferredJobTitles: '', industries: '', preferredLocations: '', workArrangement: '', salaryExpectation: '', availability: '', workAuthorization: '', authorizedCountries: '', needsVisaSponsorship: false });
+  const [saving, setSaving] = useState(false);
+
+  const reload = useCallback(async () => {
+    try {
+      const data = await studentsApi.getCareerPreferences();
+      setPrefs(data);
+      if (data) {
+        setForm({
+          preferredJobTitles: Array.isArray(data.preferredJobTitles) ? data.preferredJobTitles.join(', ') : '',
+          industries: Array.isArray(data.industries) ? data.industries.join(', ') : '',
+          preferredLocations: Array.isArray(data.preferredLocations) ? data.preferredLocations.join(', ') : '',
+          workArrangement: data.workArrangement || '',
+          salaryExpectation: data.salaryExpectation || '',
+          availability: data.availability || '',
+          workAuthorization: data.workAuthorization || '',
+          authorizedCountries: Array.isArray(data.authorizedCountries) ? data.authorizedCountries.join(', ') : '',
+          needsVisaSponsorship: data.needsVisaSponsorship,
+        });
+      }
+    } catch {
+      setPrefs(null);
+    }
+  }, []);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  useEffect(() => {
+    if (onSectionClick && !prefs) {
+      setEditing(true);
+    }
+  }, [onSectionClick, prefs]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await studentsApi.updateCareerPreferences({
+        preferredJobTitles: form.preferredJobTitles.split(',').map((s) => s.trim()).filter(Boolean),
+        industries: form.industries.split(',').map((s) => s.trim()).filter(Boolean),
+        preferredLocations: form.preferredLocations.split(',').map((s) => s.trim()).filter(Boolean),
+        workArrangement: form.workArrangement || undefined,
+        salaryExpectation: form.salaryExpectation || undefined,
+        availability: form.availability || undefined,
+        workAuthorization: form.workAuthorization || undefined,
+        authorizedCountries: form.authorizedCountries.split(',').map((s) => s.trim()).filter(Boolean),
+        needsVisaSponsorship: form.needsVisaSponsorship,
+      });
+      setEditing(false);
+      reload();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card title="Career Preferences" subtitle="Help us match you with the right opportunities." className="section--mt" id="section-preferences">
+      {editing ? (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <FormInput label="Preferred Job Titles" value={form.preferredJobTitles} onChange={(e) => setForm({ ...form, preferredJobTitles: e.target.value })} placeholder="Software Engineer, Product Manager" />
+          </div>
+          <div className="col-span-2">
+            <FormInput label="Industries" value={form.industries} onChange={(e) => setForm({ ...form, industries: e.target.value })} placeholder="Technology, Finance, Healthcare" />
+          </div>
+          <div className="col-span-2">
+            <FormInput label="Preferred Locations" value={form.preferredLocations} onChange={(e) => setForm({ ...form, preferredLocations: e.target.value })} placeholder="Manila, Remote, Singapore" />
+          </div>
+          <FormSelect label="Work Arrangement" value={form.workArrangement} onChange={(e) => setForm({ ...form, workArrangement: e.target.value })} options={EMPLOYMENT_TYPE_OPTIONS} />
+          <FormInput label="Salary Expectation" value={form.salaryExpectation} onChange={(e) => setForm({ ...form, salaryExpectation: e.target.value })} placeholder="e.g. 50000–70000 PHP/month" />
+          <FormSelect label="Availability" value={form.availability} onChange={(e) => setForm({ ...form, availability: e.target.value })} options={AVAILABILITY_OPTIONS} />
+          <div className="col-span-2">
+            <FormInput label="Authorized Countries" value={form.authorizedCountries} onChange={(e) => setForm({ ...form, authorizedCountries: e.target.value })} placeholder="Philippines, Singapore" />
+          </div>
+          <div className="col-span-2 flex items-center gap-2">
+            <input type="checkbox" id="needsVisaSponsorship" checked={form.needsVisaSponsorship} onChange={(e) => setForm({ ...form, needsVisaSponsorship: e.target.checked })} />
+            <label htmlFor="needsVisaSponsorship" className="text-sm">I need visa sponsorship</label>
+          </div>
+          <div className="col-span-2 flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Preferred Job Titles</label><div className="text-sm font-medium">{(prefs?.preferredJobTitles ?? []).join(', ') || 'Not set'}</div></div>
+          <div><label className="form-label">Industries</label><div className="text-sm font-medium">{(prefs?.industries ?? []).join(', ') || 'Not set'}</div></div>
+          <div><label className="form-label">Preferred Locations</label><div className="text-sm font-medium">{(prefs?.preferredLocations ?? []).join(', ') || 'Not set'}</div></div>
+          <div><label className="form-label">Work Arrangement</label><div className="text-sm font-medium">{prefs?.workArrangement || 'Not set'}</div></div>
+          <div><label className="form-label">Salary Expectation</label><div className="text-sm font-medium">{prefs?.salaryExpectation || 'Not set'}</div></div>
+          <div><label className="form-label">Availability</label><div className="text-sm font-medium">{prefs?.availability || 'Not set'}</div></div>
+          <div><label className="form-label">Work Authorization</label><div className="text-sm font-medium">{prefs?.workAuthorization || 'Not set'}</div></div>
+          <div><label className="form-label">Authorized Countries</label><div className="text-sm font-medium">{(prefs?.authorizedCountries ?? []).join(', ') || 'Not set'}</div></div>
+        </div>
+      )}
+      {!editing && (
+        <div className="mt-4">
+          <Button variant="ghost" size="sm" onClick={() => setEditing(true)}><Icon name="edit" size={16} /> Edit preferences</Button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function ProfileVisibilitySection({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
+  const [visibility, setVisibility] = useState((profile.visibility as string) || 'EMPLOYERS_ONLY');
+  const [saving, setSaving] = useState(false);
+
+  const handleChange = async (value: string) => {
+    setVisibility(value);
+    setSaving(true);
+    try {
+      await studentsApi.updateProfile({ visibility: value } as any);
+      onUpdate();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card title="Profile Visibility" subtitle="Control who can see your profile." className="section--mt" id="section-visibility">
       <div className="form-group">
-        <label className="form-label">Employer discoverability</label>
-           <select
-            value={visibility}
-            onChange={(e) => handleChange(e.target.value)}
-            disabled={saving}
-            className="select"
-          >
+        <label className="form-label">Visibility</label>
+        <select value={visibility} onChange={(e) => handleChange(e.target.value)} disabled={saving} className="select">
           {VISIBILITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -99,6 +882,48 @@ function TalentVisibility({ profile, onUpdate }: { profile: Record<string, unkno
 
 function ResumeSection() {
   const { data: resumes, loading, reload } = useAsync<Resume[]>(() => resumesApi.listMine(), []);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleView = async (id: string) => {
+    try {
+      const resume = await resumesApi.getById(id);
+      if (resume.fileUrl) {
+        window.open(resume.fileUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      alert('Unable to open resume. Please try again.');
+    }
+  };
+
+  const handleDownload = async (id: string) => {
+    try {
+      const resume = await resumesApi.getById(id);
+      if (resume.fileUrl) {
+        const a = document.createElement('a');
+        a.href = resume.fileUrl;
+        a.download = resume.fileName;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    } catch {
+      alert('Unable to download resume. Please try again.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this resume? This action cannot be undone.')) return;
+    setDeletingId(id);
+    try {
+      await resumesApi.delete(id);
+      reload();
+    } catch {
+      alert('Failed to delete resume. Please try again.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <Card title="Resume" subtitle="Manage your uploaded resumes." className="section--mt">
@@ -116,9 +941,11 @@ function ResumeSection() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm">View</Button>
-                  <Button variant="ghost" size="sm">Download</Button>
-                  <Button variant="ghost" size="sm" className="text-danger">Delete</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleView(resume.id)}>View</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDownload(resume.id)}>Download</Button>
+                  <Button variant="ghost" size="sm" className="text-danger" onClick={() => handleDelete(resume.id)} disabled={deletingId === resume.id}>
+                    {deletingId === resume.id ? 'Deleting…' : 'Delete'}
+                  </Button>
                 </div>
               </div>
             </article>
@@ -152,127 +979,6 @@ function ResumeSection() {
             }}
           />
         </label>
-      </div>
-    </Card>
-  );
-}
-
-function TalentCareerSection({ profile, onUpdate }: { profile: Record<string, unknown>; onUpdate: () => void }) {
-  const [editing, setEditing] = useState<string | null>(null);
-  const [form, setForm] = useState<Record<string, unknown>>({});
-  const [saving, setSaving] = useState(false);
-
-  const startEdit = (section: string) => {
-    setEditing(section);
-    setForm({ ...profile });
-  };
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      await studentsApi.updateProfile(form as Record<string, string>);
-      onUpdate();
-      setEditing(null);
-    } catch {
-      // handle error
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const sections = [
-    {
-      key: 'qualifications',
-      title: 'Qualifications',
-      description: profile.summary as string || 'Not provided',
-      fields: ['summary', 'skills', 'education', 'experience'],
-    },
-    {
-      key: 'preferences',
-      title: 'Job preferences',
-      description: `${profile.availability as string || 'Not set'} · ${profile.workAuthorization as string || 'Not set'}`,
-      fields: ['availability', 'workAuthorization', 'expectedSalary'],
-    },
-    {
-      key: 'availability',
-      title: 'Availability',
-      description: profile.availability as string || 'Not provided',
-      fields: ['availability'],
-    },
-    {
-      key: 'interests',
-      title: 'Career interests',
-      description: 'Select industries, job categories, and roles you are interested in.',
-      fields: ['focus'],
-    },
-    {
-      key: 'skills',
-      title: 'Skills',
-      description: Array.isArray(profile.skills) && profile.skills.length > 0 ? profile.skills.join(', ') as string : 'No skills added',
-      fields: ['skills'],
-    },
-    {
-      key: 'experience',
-      title: 'Experience',
-      description: profile.experience as string || 'Not provided',
-      fields: ['experience'],
-    },
-    {
-      key: 'education',
-      title: 'Education',
-      description: profile.education as string || 'Not provided',
-      fields: ['education'],
-    },
-  ];
-
-  return (
-    <Card title="Career profile" subtitle="Improve your job matches by completing your career profile." className="section--mt">
-      <div className="stack">
-        {sections.map((section) => (
-          <div key={section.key} className="card card--compact border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h4 className="card__title">{section.title}</h4>
-                <p className="card__subtitle">{editing === section.key ? '' : section.description}</p>
-              </div>
-              {editing === section.key ? (
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => setEditing(null)} disabled={saving}>Cancel</Button>
-                  <Button size="sm" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
-                </div>
-              ) : (
-                <Button variant="ghost" size="sm" onClick={() => startEdit(section.key)}>
-                  <Icon name="edit" size={16} /> Edit
-                </Button>
-              )}
-            </div>
-            {editing === section.key && (
-              <div className="mt-4 stack">
-                {section.fields.includes('summary') && (
-                  <FormTextarea label="Summary" value={(form.summary as string) || ''} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
-                )}
-                {section.fields.includes('skills') && (
-                  <FormInput label="Skills (comma separated)" value={(Array.isArray(form.skills) ? form.skills : []).join(', ')} onChange={(e) => setForm({ ...form, skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
-                )}
-                {section.fields.includes('experience') && (
-                  <FormTextarea label="Experience" value={(form.experience as string) || ''} onChange={(e) => setForm({ ...form, experience: e.target.value })} />
-                )}
-                {section.fields.includes('education') && (
-                  <FormTextarea label="Education" value={(form.education as string) || ''} onChange={(e) => setForm({ ...form, education: e.target.value })} />
-                )}
-                {section.fields.includes('availability') && (
-                  <FormSelect label="Availability" value={(form.availability as string) || ''} onChange={(e) => setForm({ ...form, availability: e.target.value })} options={AVAILABILITY_OPTIONS} />
-                )}
-                {section.fields.includes('workAuthorization') && (
-                  <FormInput label="Work authorization" value={(form.workAuthorization as string) || ''} onChange={(e) => setForm({ ...form, workAuthorization: e.target.value })} />
-                )}
-                {section.fields.includes('expectedSalary') && (
-                  <FormInput label="Expected salary" type="number" value={(form.expectedSalary as string) || ''} onChange={(e) => setForm({ ...form, expectedSalary: e.target.value })} />
-                )}
-              </div>
-            )}
-          </div>
-        ))}
       </div>
     </Card>
   );
@@ -362,6 +1068,8 @@ export const AccountPage = () => {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [completeness, setCompleteness] = useState<ProfileCompleteness | null>(null);
+  const [aiReadiness, setAiReadiness] = useState<AiReadiness | null>(null);
 
   const reloadProfile = async () => {
     setProfileLoading(true);
@@ -376,20 +1084,40 @@ export const AccountPage = () => {
     }
   };
 
-  useEffect(() => {
-    reloadProfile();
-  }, [role]);
+  const loadMeta = async () => {
+    if (role === 'STUDENT' && user?.id) {
+      try {
+        const [c, a] = await Promise.all([studentsApi.getProfileCompleteness(), studentsApi.getAiReadiness()]);
+        setCompleteness(c);
+        setAiReadiness(a);
+      } catch {
+        setCompleteness(null);
+        setAiReadiness(null);
+      }
+    }
+  };
 
-  const profileCompletion = useMemo(() => {
-    if (!profile || typeof profile !== 'object') return 0;
-    const fields = ['name', 'focus', 'summary', 'skills', 'education', 'experience', 'phone', 'location', 'website'];
-    const filled = fields.filter((f) => {
-      const v = (profile as Record<string, unknown>)[f];
-      if (Array.isArray(v)) return v.length > 0;
-      return v !== null && v !== undefined && v !== '';
-    }).length;
-    return Math.round((filled / fields.length) * 100);
-  }, [profile]);
+  const scrollToSection = (section: string) => {
+    const map: Record<string, string> = {
+      education: 'section-education',
+      experience: 'section-experience',
+      skills: 'section-skills',
+      resume: 'section-resume',
+      preferences: 'section-preferences',
+      visibility: 'section-visibility',
+      personal: 'section-personal',
+      headline: 'section-headline',
+      about: 'section-about',
+    };
+    const id = map[section];
+    if (id) {
+      const el = document.getElementById(id);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => { reloadProfile(); }, [role]);
+  useEffect(() => { if (profile) loadMeta(); }, [profile]);
 
   if (profileLoading) {
     return (
@@ -427,16 +1155,12 @@ export const AccountPage = () => {
               {role === 'EMPLOYER' && Boolean((profile as Record<string, unknown>).verified) && (
                 <Badge kind="open">Verified</Badge>
               )}
-              {role === 'STUDENT' && (
-                <span className="text-xs text-tertiary">{profileCompletion}% complete</span>
+              {role === 'STUDENT' && completeness && (
+                <span className="text-xs text-tertiary">{completeness.percentage}% complete</span>
               )}
             </div>
-            {role === 'STUDENT' && <ProfileCompletion profile={profile} />}
-          </div>
-          <div className="flex-shrink-0">
-            <Button variant="secondary" size="sm">
-              <Icon name="edit" size={16} /> Edit profile
-            </Button>
+            {role === 'STUDENT' && <ProfileCompleteness completeness={completeness} onSectionClick={scrollToSection} />}
+            {role === 'STUDENT' && <AiReadiness readiness={aiReadiness} onSectionClick={scrollToSection} />}
           </div>
         </div>
       </Card>
@@ -489,11 +1213,19 @@ export const AccountPage = () => {
       </Card>
 
       {/* Role-specific sections */}
-      {role === 'STUDENT' && (
+      {role === 'STUDENT' && user?.id && (
         <>
-          <TalentVisibility profile={profile} onUpdate={reloadProfile} />
+          <PersonalInfoSection profile={profile} onUpdate={reloadProfile} />
+          <HeadlineSection profile={profile} onUpdate={reloadProfile} />
+          <AboutSection profile={profile} onUpdate={reloadProfile} />
+          <EducationSection userId={user.id} onSectionClick={scrollToSection} />
+          <ExperienceSection userId={user.id} onSectionClick={scrollToSection} />
+          <SkillsSection userId={user.id} onSectionClick={scrollToSection} />
+          <CertificationsSection onSectionClick={scrollToSection} />
+          <ProjectsSection onSectionClick={scrollToSection} />
           <ResumeSection />
-          <TalentCareerSection profile={profile} onUpdate={reloadProfile} />
+          <CareerPreferencesSection onSectionClick={scrollToSection} />
+          <ProfileVisibilitySection profile={profile} onUpdate={reloadProfile} />
           <TalentAccountSettings onUpdate={reloadProfile} />
         </>
       )}

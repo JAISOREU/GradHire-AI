@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query, Req, UseGuards, Put } from '
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { EmployerGuard } from '../auth/employer.guard';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto, UpdateApplicationStatusDto } from '../common/dto/application.dto';
 import { normalizePagination } from '../common/pagination';
@@ -23,6 +24,7 @@ export class ApplicationsController {
   }
 
   @Get('employer/all')
+  @UseGuards(EmployerGuard)
   async allForEmployer(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
     const pagination = query ? normalizePagination(query) : undefined;
     return this.applications.listForEmployer(req.user, pagination);

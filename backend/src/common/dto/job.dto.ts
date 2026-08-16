@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ExperienceLevel,
@@ -13,6 +13,7 @@ import {
 export class CreateJobDto {
   @ApiProperty({ example: 'Software Engineer' })
   @IsString()
+  @IsNotEmpty()
   title!: string;
 
   @ApiProperty({ required: false, example: 'Engineering' })
@@ -37,6 +38,7 @@ export class CreateJobDto {
 
   @ApiProperty({ example: 'Build scalable web applications' })
   @IsString()
+  @MinLength(10, { message: 'Description must be at least 10 characters' })
   description!: string;
 
   @ApiProperty({ example: 'Develop and maintain backend services' })
@@ -320,6 +322,7 @@ export class CreateJobDto {
 
   @ApiProperty({ example: 'Acme Corp' })
   @IsString()
+  @IsNotEmpty()
   company!: string;
 
   @ApiProperty({ required: false, default: false })

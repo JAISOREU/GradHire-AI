@@ -75,11 +75,20 @@ export class AppService implements OnModuleInit {
     if (query.internship !== undefined) {
       where.type = query.internship ? 'INTERNSHIP' : { not: 'INTERNSHIP' };
     }
-    if (query.salaryMin !== undefined) {
-      where.OR = [
-        { salaryMin: { gte: query.salaryMin } },
-        { salaryUndisclosed: false, salaryMin: null },
-      ];
+    if (query.salaryMin !== undefined || query.salaryMax !== undefined) {
+      const salaryConditions: Record<string, unknown>[] = [];
+      if (query.salaryMin !== undefined) {
+        salaryConditions.push({ salaryMin: { gte: query.salaryMin } });
+      }
+      if (query.salaryMax !== undefined) {
+        salaryConditions.push({ salaryMax: { lte: query.salaryMax } });
+      }
+      salaryConditions.push({ salaryUndisclosed: false });
+      if (where.OR) {
+        where.OR = [...(where.OR as Record<string, unknown>[]), ...salaryConditions];
+      } else {
+        where.OR = salaryConditions;
+      }
     }
 
     const orderBy: Record<string, string> = {};
@@ -98,7 +107,6 @@ export class AppService implements OnModuleInit {
           id: true,
           title: true,
           company: true,
-          location: true,
           type: true,
           experienceLevel: true,
           workplaceType: true,
@@ -113,6 +121,7 @@ export class AppService implements OnModuleInit {
           views: true,
           createdAt: true,
           companyRef: { select: { name: true, industry: true, logo: true } },
+          location: { select: { city: true, country: true, region: true } },
           isExternal: true,
           applicationUrl: true,
           sourceName: true,
@@ -124,12 +133,19 @@ export class AppService implements OnModuleInit {
       this.prisma.job.count({ where }),
     ]);
 
-    const items = jobs.map((j: Record<string, unknown>) => ({
-      ...j,
-      type: String(j.type),
-      experienceLevel: String(j.experienceLevel),
-      workplaceType: String(j.workplaceType),
-    }));
+    const items = jobs.map((j: Record<string, unknown>) => {
+      const loc = j.location as Record<string, string> | undefined;
+      const locationStr = loc
+        ? [loc.city, loc.region, loc.country].filter(Boolean).join(', ')
+        : [j.city, j.country].filter(Boolean).join(', ');
+      return {
+        ...j,
+        location: locationStr || 'Remote',
+        type: String(j.type),
+        experienceLevel: String(j.experienceLevel),
+        workplaceType: String(j.workplaceType),
+      };
+    });
 
     const result = applyPagination(items, total, page, limit);
     await this.cache.set(cacheKey, result, 30);
@@ -162,6 +178,9 @@ export class AppService implements OnModuleInit {
             type: String(dbJob.type),
             experienceLevel: String(dbJob.experienceLevel),
             workplaceType: String(dbJob.workplaceType),
+            location: dbJob.location
+              ? [dbJob.location.city, dbJob.location.region, dbJob.location.country].filter(Boolean).join(', ')
+              : [dbJob.city, dbJob.country].filter(Boolean).join(', ') || 'Remote',
             isExternal: dbJob.isExternal,
             applicationUrl: dbJob.applicationUrl,
             sourceName: dbJob.sourceName,

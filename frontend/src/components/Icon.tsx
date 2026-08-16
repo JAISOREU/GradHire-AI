@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo';
+type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo' | 'resume' | 'reports' | 'ai' | 'database' | 'api' | 'email' | 'cms' | 'feature' | 'backup' | 'security';
 
 type IconProps = {
   name: IconName;
@@ -138,6 +138,36 @@ const PATH: Record<IconName, ReactNode> = {
   ),
   moon: (
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  resume: (
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  reports: (
+    <path d="M18 20V10M12 20V4M6 20v-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  ai: (
+    <path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22l-1.25-7.07A4 4 0 0 1 8 6a4 4 0 0 1 4-4zM9 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM21 14a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM15 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  database: (
+    <path d="M12 2C6.48 2 2 4.02 2 6.5S6.48 11 12 11s10-2.02 10-4.5S17.52 2 12 2zM2 12c0 2.48 4.48 4.5 10 4.5s10-2.02 10-4.5M2 17.5c0 2.48 4.48 4.5 10 4.5s10-2.02 10-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  api: (
+    <path d="M4 6h16M4 12h16M4 18h7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  email: (
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  cms: (
+    <path d="M4 6h16M4 12h16M4 18h12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  feature: (
+    <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  backup: (
+    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.24M21 3v6h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  security: (
+    <path d="M12 2L4 5v6c0 5.25 3.5 10 8 11 4.5-1 8-5.75 8-11V5l-8-3z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   ),
 };
 

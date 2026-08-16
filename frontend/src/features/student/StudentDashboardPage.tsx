@@ -18,12 +18,13 @@ export const StudentDashboardPage = () => {
   const { data: profile, error: profileError } = useAsync(() => studentsApi.getProfile(), []);
   const { data: applications, loading: appsLoading, error: appsError } = useAsync(() => studentsApi.listApplications(), []);
   const { data: savedJobs } = useAsync(() => savedJobsApi.listMine<{ id: string }>(), []);
+  const { data: aiReadiness } = useAsync(() => studentsApi.getAiReadiness(), []);
 
   const appCount = applications?.length ?? 0;
   const savedCount = savedJobs?.length ?? 0;
   const focusWords = profile?.focus ? profile.focus.split(' ').filter(Boolean).length : 0;
   const profileCompletePct = Math.min(100, Math.round((focusWords / 5) * 100));
-  const hasRecommendationAccess = focusWords >= 5 && (profile?.skills?.length ?? 0) > 0 && Boolean(profile?.experience?.trim());
+  const hasRecommendationAccess = aiReadiness?.ready ?? false;
 
   return (
     <div className="page fade-in pc-density">

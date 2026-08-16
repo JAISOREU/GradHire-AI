@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type Size = 'md' | 'sm';
+type Size = 'lg' | 'md' | 'sm';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;

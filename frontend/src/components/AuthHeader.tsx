@@ -122,6 +122,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
         return [
           { to: '/student/account', label: 'Profile', icon: 'profile' as const },
           { to: '/student/applications', label: 'Applications', icon: 'applications' as const },
+          { to: '/student/recommended', label: 'Recommended jobs', icon: 'star' as const },
           { to: '/student/saved', label: 'Saved jobs', icon: 'saved' as const },
           { to: '/student/messages', label: 'Messages', icon: 'messages' as const },
           { to: '/student/notifications', label: 'Notifications', icon: 'notifications' as const },
@@ -130,8 +131,10 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       case 'EMPLOYER':
         return [
           { to: '/employer/account', label: 'Company profile', icon: 'company' as const },
+          { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' as const },
           { to: '/employer/jobs', label: 'Job posts', icon: 'jobs' as const },
           { to: '/employer/applicants', label: 'Applicants', icon: 'users' as const },
+          { to: '/employer/interviews', label: 'Interviews', icon: 'interviews' as const },
           { to: '/employer/messages', label: 'Messages', icon: 'messages' as const },
           { to: '/employer/notifications', label: 'Notifications', icon: 'notifications' as const },
           { to: '/employer/settings', label: 'Hiring settings', icon: 'settings' as const },
@@ -141,8 +144,11 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           { to: '/admin/account', label: 'Admin profile', icon: 'profile' as const },
           { to: '/admin/users', label: 'Users', icon: 'users' as const },
           { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' as const },
+          { to: '/admin/applications', label: 'Applications', icon: 'applications' as const },
           { to: '/admin/companies', label: 'Companies', icon: 'company' as const },
           { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' as const },
+          { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' as const },
+          { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' as const },
           { to: '/admin/settings', label: 'Settings', icon: 'settings' as const },
         ];
       default:

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -25,7 +26,7 @@ export class ResumesController {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   async upload(
@@ -47,6 +48,11 @@ export class ResumesController {
   @Get(':id')
   async getOne(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.resumes.getResume(req.user, id);
+  }
+
+  @Delete(':id')
+  async delete(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
+    return this.resumes.deleteResume(req.user, id);
   }
 }
 

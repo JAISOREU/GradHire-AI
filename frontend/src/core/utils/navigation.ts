@@ -24,6 +24,7 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
     label: 'Profile',
     items: [
       { to: '/student/account', label: 'Account', icon: 'profile' },
+      { to: '/student/resume', label: 'Resume', icon: 'resume' },
       { to: '/student/saved', label: 'Saved Jobs', icon: 'saved' },
       { to: '/student/settings', label: 'Settings', icon: 'settings' },
     ],
@@ -40,6 +41,7 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
     label: 'Main',
     items: [
       { to: '/employer/dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' },
       { to: '/employer/applicants', label: 'Applicants', icon: 'users' },
       { to: '/employer/jobs', label: 'Manage Jobs', icon: 'jobs' },
     ],
@@ -78,6 +80,8 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
       { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
       { to: '/admin/users', label: 'Users', icon: 'users' },
       { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
+      { to: '/admin/reports', label: 'Reports', icon: 'reports' },
+      { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
     ],
   },
   {
@@ -86,6 +90,7 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
       { to: '/admin/applications', label: 'Applications', icon: 'applications' },
       { to: '/admin/companies', label: 'Companies', icon: 'company' },
       { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'audit' },
+      { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'ai' },
     ],
   },
   {
@@ -97,6 +102,20 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'System',
     items: [
+      { to: '/admin/database', label: 'Database', icon: 'database' },
+      { to: '/admin/api-keys', label: 'API Keys', icon: 'api' },
+      { to: '/admin/email-templates', label: 'Email Templates', icon: 'email' },
+      { to: '/admin/cms', label: 'CMS', icon: 'cms' },
+      { to: '/admin/feature-flags', label: 'Feature Flags', icon: 'feature' },
+      { to: '/admin/backups', label: 'Backups', icon: 'backup' },
+      { to: '/admin/security', label: 'Security', icon: 'security' },
+      { to: '/admin/developer-tools', label: 'Developer Tools', icon: 'developer' },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { to: '/admin/account', label: 'Account', icon: 'profile' },
       { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' },
       { to: '/admin/settings', label: 'System Settings', icon: 'settings' },
     ],

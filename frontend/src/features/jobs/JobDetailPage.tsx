@@ -132,14 +132,35 @@ export const JobDetailPage = () => {
 
       {job.description && (
         <div className="card section--mt">
-          <h3 className="card__title">Job Description</h3>
+          <h3 className="card__title">Overview</h3>
           <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.description}</div>
+        </div>
+      )}
+
+      {(job.responsibilities ?? '').trim() && (
+        <div className="card section--mt">
+          <h3 className="card__title">Responsibilities</h3>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.responsibilities}</div>
+        </div>
+      )}
+
+      {(job.requiredQualifications ?? '').trim() && (
+        <div className="card section--mt">
+          <h3 className="card__title">Requirements</h3>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.requiredQualifications}</div>
+        </div>
+      )}
+
+      {(job.preferredQualifications ?? '').trim() && (
+        <div className="card section--mt">
+          <h3 className="card__title">Preferred Qualifications</h3>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.preferredQualifications}</div>
         </div>
       )}
 
       {(job.requiredSkills ?? []).length > 0 && (
         <div className="card section--mt">
-          <h3 className="card__title">Responsibilities</h3>
+          <h3 className="card__title">Required Skills</h3>
           <div className="flex flex-wrap gap-2">
             {(job.requiredSkills ?? []).map((skill) => (
               <span key={skill} className="badge">{skill}</span>
@@ -150,7 +171,7 @@ export const JobDetailPage = () => {
 
       {(job.preferredSkills ?? []).length > 0 && (
         <div className="card section--mt">
-          <h3 className="card__title">Qualifications and Requirements</h3>
+          <h3 className="card__title">Preferred Skills</h3>
           <div className="flex flex-wrap gap-2">
             {(job.preferredSkills ?? []).map((skill) => (
               <span key={skill} className="badge badge--muted">{skill}</span>

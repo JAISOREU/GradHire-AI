@@ -146,5 +146,19 @@ export class ResumesService {
       createdAt: resume.createdAt,
     };
   }
+
+  /** Delete a resume by ID (ownership enforced). */
+  async deleteResume(user: AuthUser, resumeId: string): Promise<void> {
+    const resume = await this.prisma.resume.findUnique({ where: { id: resumeId } });
+    if (!resume || resume.userId !== user.id) {
+      throw new NotFoundException('Resume not found');
+    }
+    await this.prisma.resume.delete({ where: { id: resumeId } });
+    try {
+      await this.storage.remove(resume.fileUrl);
+    } catch {
+      this.logger.warn(`Failed to delete resume file from storage: ${resume.fileUrl}`);
+    }
+  }
 }
 

@@ -6,16 +6,17 @@ import { AuthUser } from '../auth/auth.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 
   @Get('me/avatar')
+  @UseGuards(AuthGuard)
   async getAvatar(@Req() req: Request & { user: AuthUser }) {
     return this.users.getAvatar(req.user.id);
   }
 
   @Post('me/avatar')
+  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
   async uploadAvatar(@Req() req: Request & { user: AuthUser }, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
@@ -25,6 +26,7 @@ export class UsersController {
   }
 
   @Delete('me/avatar')
+  @UseGuards(AuthGuard)
   async deleteAvatar(@Req() req: Request & { user: AuthUser }) {
     return this.users.deleteAvatar(req.user.id);
   }
