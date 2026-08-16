@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AuthResponse, AuthUser } from '../types';
 import { authApi } from '../api/endpoints/auth';
-import { getStoredToken } from '../api/client';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -64,11 +63,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const token = getStoredToken();
-    if (!token) {
-      setStatus('unauthenticated');
-      return;
-    }
     authApi.me()
       .then(({ user }) => {
         setUser(user);
