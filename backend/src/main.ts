@@ -9,6 +9,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import helmet from 'helmet';
 import * as dotenv from 'dotenv';
+import * as cookieParser from 'cookie-parser';
+import { Request, Response } from 'express';
 
 dotenv.config();
 
@@ -23,9 +25,49 @@ function parseCorsOrigins(): string[] {
   return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
 }
 
+function getCookieOptions(): Record<string, unknown> {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax',
+    maxAge: 15 * 60 * 1000,
+    path: '/',
+  };
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
+
+  app.use(cookieParser());
+  app.use(new LoggingMiddleware().use.bind(new LoggingMiddleware()));
+  app.use(auditLoggingMiddleware(prisma));
+
+  app.use((req: Request, res: Response, next: Function) => {
+    const csrfToken = (req as any).cookies?.['XSRF-TOKEN'] || require('crypto').randomBytes(32).toString('hex');
+    res.cookie('XSRF-TOKEN', csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    (req as any).csrfToken = csrfToken;
+    next();
+  });
+
+  app.use((req: Request, res: Response, next: Function) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+      return next();
+    }
+    const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
+    const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
+    if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
+      return res.status(403).json({ message: 'Invalid CSRF token' });
+    }
+    next();
+  });
 
   app.use(helmet({
     contentSecurityPolicy: {
@@ -48,9 +90,6 @@ async function bootstrap() {
       preload: true,
     },
   }));
-
-  app.use(new LoggingMiddleware().use.bind(new LoggingMiddleware()));
-  app.use(auditLoggingMiddleware(prisma));
 
   app.enableCors({ origin: parseCorsOrigins(), credentials: true });
   app.setGlobalPrefix('api/v1');

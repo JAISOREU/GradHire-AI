@@ -4,6 +4,7 @@ import { api, getStoredToken, setStoredToken, clearStoredToken, ApiError } from 
 describe('api client', () => {
   beforeEach(() => {
     localStorage.clear();
+    document.cookie = 'XSRF-TOKEN=test-csrf-token; path=/';
     vi.resetAllMocks();
   });
 
@@ -17,7 +18,10 @@ describe('api client', () => {
 
     const result = await api<{ id: string; title: string }>('/test');
     expect(result).toEqual(mockData);
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ method: 'GET' }));
+    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ 
+      method: 'GET',
+      credentials: 'include',
+    }));
   });
 
   it('defaults to POST when body is present', async () => {
@@ -28,11 +32,26 @@ describe('api client', () => {
     } as Response);
 
     await api('/test', { json: { name: 'Test' } });
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ method: 'POST' }));
+    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ 
+      method: 'POST',
+      credentials: 'include',
+    }));
   });
 
-  it('injects Authorization header when token exists and requiresAuth is true', async () => {
-    setStoredToken('test-token');
+  it('includes CSRF token on state-changing requests', async () => {
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+    } as Response);
+
+    await api('/test', { method: 'POST', json: {} });
+    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
+      headers: expect.objectContaining({ 'X-XSRF-TOKEN': 'test-csrf-token' }),
+    }));
+  });
+
+  it('does not send Authorization header (cookie-based auth)', async () => {
     global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
       ok: true,
       status: 200,
@@ -40,20 +59,6 @@ describe('api client', () => {
     } as Response);
 
     await api('/test');
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
-      headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
-    }));
-  });
-
-  it('skips Authorization header when requiresAuth is false', async () => {
-    setStoredToken('test-token');
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({}),
-    } as Response);
-
-    await api('/test', { requiresAuth: false });
     expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
       headers: expect.not.objectContaining({ Authorization: expect.anything() }),
     }));
@@ -92,12 +97,11 @@ describe('api client', () => {
 });
 
 describe('token storage', () => {
-  it('stores and retrieves token', () => {
-    setStoredToken('abc');
-    expect(getStoredToken()).toBe('abc');
+  it('returns null for getStoredToken (cookie-based auth)', () => {
+    expect(getStoredToken()).toBeNull();
   });
 
-  it('clears token', () => {
+  it('setStoredToken and clearStoredToken are no-ops', () => {
     setStoredToken('abc');
     clearStoredToken();
     expect(getStoredToken()).toBeNull();

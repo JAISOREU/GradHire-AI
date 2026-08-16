@@ -1,5 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Query, BadRequestException, Res } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { Response } from 'express';
 import { Request } from 'express';
 import { AuthService, AuthUser } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -15,27 +16,30 @@ export class AuthController {
 
   @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Post('register')
-  async register(@Body() body: RegisterDto) {
-    return this.auth.register(body);
+  async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res?: Response) {
+    return this.auth.register(body, res);
   }
 
   @Throttle({ default: { ttl: 60000, limit: 5 } })
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() body: LoginDto) {
-    return this.auth.login(body);
+  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res?: Response) {
+    return this.auth.login(body, res);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refresh(@Body() body: RefreshTokenDto) {
-    return this.auth.refresh(body.token);
+  async refresh(@Body() body: RefreshTokenDto, @Res({ passthrough: true }) res?: Response) {
+    return this.auth.refresh(body.token, res);
   }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logout() {
+  async logout(@Res({ passthrough: true }) res?: Response) {
+    if (res) {
+      this.auth.clearAuthCookie(res);
+    }
     return { message: 'Logged out successfully' };
   }
 

@@ -1,17 +1,15 @@
-/** Base API client — single abstraction over fetch with token injection and error normalization. */
+/** Base API client — single abstraction over fetch with cookie-based auth and CSRF protection. */
 
-const TOKEN_KEY = 'gradture_token';
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
-export const getStoredToken = (): string | null => localStorage.getItem(TOKEN_KEY);
-
-export const setStoredToken = (token: string): void => {
-  localStorage.setItem(TOKEN_KEY, token);
-};
-
-export const clearStoredToken = (): void => {
-  localStorage.removeItem(TOKEN_KEY);
-};
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() ?? null;
+  }
+  return null;
+}
 
 export class ApiError extends Error {
   status: number;
@@ -36,14 +34,15 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
     finalHeaders['Content-Type'] = 'application/json';
   }
 
-  const token = getStoredToken();
-  if (requiresAuth && token) {
-    finalHeaders['Authorization'] = `Bearer ${token}`;
-  }
-
   const body = json !== undefined ? JSON.stringify(json) : formData;
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
+  if (requiresAuth && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
+    const csrfToken = getCookie('XSRF-TOKEN');
+    if (csrfToken) {
+      finalHeaders['X-XSRF-TOKEN'] = csrfToken;
+    }
+  }
   const url = API_BASE ? `${API_BASE}${path}` : path;
 
   let res: Response;
@@ -53,6 +52,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
       method: requestMethod,
       headers: finalHeaders,
       body: body as BodyInit | undefined,
+      credentials: 'include',
     });
   } catch (networkError) {
     const reason = networkError instanceof Error ? networkError.message : String(networkError);
@@ -60,7 +60,6 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   }
 
   if (res.status === 401) {
-    clearStoredToken();
     window.location.href = '/login';
   }
 
@@ -75,3 +74,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
 
   return data as T;
 };
+
+export const getStoredToken = (): string | null => null;
+export const setStoredToken = (_token: string): void => {};
+export const clearStoredToken = (): void => {};

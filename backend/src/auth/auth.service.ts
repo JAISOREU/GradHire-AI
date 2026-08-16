@@ -2,6 +2,7 @@ import { Injectable, Logger, UnauthorizedException, ConflictException, BadReques
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
+import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import { EmailService } from '../email/email.service';
 
@@ -38,7 +39,26 @@ export class AuthService {
     private readonly email: EmailService,
   ) {}
 
-  async register(body: { email: string; password: string; name?: string; role?: string }): Promise<{ accessToken: string; user: AuthUser }> {
+  private getCookieOptions(): Record<string, unknown> {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+    };
+  }
+
+  private setAuthCookie(res: Response, token: string): void {
+    res.cookie('access_token', token, this.getCookieOptions());
+  }
+
+  clearAuthCookie(res: Response): void {
+    res.clearCookie('access_token', { path: '/' });
+  }
+
+  async register(body: { email: string; password: string; name?: string; role?: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
     const role = body.role === 'EMPLOYER' ? 'EMPLOYER' : 'STUDENT';
     if (body.role === 'ADMIN') {
       throw new ConflictException('This endpoint cannot register ADMIN users');
@@ -67,13 +87,19 @@ export class AuthService {
         include: { profile: true, employerProfile: true },
       });
 
-      return this.buildAuthResponse({
+      const authResponse = this.buildAuthResponse({
         id: user.id,
         email: user.email,
         role: user.role,
         name: user.profile?.name || user.employerProfile?.companyName,
         avatarUrl: user.avatarUrl ?? undefined,
       });
+
+      if (res) {
+        this.setAuthCookie(res, authResponse.accessToken);
+      }
+
+      return authResponse;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes('Unique constraint') || message.includes('unique')) {
@@ -84,7 +110,7 @@ export class AuthService {
     }
   }
 
-  async login(body: { email: string; password: string }): Promise<{ accessToken: string; user: AuthUser }> {
+  async login(body: { email: string; password: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
     const user = await this.prisma.user.findUnique({
       where: { email: body.email.toLowerCase() },
       select: { id: true, email: true, role: true, passwordHash: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
@@ -99,13 +125,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.buildAuthResponse({
+    const authResponse = this.buildAuthResponse({
       id: user.id,
       email: user.email,
       role: user.role,
       name: user.profile?.name || user.employerProfile?.companyName,
       avatarUrl: user.avatarUrl ?? undefined,
     });
+
+    if (res) {
+      this.setAuthCookie(res, authResponse.accessToken);
+    }
+
+    return authResponse;
   }
 
   private buildAuthResponse(user: AuthUser): { accessToken: string; user: AuthUser } {
@@ -138,7 +170,7 @@ export class AuthService {
     }
   }
 
-  async refresh(token: string): Promise<{ accessToken: string; user: AuthUser }> {
+  async refresh(token: string, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
     const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
 
     if (!payload?.sub) {
@@ -153,13 +185,19 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    return this.buildAuthResponse({
+    const authResponse = this.buildAuthResponse({
       id: user.id,
       email: user.email,
       role: user.role,
       name: user.profile?.name || user.employerProfile?.companyName,
       avatarUrl: user.avatarUrl ?? undefined,
     });
+
+    if (res) {
+      this.setAuthCookie(res, authResponse.accessToken);
+    }
+
+    return authResponse;
   }
 
   async requestPasswordReset(email: string): Promise<{ message: string }> {

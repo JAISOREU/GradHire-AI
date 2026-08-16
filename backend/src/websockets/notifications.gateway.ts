@@ -26,10 +26,27 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
 
   constructor(private readonly jwt: JwtService) {}
 
+  private extractTokenFromHandshake(client: Socket): string | undefined {
+    const authToken = client.handshake.auth?.token;
+    if (authToken && typeof authToken === 'string') {
+      return authToken;
+    }
+
+    const cookieHeader = client.handshake.headers?.cookie;
+    if (cookieHeader && typeof cookieHeader === 'string') {
+      const match = cookieHeader.match(/access_token=([^;]+)/);
+      if (match) {
+        return match[1];
+      }
+    }
+
+    return undefined;
+  }
+
   async handleConnection(client: Socket) {
     await Sentry.withIsolationScope(async () => {
       try {
-        const token = client.handshake.auth.token as string | undefined;
+        const token = this.extractTokenFromHandshake(client);
         if (!token) {
           this.logger.warn(`Socket ${client.id} rejected: no token`);
           client.disconnect();

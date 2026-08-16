@@ -15,11 +15,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('gradture_token');
-    if (!token) return;
-
     const s = io(API_BASE || undefined, {
-      auth: { token },
+      withCredentials: true,
       transports: ['websocket', 'polling'],
     });
 

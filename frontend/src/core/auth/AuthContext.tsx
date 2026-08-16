@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AuthResponse, AuthUser } from '../types';
 import { authApi } from '../api/endpoints/auth';
-import { clearStoredToken, getStoredToken, setStoredToken } from '../api/client';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<AuthStatus>('loading');
 
   const applyAuth = useCallback((data: AuthResponse) => {
-    setStoredToken(data.accessToken);
     setUser(data.user);
     setStatus('authenticated');
   }, []);
@@ -49,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch {
       /* ignore network errors */
     }
-    clearStoredToken();
     setUser(null);
     setStatus('unauthenticated');
   }, []);
@@ -59,39 +56,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { user } = await authApi.me();
       setUser(user);
       setStatus('authenticated');
-    } catch (err) {
-      const token = getStoredToken();
-      if (token) {
-        try {
-          const data = await authApi.refresh();
-          setStoredToken(data.accessToken);
-          setUser(data.user);
-          setStatus('authenticated');
-          return;
-        } catch {
-          clearStoredToken();
-        }
-      }
+    } catch {
       setUser(null);
       setStatus('unauthenticated');
     }
   }, []);
 
-  // Restore session on mount.
   useEffect(() => {
-    const token = getStoredToken();
-    if (!token) {
-      setStatus('unauthenticated');
-      return;
-    }
-    authApi
-      .me()
+    authApi.me()
       .then(({ user }) => {
         setUser(user);
         setStatus('authenticated');
       })
       .catch(() => {
-        clearStoredToken();
+        setUser(null);
         setStatus('unauthenticated');
       });
   }, []);
