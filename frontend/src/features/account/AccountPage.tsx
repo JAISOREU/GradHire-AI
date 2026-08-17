@@ -1075,8 +1075,15 @@ export const AccountPage = () => {
     setProfileLoading(true);
     setProfileError(null);
     try {
-      const data = role === 'EMPLOYER' ? await employersApi.getProfile() : await studentsApi.getProfile();
-      setProfile(data as Record<string, unknown>);
+      if (role === 'EMPLOYER') {
+        const data = await employersApi.getProfile();
+        setProfile(data as Record<string, unknown>);
+      } else if (role === 'ADMIN') {
+        setProfile((user as Record<string, unknown>) || { name: 'Admin', email: user?.email || '' });
+      } else {
+        const data = await studentsApi.getProfile();
+        setProfile(data as Record<string, unknown>);
+      }
     } catch (err) {
       setProfileError(err instanceof Error ? err.message : 'Failed to load profile');
     } finally {
