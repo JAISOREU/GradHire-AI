@@ -40,7 +40,7 @@ export const StudentResumePage = () => {
   const handleReplace = async (resume: Resume) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.pdf,.doc,.docx,.txt';
+    input.accept = '.pdf,.docx,.txt';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
@@ -106,7 +106,7 @@ export const StudentResumePage = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,.doc,.docx,.txt"
+              accept=".pdf,.docx,.txt"
               onChange={handleUpload}
               disabled={uploading}
               style={{ display: 'none' }}

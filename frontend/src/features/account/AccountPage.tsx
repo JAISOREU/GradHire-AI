@@ -959,19 +959,19 @@ function ResumeSection() {
           <Icon name="upload" size={16} /> Upload new resume
           <input
             type="file"
-            accept=".pdf,.doc,.docx,.txt"
+            accept=".pdf,.docx,.txt"
             hidden
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
                 const maxSize = 5 * 1024 * 1024;
-                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
                 if (file.size > maxSize) {
                   alert('File size must be under 5 MB.');
                   return;
                 }
-                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|doc|docx|txt)$/i)) {
-                  alert('Invalid file type. Please upload PDF, DOC, DOCX, or TXT.');
+                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt)$/i)) {
+                  alert('Invalid file type. Please upload PDF, DOCX, or TXT.');
                   return;
                 }
                 resumesApi.upload(file).then(() => reload());
