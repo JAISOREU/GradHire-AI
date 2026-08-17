@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsISO8601, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateExperienceDto {
   @IsString()
@@ -17,11 +17,11 @@ export class CreateExperienceDto {
   @IsString()
   location?: string;
 
-  @IsDateString()
+  @IsISO8601()
   startDate!: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsISO8601()
   endDate?: string;
 
   @IsOptional()
@@ -56,11 +56,11 @@ export class UpdateExperienceDto {
   location?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsISO8601()
   startDate?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsISO8601()
   endDate?: string;
 
   @IsOptional()

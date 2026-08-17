@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsISO8601 } from 'class-validator';
 
 export class CreateCertificationDto {
   @IsString()
@@ -7,6 +7,14 @@ export class CreateCertificationDto {
   @IsOptional()
   @IsString()
   issuer?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  issuedAt?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  expiresAt?: string;
 
   @IsOptional()
   @IsString()
@@ -25,6 +33,14 @@ export class UpdateCertificationDto {
   @IsOptional()
   @IsString()
   issuer?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  issuedAt?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  expiresAt?: string;
 
   @IsOptional()
   @IsString()

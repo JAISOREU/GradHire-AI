@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, NotFoundException, ServiceUnavailableException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { WorkAuthorizationStatus } from '@prisma/client';
 import { AiService, AiRecommendation } from './ai/ai.service';
@@ -24,6 +24,45 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable && process.env.NODE_ENV === 'production') {
       throw new ServiceUnavailableException('Database connection failed');
     }
+  }
+
+  private normalizeDate(value: unknown): Date | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+    if (value instanceof Date) {
+      if (isNaN(value.getTime())) {
+        throw new BadRequestException('Invalid date format');
+      }
+      return value;
+    }
+    if (typeof value !== 'string') {
+      throw new BadRequestException('Invalid date format');
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return undefined;
+    }
+    let date: Date;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      date = new Date(`${trimmed}T00:00:00.000Z`);
+    } else {
+      date = new Date(trimmed);
+    }
+    if (isNaN(date.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+    return date;
+  }
+
+  private normalizeDates(data: Record<string, unknown>, fields: string[]): Record<string, unknown> {
+    const normalized: Record<string, unknown> = { ...data };
+    for (const field of fields) {
+      if (field in data) {
+        normalized[field] = this.normalizeDate(data[field]);
+      }
+    }
+    return normalized;
   }
 
   async onModuleInit() {
@@ -332,7 +371,8 @@ export class AppService implements OnModuleInit {
   async createEducation(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    return this.prisma.education.create({ data: { userId, ...data } as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.education.create({ data: { userId, ...normalized } as any });
   }
 
   async updateEducation(userId: string, educationId: string, data: Record<string, unknown>) {
@@ -340,7 +380,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.education.findFirst({ where: { id: educationId, userId } });
     if (!existing) throw new NotFoundException('Education not found');
-    return this.prisma.education.update({ where: { id: educationId }, data: data as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.education.update({ where: { id: educationId }, data: normalized as any });
   }
 
   async deleteEducation(userId: string, educationId: string) {
@@ -365,7 +406,8 @@ export class AppService implements OnModuleInit {
   async createExperience(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    return this.prisma.experience.create({ data: { userId, ...data } as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.experience.create({ data: { userId, ...normalized } as any });
   }
 
   async updateExperience(userId: string, experienceId: string, data: Record<string, unknown>) {
@@ -373,7 +415,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.experience.findFirst({ where: { id: experienceId, userId } });
     if (!existing) throw new NotFoundException('Experience not found');
-    return this.prisma.experience.update({ where: { id: experienceId }, data: data as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.experience.update({ where: { id: experienceId }, data: normalized as any });
   }
 
   async deleteExperience(userId: string, experienceId: string) {
@@ -430,7 +473,8 @@ export class AppService implements OnModuleInit {
   async createCertification(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    return this.prisma.certification.create({ data: { userId, ...data } as any });
+    const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
+    return this.prisma.certification.create({ data: { userId, ...normalized } as any });
   }
 
   async updateCertification(userId: string, certificationId: string, data: Record<string, unknown>) {
@@ -438,7 +482,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.certification.findFirst({ where: { id: certificationId, userId } });
     if (!existing) throw new NotFoundException('Certification not found');
-    return this.prisma.certification.update({ where: { id: certificationId }, data: data as any });
+    const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
+    return this.prisma.certification.update({ where: { id: certificationId }, data: normalized as any });
   }
 
   async deleteCertification(userId: string, certificationId: string) {
@@ -463,7 +508,8 @@ export class AppService implements OnModuleInit {
   async createProject(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    return this.prisma.project.create({ data: { userId, ...data } as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.project.create({ data: { userId, ...normalized } as any });
   }
 
   async updateProject(userId: string, projectId: string, data: Record<string, unknown>) {
@@ -471,7 +517,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.project.findFirst({ where: { id: projectId, userId } });
     if (!existing) throw new NotFoundException('Project not found');
-    return this.prisma.project.update({ where: { id: projectId }, data: data as any });
+    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    return this.prisma.project.update({ where: { id: projectId }, data: normalized as any });
   }
 
   async deleteProject(userId: string, projectId: string) {
@@ -630,10 +677,20 @@ export class AppService implements OnModuleInit {
 
   async saveJob(userId: string, jobId: string): Promise<{ id: string }> {
     this.assertDbAvailable();
-    const saved = await this.prisma.savedJob.create({
-      data: { userId, jobId },
-    });
-    return { id: saved.id };
+    try {
+      const saved = await this.prisma.savedJob.create({
+        data: { userId, jobId },
+      });
+      return { id: saved.id };
+    } catch (error: unknown) {
+      if ((error as any)?.code === 'P2002') {
+        const existing = await this.prisma.savedJob.findFirst({ where: { userId, jobId } });
+        if (existing) {
+          return { id: existing.id };
+        }
+      }
+      throw error;
+    }
   }
 
   async unsaveJob(userId: string, jobId: string): Promise<void> {

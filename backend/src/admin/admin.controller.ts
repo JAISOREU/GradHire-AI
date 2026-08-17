@@ -132,4 +132,25 @@ export class AdminController {
     }
     return user;
   }
+
+  @Get('job-source-runs')
+  async jobSourceRuns(@Query() query?: Record<string, unknown>): Promise<PaginatedResponse<Record<string, unknown>>> {
+    const sourceId = typeof query?.sourceId === 'string' ? query.sourceId : undefined;
+    const status = typeof query?.status === 'string' ? query.status : undefined;
+    const { page = 1, limit = 20 } = query ? normalizePagination(query) : { page: 1, limit: 20 };
+    const where: Record<string, unknown> = {};
+    if (sourceId) where.sourceId = sourceId;
+    if (status) where.status = status;
+    const [runs, total] = await Promise.all([
+      this.prisma.jobSourceRun.findMany({
+        where,
+        include: { source: { select: { id: true, name: true, company: true } } },
+        orderBy: { createdAt: 'desc' } as any,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.jobSourceRun.count({ where }),
+    ]);
+    return applyPagination(runs, total, page, limit);
+  }
 }
