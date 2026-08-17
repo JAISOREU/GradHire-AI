@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { api, getStoredToken, setStoredToken, clearStoredToken, ApiError } from './client';
 
+function mockResponse(overrides: Partial<Response> = {}): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({}),
+    headers: new Headers(),
+    ...overrides,
+  } as unknown as Response;
+}
+
 describe('api client', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -10,11 +20,13 @@ describe('api client', () => {
 
   it('returns parsed JSON on success', async () => {
     const mockData = { id: '1', title: 'Test' };
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve(mockData),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockData),
+      }),
+    );
 
     const result = await api<{ id: string; title: string }>('/test');
     expect(result).toEqual(mockData);
@@ -25,11 +37,13 @@ describe('api client', () => {
   });
 
   it('defaults to POST when body is present', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ success: true }),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ success: true }),
+      }),
+    );
 
     await api('/test', { json: { name: 'Test' } });
     expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ 
@@ -39,11 +53,13 @@ describe('api client', () => {
   });
 
   it('includes CSRF token on state-changing requests', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({}),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+      }),
+    );
 
     await api('/test', { method: 'POST', json: {} });
     expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
@@ -52,11 +68,13 @@ describe('api client', () => {
   });
 
   it('does not send Authorization header (cookie-based auth)', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({}),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+      }),
+    );
 
     await api('/test');
     expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
@@ -65,31 +83,38 @@ describe('api client', () => {
   });
 
   it('throws ApiError on non-ok response', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: false,
-      status: 400,
-      json: () => Promise.resolve({ message: 'Bad request' }),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ message: 'Bad request' }),
+      }),
+    );
 
     await expect(api('/test')).rejects.toThrow(ApiError);
     await expect(api('/test')).rejects.toMatchObject({ status: 400, message: 'Bad request' });
   });
 
   it('falls back to generic message when response has no message', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: false,
-      status: 500,
-      json: () => Promise.resolve(null),
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve(null),
+      }),
+    );
 
     await expect(api('/test')).rejects.toMatchObject({ status: 500, message: 'Request failed. Please try again.' });
   });
 
   it('handles 204 No Content', async () => {
-    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue({
-      ok: true,
-      status: 204,
-    } as Response);
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: true,
+        status: 204,
+        json: () => Promise.resolve(null),
+      }),
+    );
 
     const result = await api('/test', { method: 'DELETE' });
     expect(result).toBeNull();

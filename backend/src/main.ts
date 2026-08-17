@@ -39,15 +39,26 @@ function createCorsOriginChecker(allowedOrigins: string[]) {
   };
 }
 
+let currentCsrfToken: string | null = null;
+let csrfTokenExpiresAt = 0;
+
+function getOrCreateCsrfToken(): string {
+  if (!currentCsrfToken || Date.now() > csrfTokenExpiresAt) {
+    currentCsrfToken = require('crypto').randomBytes(32).toString('hex');
+    csrfTokenExpiresAt = Date.now() + 60 * 60 * 1000;
+  }
+  return currentCsrfToken as string;
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
 
   const validator = app.get(StartupValidator);
   const startupChecks = validator.validate();
-  const failedRequired = startupChecks.filter((c: { ok: boolean; required: boolean }) => !c.ok && c.required);
+  const failedRequired = startupChecks.filter((c) => !c.ok && c.required);
   if (failedRequired.length > 0) {
-    console.error('[STARTUP] Failed required checks:', failedRequired.map((c: { name: string }) => c.name));
+    console.error('[STARTUP] Failed required checks:', failedRequired.map((c) => c.name));
     if (process.env.NODE_ENV === 'production') {
       process.exit(1);
     }
@@ -62,6 +73,7 @@ async function bootstrap() {
   app.enableCors({
     origin: createCorsOriginChecker(corsOrigins),
     credentials: true,
+    exposedHeaders: ['X-CSRF-TOKEN'],
   });
 
   app.use(cookieParser());
@@ -69,16 +81,17 @@ async function bootstrap() {
   app.use(auditLoggingMiddleware(prisma));
 
   app.use((req: Request, res: Response, next: Function) => {
-    const csrfToken = (req as any).cookies?.['XSRF-TOKEN'] || require('crypto').randomBytes(32).toString('hex');
+    const token = getOrCreateCsrfToken();
     const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie('XSRF-TOKEN', csrfToken, {
+    res.cookie('XSRF-TOKEN', token, {
       httpOnly: false,
       secure: isProduction,
       sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
       path: '/',
     });
-    (req as any).csrfToken = csrfToken;
+    res.set('X-CSRF-TOKEN', token);
+    (req as any).csrfToken = token;
     next();
   });
 
@@ -94,8 +107,13 @@ async function bootstrap() {
 
     const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
     const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
-    
-    if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
+    const serverToken = (req as any).csrfToken;
+
+    const isValid =
+      (csrfCookie && csrfHeader && csrfCookie === csrfHeader) ||
+      (csrfHeader && serverToken && csrfHeader === serverToken);
+
+    if (!isValid) {
       console.warn(`[CSRF] Blocked ${req.method} ${req.path}`, {
         hasCookie: !!csrfCookie,
         hasHeader: !!csrfHeader,
@@ -108,6 +126,8 @@ async function bootstrap() {
     next();
   });
 
+  const connectSrc = ["'self'", "ws:", "wss:", ...corsOrigins];
+
   app.use(helmet({
     contentSecurityPolicy: {
       directives: {
@@ -115,7 +135,7 @@ async function bootstrap() {
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "ws:", "wss:"],
+        connectSrc: connectSrc,
         fontSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],

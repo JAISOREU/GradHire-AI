@@ -28,6 +28,7 @@ type RequestOptions = Omit<RequestInit, 'body'> & {
 
 let isRefreshing = false;
 let authRefreshCallback: (() => Promise<boolean>) | null = null;
+let csrfToken: string | null = null;
 
 export const setAuthRefresh = (fn: (() => Promise<boolean>) | null) => {
   authRefreshCallback = fn;
@@ -45,9 +46,9 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
-    const csrfToken = getCookie('XSRF-TOKEN');
-    if (csrfToken) {
-      finalHeaders['X-XSRF-TOKEN'] = csrfToken;
+    const token = csrfToken || getCookie('XSRF-TOKEN');
+    if (token) {
+      finalHeaders['X-XSRF-TOKEN'] = token;
     }
   }
   const url = API_BASE ? `${API_BASE}${path}` : path;
@@ -64,6 +65,11 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   } catch (networkError) {
     const reason = networkError instanceof Error ? networkError.message : String(networkError);
     throw new ApiError(`Network error: ${reason}. Please check your connection and try again.`, 0);
+  }
+
+  const csrfHeader = res.headers.get('X-CSRF-TOKEN');
+  if (csrfHeader) {
+    csrfToken = csrfHeader;
   }
 
   const data = res.status === 204 ? null : await res.json().catch(() => null);
