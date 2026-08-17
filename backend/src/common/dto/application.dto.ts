@@ -16,6 +16,15 @@ export class CreateApplicationDto {
   @IsOptional()
   @IsString()
   resumeId?: string;
+
+  @ApiProperty({ required: false, example: '123e4567-e89b-12d3-a456-426614174001' })
+  @IsOptional()
+  @IsString()
+  resumeVersionId?: string;
+
+  @ApiProperty({ required: false, type: [Object] })
+  @IsOptional()
+  answers?: Array<{ questionId?: string; value: string }>;
 }
 
 export class UpdateApplicationStatusDto {

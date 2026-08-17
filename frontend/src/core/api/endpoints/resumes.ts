@@ -1,4 +1,4 @@
-import { api } from '../client';
+import { api, getApiUrl } from '../client';
 import type { Resume, ResumeParseResult } from '../../types';
 
 export const resumesApi = {
@@ -21,7 +21,7 @@ export const resumesApi = {
   listMine: (page = 1, limit = 20) =>
     api<{ items: Resume[] }>(`/api/v1/resumes/me?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
   getById: (id: string) => api<Resume>(`/api/v1/resumes/${id}`),
-  download: (id: string) => `/api/v1/resumes/${id}/download`,
-  view: (id: string) => `/api/v1/resumes/${id}/view`,
+  download: (id: string) => getApiUrl(`/api/v1/resumes/${id}/download`),
+  view: (id: string) => getApiUrl(`/api/v1/resumes/${id}/view`),
   delete: (id: string) => api<void>(`/api/v1/resumes/${id}`, { method: 'DELETE' }),
 };

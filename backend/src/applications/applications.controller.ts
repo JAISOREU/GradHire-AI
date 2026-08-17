@@ -47,6 +47,13 @@ export class ApplicationsController {
     return this.applications.getForJob(req.user, jobId, pagination);
   }
 
+  @Get('employer/job/:jobId')
+  @UseGuards(EmployerGuard)
+  async getForJobAlias(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string, @Query() query?: Record<string, unknown>) {
+    const pagination = query ? normalizePagination(query) : undefined;
+    return this.applications.getForJob(req.user, jobId, pagination);
+  }
+
   @Post(':id/withdraw')
   @UseGuards(StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })

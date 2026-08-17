@@ -3,7 +3,7 @@ import type { Application, EmployerJob, EmployerSettings, Interview } from '../.
 
 export const employersApi = {
   getProfile: () => api<EmployerJob>('/api/v1/employer/profile'),
-  updateProfile: (payload: { name: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) =>
+  updateProfile: (payload: { companyName?: string; name?: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) =>
     api<EmployerJob>('/api/v1/employer/profile', { method: 'PUT', json: payload }),
   listJobs: (page = 1, limit = 20): Promise<EmployerJob[]> =>
     api<{ items: EmployerJob[] }>(`/api/v1/employer/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
@@ -58,4 +58,7 @@ export const savedJobsApi = {
       return [];
     }
   },
+  save: (jobId: string) => api<{ id: string }>('/api/v1/saved-jobs', { method: 'POST', json: { jobId } }),
+  unsave: (jobId: string) => api<void>(`/api/v1/saved-jobs/${jobId}`, { method: 'DELETE' }),
+  check: (jobId: string) => api<{ saved: boolean }>(`/api/v1/saved-jobs/check/${jobId}`),
 };

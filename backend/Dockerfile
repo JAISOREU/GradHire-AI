@@ -1,4 +1,4 @@
-FROM node:20 AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --silent
@@ -7,8 +7,9 @@ RUN npx prisma generate
 COPY . .
 RUN npm run build
 
-FROM node:20
+FROM node:20-slim
 WORKDIR /app
+RUN addgroup --system --gid 1001 appgroup && adduser --system --uid 1001 --ingroup appgroup appuser
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
@@ -17,5 +18,6 @@ COPY prisma ./prisma
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
+USER appuser
 EXPOSE 3000
 ENTRYPOINT ["./docker-entrypoint.sh"]

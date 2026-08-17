@@ -627,4 +627,25 @@ export class AppService implements OnModuleInit {
       limit,
     );
   }
+
+  async saveJob(userId: string, jobId: string): Promise<{ id: string }> {
+    this.assertDbAvailable();
+    const saved = await this.prisma.savedJob.create({
+      data: { userId, jobId },
+    });
+    return { id: saved.id };
+  }
+
+  async unsaveJob(userId: string, jobId: string): Promise<void> {
+    this.assertDbAvailable();
+    await this.prisma.savedJob.deleteMany({
+      where: { userId, jobId },
+    });
+  }
+
+  async isJobSaved(userId: string, jobId: string): Promise<{ saved: boolean }> {
+    this.assertDbAvailable();
+    const count = await this.prisma.savedJob.count({ where: { userId, jobId } });
+    return { saved: count > 0 };
+  }
 }

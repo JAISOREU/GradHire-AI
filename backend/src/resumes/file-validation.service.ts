@@ -14,7 +14,7 @@ export class FileValidationService {
   private static readonly ALLOWED_MIME_TYPES = new Set([
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/octet-stream',
+    'text/plain',
   ]);
 
   private static readonly ALLOWED_EXTENSIONS = new Set([

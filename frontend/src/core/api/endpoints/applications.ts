@@ -15,7 +15,7 @@ export const applicationsApi = {
     api<void>(`/api/v1/applications/${id}/withdraw`, { method: 'POST' }),
 
   getForJob: (jobId: string, page = 1, limit = 20): Promise<PaginatedResponse<Application>> =>
-    api<PaginatedResponse<Application>>(`/api/v1/applications/employer/job/${jobId}?page=${page}&limit=${limit}`).then((r) => r ?? { items: [], total: 0, page, limit }),
+    api<PaginatedResponse<Application>>(`/api/v1/applications/job/${jobId}?page=${page}&limit=${limit}`).then((r) => r ?? { items: [], total: 0, page, limit }),
 
   updateStatus: (id: string, status: ApplicationStatus, message?: string) =>
     api<Application>(`/api/v1/applications/${id}/status`, { method: 'PUT', json: { status, message } }),

@@ -202,13 +202,18 @@ export class EmployerService {
     return profile ?? { id: user.id, email: user.email, role: user.role };
   }
 
-  async updateEmployerProfile(user: AuthUser, body: { companyName: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) {
+  async updateEmployerProfile(user: AuthUser, body: { companyName?: string; name?: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) {
     this.requireEmployer(user);
+
+    const companyName = body.companyName ?? body.name;
+    if (!companyName) {
+      throw new BadRequestException('Company name is required');
+    }
 
     const profile = await this.prisma.employerProfile.upsert({
       where: { userId: user.id },
       update: {
-        companyName: body.companyName,
+        companyName,
         industry: body.industry ?? null,
         location: body.location ?? null,
         description: body.description ?? null,
@@ -217,7 +222,7 @@ export class EmployerService {
       },
       create: {
         userId: user.id,
-        companyName: body.companyName,
+        companyName,
         industry: body.industry,
         location: body.location,
         description: body.description,

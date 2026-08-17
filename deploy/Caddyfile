@@ -1,35 +1,23 @@
-# GradHire AI — Caddy Reverse Proxy Configuration
-# Deploy to: /etc/caddy/Caddyfile on your Oracle Cloud VM
-#
-# After deploying, run:
-#   sudo cp Caddyfile /etc/caddy/Caddyfile
-#   sudo systemctl reload caddy
-
 {
-	# Global options
 	email admin@gradture.ai
 }
 
-# Frontend
 gradture.ai {
 	reverse_proxy localhost:80
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 }
 
 www.gradture.ai {
 	reverse_proxy localhost:80
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 }
 
-# Backend API
 api.gradture.ai {
 	reverse_proxy localhost:3000
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 }
 
-# Admin panel
 admin.gradture.ai {
 	reverse_proxy localhost:3000
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 }
-
-# AI Service (optional, if you want it public)
-# ai.gradture.ai {
-# 	reverse_proxy localhost:8000
-# }

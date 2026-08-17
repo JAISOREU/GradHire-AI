@@ -47,10 +47,10 @@ export const jobsApi = {
   },
 
   listForEmployer: (page = 1, limit = 20): Promise<EmployerJob[]> =>
-    api<{ items: EmployerJob[] }>(`/api/v1/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
+    api<{ items: EmployerJob[] }>(`/api/v1/employer/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
 
   listForEmployerPaginated: (page = 1, limit = 20): Promise<PaginatedResponse<EmployerJob>> =>
-    parsePaginatedJobs<EmployerJob>(`/api/v1/jobs?page=${page}&limit=${limit}`),
+    parsePaginatedJobs<EmployerJob>(`/api/v1/employer/jobs?page=${page}&limit=${limit}`),
 
   getById: (id: string): Promise<Job> =>
     api<Job>(`/api/v1/jobs/${id}`, { requiresAuth: false }),

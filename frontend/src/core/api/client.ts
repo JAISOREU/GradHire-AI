@@ -2,6 +2,8 @@
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
+export const getApiUrl = (path: string): string => (API_BASE ? `${API_BASE}${path}` : path);
+
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);

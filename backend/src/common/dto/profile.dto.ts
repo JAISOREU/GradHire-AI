@@ -128,7 +128,12 @@ export class UpdateEmployerProfileDto {
   @ApiProperty({ example: 'Acme Corp' })
   @IsString()
   @IsNotEmpty({ message: 'Company name is required' })
-  companyName!: string;
+  companyName?: string;
+
+  @ApiProperty({ example: 'Acme Corp' })
+  @IsOptional()
+  @IsString()
+  name?: string;
 
   @ApiProperty({ required: false, example: 'Technology' })
   @IsOptional()

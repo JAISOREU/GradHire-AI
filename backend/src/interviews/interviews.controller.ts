@@ -43,4 +43,10 @@ export class InterviewsController {
   async cancel(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.interviews.cancel(req.user, id);
   }
+
+  @Post(':id/cancel')
+  @UseGuards(EmployerGuard)
+  async cancelAlias(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
+    return this.interviews.cancel(req.user, id);
+  }
 }

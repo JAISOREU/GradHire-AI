@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query, Req, UseGuards, HttpStatus, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, Query, Req, UseGuards, HttpStatus, Res } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from './auth/auth.guard';
 import { StudentGuard } from './auth/student.guard';
@@ -10,6 +10,7 @@ import { JobQueryDto } from './common/dto/job.dto';
 import { normalizePagination } from './common/pagination';
 import { RecommendationService, PersonalizedRecommendationsResult } from './ai/recommendation.service';
 import { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller()
 export class AppController {
@@ -57,5 +58,26 @@ export class AppController {
   async mySavedJobs(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
     const pagination = query ? normalizePagination(query) : undefined;
     return this.appService.listSavedJobs(req.user.id, pagination);
+  }
+
+  @UseGuards(AuthGuard, StudentGuard)
+  @Post('saved-jobs')
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
+  async saveJob(@Req() req: Request & { user: AuthUser }, @Body() body: { jobId: string }) {
+    return this.appService.saveJob(req.user.id, body.jobId);
+  }
+
+  @UseGuards(AuthGuard, StudentGuard)
+  @Delete('saved-jobs/:jobId')
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
+  async unsaveJob(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string) {
+    await this.appService.unsaveJob(req.user.id, jobId);
+    return { message: 'Job unsaved' };
+  }
+
+  @UseGuards(AuthGuard, StudentGuard)
+  @Get('saved-jobs/check/:jobId')
+  async checkSaved(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string) {
+    return this.appService.isJobSaved(req.user.id, jobId);
   }
 }

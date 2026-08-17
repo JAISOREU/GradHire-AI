@@ -12,7 +12,7 @@ export class ApplicationsService {
 
   constructor(private readonly prisma: PrismaService, private readonly email: EmailService, private readonly notifications: NotificationsService) {}
 
-  async apply(user: AuthUser, jobId: string, body: { coverLetter?: string; resumeId?: string }): Promise<Record<string, unknown>> {
+  async apply(user: AuthUser, jobId: string, body: { coverLetter?: string; resumeId?: string; resumeVersionId?: string; answers?: Array<{ questionId?: string; value: string }> }): Promise<Record<string, unknown>> {
     this.requireRole(user, 'STUDENT');
 
     const job = await this.prisma.job.findUnique({ where: { id: jobId } });
@@ -31,7 +31,8 @@ export class ApplicationsService {
       throw new BadRequestException('You have already applied to this job');
     }
 
-    const resume = body.resumeId ? await this.prisma.resume.findUnique({ where: { id: body.resumeId } }) : null;
+    const resumeId = body.resumeId ?? body.resumeVersionId;
+    const resume = resumeId ? await this.prisma.resume.findUnique({ where: { id: resumeId } }) : null;
 
     const application = await this.prisma.application.create({
       data: {

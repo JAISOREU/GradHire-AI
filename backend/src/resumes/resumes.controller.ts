@@ -13,6 +13,7 @@ import {
   Res,
   BadRequestException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
@@ -27,6 +28,7 @@ export class ResumesController {
   constructor(private readonly resumes: ResumesService) {}
 
   @Post()
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 5 * 1024 * 1024 },
@@ -43,6 +45,7 @@ export class ResumesController {
   }
 
   @Put(':id')
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 5 * 1024 * 1024 },
