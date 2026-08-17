@@ -373,9 +373,9 @@ Check the backend code for the actual setup endpoint path and required headers b
 6. **Migration safety**: The deployment includes a corrective idempotent migration (`20260816000000_recover_job_ingestion_state`) that safely reconciles Railway database state without data loss. The docker entrypoint auto-resolves the previously failed migration before running `prisma migrate deploy`.
 7. **Security headers**: Helmet is enabled with HSTS, CSP, and other security headers. Do not disable these in production.
 8. **Rate limiting**: Global rate limiting is active (10 req/s, 100 req/min). Auth endpoints have stricter limits (5/min for login/register, 3/min for forgot-password). Avatar endpoints are rate-limited to 30/min to prevent user ID enumeration.
-9. **Cookie-based authentication**: The application now uses httpOnly, secure, SameSite=None cookies for JWT storage instead of localStorage. This eliminates XSS risk from token exposure. CSRF protection is implemented via double-submit cookie pattern. Ensure `CORS_ORIGIN` includes all frontend domains and `credentials: true` is enabled.
+9. **Cookie-based authentication**: The application now uses httpOnly, secure, SameSite=None cookies for JWT storage instead of localStorage. This eliminates XSS risk from token exposure. CSRF protection uses a response-header token pattern for cross-origin deployments: the backend sends `X-CSRF-TOKEN` in response headers and validates `X-XSRF-TOKEN` on mutating requests. Ensure `CORS_ORIGIN` includes all frontend domains and `credentials: true` is enabled.
 10. **Cross-site cookies**: Because the frontend (Vercel) and backend (Railway) are on different domains, cookies use `SameSite=None; Secure`. This requires HTTPS in production. Do NOT use `SameSite=Lax` for cross-site deployments.
-11. **CORS configuration**: If you see CORS errors, check Railway logs for the allowed origins list. Update `CORS_ORIGIN` to include all frontend deployment URLs (e.g., `https://grad-hire-ai.vercel.app`).
+11. **CORS configuration**: If you see CORS errors, check Railway logs for the allowed origins list. Update `CORS_ORIGIN` to include all frontend deployment URLs (e.g., `https://grad-hire-ai.vercel.app`). The CSP `connectSrc` directive is automatically populated from `CORS_ORIGIN` to allow cross-origin API calls.
 12. **Message spam protection**: Per-user message rate limiting is enforced (20 messages per minute). Combined with global throttling, this prevents spam and phishing campaigns.
 
 ---
@@ -409,6 +409,12 @@ Check the backend code for the actual setup endpoint path and required headers b
 - Ensure cookies are allowed: browser DevTools → Application → Cookies should show `access_token` and `XSRF-TOKEN`
 - If using custom domains, add ALL domains to `CORS_ORIGIN` (gradture.ai, www.gradture.ai, admin.gradture.ai, and any Vercel preview URLs)
 
+### 403 CSRF errors on file uploads or mutating requests
+- The backend now sends `X-CSRF-TOKEN` in response headers for cross-origin compatibility
+- Ensure the frontend was redeployed after the CSRF fix (commit `90b22f3` or later)
+- Verify Railway logs show `[CSRF] Blocked` warnings with diagnostic cookie/header info
+- If the cookie is missing, the request will be rejected; log in again to establish a session
+
 ### Migration fails
 - Do NOT run `prisma migrate dev` in production
 - Use `prisma migrate deploy` only
@@ -435,6 +441,6 @@ If you encounter issues:
 
 ---
 
-*Last updated: 2026-08-16 — production deployment verified*
+*Last updated: 2026-08-17 — fixed cross-origin CSRF for Vercel→Railway deployment*
 
-*Commit: 90845ae — production-ready job ingestion pipeline with migration safety*
+*Commit: 90b22f3 — cross-origin CSRF and CSP fix*
