@@ -54,7 +54,13 @@ export class AuthService {
   }
 
   clearAuthCookie(res: Response): void {
-    res.clearCookie('access_token', { path: '/' });
+    const options = this.getCookieOptions();
+    res.clearCookie('access_token', {
+      path: '/',
+      secure: options.secure as boolean,
+      sameSite: options.sameSite as 'none' | 'lax' | 'strict',
+      httpOnly: options.httpOnly as boolean,
+    });
   }
 
   async register(body: { email: string; password: string; name?: string; role?: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {

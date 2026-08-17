@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AuthResponse, AuthUser } from '../types';
 import { authApi } from '../api/endpoints/auth';
+import { setAuthRefresh } from '../api/client';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -72,6 +73,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         setStatus('unauthenticated');
       });
+  }, []);
+
+  useEffect(() => {
+    setAuthRefresh(async () => {
+      try {
+        const data = await authApi.refresh();
+        setUser(data.user);
+        setStatus('authenticated');
+        return true;
+      } catch {
+        setUser(null);
+        setStatus('unauthenticated');
+        return false;
+      }
+    });
+    return () => setAuthRefresh(null);
   }, []);
 
   const value = useMemo<AuthContextValue>(

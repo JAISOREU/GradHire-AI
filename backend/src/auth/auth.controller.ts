@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Query, BadRequestException, Res } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Query, BadRequestException, Res, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { Request } from 'express';
@@ -6,7 +6,6 @@ import { AuthService, AuthUser } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { RegisterDto } from '../common/dto/auth.dto';
 import { LoginDto } from '../common/dto/auth.dto';
-import { RefreshTokenDto } from '../common/dto/auth.dto';
 import { ForgotPasswordDto } from '../common/dto/auth.dto';
 import { ResetPasswordDto } from '../common/dto/auth.dto';
 
@@ -27,10 +26,15 @@ export class AuthController {
     return this.auth.login(body, res);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refresh(@Body() body: RefreshTokenDto, @Res({ passthrough: true }) res?: Response) {
-    return this.auth.refresh(body.token, res);
+  async refresh(@Req() req: Request & { cookies?: Record<string, string> }, @Res({ passthrough: true }) res?: Response) {
+    const token = req.cookies?.access_token;
+    if (!token) {
+      throw new UnauthorizedException('Missing token');
+    }
+    return this.auth.refresh(token, res);
   }
 
   @HttpCode(HttpStatus.OK)

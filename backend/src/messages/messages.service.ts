@@ -42,6 +42,18 @@ export class MessagesService {
   }
 
   async create(senderId: string, recipientId: string, body: string) {
+    if (senderId === recipientId) {
+      throw new BadRequestException('You cannot send a message to yourself');
+    }
+
+    const recipient = await this.prisma.user.findUnique({
+      where: { id: recipientId },
+      select: { id: true, role: true },
+    });
+    if (!recipient) {
+      throw new NotFoundException('Recipient not found');
+    }
+
     const recentCount = await this.prisma.message.count({
       where: {
         senderId,

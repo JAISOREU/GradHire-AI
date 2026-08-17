@@ -38,17 +38,6 @@ function createCorsOriginChecker(allowedOrigins: string[]) {
   };
 }
 
-function getCookieOptions(): Record<string, unknown> {
-  const isProduction = process.env.NODE_ENV === 'production';
-  return {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'none',
-    maxAge: 15 * 60 * 1000,
-    path: '/',
-  };
-}
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
@@ -70,9 +59,10 @@ async function bootstrap() {
 
   app.use((req: Request, res: Response, next: Function) => {
     const csrfToken = (req as any).cookies?.['XSRF-TOKEN'] || require('crypto').randomBytes(32).toString('hex');
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('XSRF-TOKEN', csrfToken, {
       httpOnly: false,
-      secure: true,
+      secure: isProduction,
       sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',

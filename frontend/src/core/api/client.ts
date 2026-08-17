@@ -26,6 +26,13 @@ type RequestOptions = Omit<RequestInit, 'body'> & {
   requiresAuth?: boolean;
 };
 
+let isRefreshing = false;
+let authRefreshCallback: (() => Promise<boolean>) | null = null;
+
+export const setAuthRefresh = (fn: (() => Promise<boolean>) | null) => {
+  authRefreshCallback = fn;
+};
+
 export const api = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
   const { json, formData, requiresAuth = true, headers, method, ...rest } = options;
 
@@ -62,6 +69,18 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const data = res.status === 204 ? null : await res.json().catch(() => null);
 
   if (!res.ok) {
+    if (res.status === 401 && requiresAuth && authRefreshCallback && !isRefreshing) {
+      isRefreshing = true;
+      try {
+        const refreshed = await authRefreshCallback();
+        if (refreshed) {
+          return api<T>(path, { ...options, requiresAuth: false });
+        }
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
     const message =
       (data as { message?: string } | null)?.message ??
       'Request failed. Please try again.';
