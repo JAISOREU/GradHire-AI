@@ -24,7 +24,7 @@ export const AdminListPage = <T,>({
 }: AdminListPageProps<T>) => {
   if (loading) {
     return (
-      <div className="list-container" style={{ marginTop: '1rem' }}>
+      <div className="list-container">
         <Skeleton variant="table" lines={5} />
       </div>
     );
@@ -32,17 +32,17 @@ export const AdminListPage = <T,>({
 
   if (!items.length) {
     return (
-      <div className="list-container" style={{ marginTop: '1rem' }}>
+      <div className="list-container">
         <EmptyState icon={emptyIcon} title={emptyTitle} text={emptyText} />
       </div>
     );
   }
 
   return (
-    <div className="list-container" style={{ marginTop: '1rem' }}>
+    <div className="list-container">
       {title && (
-        <div style={{ marginBottom: '0.75rem' }}>
-          {icon && <span style={{ marginRight: '0.5rem' }}>{icon}</span>}
+        <div className="list-container__header">
+          {icon && <span className="list-container__icon" aria-hidden="true">{icon}</span>}
           <h2 className="page-title">{title}</h2>
         </div>
       )}
