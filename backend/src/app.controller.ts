@@ -8,11 +8,12 @@ import { HealthService } from './health/health.service';
 import { UpdateProfileDto } from './common/dto/profile.dto';
 import { JobQueryDto } from './common/dto/job.dto';
 import { normalizePagination } from './common/pagination';
+import { RecommendationService, PersonalizedRecommendationsResult } from './ai/recommendation.service';
 import { Response } from 'express';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly healthService: HealthService) {}
+  constructor(private readonly appService: AppService, private readonly healthService: HealthService, private readonly recommendationService: RecommendationService) {}
 
   @Get('health')
   async getHealth(@Res() res: Response) {
@@ -34,17 +35,9 @@ export class AppController {
 
   @UseGuards(AuthGuard, StudentGuard)
   @Get('recommendations/ai')
-  async getAiRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK = 5) {
-    const profile = await this.appService.getStudentProfile(req.user.id);
-    const education = String(profile.education ?? '').trim();
-    const skills = Array.isArray(profile.skills) ? profile.skills.filter((s: unknown) => String(s).trim()) : [];
-    const experience = String(profile.experience ?? '').trim();
-
-    if (!education || !skills.length || !experience) {
-      return [];
-    }
-
-    return this.appService.getAiRecommendations((profile.focus as string) || '', Number(topK));
+  async getAiRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK = 5): Promise<PersonalizedRecommendationsResult> {
+    const result = await this.recommendationService.getPersonalizedRecommendations(req.user.id, Number(topK));
+    return result;
   }
 
   @UseGuards(AuthGuard, StudentGuard)

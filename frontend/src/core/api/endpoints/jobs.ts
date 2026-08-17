@@ -66,8 +66,12 @@ export const jobsApi = {
 };
 
 export const recommendationsApi = {
-  ai: async (topK = 5): Promise<AiRecommendation[]> =>
-    api<{ recommendations: AiRecommendation[] }>(`/api/v1/recommendations/ai?top_k=${topK}`).then(
-      (r) => r.recommendations ?? [],
+  ai: async (topK = 5): Promise<{ ready: boolean; missing: string[]; recommendations: AiRecommendation[] }> =>
+    api<{ ready: boolean; missing: string[]; recommendations: AiRecommendation[] }>(`/api/v1/recommendations/ai?top_k=${topK}`).then(
+      (r) => ({
+        ready: r.ready ?? false,
+        missing: r.missing ?? [],
+        recommendations: r.recommendations ?? [],
+      }),
     ),
 };

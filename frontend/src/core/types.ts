@@ -124,10 +124,21 @@ export type AiRecommendation = {
   type: string;
   score: number;
   description: string;
+  company?: string;
+  location?: string;
+  workplaceType?: string;
 };
 
 export type AiRecommendationResponse = {
   recommendations: AiRecommendation[];
+};
+
+export type PersonalizedRecommendationsResponse = {
+  ready: boolean;
+  missing: string[];
+  checks: { key: string; required: boolean; ready: boolean }[];
+  recommendations: AiRecommendation[];
+  profileSummary: Record<string, unknown>;
 };
 
 export type StudentProfile = {

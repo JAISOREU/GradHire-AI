@@ -1,6 +1,5 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { recommendationsApi } from '../../core/api/endpoints/jobs';
-import { studentsApi } from '../../core/api/endpoints/students';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { LoadingState } from '../../components/LoadingState';
 import { EmptyState } from '../../components/EmptyState';
@@ -9,38 +8,45 @@ import { Button } from '../../components/Button';
 import { PageHeader } from '../../components/PageHeader';
 
 export const StudentRecommendedJobsPage = () => {
-  const { data: aiJobs, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
-  const { data: readiness } = useAsync(() => studentsApi.getAiReadiness(), []);
+  const { data: recommendationResult, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
 
-  const profileComplete = readiness?.ready ?? false;
+  const ready = recommendationResult?.ready ?? false;
+  const missing = recommendationResult?.missing ?? [];
+  const recommendations = recommendationResult?.recommendations ?? [];
 
-  const recommendations = aiJobs && aiJobs.length > 0
-    ? aiJobs.map((rec) => ({
-        id: rec.id,
-        title: rec.title,
-        company: '',
-        location: '',
-        type: rec.type as 'HIRING' | 'INTERNSHIP',
-        matchScore: Math.round(rec.score * 100),
-        description: rec.description,
-      }))
-    : [];
+  const mappedRecommendations = recommendations.map((rec) => ({
+    id: rec.id,
+    title: rec.title,
+    company: '',
+    location: '',
+    type: rec.type as 'HIRING' | 'INTERNSHIP',
+    matchScore: Math.round(rec.score * 100),
+    description: rec.description,
+  }));
 
-  const hasCompany = recommendations.some((j) => j.company);
-  const hasLocation = recommendations.some((j) => j.location);
+  const hasCompany = mappedRecommendations.some((j) => j.company);
+  const hasLocation = mappedRecommendations.some((j) => j.location);
+
+  const missingSectionLinks: Record<string, { to: string; label: string }> = {
+    education: { to: '/student/account', label: 'Add education' },
+    skills: { to: '/student/account', label: 'Add skills' },
+    experience: { to: '/student/account', label: 'Add experience' },
+    resume: { to: '/student/resume', label: 'Upload resume' },
+    career_preferences: { to: '/student/settings', label: 'Set preferences' },
+  };
 
   return (
     <div className="page fade-in">
       <PageHeader
         title="Recommended jobs"
-        subtitle={profileComplete ? 'AI-matched roles based on your profile.' : 'Complete your profile to unlock personalized recommendations.'}
+        subtitle={ready ? 'AI-matched roles based on your profile.' : 'Complete your profile to unlock personalized recommendations.'}
       />
 
       <div className="list-container">
-        {aiLoading && profileComplete ? (
+        {aiLoading && ready ? (
           <LoadingState label="Loading recommendations…" />
-        ) : recommendations.length > 0 ? (
-          recommendations.map((job) => (
+        ) : ready && mappedRecommendations.length > 0 ? (
+          mappedRecommendations.map((job) => (
             <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
               <div className="list-item__head">
                 <div>
@@ -58,15 +64,27 @@ export const StudentRecommendedJobsPage = () => {
               </div>
             </Link>
           ))
-        ) : profileComplete ? (
-          <EmptyState icon="✨" title="No recommendations yet" text="Complete your profile to get AI-matched roles." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
+        ) : ready ? (
+          <EmptyState icon="✨" title="No recommendations yet" text="We could not find matching roles right now. Try broadening your profile or check back later." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
         ) : (
-          <EmptyState
-            icon="🎯"
-            title="Complete your profile to receive personalized job recommendations"
-            text="Add your education, skills, and experience so we can match you with the right opportunities."
-            action={<Link to="/student/account"><Button size="sm">Complete profile</Button></Link>}
-          />
+          <div className="card section--mt">
+            <EmptyState
+              icon="🎯"
+              title="Complete your profile to receive personalized job recommendations"
+              text="Add your education, skills, and experience so we can match you with the right opportunities."
+            />
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {missing.map((key) => {
+                const link = missingSectionLinks[key];
+                if (!link) return null;
+                return (
+                  <Link key={key} to={link.to} className="btn btn--secondary btn--sm" style={{ alignSelf: 'flex-start' }}>
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
     </div>

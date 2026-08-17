@@ -54,6 +54,32 @@ export class AiService {
     }
   }
 
+  async getPersonalizedRecommendations(profile: Record<string, unknown>, topK = 5): Promise<AiRecommendation[]> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.baseUrl}/recommendations`, { profile, top_k: topK }),
+      );
+      return response.data.recommendations ?? [];
+    } catch (error) {
+      this.logger.warn('AI personalized recommendations failed', error);
+      return [];
+    }
+  }
+
+  async getHeuristicRecommendations(profile: Record<string, unknown>, topK = 5): Promise<AiRecommendation[]> {
+    const focus = String(profile.focus ?? '');
+    if (!focus) return [];
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.baseUrl}/recommendations`, { focus, top_k: topK, fallback: true }),
+      );
+      return response.data.recommendations ?? [];
+    } catch (error) {
+      this.logger.warn('AI heuristic recommendations failed', error);
+      return [];
+    }
+  }
+
   async getMetrics(): Promise<RecommendationMetrics | null> {
     try {
       const response = await firstValueFrom(this.http.get(`${this.baseUrl}/metrics`));
