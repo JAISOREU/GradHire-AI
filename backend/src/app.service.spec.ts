@@ -108,10 +108,14 @@ describe('AppService', () => {
   });
 
   it('getStudentProfile returns the current profile', async () => {
-    const profile = await service.getStudentProfile('student-001');
+    const prisma = createMockPrisma();
+    const ai = { getRecommendations: async () => [] } as any;
+    const cache = { get: async () => null, set: async () => {} } as any;
+    const svc = new AppService(prisma as any, ai as any, cache as any);
+    await svc.saveStudentProfile('student-001', { name: 'Ava Chen', focus: 'AI' });
+    const profile = await svc.getStudentProfile('student-001');
 
-    assert.equal(profile.id, 'student-001');
-    assert.equal(typeof profile.name, 'string');
+    assert.equal(profile.name, 'Ava Chen');
     assert.equal(typeof profile.focus, 'string');
   });
 

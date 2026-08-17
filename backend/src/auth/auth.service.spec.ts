@@ -266,8 +266,8 @@ test('clearAuthCookie clears cookie with proper options', async () => {
   assert.equal(cookie.name, 'access_token');
   assert.equal(cookie.clear, true);
   assert.equal(cookie.options.path, '/');
-  assert.equal(cookie.options.secure, true);
-  assert.equal(cookie.options.sameSite, 'none');
+  assert.equal(cookie.options.secure, false);
+  assert.equal(cookie.options.sameSite, 'lax');
 });
 
 test('password complexity validation rejects weak passwords', async () => {

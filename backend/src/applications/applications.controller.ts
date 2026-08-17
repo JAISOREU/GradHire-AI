@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, Req, UseGuards, Put } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -15,6 +16,7 @@ export class ApplicationsController {
 
   @Post()
   @UseGuards(StudentGuard)
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   async apply(@Req() req: Request & { user: AuthUser }, @Body() body: CreateApplicationDto) {
     return this.applications.apply(req.user, body.jobId, body);
   }
@@ -47,12 +49,14 @@ export class ApplicationsController {
 
   @Post(':id/withdraw')
   @UseGuards(StudentGuard)
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   async withdraw(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.applications.withdraw(req.user, id);
   }
 
   @Put(':id/status')
   @UseGuards(EmployerGuard)
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   async updateStatus(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Body() body: UpdateApplicationStatusDto) {
     return this.applications.updateStatus(req.user, id, body);
   }

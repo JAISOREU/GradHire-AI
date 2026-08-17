@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { EmployerGuard } from '../auth/employer.guard';
@@ -19,21 +20,25 @@ export class EmployerController {
   }
 
   @Put('profile')
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   async updateProfile(@Req() req: Request & { user: AuthUser }, @Body() body: UpdateEmployerProfileDto) {
     return this.employer.updateEmployerProfile(req.user, body);
   }
 
   @Post('jobs')
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   async createJob(@Req() req: Request & { user: AuthUser }, @Body() body: CreateJobDto) {
     return this.employer.createJob(req.user, body);
   }
 
   @Put('jobs/:id')
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   async updateJob(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Body() body: UpdateJobDto) {
     return this.employer.updateJob(req.user, id, body);
   }
 
   @Delete('jobs/:id')
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   async deleteJob(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.employer.deleteJob(req.user, id);
   }

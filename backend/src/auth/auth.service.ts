@@ -40,10 +40,11 @@ export class AuthService {
   ) {}
 
   private getCookieOptions(): Record<string, unknown> {
+    const isProduction = process.env.NODE_ENV === 'production';
     return {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     };
@@ -217,7 +218,7 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { resetTokenHash: tokenHash, resetTokenExpires: expires },
+      data: { resetTokenHash: tokenHash, resetTokenExpires: expires, updatedAt: expires },
     });
 
     const resetUrl = `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/reset-password?token=${token}`;
@@ -233,16 +234,19 @@ export class AuthService {
 
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
     this.validatePasswordComplexity(newPassword);
-    const users = await this.prisma.user.findMany({
+
+    const candidates = await this.prisma.user.findMany({
       where: {
         resetTokenExpires: { gte: new Date() },
         resetTokenHash: { not: null },
       },
       select: { id: true, resetTokenHash: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 100,
     });
 
     let matchedUser = null;
-    for (const user of users) {
+    for (const user of candidates) {
       if (user.resetTokenHash && await bcrypt.compare(token, user.resetTokenHash)) {
         matchedUser = user;
         break;
@@ -263,17 +267,19 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {
-    const users = await this.prisma.user.findMany({
+    const candidates = await this.prisma.user.findMany({
       where: {
         emailVerified: false,
         emailVerificationToken: { not: null },
         emailVerificationExpires: { gte: new Date() },
       },
-      select: { id: true, emailVerificationToken: true, emailVerificationExpires: true },
+      select: { id: true, emailVerificationToken: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 100,
     });
 
     let matchedUser = null;
-    for (const user of users) {
+    for (const user of candidates) {
       if (user.emailVerificationToken && await bcrypt.compare(token, user.emailVerificationToken)) {
         matchedUser = user;
         break;
