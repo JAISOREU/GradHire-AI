@@ -167,7 +167,7 @@ export const StudentResumePage = () => {
                       {resume.mimeType && <span className="badge">{resume.mimeType}</span>}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 resume-actions">
                     <Button variant="ghost" size="sm" onClick={() => handleView(resume.id)}>View</Button>
                     <Button variant="ghost" size="sm" onClick={() => handleDownload(resume.id)}>Download</Button>
                     <Button variant="ghost" size="sm" onClick={() => handleReplace(resume)} disabled={uploading}>Replace</Button>

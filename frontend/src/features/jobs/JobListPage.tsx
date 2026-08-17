@@ -102,61 +102,60 @@ export const JobListPage = () => {
       />
 
       <div className="card section--mt" style={{ padding: 'var(--space-5)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-            <input
-              className="input"
-              type="search"
-              placeholder="Search jobs, companies..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ flex: '1 1 240px' }}
-            />
-            <input
-              className="input"
-              type="text"
-              placeholder="Location"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              style={{ flex: '1 1 160px' }}
-            />
-            <select
-              className="select select--auto"
-              value={type}
-              onChange={(e) => setType(e.target.value as JobType | '')}
-            >
-              {JOB_TYPES.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <select
-              className="select select--auto"
-              value={experienceLevel}
-              onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
-            >
-              {EXPERIENCE_LEVELS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <select
-              className="select select--auto"
-              value={workplaceType}
-              onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
-            >
-              {WORKPLACE_TYPES.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <select
-              className="select select--auto"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
+        <div className="filter-bar">
+          <input
+            className="input"
+            type="search"
+            placeholder="Search jobs, companies..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: '1 1 240px' }}
+          />
+          <input
+            className="input"
+            type="text"
+            placeholder="Location"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            style={{ flex: '1 1 160px' }}
+          />
+          <select
+            className="select select--auto"
+            value={type}
+            onChange={(e) => setType(e.target.value as JobType | '')}
+          >
+            {JOB_TYPES.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          <select
+            className="select select--auto"
+            value={experienceLevel}
+            onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
+          >
+            {EXPERIENCE_LEVELS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          <select
+            className="select select--auto"
+            value={workplaceType}
+            onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
+          >
+            {WORKPLACE_TYPES.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          <select
+            className="select select--auto"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
             <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
@@ -168,7 +167,6 @@ export const JobListPage = () => {
               </button>
             </div>
           </div>
-        </div>
       </div>
 
       <div className="list-container">
