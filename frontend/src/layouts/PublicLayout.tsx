@@ -3,6 +3,7 @@ import { useAuth } from '../core/auth/AuthContext';
 import { Button } from '../components/Button';
 import { SkipLink } from '../components/SkipLink';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { Icon } from '../components/Icon';
 import { useState, useRef, useEffect } from 'react';
 import { roleHomePath } from '../core/utils/navigation';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
@@ -126,9 +127,8 @@ export const PublicLayout = () => {
             onClick={() => setMobileNavOpen((prev) => !prev)}
             aria-label="Toggle navigation"
             aria-expanded={mobileNavOpen}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-2)', fontSize: '1.25rem', lineHeight: 1 }}
           >
-            ☰
+            <Icon name="menu" size={22} />
           </button>
           <nav className="public-nav" aria-label="Primary" style={navStyle}>
             <Link to="/">Home</Link>

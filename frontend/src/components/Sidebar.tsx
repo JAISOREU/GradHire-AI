@@ -29,7 +29,8 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
     <nav className="sidebar__nav" aria-label={`${title} navigation`}>
       {sections
         ? sections.map((section, idx) => (
-            <div key={idx}>
+            <div key={idx} className="sidebar__section">
+              {section.label && <div className="sidebar__section-label">{section.label}</div>}
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}
@@ -42,6 +43,7 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
                   <span className="sidebar__icon" aria-hidden="true">
                     <Icon name={item.icon as any} size={22} />
                   </span>
+                  <span className="sidebar__label">{item.label}</span>
                 </NavLink>
               ))}
             </div>
@@ -58,6 +60,7 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
               <span className="sidebar__icon" aria-hidden="true">
                 <Icon name={item.icon as any} size={22} />
               </span>
+              <span className="sidebar__label">{item.label}</span>
             </NavLink>
           ))}
     </nav>

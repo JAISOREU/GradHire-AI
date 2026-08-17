@@ -111,12 +111,6 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
     transition: 'opacity 0.35s ease',
   };
 
-  const publicNavItems = [
-    { to: '/jobs', label: 'Jobs', icon: 'jobs' as const },
-    { to: '/companies', label: 'Companies', icon: 'company' as const },
-    { to: '/about', label: 'About' },
-  ];
-
   const roleMenuItems = useMemo(() => {
     switch (user.role) {
       case 'STUDENT':
@@ -125,13 +119,14 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           { to: '/student/applications', label: 'Applications', icon: 'applications' as const },
           { to: '/student/recommended', label: 'Recommended jobs', icon: 'star' as const },
           { to: '/student/saved', label: 'Saved jobs', icon: 'saved' as const },
+          { to: '/student/resume', label: 'Resume', icon: 'resume' as const },
           { to: '/student/messages', label: 'Messages', icon: 'messages' as const },
           { to: '/student/notifications', label: 'Notifications', icon: 'notifications' as const },
           { to: '/student/settings', label: 'Settings', icon: 'settings' as const },
         ];
       case 'EMPLOYER':
         return [
-          { to: '/employer/account', label: 'Company profile', icon: 'company' as const },
+          { to: '/employer/company-profile', label: 'Company profile', icon: 'company' as const },
           { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' as const },
           { to: '/employer/jobs', label: 'Job posts', icon: 'jobs' as const },
           { to: '/employer/applicants', label: 'Applicants', icon: 'users' as const },
@@ -160,42 +155,39 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   return (
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
       <div className="app-header__inner" style={innerStyle}>
-        <div className="brand" style={brandStyle}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleSidebar}
-            aria-label="Toggle sidebar"
-            aria-expanded={sidebarOpen ?? false}
-            className="mobile-menu-toggle"
-            style={{ display: 'inline-flex', padding: 'var(--space-2)', fontSize: '1.25rem', lineHeight: 1 }}
-          >
-            <Icon name="menu" size={22} />
-          </Button>
-          <Link to={homeRoute} className="brand-link" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center' }}>
-            <span className="header-logo__mark" aria-hidden="true">
-              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
-                <path d="M20 24V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="header-logo-tassel" />
-                <circle cx="20" cy="33" r="2" fill="currentColor" className="header-logo-tassel-dot" />
-                <circle cx="4" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--1" />
-                <circle cx="20" cy="8" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--2" />
-                <circle cx="36" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--3" />
-                <circle cx="20" cy="24" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--4" />
-                <path d="M4 16H36M20 8V24M4 16L20 24M36 16L20 24" stroke="currentColor" strokeWidth="1" opacity="0.3" className="header-logo-lines" />
-              </svg>
-            </span>
-            <span className="header-logo__text" style={titleStyle}>
-              <span className="header-logo__inner">{title.split(' ').map((word, i, arr) => {
-                const isLast = i === arr.length - 1;
-                if (isLast && arr.length > 1) {
-                  return <span key={i} className="header-logo__ai">{word} </span>;
-                }
-                return <span key={i}>{word} </span>;
-              })}</span>
-            </span>
-          </Link>
-        </div>
+        <Link to={homeRoute} className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', ...brandStyle }}>
+          <span className="header-logo__mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
+              <path d="M20 24V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="header-logo-tassel" />
+              <circle cx="20" cy="33" r="2" fill="currentColor" className="header-logo-tassel-dot" />
+              <circle cx="4" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--1" />
+              <circle cx="20" cy="8" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--2" />
+              <circle cx="36" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--3" />
+              <circle cx="20" cy="24" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--4" />
+              <path d="M4 16H36M20 8V24M4 16L20 24M36 16L20 24" stroke="currentColor" strokeWidth="1" opacity="0.3" className="header-logo-lines" />
+            </svg>
+          </span>
+          <span className="header-logo__text" style={titleStyle}>
+            <span className="header-logo__inner">{title.split(' ').map((word, i, arr) => {
+              const isLast = i === arr.length - 1;
+              if (isLast && arr.length > 1) {
+                return <span key={i} className="header-logo__ai">{word} </span>;
+              }
+              return <span key={i}>{word} </span>;
+            })}</span>
+          </span>
+        </Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onToggleSidebar}
+          aria-label="Toggle sidebar"
+          aria-expanded={sidebarOpen ?? false}
+          className="mobile-menu-toggle"
+        >
+          <Icon name="menu" size={22} />
+        </Button>
 
         <div className="header-user" style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
           <span style={themeStyle}>
@@ -227,16 +219,8 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
                   <span>{item.label}</span>
                 </Link>
               ))}
-              <div style={{ height: 1, background: 'var(--color-border)', margin: '4px 0' }} role="separator" />
-              {publicNavItems.map((item) => (
-                <Link key={item.to} to={item.to} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
-                  {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-              <div style={{ height: 1, background: 'var(--color-border)', margin: '4px 0' }} role="separator" />
+              <div className="header-dropdown__separator" role="separator" />
               <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={() => setConfirmLogout(true)} role="listitem">
-                <span>🚪</span>
                 <span>Log out</span>
               </button>
             </div>
