@@ -10,6 +10,7 @@ import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { useState } from 'react';
 import type { Job } from '../../core/types';
+import { cleanText } from '../../core/utils/text';
 
 const formatSalary = (job: Job) => {
   if (job.salaryUndisclosed) return 'Confidential';
@@ -133,28 +134,28 @@ export const JobDetailPage = () => {
       {job.description && (
         <div className="card section--mt">
           <h3 className="card__title">Overview</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.description}</div>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.description)}</div>
         </div>
       )}
 
       {(job.responsibilities ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Responsibilities</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.responsibilities}</div>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.responsibilities)}</div>
         </div>
       )}
 
       {(job.requiredQualifications ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Requirements</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.requiredQualifications}</div>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.requiredQualifications)}</div>
         </div>
       )}
 
       {(job.preferredQualifications ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Preferred Qualifications</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{job.preferredQualifications}</div>
+          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.preferredQualifications)}</div>
         </div>
       )}
 

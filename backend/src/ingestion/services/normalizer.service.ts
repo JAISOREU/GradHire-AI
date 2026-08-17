@@ -8,6 +8,7 @@ export interface NormalizedJob {
   title: string;
   company: string;
   description: string;
+  responsibilities?: string;
   type: Job['type'];
   workplaceType: Job['workplaceType'];
   experienceLevel?: Job['experienceLevel'];
@@ -55,55 +56,81 @@ export class NormalizerService {
       enriched.sourceUrl = raw.sourceUrl;
     }
 
-    enriched.description = this.sanitizeDescription(enriched.description);
+    const cleanedDescription = this.cleanText(enriched.description);
+    const formattedDescription = this.formatJobDescription(cleanedDescription, enriched);
+
+    enriched.description = formattedDescription;
+    enriched.requiredQualifications = this.cleanText(enriched.requiredQualifications);
+    enriched.company = this.resolveCompany(enriched.company, source);
 
     return enriched;
   }
 
-  private sanitizeDescription(input: string): string {
-    let text = input || '';
+  private resolveCompany(company: string, source: JobSource): string {
+    const trimmed = (company || '').trim();
+    if (trimmed && trimmed !== 'Unknown' && trimmed.length > 1) {
+      return trimmed;
+    }
+
+    const sourceCompany = (source as any).company as string | undefined;
+    if (sourceCompany && sourceCompany.trim().length > 1) {
+      return sourceCompany.trim();
+    }
+
+    const sourceName = (source.name || '').trim();
+    if (sourceName.length > 1) {
+      return sourceName;
+    }
+
+    return 'Not specified';
+  }
+
+  private cleanText(input: string | undefined | null): string {
+    if (!input) return '';
+
+    let text = input;
 
     text = text.replace(/<script[\s\S]*?<\/script>/gi, ' ');
     text = text.replace(/<style[\s\S]*?<\/style>/gi, ' ');
     text = text.replace(/<[^>]+>/g, ' ');
-    text = text.replace(/&nbsp;/g, ' ');
-    text = text.replace(/&lt;/g, '<');
-    text = text.replace(/&gt;/g, '>');
-    text = text.replace(/&amp;/g, '&');
-    text = text.replace(/&quot;/g, '"');
-    text = text.replace(/&#39;/g, "'");
-    text = text.replace(/&#x[0-9a-fA-F]+;|&#\d+;/g, ' ');
+    text = text.replace(/&nbsp;/gi, ' ');
+    text = text.replace(/&lt;/gi, '<');
+    text = text.replace(/&gt;/gi, '>');
+    text = text.replace(/&amp;/gi, '&');
+    text = text.replace(/&quot;/gi, '"');
+    text = text.replace(/&#39;/gi, "'");
+    text = text.replace(/&#x[0-9a-fA-F]+;|&#\d+;/gi, ' ');
 
     const boilerplatePatterns = [
-      /cookie\s*(policy|notice|consent).*?/gi,
-      /privacy\s*policy.*?/gi,
-      /terms\s*(of\s*use|service).*?/gi,
-      /all\s*rights\s*reserved.*?/gi,
-      /powered\s*by.*?/gi,
-      /subscribe\s*to.*?/gi,
-      /follow\s*us\s*(on|at).*?/gi,
-      /share\s*this\s*job.*?/gi,
-      /back\s*to\s*(top|search).*?/gi,
-      /home\s*page\s*of.*?/gi,
-      /site\s*map.*?/gi,
-      /click\s*here\s*(to|for).*?/gi,
-      /read\s*more.*?/gi,
-      /view\s*all\s*jobs.*?/gi,
-      /browse\s*jobs.*?/gi,
-      /sign\s*in\s*or\s*register.*?/gi,
-      /login\s*(here|to|required).*?/gi,
-      /create\s*alert.*?/gi,
-      /save\s*(this\s*)?job.*?/gi,
-      /email\s*me\s*jobs.*?/gi,
-      /similar\s*jobs.*?/gi,
-      /related\s*jobs.*?/gi,
-      /you\s*may\s*also\s*be\s*interested.*?/gi,
-      /recommended\s*for\s*you.*?/gi,
-      /sponsored\s*listing.*?/gi,
-      /advertisement.*?/gi,
-      /google\s*(ads|analytics|tag\s*manager).*?/gi,
-      /facebook\s*pixel.*?/gi,
-      /linkedin\s*tracking.*?/gi,
+      /cookie\s*(policy|notice|consent).*?$/gim,
+      /privacy\s*policy.*?$/gim,
+      /terms\s*(of\s*use|service).*?$/gim,
+      /all\s*rights\s*reserved.*?$/gim,
+      /powered\s*by.*?$/gim,
+      /subscribe\s*to.*?$/gim,
+      /follow\s*us\s*(on|at).*?$/gim,
+      /share\s*this\s*job.*?$/gim,
+      /back\s*to\s*(top|search).*?$/gim,
+      /home\s*page\s*of.*?$/gim,
+      /site\s*map.*?$/gim,
+      /click\s*here\s*(to|for).*?$/gim,
+      /read\s*more.*?$/gim,
+      /view\s*all\s*jobs.*?$/gim,
+      /browse\s*jobs.*?$/gim,
+      /sign\s*in\s*or\s*register.*?$/gim,
+      /login\s*(here|to|required).*?$/gim,
+      /create\s*alert.*?$/gim,
+      /save\s*(this\s*)?job.*?$/gim,
+      /email\s*me\s*jobs.*?$/gim,
+      /similar\s*jobs.*?$/gim,
+      /related\s*jobs.*?$/gim,
+      /you\s*may\s*also\s*be\s*interested.*?$/gim,
+      /recommended\s*for\s*you.*?$/gim,
+      /sponsored\s*listing.*?$/gim,
+      /advertisement.*?$/gim,
+      /google\s*(ads|analytics|tag\s*manager).*?$/gim,
+      /facebook\s*pixel.*?$/gim,
+      /linkedin\s*tracking.*?$/gim,
       /utm_\w+=[^&\s]+/gi,
       /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
       /\[?https?:\/\/[^\s\]\)]+/gi,
@@ -112,7 +139,7 @@ export class NormalizerService {
     ];
 
     for (const pattern of boilerplatePatterns) {
-      text = text.replace(pattern, ' ');
+      text = text.replace(pattern, '');
     }
 
     const lines = text.split(/\n+/).map((line) => line.trim()).filter((line) => line.length > 0);
@@ -133,6 +160,29 @@ export class NormalizerService {
     }
 
     return text;
+  }
+
+  private formatJobDescription(description: string, enriched: NormalizedJob): string {
+    if (!description) return '';
+
+    const responsibilities = enriched.responsibilities || description;
+    const qualifications = this.cleanText(enriched.requiredQualifications);
+
+    const parts: string[] = [];
+
+    if (description) {
+      parts.push(description);
+    }
+
+    if (responsibilities && responsibilities !== description) {
+      parts.push(`Responsibilities\n${responsibilities}`);
+    }
+
+    if (qualifications) {
+      parts.push(`Qualifications\n${qualifications}`);
+    }
+
+    return parts.join('\n\n');
   }
 
   private providerNormalize(parserType: JobSourceParserType, raw: RawJobItem): NormalizedJob {
@@ -176,6 +226,7 @@ export class NormalizerService {
       title: raw.title,
       company: raw.company,
       description: raw.description,
+      responsibilities: raw.description,
       type,
       workplaceType,
       requiredSkills,
