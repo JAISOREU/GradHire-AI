@@ -17,16 +17,16 @@ export const EmployerAnalyticsPage = () => {
        ) : analytics ? (
          <>
            <div className="status-strip status-strip--auto">
-             <StatCard label="Active jobs" value={analytics.activeJobs} icon="🗂️" />
-             <StatCard label="Applications today" value={analytics.applicationsToday} icon="📨" />
-             <StatCard label="Profile views" value={analytics.views} icon="👀" />
-             <StatCard label="Pending interviews" value={analytics.pendingInterviews} icon="🗓️" />
+              <StatCard label="Active jobs" value={analytics.activeJobs ?? 0} icon="🗂️" />
+              <StatCard label="Applications today" value={analytics.applicationsToday ?? 0} icon="📨" />
+              <StatCard label="Profile views" value={analytics.views ?? 0} icon="👀" />
+              <StatCard label="Pending interviews" value={analytics.pendingInterviews ?? 0} icon="🗓️" />
            </div>
 
            <div className="card mt-4">
              <h3 className="card__title">Hiring funnel</h3>
              <p className="card__subtitle">Views → Applications → Interviews</p>
-             {analytics.hiringFunnel.length > 0 && (
+              {(analytics.hiringFunnel?.length ?? 0) > 0 && (
                <div className="stack mt-3">
                  {analytics.hiringFunnel.map((value, index) => (
                    <div key={index}>

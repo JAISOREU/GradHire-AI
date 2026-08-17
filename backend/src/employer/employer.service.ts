@@ -279,9 +279,16 @@ export class EmployerService {
     const rejected = counts['REJECTED'] ?? 0;
     const withdrawn = counts['WITHDRAWN'] ?? 0;
 
+    const views = await this.prisma.job.aggregate({
+      where: { employerId: user.id, status: 'PUBLISHED' },
+      _sum: { views: true },
+    });
+
     return {
       activeJobs,
       applicationsToday,
+      views: views._sum.views ?? 0,
+      pendingInterviews: interviewing,
       totalApplications,
       awaitingReview,
       shortlisted,
@@ -290,6 +297,13 @@ export class EmployerService {
       hired,
       rejected,
       withdrawn,
+      hiringFunnel: [
+        totalApplications,
+        awaitingReview + shortlisted,
+        interviewing,
+        offers,
+        hired,
+      ],
     };
   }
 
