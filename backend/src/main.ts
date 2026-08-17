@@ -38,6 +38,17 @@ function createCorsOriginChecker(allowedOrigins: string[]) {
   };
 }
 
+function getCookieCaseInsensitive(req: Request, name: string): string | undefined {
+  const cookies = (req as any).cookies || {};
+  const lower = name.toLowerCase();
+  if (cookies[name] !== undefined) return cookies[name];
+  if (cookies[lower] !== undefined) return cookies[lower];
+  for (const key of Object.keys(cookies)) {
+    if (key.toLowerCase() === lower) return cookies[key];
+  }
+  return undefined;
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
@@ -58,7 +69,7 @@ async function bootstrap() {
   app.use(auditLoggingMiddleware(prisma));
 
   app.use((req: Request, res: Response, next: Function) => {
-    const csrfToken = (req as any).cookies?.['XSRF-TOKEN'] || require('crypto').randomBytes(32).toString('hex');
+    const csrfToken = getCookieCaseInsensitive(req, 'XSRF-TOKEN') || require('crypto').randomBytes(32).toString('hex');
     const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('XSRF-TOKEN', csrfToken, {
       httpOnly: false,
@@ -81,9 +92,9 @@ async function bootstrap() {
       return next();
     }
 
-    const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
+    const csrfCookie = getCookieCaseInsensitive(req, 'XSRF-TOKEN');
     const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
-    
+
     if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
       console.warn(`[CSRF] Blocked ${req.method} ${req.path}`, {
         hasCookie: !!csrfCookie,
