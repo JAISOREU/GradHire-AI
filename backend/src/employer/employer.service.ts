@@ -239,6 +239,9 @@ export class EmployerService {
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
+        include: {
+          companyRef: { select: { name: true, industry: true, logo: true } },
+        },
       }),
       this.prisma.job.count({ where }),
     ]);

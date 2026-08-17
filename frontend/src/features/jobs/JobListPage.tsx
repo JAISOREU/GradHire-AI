@@ -179,6 +179,8 @@ export const JobListPage = () => {
             {jobs.map((job, index) => {
               const salary = formatSalary(job);
               const isExternal = !!job.isExternal;
+              const company = job.company || job.companyRef?.name || 'Not specified';
+              const location = job.location || 'Remote';
               return (
                 <article key={job.id} className={`list-item card--hover mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
@@ -196,8 +198,8 @@ export const JobListPage = () => {
                         )}
                       </div>
                       <div className="list-item__meta" style={{ flexWrap: 'wrap' }}>
-                        <span>{job.company}</span>
-                        <span>{job.location}</span>
+                        <span>{company}</span>
+                        <span>{location}</span>
                         <Badge kind={resolveBadgeKind(job.type)}>
                           {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
                         </Badge>

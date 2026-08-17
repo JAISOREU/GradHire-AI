@@ -587,6 +587,7 @@ export type EmployerJob = {
   internshipAccepted?: boolean;
   applicantCountVisible?: boolean;
   autoCloseAfterDeadline?: boolean;
+  companyRef?: { name?: string; industry?: string; logo?: string; description?: string } | null;
   benefits?: JobBenefit[];
   requirements?: JobRequirement[];
   screeningQuestions?: ScreeningQuestion[];

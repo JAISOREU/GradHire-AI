@@ -47,12 +47,12 @@ export const EmployerManageJobsPage = () => {
               <tbody>
                 {jobs.map((job) => (
                   <tr key={job.id}>
-                    <td>
-                      <div className="font-medium">{job.title}</div>
-                      <div className="text-secondary text-sm">{job.company}</div>
-                    </td>
-                    <td className="text-sm">{job.type}</td>
-                    <td className="text-sm">{job.location}</td>
+                  <td>
+                    <div className="font-medium">{job.title}</div>
+                    <div className="text-secondary text-sm">{job.company || job.companyRef?.name || 'Not specified'}</div>
+                  </td>
+                  <td className="text-sm">{job.type}</td>
+                  <td className="text-sm">{job.location || 'Remote'}</td>
                     <td className="text-sm">{job.workplaceType}</td>
                     <td><Badge kind={resolveBadgeKind(job.status)}>{job.status}</Badge></td>
                     <td className="text-secondary text-sm">{job.publishedAt ? new Date(job.publishedAt).toLocaleDateString() : new Date(job.createdAt).toLocaleDateString()}</td>

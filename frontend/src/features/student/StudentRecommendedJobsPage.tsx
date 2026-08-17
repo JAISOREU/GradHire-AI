@@ -26,6 +26,9 @@ export const StudentRecommendedJobsPage = () => {
       }))
     : [];
 
+  const hasCompany = recommendations.some((j) => j.company);
+  const hasLocation = recommendations.some((j) => j.location);
+
   return (
     <div className="page fade-in">
       <PageHeader
@@ -43,8 +46,8 @@ export const StudentRecommendedJobsPage = () => {
                 <div>
                   <h3 className="list-item__title">{job.title}</h3>
                   <div className="list-item__meta">
-                    <span>{job.company}</span>
-                    <span>{job.location}</span>
+                    {hasCompany && <span>{job.company || 'Not specified'}</span>}
+                    {hasLocation && <span>{job.location || 'Remote'}</span>}
                     <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
                   </div>
                 </div>

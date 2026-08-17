@@ -50,6 +50,8 @@ export const JobDetailPage = () => {
   const workplaceLabel = job.workplaceType === 'ONSITE' ? 'Work From Office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : job.workplaceType === 'REMOTE' ? 'Remote' : job.workplaceType;
   const experienceLabel = job.experienceLevel ? job.experienceLevel.replace(/_/g, ' ').toLowerCase() : null;
   const postedDate = job.createdAt ? new Date(job.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not specified';
+  const company = job.company || job.companyRef?.name || 'Not specified';
+  const location = job.location || 'Remote';
 
   return (
     <div className="page fade-in">
@@ -69,18 +71,16 @@ export const JobDetailPage = () => {
           }
           subtitle={
             isExternal && job.sourceName
-              ? `${job.company} · ${job.location || 'Remote'} · Source: ${job.sourceName}`
-              : `${job.company} · ${job.location || 'Remote'}`
+              ? `${company} · ${location} · Source: ${job.sourceName}`
+              : `${company} · ${location}`
           }
         />
 
         <div className="grid grid-cols-2 gap-4 section--mt">
-          {job.location && (
-            <div>
-              <span className="text-secondary text-sm">Location</span>
-              <div className="font-medium">{job.location}</div>
-            </div>
-          )}
+          <div>
+            <span className="text-secondary text-sm">Location</span>
+            <div className="font-medium">{location}</div>
+          </div>
           {workplaceLabel && (
             <div>
               <span className="text-secondary text-sm">Work arrangement</span>

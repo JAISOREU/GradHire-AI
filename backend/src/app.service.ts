@@ -67,6 +67,7 @@ export class AppService implements OnModuleInit {
         { title: { contains: query.search, mode: 'insensitive' } },
         { company: { contains: query.search, mode: 'insensitive' } },
         { description: { contains: query.search, mode: 'insensitive' } },
+        { companyRef: { name: { contains: query.search, mode: 'insensitive' } } },
       ];
     }
     if (query.freshGraduateFriendly !== undefined) {
@@ -137,9 +138,12 @@ export class AppService implements OnModuleInit {
       const loc = j.location as Record<string, string> | undefined;
       const locationStr = loc
         ? [loc.city, loc.region, loc.country].filter(Boolean).join(', ')
-        : [j.city, j.country].filter(Boolean).join(', ');
+        : [j.city, j.country].filter(Boolean).join(', ') || 'Remote';
+      const companyRef = j.companyRef as Record<string, string> | undefined;
+      const company = j.company || companyRef?.name || '';
       return {
         ...j,
+        company,
         location: locationStr || 'Remote',
         type: String(j.type),
         experienceLevel: String(j.experienceLevel),
@@ -173,11 +177,13 @@ export class AppService implements OnModuleInit {
           if (dbJob.status !== 'PUBLISHED' && !isOwner) {
             throw new NotFoundException('Job not found');
           }
+          const companyRef = dbJob.companyRef as Record<string, string> | null;
           return {
             ...dbJob,
             type: String(dbJob.type),
             experienceLevel: String(dbJob.experienceLevel),
             workplaceType: String(dbJob.workplaceType),
+            company: dbJob.company || companyRef?.name || '',
             location: dbJob.location
               ? [dbJob.location.city, dbJob.location.region, dbJob.location.country].filter(Boolean).join(', ')
               : [dbJob.city, dbJob.country].filter(Boolean).join(', ') || 'Remote',
