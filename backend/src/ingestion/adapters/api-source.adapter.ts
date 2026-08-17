@@ -35,12 +35,22 @@ export class ApiSourceAdapter implements SourceAdapter {
       const rawRemote = item.remote ?? item.is_remote ?? item.remoteWork;
       const isRemoteFlag = rawRemote === true || rawRemote === 'true' || rawRemote === '1';
 
+      const externalId = mapped.externalId(item);
+      const title = mapped.title(item);
+      const company = mapped.company(item);
+      const description = mapped.description(item);
+      const applicationUrl = mapped.applicationUrl(item);
+
+      if (!externalId || !title || !company || !description || !applicationUrl || applicationUrl === '#') {
+        return null;
+      }
+
       const raw: RawJobItem = {
-        externalId: mapped.externalId(item) ?? `${Date.now()}-${Math.random()}`,
-        title: mapped.title(item) ?? 'Untitled',
-        company: mapped.company(item) ?? 'Unknown',
-        description: mapped.description(item) ?? '',
-        location: location,
+        externalId,
+        title,
+        company,
+        description,
+        location,
         type: mapped.type(item) ?? 'HIRING',
         workplaceType: isRemote || isRemoteFlag ? 'REMOTE' : (mapped.workplaceType(item) ?? 'ONSITE'),
         salaryMin: mapped.salaryMin(item) ?? null,
@@ -48,12 +58,12 @@ export class ApiSourceAdapter implements SourceAdapter {
         skills: mapped.skills(item) ?? [],
         postedAt: mapped.postedAt(item),
         expiresAt: mapped.expiresAt(item),
-        applicationUrl: mapped.applicationUrl(item) ?? '#',
+        applicationUrl,
         sourceUrl: mapped.sourceUrl(item, source.feedUrl),
         raw: item,
       };
       return raw;
-    });
+    }).filter((raw): raw is RawJobItem => raw !== null);
   }
 
   private mapFields(fieldMap: FieldMap) {

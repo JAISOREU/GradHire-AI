@@ -38,6 +38,7 @@ export class HtmlSourceAdapter implements SourceAdapter {
 
       if (!title) return;
 
+      const absoluteHref = href.startsWith('http') ? href : new URL(href, source.feedUrl).href;
       const idSeed = `${source.feedUrl}|${title}|${company || ''}|${description || ''}`;
       items.push({
         externalId: this.simpleHash(idSeed),
@@ -46,8 +47,8 @@ export class HtmlSourceAdapter implements SourceAdapter {
         description: description || '',
         location: location || undefined,
         postedAt: postedText ? this.toDate(postedText) : undefined,
-        applicationUrl: href.startsWith('http') ? href : new URL(href, source.feedUrl).href,
-        sourceUrl: source.feedUrl,
+        applicationUrl: absoluteHref === '#' ? source.feedUrl : absoluteHref,
+        sourceUrl: absoluteHref,
         raw: { html: $el.html() ?? '' },
       });
     });

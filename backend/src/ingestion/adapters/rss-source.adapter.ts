@@ -19,13 +19,17 @@ export class RssSourceAdapter implements SourceAdapter {
       return [];
     }
 
-    const items = Array.isArray(channel.item) ? channel.item : channel.items ? [channel.items] : [];
+    let items = Array.isArray(channel.item) ? channel.item : channel.items ? [channel.items] : [];
+    if (!Array.isArray(items) && Array.isArray(channel.entry)) {
+      items = channel.entry;
+    }
     if (!Array.isArray(items)) {
       return [];
     }
 
     return items.map((item: any) => {
       const guid = item.guid ?? item.id ?? `${Date.now()}-${Math.random()}`;
+      const link = item.link ?? item['job:applyUrl'] ?? '#';
       return {
         externalId: String(guid),
         title: String(item.title ?? 'Untitled'),
@@ -39,8 +43,8 @@ export class RssSourceAdapter implements SourceAdapter {
         skills: item['job:skills'] ? String(item['job:skills']).split(',').map((s) => s.trim()) : [],
         postedAt: item.pubDate ? new Date(item.pubDate) : undefined,
         expiresAt: item['job:expiresAt'] ? new Date(item['job:expiresAt']) : undefined,
-        applicationUrl: String(item.link ?? item['job:applyUrl'] ?? '#'),
-        sourceUrl: String(item.link ?? source.feedUrl),
+        applicationUrl: String(link),
+        sourceUrl: String(link ?? source.feedUrl),
         raw: item,
       };
     });
