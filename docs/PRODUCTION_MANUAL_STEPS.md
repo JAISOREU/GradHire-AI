@@ -220,6 +220,9 @@ If the test fails:
 | Variable | Value |
 |----------|-------|
 | `VITE_SENTRY_DSN` | frontend-sentry-dsn |
+| `RAILWAY_API_URL` | `https://gradhire-ai-production.up.railway.app` |
+
+> **Note:** `RAILWAY_API_URL` is used by `vercel.json` to proxy `/api/*` requests to the Railway backend. It must NOT include a trailing slash.
 
 8. Redeploy both services
 
@@ -286,6 +289,7 @@ After DNS propagates:
 | Variable | Updated Value |
 |----------|---------------|
 | `VITE_API_URL` | `https://api.gradture.ai` |
+| `RAILWAY_API_URL` | `https://gradhire-ai-production.up.railway.app` |
 
 Save both and trigger redeploys.
 
@@ -387,8 +391,15 @@ Check the backend code for the actual setup endpoint path and required headers b
 ### Frontend shows blank page
 - Verify Vercel root directory is `frontend/`
 - Verify `VITE_API_URL` is set in Vercel
+- Verify `RAILWAY_API_URL` is set in Vercel (required for API proxy fallback)
 - Check browser console for JS errors
 - Check Network tab for failed asset loads
+
+### Direct navigation returns Vercel 404
+- Ensure `vercel.json` is deployed (check Vercel dashboard → Settings → Git Integration)
+- Verify the rewrite `/(.*)` → `/index.html` exists in Vercel's routing configuration
+- Confirm Vercel root directory is `frontend/` so `frontend/vercel.json` is used
+- Redeploy the frontend after any `vercel.json` changes
 
 ### CORS errors
 - Check Railway logs for the allowed origins list on startup

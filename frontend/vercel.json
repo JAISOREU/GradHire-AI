@@ -1,12 +1,20 @@
 {
+  "version": 2,
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://gradhire-ai-production.up.railway.app/api/$1"
+      "destination": "$RAILWAY_API_URL/api/$1"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [
