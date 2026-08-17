@@ -26,6 +26,10 @@ export class EmailService {
     }
   }
 
+  isConfigured(): boolean {
+    return this.resend !== null;
+  }
+
   async send(message: EmailMessage): Promise<{ id: string; status: string }> {
     const id = `email-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 

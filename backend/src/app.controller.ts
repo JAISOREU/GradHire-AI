@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, Req, UseGuards, HttpStatus, Res } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from './auth/auth.guard';
 import { StudentGuard } from './auth/student.guard';
@@ -8,14 +8,17 @@ import { HealthService } from './health/health.service';
 import { UpdateProfileDto } from './common/dto/profile.dto';
 import { JobQueryDto } from './common/dto/job.dto';
 import { normalizePagination } from './common/pagination';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService, private readonly healthService: HealthService) {}
 
   @Get('health')
-  async getHealth() {
-    return this.healthService.check();
+  async getHealth(@Res() res: Response) {
+    const health = await this.healthService.check();
+    const statusCode = health.status === 'healthy' ? HttpStatus.OK : health.status === 'degraded' ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE;
+    res.status(statusCode).json(health);
   }
 
   @Get('jobs')

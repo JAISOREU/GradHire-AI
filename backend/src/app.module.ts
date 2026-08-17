@@ -29,6 +29,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { UsersModule } from './users/users.module';
 import { JobSourcesModule } from './job-sources/job-sources.module';
 import { IngestionModule } from './ingestion/ingestion.module';
+import { StartupValidator } from './common/startup-validator.service';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { IngestionModule } from './ingestion/ingestion.module';
     AppService,
     HealthService,
     MetricsService,
+    StartupValidator,
     {
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,

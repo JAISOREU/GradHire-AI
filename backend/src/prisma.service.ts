@@ -18,6 +18,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`PostgreSQL connection failed: ${message}`);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`PostgreSQL connection failed: ${message}`);
+      }
     }
   }
 

@@ -73,4 +73,13 @@ export class AiService {
       return null;
     }
   }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await firstValueFrom(this.http.get(`${this.baseUrl}/health`));
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
 }

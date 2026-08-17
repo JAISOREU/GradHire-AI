@@ -90,4 +90,8 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
     this.logger.debug(`Socket ${client.id} left room user:${data.userId}`);
     return { ok: true };
   }
+
+  getServer(): Server | undefined {
+    return this.server;
+  }
 }

@@ -7,6 +7,7 @@ import { auditLoggingMiddleware } from './audit/audit.middleware';
 import { PrismaService } from './prisma.service';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { StartupValidator } from './common/startup-validator.service';
 import helmet from 'helmet';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
@@ -41,6 +42,16 @@ function createCorsOriginChecker(allowedOrigins: string[]) {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const prisma = app.get(PrismaService);
+
+  const validator = app.get(StartupValidator);
+  const startupChecks = validator.validate();
+  const failedRequired = startupChecks.filter((c: { ok: boolean; required: boolean }) => !c.ok && c.required);
+  if (failedRequired.length > 0) {
+    console.error('[STARTUP] Failed required checks:', failedRequired.map((c: { name: string }) => c.name));
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1);
+    }
+  }
 
   const corsOrigins = parseCorsOrigins();
   console.log(`[CORS] Allowed origins: ${corsOrigins.join(', ')}`);

@@ -17,6 +17,8 @@ export class CacheService {
         options.password = password;
       }
       this.client = new Redis(url, options);
+      this.client.on('error', (err) => this.logger.error('Redis connection error', err));
+      this.client.on('connect', () => this.logger.log('Redis connected'));
       this.logger.log('Redis cache enabled');
     } else {
       this.logger.warn('Redis cache disabled — REDIS_URL not set');
@@ -47,6 +49,16 @@ export class CacheService {
 
     if (keys.length > 0) {
       await this.client.del(...keys);
+    }
+  }
+
+  async ping(): Promise<boolean> {
+    if (!this.enabled || !this.client) return false;
+    try {
+      const result = await this.client.ping();
+      return result === 'PONG';
+    } catch {
+      return false;
     }
   }
 }
