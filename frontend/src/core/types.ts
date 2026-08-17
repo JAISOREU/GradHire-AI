@@ -372,6 +372,9 @@ export type Resume = {
   id: string;
   fileName: string;
   fileUrl: string;
+  mimeType?: string | null;
+  fileSize?: number | null;
+  parsedText?: string | null;
   createdAt: string;
 };
 

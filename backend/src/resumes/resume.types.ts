@@ -5,16 +5,15 @@ export type ParsedResume = {
   skills: string[];
   focus: string;
   summary: string;
+  address: string | null;
+  education: string | null;
+  experience: string | null;
+  projects: string | null;
 };
 
-/**
- * Slice of an Express.Multer.File we depend on.
- * Defined locally so we don't need @types/multer for parsing logic.
- */
 export type UploadedFile = {
   buffer: Buffer;
-  mimetype: string;
   originalname: string;
+  mimetype: string;
   size: number;
 };
-

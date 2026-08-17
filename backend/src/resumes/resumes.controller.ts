@@ -4,11 +4,14 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
@@ -34,9 +37,26 @@ export class ResumesController {
     @UploadedFile() file: ResumeFile | undefined,
   ) {
     if (!file) {
-      return { error: 'No file uploaded. Please attach a resume file.' };
+      throw new BadRequestException('No file uploaded. Please attach a resume file.');
     }
     return this.resumes.uploadAndParse(req.user, file);
+  }
+
+  @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
+  async replace(
+    @Req() req: Request & { user: AuthUser },
+    @Param('id') id: string,
+    @UploadedFile() file: ResumeFile | undefined,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded. Please attach a resume file.');
+    }
+    return this.resumes.replaceResume(req.user, id, file);
   }
 
   @Get('me')
@@ -50,9 +70,30 @@ export class ResumesController {
     return this.resumes.getResume(req.user, id);
   }
 
+  @Get(':id/download')
+  async download(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Res() res: any) {
+    const file = await this.resumes.getResumeFile(req.user, id);
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(file.fileName)}"`,
+      'Content-Length': file.buffer.length,
+    });
+    res.send(file.buffer);
+  }
+
+  @Get(':id/view')
+  async view(@Req() req: Request & { user: AuthUser }, @Param('id') id: string, @Res() res: any) {
+    const file = await this.resumes.getResumeFile(req.user, id);
+    res.set({
+      'Content-Type': file.mimeType,
+      'Content-Disposition': `inline; filename="${encodeURIComponent(file.fileName)}"`,
+      'Content-Length': file.buffer.length,
+    });
+    res.send(file.buffer);
+  }
+
   @Delete(':id')
   async delete(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.resumes.deleteResume(req.user, id);
   }
 }
-

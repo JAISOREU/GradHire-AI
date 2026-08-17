@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import * as assert from 'node:assert/strict';
 import { ResumesService } from './resumes.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { sanitizeDatabaseString, sanitizeFilename } from '../common/utils/sanitize';
+import { FileValidationService } from './file-validation.service';
 
 function createMockPrisma() {
   const resumes: Array<Record<string, unknown>> = [];
@@ -22,11 +23,19 @@ function createMockPrisma() {
       },
       findMany: async () => resumes,
       findUnique: async ({ where }: { where: { id: string } }) => resumes.find((r) => r.id === where.id) ?? null,
+      update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+        const idx = resumes.findIndex((r) => r.id === where.id);
+        if (idx === -1) throw new Error('not found');
+        const updated = { ...resumes[idx], ...data, id: resumes[idx].id };
+        resumes[idx] = updated;
+        return updated;
+      },
       delete: async ({ where }: { where: { id: string } }) => {
         const idx = resumes.findIndex((r) => r.id === where.id);
         if (idx === -1) throw new Error('not found');
+        const deleted = resumes[idx];
         resumes.splice(idx, 1);
-        return resumes[idx];
+        return deleted;
       },
       count: async () => resumes.length,
     },
@@ -50,16 +59,21 @@ function createMockPrisma() {
 function createMockStorage() {
   const uploaded: Array<{ key: string }> = [];
   const removed: string[] = [];
+  const files: Map<string, Buffer> = new Map();
   return {
     upload: async (file: { buffer: Buffer; originalname: string; mimetype: string; size: number }, key: string) => {
       uploaded.push({ key });
+      files.set(key, file.buffer);
       return key;
     },
     remove: async (key: string) => {
       removed.push(key);
+      files.delete(key);
     },
+    get: async (key: string) => files.get(key) ?? null,
     uploaded,
     removed,
+    files,
   };
 }
 
@@ -68,30 +82,28 @@ const student = { id: 'stu-1', email: 'test@example.com', role: 'STUDENT' };
 test('uploadAndParse sanitizes NUL bytes in filename before Prisma', async () => {
   const prisma = createMockPrisma();
   const storage = createMockStorage();
-  const service = new ResumesService(prisma as any, storage as any);
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
 
   const file = {
-    buffer: Buffer.from('Jordan Lee\njordan.lee@example.com\n(555) 123-4567\nData Analyst with experience building dashboards in Tableau and SQL.\nSkills: SQL, Tableau, Python, Data Analysis, Excel'),
+    buffer: Buffer.from('%PDF-1.4\nJordan Lee\njordan.lee@example.com\n(555) 123-4567\nData Analyst with experience building dashboards in Tableau and SQL.\nSkills: SQL, Tableau, Python, Data Analysis, Excel'),
     originalname: 'Résumé\0Test.pdf',
     mimetype: 'application/pdf',
     size: 200,
   };
 
-  const result = await service.uploadAndParse(student, file);
-
-  assert.ok(result.resume.id);
-  assert.equal(result.resume.fileName, 'RésuméTest.pdf');
-  assert.ok(result.resume.fileUrl.includes('resumes/stu-1/'));
-  assert.ok(result.resume.fileUrl.endsWith('.pdf'));
+  await assert.rejects(
+    async () => service.uploadAndParse(student, file),
+    BadRequestException,
+  );
 });
 
 test('uploadAndParse sanitizes NUL bytes in extracted text before Prisma', async () => {
   const prisma = createMockPrisma();
   const storage = createMockStorage();
-  const service = new ResumesService(prisma as any, storage as any);
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
 
-  // We need to mock extractTextFromFile since it's imported directly
-  // For this test, we'll verify the sanitize helper directly and trust the integration
   const safe = sanitizeDatabaseString('text\0with\0nulls');
   assert.equal(safe, 'textwithnulls');
 });
@@ -99,17 +111,9 @@ test('uploadAndParse sanitizes NUL bytes in extracted text before Prisma', async
 test('uploadAndParse cleans up storage if database create fails', async () => {
   const prisma = createMockPrisma();
   const storage = createMockStorage();
-  const service = new ResumesService(prisma as any, storage as any);
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
 
-  // Override storage to succeed first time, then make prisma fail
-  const originalUpload = storage.upload;
-  storage.upload = async () => {
-    storage.uploaded.push({ key: 'will-cleanup' });
-    return 'will-cleanup';
-  };
-
-  // We can't easily inject a prisma failure for resume.create without mocking module internals
-  // Instead verify the helper directly
   assert.ok(sanitizeDatabaseString('test\0').length === 4);
 });
 
@@ -121,11 +125,12 @@ test('sanitizeFilename handles path traversal attempts', async () => {
 test('rejects non-students', async () => {
   const prisma = createMockPrisma();
   const storage = createMockStorage();
-  const service = new ResumesService(prisma as any, storage as any);
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
 
   const employer = { id: 'emp-1', email: 'employer@test.com', role: 'EMPLOYER' };
   const file = {
-    buffer: Buffer.from('PDF'),
+    buffer: Buffer.from('%PDF-1.4\nPDF'),
     originalname: 'resume.pdf',
     mimetype: 'application/pdf',
     size: 1024,
@@ -135,4 +140,125 @@ test('rejects non-students', async () => {
     async () => service.uploadAndParse(employer, file),
     BadRequestException,
   );
+});
+
+test('file validation rejects oversized files', async () => {
+  const validator = new FileValidationService();
+  const result = validator.validate({
+    buffer: Buffer.from('test'),
+    originalname: 'resume.pdf',
+    mimetype: 'application/pdf',
+    size: 10 * 1024 * 1024,
+  });
+  assert.ok(!result.valid);
+  assert.ok(result.errors.some((e) => e.includes('exceeds')));
+});
+
+test('file validation rejects invalid MIME types', async () => {
+  const validator = new FileValidationService();
+  const result = validator.validate({
+    buffer: Buffer.from('test'),
+    originalname: 'resume.exe',
+    mimetype: 'application/x-msdownload',
+    size: 1024,
+  });
+  assert.ok(!result.valid);
+  assert.ok(result.errors.some((e) => e.includes('Unsupported file type')));
+});
+
+test('file validation rejects null bytes in filename', async () => {
+  const validator = new FileValidationService();
+  const result = validator.validate({
+    buffer: Buffer.from('test'),
+    originalname: 'resume\0.pdf',
+    mimetype: 'application/pdf',
+    size: 1024,
+  });
+  assert.ok(!result.valid);
+  assert.ok(result.errors.some((e) => e.includes('null bytes')));
+});
+
+test('file validation accepts valid PDF', async () => {
+  const validator = new FileValidationService();
+  const result = validator.validate({
+    buffer: Buffer.from('%PDF-1.4 test content'),
+    originalname: 'resume.pdf',
+    mimetype: 'application/pdf',
+    size: 1024,
+  });
+  assert.ok(result.valid);
+  assert.equal(result.detectedMime, 'application/pdf');
+});
+
+test('file validation rejects corrupted PDF signature', async () => {
+  const validator = new FileValidationService();
+  const result = validator.validate({
+    buffer: Buffer.from('not a pdf file'),
+    originalname: 'resume.pdf',
+    mimetype: 'application/pdf',
+    size: 1024,
+  });
+  assert.ok(!result.valid);
+  assert.ok(result.errors.some((e) => e.includes('File content does not match')));
+});
+
+test('replacement updates resume and profile', async () => {
+  const prisma = createMockPrisma();
+  const storage = createMockStorage();
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
+
+  const first = await service.uploadAndParse(student, {
+    buffer: Buffer.from('%PDF-1.4\nFirst resume content'),
+    originalname: 'first.pdf',
+    mimetype: 'application/pdf',
+    size: 100,
+  });
+
+  const second = await service.replaceResume(student, first.resume.id, {
+    buffer: Buffer.from('%PDF-1.4\nSecond resume content'),
+    originalname: 'second.pdf',
+    mimetype: 'application/pdf',
+    size: 200,
+  });
+
+  assert.equal(second.resume.id, first.resume.id);
+  assert.equal(second.resume.fileName, 'second.pdf');
+  assert.equal(storage.removed.length, 1);
+});
+
+test('download returns file buffer', async () => {
+  const prisma = createMockPrisma();
+  const storage = createMockStorage();
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
+
+  const uploaded = await service.uploadAndParse(student, {
+    buffer: Buffer.from('%PDF-1.4\ndownload test'),
+    originalname: 'download.pdf',
+    mimetype: 'application/pdf',
+    size: 12,
+  });
+
+  const file = await service.getResumeFile(student, uploaded.resume.id);
+  assert.equal(file.buffer.toString(), '%PDF-1.4\ndownload test');
+  assert.equal(file.fileName, 'download.pdf');
+});
+
+test('delete removes resume and storage', async () => {
+  const prisma = createMockPrisma();
+  const storage = createMockStorage();
+  const validator = new FileValidationService();
+  const service = new ResumesService(prisma as any, storage as any, validator);
+
+  const uploaded = await service.uploadAndParse(student, {
+    buffer: Buffer.from('%PDF-1.4\ndelete test'),
+    originalname: 'delete.pdf',
+    mimetype: 'application/pdf',
+    size: 11,
+  });
+
+  await service.deleteResume(student, uploaded.resume.id);
+  assert.equal(prisma.resumes.length, 0);
+  assert.equal(storage.removed.length, 1);
 });

@@ -67,9 +67,7 @@ export function extractName(text: string): string | null {
   for (const rawLine of text.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
-    // Skip lines that look like emails, phones, URLs, or section headers
     if (/@|https?:\/\/|www\.|^\+?\d|^#/.test(line)) continue;
-    // Match "First Last" style names (2+ capitalized words)
     if (/^[A-Z][a-zA-Z'-]+(\s+[A-Z][a-zA-Z'-]+)+$/.test(line)) {
       return line.slice(0, 80);
     }
@@ -92,36 +90,141 @@ export function inferFocus(text: string): string {
   return best.focus;
 }
 
+export function extractAddress(text: string): string | null {
+  const addressPatterns = [
+    /(?:address|location|addr)[:\s]+([^\n]+)/i,
+    /\d+\s+[A-Za-z0-0\s]+(?:St|Street|Ave|Avenue|Blvd|Boulevard|Rd|Road|Ln|Lane|Dr|Drive|Way|Court|Ct)[^\n]*/i,
+    /(?:suite|apt|unit|floor|fl)[^\n]*/i,
+  ];
+
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.length < 10 || trimmed.length > 200) continue;
+    for (const pattern of addressPatterns) {
+      const match = trimmed.match(pattern);
+      if (match && match[0].length > 5) {
+        return trimmed.slice(0, 200);
+      }
+    }
+  }
+
+  return null;
+}
+
+export function extractEducation(text: string): string | null {
+  const educationKeywords = [
+    'bachelor', 'master', 'phd', 'doctorate', 'associate', 'diploma', 'degree',
+    'b.s.', 'b.a.', 'm.s.', 'm.a.', 'mba', 'bs', 'ba', 'ms', 'ma',
+    'university', 'college', 'institute', 'school', 'faculty',
+    'graduated', 'graduation', 'gpa', 'cum laude', 'honors',
+  ];
+
+  const lines = text.split(/\r?\n/);
+  const educationLines: string[] = [];
+
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (educationKeywords.some((kw) => lower.includes(kw))) {
+      educationLines.push(line.trim());
+    }
+  }
+
+  if (educationLines.length === 0) return null;
+  return educationLines.slice(0, 5).join('; ');
+}
+
+export function extractExperience(text: string): string | null {
+  const lines = text.split(/\r?\n/);
+  const experienceLines: string[] = [];
+
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (lower.includes('experience') || lower.includes('work history') || lower.includes('employment')) {
+      const afterHeader = line.replace(/^.*?(experience|work history|employment)[:\s]*/i, '').trim();
+      if (afterHeader) {
+        experienceLines.push(afterHeader);
+      }
+      continue;
+    }
+    if (experienceLines.length > 0 && (lower.includes('education') || lower.includes('skills') || lower.includes('project'))) {
+      continue;
+    }
+    if (experienceLines.length > 0 && line.trim()) {
+      experienceLines.push(line.trim());
+    }
+  }
+
+  if (experienceLines.length === 0) return null;
+  return experienceLines.slice(0, 10).join('; ');
+}
+
+export function extractProjects(text: string): string | null {
+  const lines = text.split(/\r?\n/);
+  const projectLines: string[] = [];
+
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (lower.includes('project')) {
+      const afterHeader = line.replace(/^.*?project[s]?[:\s]*/i, '').trim();
+      if (afterHeader) {
+        projectLines.push(afterHeader);
+      }
+      continue;
+    }
+    if (projectLines.length > 0 && (lower.includes('experience') || lower.includes('education') || lower.includes('skills'))) {
+      continue;
+    }
+    if (projectLines.length > 0 && line.trim()) {
+      projectLines.push(line.trim());
+    }
+  }
+
+  if (projectLines.length === 0) return null;
+  return projectLines.slice(0, 5).join('; ');
+}
+
 export function parseResumeText(text: string): ParsedResume {
   const name = extractName(text);
   const email = extractEmail(text);
   const phone = extractPhone(text);
   const skills = extractSkills(text);
   const focus = inferFocus(text);
+  const address = extractAddress(text);
+  const education = extractEducation(text);
+  const experience = extractExperience(text);
+  const projects = extractProjects(text);
 
-  const summary = [
+  const summaryParts = [
     name ? `Candidate ${name}.` : 'Candidate profile.',
     `Primary focus: ${focus}.`,
+    address ? `Location: ${address}.` : '',
     skills.length > 0 ? `Top skills: ${skills.slice(0, 8).join(', ')}.` : 'Skills not detected.',
-  ].join(' ');
+    education ? `Education: ${education}.` : '',
+  ].filter(Boolean);
 
-  return { name, email, phone, skills, focus, summary };
+  const summary = summaryParts.join(' ');
+
+  return {
+    name,
+    email,
+    phone,
+    skills,
+    focus,
+    summary,
+    address,
+    education,
+    experience,
+    projects,
+  };
 }
 
-/**
- * Extracts raw text from an uploaded file buffer.
- * - PDF -> pdf-parse
- * - DOCX -> mammoth
- * - Everything else -> utf-8 text
- * Falls back to utf-8 text if a parsing library is unavailable or fails.
- */
 export async function extractTextFromFile(file: UploadedFile): Promise<string> {
   const mime = (file.mimetype ?? '').toLowerCase();
   const name = file.originalname.toLowerCase();
 
   try {
     if (mime === 'application/pdf' || name.endsWith('.pdf')) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const pdfParse = require('pdf-parse');
       const result = await pdfParse(file.buffer);
       return String(result?.text ?? '');
@@ -133,7 +236,6 @@ export async function extractTextFromFile(file: UploadedFile): Promise<string> {
       name.endsWith('.doc') ||
       name.endsWith('.docx')
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mammoth = require('mammoth');
       const result = await mammoth.extractRawText({ buffer: file.buffer });
       return String(result?.value ?? '');
@@ -144,4 +246,3 @@ export async function extractTextFromFile(file: UploadedFile): Promise<string> {
     return file.buffer.toString('utf-8');
   }
 }
-

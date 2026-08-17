@@ -6,6 +6,10 @@ import {
   extractPhone,
   extractSkills,
   inferFocus,
+  extractAddress,
+  extractEducation,
+  extractExperience,
+  extractProjects,
   parseResumeText,
 } from './resume.parser';
 
@@ -14,8 +18,12 @@ describe('resume parser', () => {
     'Jordan Lee',
     'jordan.lee@example.com',
     '(555) 123-4567',
+    '123 Main St, San Francisco, CA',
     'Data Analyst with experience building dashboards in Tableau and SQL.',
     'Skills: SQL, Tableau, Python, Data Analysis, Excel',
+    'Education: BS Computer Science, Stanford University, GPA 3.8',
+    'Experience: Data Analyst at Acme Corp, 2021-Present',
+    'Project: Built real-time dashboard for sales analytics',
   ].join('\n');
 
   const sampleAiResume = [
@@ -52,6 +60,26 @@ describe('resume parser', () => {
     assert.ok(inferFocus(sampleAiResume).toLowerCase().includes('ai'));
   });
 
+  it('extracts address from resume text', () => {
+    const address = extractAddress(sampleDataResume);
+    assert.ok(address?.includes('123 Main St'));
+  });
+
+  it('extracts education from resume text', () => {
+    const education = extractEducation(sampleDataResume);
+    assert.ok(education?.includes('Stanford'));
+  });
+
+  it('extracts experience from resume text', () => {
+    const experience = extractExperience(sampleDataResume);
+    assert.ok(experience?.includes('Acme Corp'));
+  });
+
+  it('extracts projects from resume text', () => {
+    const projects = extractProjects(sampleDataResume);
+    assert.ok(projects?.includes('dashboard'));
+  });
+
   it('parses a full resume into structured fields', () => {
     const parsed = parseResumeText(sampleDataResume);
     assert.equal(parsed.name, 'Jordan Lee');
@@ -59,6 +87,10 @@ describe('resume parser', () => {
     assert.ok(parsed.skills.length > 0);
     assert.ok(parsed.focus.length > 0);
     assert.ok(parsed.summary.length > 0);
+    assert.ok(parsed.address?.includes('123 Main St'));
+    assert.ok(parsed.education?.includes('Stanford'));
+    assert.ok(parsed.experience?.includes('Acme Corp'));
+    assert.ok(parsed.projects?.includes('dashboard'));
   });
 
   it('returns null email/name when none present', () => {
