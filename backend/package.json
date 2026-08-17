@@ -6,7 +6,7 @@
     "start": "prisma migrate deploy && node dist/main.js",
     "start:dev": "node -r ts-node/register src/main.ts",
     "build": "prisma generate && tsc -p tsconfig.json",
-    "test": "cross-env JWT_SECRET=test-secret-for-unit-tests-only node -r ts-node/register --test src/**/*.spec.ts",
+    "test": "cross-env DATABASE_URL=postgresql://postgres:@localhost:5432/gradhire_test JWT_SECRET=test-secret-for-unit-tests-only node -r ts-node/register --test src/**/*.spec.ts",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "seed": "ts-node prisma/seed.ts",
