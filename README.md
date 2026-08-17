@@ -4,6 +4,7 @@ This repository contains the initial SDLC-driven blueprint for the Gradture AI p
 
 ## Documentation Set
 
+### Architecture & Design
 - [docs/00_Project_Charter.md](docs/00_Project_Charter.md)
 - [docs/01_Software_Requirements_Specification.md](docs/01_Software_Requirements_Specification.md)
 - [docs/02_System_Architecture.md](docs/02_System_Architecture.md)
@@ -13,7 +14,17 @@ This repository contains the initial SDLC-driven blueprint for the Gradture AI p
 - [docs/06_UI_UX_Guidelines.md](docs/06_UI_UX_Guidelines.md)
 - [docs/07_AI_Architecture.md](docs/07_AI_Architecture.md)
 - [docs/08_Deployment_Architecture.md](docs/08_Deployment_Architecture.md)
+
+### Operations & Reliability
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- [docs/PRODUCTION_MANUAL_STEPS.md](docs/PRODUCTION_MANUAL_STEPS.md)
+- [docs/PRODUCTION-CHECKLIST.md](docs/PRODUCTION-CHECKLIST.md)
+- [docs/BUGS.md](docs/BUGS.md)
+- [docs/LESSONS-LEARNED.md](docs/LESSONS-LEARNED.md)
+- [docs/13_Monitoring_and_Alerting.md](docs/13_Monitoring_and_Alerting.md)
 - [docs/09_Testing_Strategy.md](docs/09_Testing_Strategy.md)
+
+### Process
 - [docs/10_Coding_Standards.md](docs/10_Coding_Standards.md)
 - [docs/11_Git_Workflow.md](docs/11_Git_Workflow.md)
 - [docs/12_Roadmap.md](docs/12_Roadmap.md)
