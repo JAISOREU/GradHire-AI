@@ -68,6 +68,12 @@ jobs:
         working-directory: backend
         run: npm run build
 
+      - name: Run database migrations
+        working-directory: backend
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://gradhire:gradhire@localhost:5432/gradhire
+
       - name: Run backend unit tests
         working-directory: backend
         run: npm test
