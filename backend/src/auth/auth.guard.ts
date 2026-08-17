@@ -1,8 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
   constructor(private readonly auth: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -23,11 +24,17 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!token) {
+      this.logger.warn(`AuthGuard: no token found. cookies=${Object.keys(request.cookies || {}).join(',') || 'none'}`);
       throw new UnauthorizedException('Missing authorization token');
     }
 
-    const user = await this.auth.validateToken(token);
-    request.user = user;
-    return true;
+    try {
+      const user = await this.auth.validateToken(token);
+      request.user = user;
+      return true;
+    } catch (err) {
+      this.logger.warn(`AuthGuard: token validation failed: ${err instanceof Error ? err.message : String(err)}`);
+      throw err;
+    }
   }
 }

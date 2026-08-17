@@ -93,7 +93,15 @@ async function bootstrap() {
 
     const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
     const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
+    
     if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
+      console.warn(`[CSRF] Blocked ${req.method} ${req.path}`, {
+        hasCookie: !!csrfCookie,
+        hasHeader: !!csrfHeader,
+        cookieLength: csrfCookie?.length,
+        headerLength: csrfHeader?.length,
+        allCookies: Object.keys(req.cookies || {}).join(','),
+      });
       return res.status(403).json({ message: 'Invalid CSRF token' });
     }
     next();
