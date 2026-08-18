@@ -4755,10 +4755,18 @@ html {
 
   .hero-subtitle {
     font-size: var(--text-lg);
+    max-width: 100%;
+    padding: 0 var(--space-2);
   }
 
   .hero-actions {
     gap: var(--space-3);
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    flex: 1;
+    justify-content: center;
   }
 }
 
