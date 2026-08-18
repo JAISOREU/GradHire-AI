@@ -40,7 +40,7 @@ export class AuthService {
   ) {}
 
   private getCookieOptions(): Record<string, unknown> {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT === 'production';
     return {
       httpOnly: true,
       secure: isProduction,
