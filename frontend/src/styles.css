@@ -4831,6 +4831,8 @@ html {
 }
 
 .hero-visual {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 520px;
   transition: transform 0.15s ease-out;

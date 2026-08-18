@@ -2,6 +2,7 @@ import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { AnimatedLogo } from '../../components/AnimatedLogo';
 import { HeroVisual } from './visuals/HeroVisual';
+import { FloatingCards } from './visuals/FloatingCards';
 import { WhyGradture } from './WhyGradture';
 import { HowItWorks } from './HowItWorks';
 
@@ -13,7 +14,7 @@ const HERO_INDICATORS = [
 
 export const HomePage = () => (
   <div className="public-page">
-    <section className="section-full hero-wrapper hero-glow">
+    <section className="section-full hero-wrapper">
       <div className="hero-inner">
         <div className="hero-content">
           <div className="hero-anim hero-anim--logo">
@@ -43,6 +44,7 @@ export const HomePage = () => (
         </div>
         <div className="hero-visual-wrap hero-anim hero-anim--visual">
           <HeroVisual />
+          <FloatingCards />
         </div>
       </div>
       <div className="scroll-cue" aria-hidden="true">
