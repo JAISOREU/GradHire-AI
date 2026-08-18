@@ -1,28 +1,53 @@
 import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { AnimatedLogo } from '../../components/AnimatedLogo';
+import { HeroVisual } from './visuals/HeroVisual';
 import { WhyGradture } from './WhyGradture';
 import { HowItWorks } from './HowItWorks';
+
+const HERO_INDICATORS = [
+  'AI-powered matching',
+  'Real opportunities',
+  'Profile-based recommendations',
+];
 
 export const HomePage = () => (
   <div className="public-page">
     <section className="section-full hero-wrapper hero-glow">
-      <div className="section-inner">
-        <div className="app-hero">
+      <div className="hero-inner">
+        <div className="hero-content">
           <div className="hero-anim hero-anim--logo">
-            <AnimatedLogo size={64} showText={true} />
+            <AnimatedLogo size={56} showText={true} />
           </div>
           <h1 className="hero-title gradient-text gradient-text--hero hero-anim hero-anim--title">
             Find the career you always wanted
           </h1>
           <p className="hero-subtitle hero-anim hero-anim--subtitle">
-            Build a stronger profile and let AI connect you with the right opportunities.
+            Discover opportunities that fit your skills, experience, education, and goals — while building a stronger profile for the right employers.
           </p>
           <div className="hero-actions hero-anim hero-anim--actions">
             <Button to="/jobs" iconRight={<Icon name="arrow-right" size={16} />}>Browse jobs</Button>
             <Button to="/register" variant="secondary">Create account</Button>
           </div>
+          <div className="hero-indicators hero-anim hero-anim--indicators">
+            {HERO_INDICATORS.map((item) => (
+              <span key={item} className="hero-indicator">
+                <span className="hero-indicator__dot" aria-hidden="true" />
+                {item}
+              </span>
+            ))}
+          </div>
+          <p className="hero-context">
+            For talent looking for the right opportunity — and employers looking for the right people.
+          </p>
         </div>
+        <div className="hero-visual-wrap hero-anim hero-anim--visual">
+          <HeroVisual />
+        </div>
+      </div>
+      <div className="scroll-cue" aria-hidden="true">
+        <span className="scroll-cue__label">Scroll to explore</span>
+        <span className="scroll-cue__line" />
       </div>
     </section>
 
