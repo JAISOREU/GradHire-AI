@@ -32,11 +32,15 @@ export const HomePage = () => (
       </div>
     </section>
 
+    <div className="section-divider" aria-hidden="true" />
+
     <section className="section-full">
       <div className="section-inner">
         <HowItWorks />
       </div>
     </section>
+
+    <div className="section-divider" aria-hidden="true" />
 
     <section className="section-full">
       <div className="section-inner">
