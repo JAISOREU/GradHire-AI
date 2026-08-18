@@ -4690,6 +4690,19 @@ html {
   z-index: 2;
 }
 
+[data-theme='dark'] .hero-wrapper::before {
+  background:
+    radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 65%, rgba(255,255,255,0.05) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.06) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.04) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.05) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 25% 85%, rgba(255,255,255,0.03) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 65% 35%, rgba(255,255,255,0.03) 0%, transparent 100%),
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(79, 70, 229, 0.05), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6, 182, 212, 0.03), transparent 50%);
+}
+
 @media (max-width: 640px) {
   .hero-wrapper {
     min-height: auto;
@@ -4820,6 +4833,14 @@ html {
 .hero-visual {
   width: 100%;
   max-width: 520px;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .hero-visual:hover {
+    transform: perspective(1000px) rotateX(-2deg) rotateY(2deg);
+  }
 }
 
 @media (max-width: 640px) {

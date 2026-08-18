@@ -19,9 +19,32 @@ const useInView = (options?: IntersectionObserverInit) => {
 
 export const HeroVisual = () => {
   const { ref, inView } = useInView();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      setMousePos({ x, y });
+    };
+
+    el.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => el.removeEventListener('mousemove', handleMouseMove);
+  }, [ref]);
+
+  const visualStyle = {
+    '--mouse-x': `${mousePos.x * 10}px`,
+    '--mouse-y': `${mousePos.y * 10}px`,
+    transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)`,
+    transition: 'transform 0.2s ease-out',
+  } as React.CSSProperties;
 
   return (
-    <div ref={ref} className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`} aria-hidden="true">
+    <div ref={ref} className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`} style={visualStyle} aria-hidden="true">
       <svg viewBox="0 0 560 420" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="hero-glow-1" cx="50%" cy="50%" r="50%">
