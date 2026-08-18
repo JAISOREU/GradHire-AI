@@ -45,7 +45,7 @@ export const HeroVisual = () => {
 
   return (
     <div ref={ref} className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`} style={visualStyle} aria-hidden="true">
-      <svg viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="hero-glow-1" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.3" />
@@ -66,85 +66,97 @@ export const HeroVisual = () => {
           <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="var(--color-primary)" floodOpacity="0.2" />
           </filter>
+          <linearGradient id="hero-btn" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-primary)" />
+            <stop offset="100%" stopColor="var(--color-info)" />
+          </linearGradient>
         </defs>
 
         {/* Ambient glows */}
-        <circle cx="320" cy="240" r="220" fill="url(#hero-glow-1)" opacity="0.5" className="hero-visual__glow" />
-        <circle cx="320" cy="240" r="160" fill="url(#hero-glow-2)" opacity="0.4" className="hero-visual__glow" />
+        <circle cx="400" cy="300" r="280" fill="url(#hero-glow-1)" opacity="0.5" className="hero-visual__glow" />
+        <circle cx="400" cy="300" r="200" fill="url(#hero-glow-2)" opacity="0.4" className="hero-visual__glow" />
 
         {/* Profile node */}
         <g className="hero-visual__node hero-visual__node--profile">
-          <circle cx="140" cy="160" r="56" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="140" cy="136" r="16" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <path d="M120 156 Q140 168 160 156" stroke="var(--color-text-secondary)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <rect x="116" y="176" width="48" height="7" rx="3.5" fill="var(--color-border)" />
-          <rect x="124" y="188" width="32" height="5" rx="2.5" fill="var(--color-border)" opacity="0.6" />
-          <text x="140" y="214" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="10" fontWeight="600">Profile</text>
+          <circle cx="200" cy="220" r="70" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" filter="url(#hero-shadow)" />
+          <circle cx="200" cy="190" r="20" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <path d="M174 236 Q200 252 226 236" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" fill="none" />
+          <rect x="168" y="262" width="64" height="9" rx="4.5" fill="var(--color-border)" />
+          <rect x="178" y="278" width="44" height="7" rx="3.5" fill="var(--color-border)" opacity="0.6" />
+          <text x="200" y="310" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="12" fontWeight="600">Profile</text>
         </g>
 
         {/* Skills node */}
         <g className="hero-visual__node hero-visual__node--skills">
-          <circle cx="320" cy="100" r="48" fill="var(--color-surface)" stroke="var(--color-info)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <rect x="292" y="84" width="56" height="7" rx="3.5" fill="var(--color-primary)" />
-          <rect x="296" y="96" width="48" height="5" rx="2.5" fill="var(--color-border)" />
-          <rect x="296" y="104" width="40" height="5" rx="2.5" fill="var(--color-border)" opacity="0.6" />
-          <rect x="300" y="112" width="32" height="5" rx="2.5" fill="var(--color-info)" opacity="0.8" />
-          <text x="320" y="134" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="10" fontWeight="600">Skills</text>
+          <circle cx="400" cy="140" r="60" fill="var(--color-surface)" stroke="var(--color-info)" strokeWidth="1.5" filter="url(#hero-shadow)" />
+          <rect x="364" y="120" width="72" height="9" rx="4.5" fill="var(--color-primary)" />
+          <rect x="370" y="136" width="60" height="7" rx="3.5" fill="var(--color-border)" />
+          <rect x="370" y="148" width="50" height="7" rx="3.5" fill="var(--color-border)" opacity="0.6" />
+          <rect x="376" y="160" width="38" height="7" rx="3.5" fill="var(--color-info)" opacity="0.8" />
+          <text x="400" y="188" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="12" fontWeight="600">Skills</text>
         </g>
 
         {/* Job node */}
         <g className="hero-visual__node hero-visual__node--job">
-          <circle cx="500" cy="160" r="56" fill="var(--color-surface)" stroke="var(--color-success)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <rect x="476" y="140" width="48" height="7" rx="3.5" fill="var(--color-success)" />
-          <rect x="480" y="152" width="40" height="5" rx="2.5" fill="var(--color-border)" />
-          <rect x="480" y="160" width="32" height="5" rx="2.5" fill="var(--color-border)" opacity="0.6" />
-          <circle cx="484" cy="174" r="3" fill="var(--color-success)" opacity="0.8" />
-          <text x="500" y="214" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="10" fontWeight="600">Opportunity</text>
+          <circle cx="620" cy="220" r="70" fill="var(--color-surface)" stroke="var(--color-success)" strokeWidth="1.5" filter="url(#hero-shadow)" />
+          <rect x="588" y="196" width="64" height="9" rx="4.5" fill="var(--color-success)" />
+          <rect x="594" y="212" width="52" height="7" rx="3.5" fill="var(--color-border)" />
+          <rect x="594" y="224" width="40" height="7" rx="3.5" fill="var(--color-border)" opacity="0.6" />
+          <circle cx="598" cy="242" r="4" fill="var(--color-success)" opacity="0.8" />
+          <text x="620" y="310" textAnchor="middle" fill="var(--color-text-tertiary)" fontSize="12" fontWeight="600">Opportunity</text>
         </g>
 
         {/* Match node */}
         <g className="hero-visual__node hero-visual__node--match">
-          <circle cx="320" cy="320" r="64" fill="url(#hero-card)" stroke="var(--color-primary)" strokeWidth="2" filter="url(#hero-shadow)" />
-          <circle cx="320" cy="320" r="48" fill="none" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1" strokeDasharray="4 3" />
-          <text x="320" y="314" textAnchor="middle" fill="var(--color-primary)" fontSize="18" fontWeight="700">96%</text>
-          <text x="320" y="334" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Match</text>
-          <circle cx="320" cy="320" r="64" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.3" className="hero-visual__pulse" />
+          <circle cx="400" cy="420" r="80" fill="url(#hero-card)" stroke="var(--color-primary)" strokeWidth="2" filter="url(#hero-shadow)" />
+          <circle cx="400" cy="420" r="60" fill="none" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1" strokeDasharray="4 3" />
+          <text x="400" y="412" textAnchor="middle" fill="var(--color-primary)" fontSize="24" fontWeight="700">96%</text>
+          <text x="400" y="436" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="12" fontWeight="600">Match</text>
+          <circle cx="400" cy="420" r="80" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" opacity="0.3" className="hero-visual__pulse" />
+        </g>
+
+        {/* Application button */}
+        <g className="hero-visual__node hero-visual__node--apply">
+          <rect x="340" y="340" width="120" height="36" rx="18" fill="url(#hero-btn)" filter="url(#hero-shadow)" />
+          <text x="400" y="363" textAnchor="middle" fill="var(--color-primary-text)" fontSize="12" fontWeight="700">Apply Now</text>
         </g>
 
         {/* Scanning line */}
         <g className="hero-visual__scan" opacity="0.4">
-          <rect x="60" y="40" width="520" height="2" rx="1" fill="url(#hero-conn)" className="hero-visual__scan-line" />
+          <rect x="80" y="60" width="640" height="3" rx="1.5" fill="url(#hero-conn)" className="hero-visual__scan-line" />
         </g>
 
         {/* Connection lines */}
         <g className="hero-visual__connections">
-          <path d="M192 156 Q240 120 280 108" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
-          <path d="M368 108 Q420 120 460 148" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
-          <path d="M184 200 Q240 260 280 280" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
-          <path d="M456 200 Q420 260 380 280" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
+          <path d="M268 200 Q320 160 348 160" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
+          <path d="M452 160 Q500 160 548 200" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
+          <path d="M268 240 Q320 300 348 380" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
+          <path d="M548 240 Q500 300 460 380" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
+          <path d="M460 460 Q480 480 500 460" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" opacity="0.5" />
         </g>
 
         {/* Traveling light particles */}
         <g className="hero-visual__particles">
-          <circle cx="200" cy="200" r="2.5" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--1" />
-          <circle cx="260" cy="220" r="2" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--2" />
-          <circle cx="360" cy="180" r="2.5" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--3" />
-          <circle cx="420" cy="240" r="2" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--4" />
+          <circle cx="280" cy="280" r="3" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--1" />
+          <circle cx="340" cy="300" r="2.5" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--2" />
+          <circle cx="460" cy="260" r="3" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--3" />
+          <circle cx="520" cy="320" r="2.5" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--4" />
+          <circle cx="380" cy="360" r="2" fill="var(--color-success)" className="hero-visual__particle hero-visual__particle--5" />
         </g>
 
         {/* Floating accent elements */}
-        <circle cx="220" cy="260" r="3" fill="var(--color-primary)" opacity="0.4" className="hero-visual__float" />
-        <circle cx="420" cy="240" r="2.5" fill="var(--color-info)" opacity="0.4" className="hero-visual__float" />
-        <circle cx="200" cy="380" r="2" fill="var(--color-success)" opacity="0.3" className="hero-visual__float" />
-        <circle cx="440" cy="380" r="2.5" fill="var(--color-primary)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="280" cy="360" r="4" fill="var(--color-primary)" opacity="0.4" className="hero-visual__float" />
+        <circle cx="520" cy="340" r="3.5" fill="var(--color-info)" opacity="0.4" className="hero-visual__float" />
+        <circle cx="260" cy="500" r="3" fill="var(--color-success)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="540" cy="500" r="3.5" fill="var(--color-primary)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="400" cy="160" r="2.5" fill="var(--color-info)" opacity="0.3" className="hero-visual__float" />
       </svg>
 
       <style>{`
         .hero-visual {
           position: relative;
           width: 100%;
-          max-width: 520px;
-          margin: 0 auto;
+          max-width: 100%;
         }
 
         .hero-visual svg {
@@ -174,10 +186,11 @@ export const HeroVisual = () => {
         .hero-visual--animated .hero-visual__node--skills { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.25s; }
         .hero-visual--animated .hero-visual__node--job { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.4s; }
         .hero-visual--animated .hero-visual__node--match { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.55s; }
+        .hero-visual--animated .hero-visual__node--apply { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.7s; }
 
         .hero-visual__connections path {
-          stroke-dasharray: 200;
-          stroke-dashoffset: 200;
+          stroke-dasharray: 240;
+          stroke-dashoffset: 240;
           transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
@@ -189,6 +202,7 @@ export const HeroVisual = () => {
         .hero-visual--animated .hero-visual__connections path:nth-child(2) { transition-delay: 0.5s; }
         .hero-visual--animated .hero-visual__connections path:nth-child(3) { transition-delay: 0.7s; }
         .hero-visual--animated .hero-visual__connections path:nth-child(4) { transition-delay: 0.9s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(5) { transition-delay: 1.1s; }
 
         .hero-visual__float {
           animation: hero-float 6s ease-in-out infinite;
@@ -197,10 +211,11 @@ export const HeroVisual = () => {
         .hero-visual__float:nth-child(2) { animation-delay: 1.5s; }
         .hero-visual__float:nth-child(3) { animation-delay: 3s; }
         .hero-visual__float:nth-child(4) { animation-delay: 4.5s; }
+        .hero-visual__float:nth-child(5) { animation-delay: 2s; }
 
         @keyframes hero-float {
           0%, 100% { transform: translateY(0); opacity: 0.3; }
-          50% { transform: translateY(-8px); opacity: 0.6; }
+          50% { transform: translateY(-10px); opacity: 0.6; }
         }
 
         .hero-visual__pulse {
@@ -221,7 +236,7 @@ export const HeroVisual = () => {
           0%, 100% { transform: translateY(0); opacity: 0; }
           10% { opacity: 0.6; }
           90% { opacity: 0.6; }
-          50% { transform: translateY(360px); }
+          50% { transform: translateY(480px); }
         }
 
         .hero-visual__particle {
@@ -233,12 +248,13 @@ export const HeroVisual = () => {
         .hero-visual__particle--2 { animation-delay: 0.8s; }
         .hero-visual__particle--3 { animation-delay: 1.6s; }
         .hero-visual__particle--4 { animation-delay: 2.4s; }
+        .hero-visual__particle--5 { animation-delay: 3.2s; }
 
         @keyframes particle-travel {
           0% { opacity: 0; transform: translate(0, 0); }
           20% { opacity: 0.8; }
           80% { opacity: 0.8; }
-          100% { opacity: 0; transform: translate(40px, -30px); }
+          100% { opacity: 0; transform: translate(50px, -40px); }
         }
 
         @media (prefers-reduced-motion: reduce) {

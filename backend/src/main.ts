@@ -29,13 +29,13 @@ function parseCorsOrigins(): string[] {
 function createCorsOriginChecker(allowedOrigins: string[]) {
   return (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin) {
-      return callback(null, false);
+      return callback(null, true);
     }
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     console.warn(`[CORS] Blocked origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
-    return callback(new Error(`Origin ${origin} not allowed by CORS`), false);
+    return callback(null, false);
   };
 }
 

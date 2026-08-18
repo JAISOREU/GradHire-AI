@@ -155,25 +155,29 @@ export class AuthService {
   }
 
   async validateToken(token: string): Promise<AuthUser> {
+    let payload: { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
     try {
-      const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
-      const user = await this.prisma.user.findUnique({
-        where: { id: payload.sub },
-        select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
-      });
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-      return {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.profile?.name || user.employerProfile?.companyName || payload.name,
-        avatarUrl: (user.avatarUrl || payload.avatarUrl) ?? undefined,
-      };
-    } catch {
+      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`JWT verification failed: ${message}`);
       throw new UnauthorizedException('Invalid or expired token');
     }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+    });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.profile?.name || user.employerProfile?.companyName || payload.name,
+      avatarUrl: (user.avatarUrl || payload.avatarUrl) ?? undefined,
+    };
   }
 
   async refresh(token: string, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
