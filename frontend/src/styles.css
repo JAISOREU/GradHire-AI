@@ -4727,8 +4727,7 @@ html {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: var(--container-max);
-  margin: 0 auto;
+  max-width: 100%;
   padding: var(--space-16) var(--space-6) var(--space-12);
   display: grid;
   grid-template-columns: 1fr;
@@ -4738,17 +4737,17 @@ html {
 
 @media (min-width: 1024px) {
   .hero-inner {
-    grid-template-columns: 1fr 1.2fr;
+    grid-template-columns: 1fr 1.6fr;
     gap: var(--space-16);
-    padding: var(--space-16) var(--space-6) var(--space-12);
+    padding: var(--space-16) var(--space-8) var(--space-12);
   }
 }
 
 @media (min-width: 1280px) {
   .hero-inner {
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 1fr 1.8fr;
     gap: var(--space-20);
-    padding: var(--space-20) var(--space-8) var(--space-16);
+    padding: var(--space-20) var(--space-10) var(--space-16);
   }
 }
 
@@ -4756,6 +4755,7 @@ html {
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  max-width: 640px;
 }
 
 .hero-anim--logo {
@@ -4855,13 +4855,13 @@ html {
 @media (min-width: 1024px) {
   .hero-visual-wrap {
     justify-self: end;
-    margin-right: calc(-1 * var(--space-10));
+    margin-right: calc(-1 * var(--space-8));
   }
 }
 
 @media (min-width: 1280px) {
   .hero-visual-wrap {
-    margin-right: calc(-1 * var(--space-16));
+    margin-right: calc(-1 * var(--space-10));
   }
 }
 
