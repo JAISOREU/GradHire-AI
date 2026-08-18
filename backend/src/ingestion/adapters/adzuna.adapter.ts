@@ -26,7 +26,7 @@ export class AdzunaAdapter implements SourceAdapter {
 
     while (page <= maxPages) {
       const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?app_id=${encodeURIComponent(appId)}&app_key=${encodeURIComponent(appKey)}&results_per_page=50&content-type=json${query ? '&q=' + encodeURIComponent(query) : ''}`;
-      this.logger.debug(`Fetching Adzuna page ${page}: ${url}`);
+      this.logger.debug(`Fetching Adzuna page ${page}: ${url.replace(new RegExp(`app_id=${encodeURIComponent(appId)}`, 'g'), 'app_id=***').replace(new RegExp(`app_key=${encodeURIComponent(appKey)}`, 'g'), 'app_key=***')}`);
       const response = await firstValueFrom(this.http.get(url, { timeout: 30000 }));
       const data = response.data;
       const results = Array.isArray(data.results) ? data.results : [];

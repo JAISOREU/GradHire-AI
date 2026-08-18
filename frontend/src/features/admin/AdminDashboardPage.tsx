@@ -30,7 +30,7 @@ export const AdminDashboardPage = () => {
   if (!stats) {
     return (
       <div className="page fade-in">
-        <EmptyState icon="🛡️" title="Admin access required" text="You do not have permission to view this page." />
+        <EmptyState icon="📊" title="No data available" text="Dashboard metrics are being collected." />
       </div>
     );
   }

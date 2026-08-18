@@ -11,13 +11,6 @@ export class AppService implements OnModuleInit {
   private readonly logger = new Logger(AppService.name);
   private dbAvailable = false;
 
-  private profile = {
-    id: 'student-001',
-    name: 'Ava Chen',
-    focus: 'Full-stack development and AI products',
-    summary: 'Interested in product engineering and AI-powered workflows.',
-  };
-
   constructor(private readonly prisma: PrismaService, private readonly ai: AiService, private readonly cache: CacheService) {}
 
   private assertDbAvailable(): void {
@@ -279,7 +272,8 @@ export class AppService implements OnModuleInit {
 
   async saveStudentProfile(userId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
     this.assertDbAvailable();
-    const summary = typeof body.focus === 'string' ? `Focused on ${body.focus.toLowerCase()}.` : '';
+    const existing = await this.prisma.profile.findFirst({ where: { userId } });
+    const summary = typeof body.focus === 'string' && !existing ? `Focused on ${body.focus.toLowerCase()}.` : (existing?.summary ?? '');
     const requiredFields = ['name', 'focus', 'skills', 'education', 'experience', 'phone', 'location', 'workAuthorization', 'degree', 'fieldOfStudy'] as const;
     const profileCompleted = requiredFields.every((field) => {
       const value = body[field];
@@ -287,7 +281,6 @@ export class AppService implements OnModuleInit {
       return value !== null && value !== undefined && value !== '';
     });
 
-    const existing = await this.prisma.profile.findFirst({ where: { userId } });
     const merged: Record<string, unknown> = {
       name: (body.name as string) || existing?.name || '',
       focus: (body.focus as string) || existing?.focus || '',

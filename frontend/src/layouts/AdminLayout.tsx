@@ -6,6 +6,7 @@ import { SkipLink } from '../components/SkipLink';
 import { useState } from 'react';
 import { ADMIN_SIDEBAR_NAV } from '../core/utils/navigation';
 import { getRoleLabel } from '../core/utils/roleLabels';
+import { roleHomePath } from '../core/utils/navigation';
 
 export const AdminLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -23,7 +24,7 @@ export const AdminLayout = () => {
   };
 
   if (!isAuthenticated || user?.role !== 'ADMIN') {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={roleHomePath(user?.role)} replace />;
   }
 
   return (

@@ -71,6 +71,7 @@ export class AuthController {
     return this.auth.sendVerificationEmail(req.user.id);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Get('verify-email')
   async verifyEmail(@Query('token') token: string) {
     if (!token) {

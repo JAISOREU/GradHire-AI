@@ -72,7 +72,13 @@ export class ResumesService {
           mimeType: sanitizeDatabaseString(validation.detectedMime),
           fileSize: file.size,
           parsedText: cleanedText,
+          isPrimary: true,
         },
+      });
+
+      await this.prisma.resume.updateMany({
+        where: { userId: user.id, id: { not: resume.id } },
+        data: { isPrimary: false },
       });
 
       const nameValue = sanitizeDatabaseString(parsed.name ?? 'Talent');

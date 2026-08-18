@@ -14,8 +14,9 @@ export const EmployerManageJobsPage = () => {
     try {
       await jobsApi.archive(id);
       reload();
-    } catch {
-      /* ignore */
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to archive job';
+      alert(message);
     }
   };
 

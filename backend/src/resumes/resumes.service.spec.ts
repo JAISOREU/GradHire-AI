@@ -38,6 +38,13 @@ function createMockPrisma() {
         return deleted;
       },
       count: async () => resumes.length,
+      updateMany: async ({ where, data }: { where: { userId: string; id: { not: string } }; data: Record<string, unknown> }) => {
+        const idx = resumes.findIndex((r) => r.userId === where.userId && r.id !== where.id.not);
+        if (idx >= 0) {
+          resumes[idx] = { ...resumes[idx], ...data };
+        }
+        return { count: idx >= 0 ? 1 : 0 };
+      },
     },
     profile: {
       upsert: async ({ where, create, update }: { where: { userId: string }; create: Record<string, unknown>; update: Record<string, unknown> }) => {
