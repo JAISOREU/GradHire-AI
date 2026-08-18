@@ -108,6 +108,12 @@ export const HeroVisual = () => {
           <circle cx="280" cy="280" r="42" fill="none" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1" strokeDasharray="4 3" />
           <text x="280" y="276" textAnchor="middle" fill="var(--color-primary)" fontSize="16" fontWeight="700">96%</text>
           <text x="280" y="292" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Match</text>
+          <circle cx="280" cy="280" r="56" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.3" className="hero-visual__pulse" />
+        </g>
+
+        {/* Scanning line */}
+        <g className="hero-visual__scan" opacity="0.4">
+          <rect x="60" y="40" width="440" height="2" rx="1" fill="url(#hero-conn)" className="hero-visual__scan-line" />
         </g>
 
         {/* Connection lines */}
@@ -189,6 +195,27 @@ export const HeroVisual = () => {
           50% { transform: translateY(-8px); opacity: 0.6; }
         }
 
+        .hero-visual__pulse {
+          animation: hero-pulse 3s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        @keyframes hero-pulse {
+          0%, 100% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.15); opacity: 0; }
+        }
+
+        .hero-visual__scan-line {
+          animation: hero-scan 4s ease-in-out infinite;
+        }
+
+        @keyframes hero-scan {
+          0%, 100% { transform: translateY(0); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          50% { transform: translateY(300px); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .hero-visual__node,
           .hero-visual__glow,
@@ -199,6 +226,14 @@ export const HeroVisual = () => {
           .hero-visual__float {
             animation: none;
             opacity: 0.4;
+          }
+          .hero-visual__pulse {
+            animation: none;
+            opacity: 0.3;
+          }
+          .hero-visual__scan-line {
+            animation: none;
+            opacity: 0;
           }
         }
       `}</style>
