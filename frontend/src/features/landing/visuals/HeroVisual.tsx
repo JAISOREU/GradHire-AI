@@ -124,6 +124,14 @@ export const HeroVisual = () => {
           <path d="M400 180 Q360 240 320 260" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
         </g>
 
+        {/* Traveling light particles */}
+        <g className="hero-visual__particles">
+          <circle r="2" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--1" />
+          <circle r="1.5" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--2" />
+          <circle r="2" fill="var(--color-primary)" className="hero-visual__particle hero-visual__particle--3" />
+          <circle r="1.5" fill="var(--color-info)" className="hero-visual__particle hero-visual__particle--4" />
+        </g>
+
         {/* Floating accent elements */}
         <circle cx="200" cy="220" r="3" fill="var(--color-primary)" opacity="0.4" className="hero-visual__float" />
         <circle cx="360" cy="200" r="2.5" fill="var(--color-info)" opacity="0.4" className="hero-visual__float" />
@@ -214,6 +222,23 @@ export const HeroVisual = () => {
           10% { opacity: 0.6; }
           90% { opacity: 0.6; }
           50% { transform: translateY(300px); }
+        }
+
+        .hero-visual__particle {
+          opacity: 0;
+          animation: particle-travel 3s ease-in-out infinite;
+        }
+
+        .hero-visual__particle--1 { animation-delay: 0s; }
+        .hero-visual__particle--2 { animation-delay: 0.8s; }
+        .hero-visual__particle--3 { animation-delay: 1.6s; }
+        .hero-visual__particle--4 { animation-delay: 2.4s; }
+
+        @keyframes particle-travel {
+          0% { opacity: 0; transform: translate(0, 0); }
+          20% { opacity: 0.8; }
+          80% { opacity: 0.8; }
+          100% { opacity: 0; transform: translate(40px, -30px); }
         }
 
         @media (prefers-reduced-motion: reduce) {
