@@ -22,7 +22,7 @@ export const BuildProfileVisual = () => {
 
   return (
     <div ref={ref} className={`step-visual step-visual--profile ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="profile-card" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="var(--color-primary-soft)" />
@@ -32,43 +32,52 @@ export const BuildProfileVisual = () => {
             <stop offset="0%" stopColor="var(--color-surface-muted)" />
             <stop offset="100%" stopColor="var(--color-surface)" />
           </linearGradient>
+          <radialGradient id="profile-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
+        <circle cx="200" cy="140" r="120" fill="url(#profile-glow)" opacity="0.6" className="prof-glow" />
+
         <g className="prof-card">
-          <rect x="110" y="50" width="100" height="120" rx="10" fill="url(#profile-card)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="160" cy="80" r="16" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="160" y="110" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="8" fontWeight="600">Profile Ready</text>
+          <rect x="150" y="60" width="100" height="120" rx="12" fill="url(#profile-card)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <circle cx="200" cy="92" r="18" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="200" y="124" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Profile Ready</text>
+          <rect x="164" y="134" width="72" height="5" rx="2.5" fill="var(--color-border)" opacity="0.6" />
+          <rect x="170" y="144" width="60" height="5" rx="2.5" fill="var(--color-border)" opacity="0.4" />
         </g>
 
         <g className="prof-skill prof-skill--1">
-          <rect x="30" y="60" width="60" height="22" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="60" y="75" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="8" fontWeight="600">React</text>
+          <rect x="40" y="70" width="70" height="24" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="75" y="86" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">React</text>
         </g>
 
         <g className="prof-skill prof-skill--2">
-          <rect x="230" y="60" width="60" height="22" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="260" y="75" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="8" fontWeight="600">Python</text>
+          <rect x="290" y="70" width="70" height="24" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="325" y="86" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Python</text>
         </g>
 
         <g className="prof-skill prof-skill--3">
-          <rect x="30" y="150" width="60" height="22" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="60" y="165" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="8" fontWeight="600">SQL</text>
+          <rect x="40" y="170" width="70" height="24" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="75" y="186" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">SQL</text>
         </g>
 
         <g className="prof-skill prof-skill--4">
-          <rect x="230" y="150" width="60" height="22" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="260" y="165" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="8" fontWeight="600">Resume</text>
+          <rect x="290" y="170" width="70" height="24" rx="6" fill="url(#chip-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="325" y="186" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Resume</text>
         </g>
 
         <g className="prof-conns">
-          <line x1="90" y1="71" x2="110" y2="80" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="230" y1="71" x2="210" y2="80" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="90" y1="161" x2="110" y2="130" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="230" y1="161" x2="210" y2="130" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="110" y1="82" x2="150" y2="92" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="250" y1="92" x2="290" y2="82" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="110" y1="182" x2="150" y2="130" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="250" y1="130" x2="290" y2="182" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="3 2" opacity="0.6" />
         </g>
       </svg>
 
       <style>{`
+        .step-visual--profile .prof-glow,
         .step-visual--profile .prof-card,
         .step-visual--profile .prof-skill,
         .step-visual--profile .prof-conns {
@@ -76,7 +85,8 @@ export const BuildProfileVisual = () => {
           transform: scale(0.94);
           transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .step-visual--profile.is-animated .prof-card { opacity: 1; transform: scale(1); transition-delay: 0.05s; }
+        .step-visual--profile.is-animated .prof-glow { opacity: 1; transform: scale(1); transition-delay: 0.05s; }
+        .step-visual--profile.is-animated .prof-card { opacity: 1; transform: scale(1); transition-delay: 0.1s; }
         .step-visual--profile.is-animated .prof-skill--1 { opacity: 1; transform: scale(1); transition-delay: 0.2s; }
         .step-visual--profile.is-animated .prof-skill--2 { opacity: 1; transform: scale(1); transition-delay: 0.3s; }
         .step-visual--profile.is-animated .prof-skill--3 { opacity: 1; transform: scale(1); transition-delay: 0.4s; }

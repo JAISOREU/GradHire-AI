@@ -18,17 +18,17 @@ export const HomePage = () => (
       <div className="hero-inner">
         <div className="hero-content">
           <div className="hero-anim hero-anim--logo">
-            <AnimatedLogo size={56} showText={true} />
+            <AnimatedLogo size={80} showText={true} />
           </div>
           <h1 className="hero-title gradient-text gradient-text--hero hero-anim hero-anim--title">
             Find the career you always wanted
           </h1>
           <p className="hero-subtitle hero-anim hero-anim--subtitle">
-            Discover opportunities that fit your skills, experience, education, and goals — while building a stronger profile for the right employers.
+            Discover opportunities that fit your skills, education, experience, and goals — while building a stronger profile for the right employers.
           </p>
           <div className="hero-actions hero-anim hero-anim--actions">
-            <Button to="/jobs" iconRight={<Icon name="arrow-right" size={16} />}>Browse jobs</Button>
-            <Button to="/register" variant="secondary">Create account</Button>
+            <Button to="/jobs" size="lg" iconRight={<Icon name="arrow-right" size={18} />}>Browse jobs</Button>
+            <Button to="/register" variant="secondary" size="lg">Create account</Button>
           </div>
           <div className="hero-indicators hero-anim hero-anim--indicators">
             {HERO_INDICATORS.map((item) => (

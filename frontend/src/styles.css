@@ -78,6 +78,9 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
 
   /* Icon sizing */
   --icon-sm: 1rem;
@@ -4729,44 +4732,50 @@ html {
 
 @media (min-width: 1024px) {
   .hero-inner {
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: var(--space-16);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-20);
     padding: var(--space-16) var(--space-8) var(--space-12);
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-inner {
+    padding: var(--space-20) var(--space-10) var(--space-16);
   }
 }
 
 .hero-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 .hero-title {
-  font-size: var(--text-5xl);
+  font-size: var(--text-7xl);
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 1.1;
+  line-height: 1.05;
   color: var(--text-primary);
   margin: 0;
 }
 
 @media (max-width: 640px) {
   .hero-title {
-    font-size: var(--text-4xl);
+    font-size: var(--text-5xl);
   }
 }
 
 .hero-subtitle {
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   color: var(--text-secondary);
-  line-height: 1.7;
-  max-width: 560px;
+  line-height: 1.6;
+  max-width: 640px;
   font-weight: 400;
 }
 
 @media (max-width: 640px) {
   .hero-subtitle {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     max-width: 100%;
     padding: 0 var(--space-2);
   }
@@ -4794,15 +4803,15 @@ html {
 .hero-indicators {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-2);
+  gap: var(--space-5);
+  margin-top: var(--space-3);
 }
 
 .hero-indicator {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 500;
   color: var(--color-text-secondary);
 }
@@ -4816,11 +4825,11 @@ html {
 }
 
 .hero-context {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--color-text-tertiary);
   line-height: 1.6;
   margin: var(--space-2) 0 0;
-  max-width: 480px;
+  max-width: 520px;
 }
 
 .hero-visual-wrap {
@@ -4834,7 +4843,7 @@ html {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 520px;
+  max-width: 700px;
   transition: transform 0.15s ease-out;
   will-change: transform;
 }
