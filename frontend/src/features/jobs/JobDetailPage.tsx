@@ -55,10 +55,12 @@ export const JobDetailPage = () => {
   const location = job.location || 'Remote';
 
   return (
-    <div className="page fade-in">
-      <Link to="/jobs" className="back-link">← Back to jobs</Link>
+    <div className="public-page">
+      <section className="section-full">
+        <div className="section-inner">
+          <Link to="/jobs" className="back-link">← Back to jobs</Link>
 
-      <div className="card section--mt">
+          <div className="card section--mt">
         <PageHeader
           title={
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
@@ -214,6 +216,8 @@ export const JobDetailPage = () => {
           </div>
         </div>
       )}
+        </div>
+      </section>
     </div>
   );
 };

@@ -401,6 +401,42 @@ button {
 }
 
 /* ============================================================
+   Public Page Shell — full-width marketing layout
+   ============================================================ */
+.public-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-full {
+  width: 100%;
+  position: relative;
+}
+
+.section-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .section-inner {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-inner {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}
+
+/* ============================================================
    Section Spacing — consistent rhythm
    ============================================================ */
 .section + .section {
