@@ -4667,9 +4667,25 @@ html {
   z-index: 0;
 }
 
+.hero-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--background));
+  pointer-events: none;
+  z-index: 2;
+}
+
 @media (max-width: 640px) {
   .hero-wrapper {
     padding: var(--space-10) 0 var(--space-8);
+  }
+
+  .hero-wrapper::after {
+    height: 80px;
   }
 }
 
@@ -5112,6 +5128,18 @@ html {
 .why-section {
   padding: var(--space-16) 0 var(--space-20);
   position: relative;
+}
+
+.why-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--background));
+  pointer-events: none;
+  z-index: 2;
 }
 
 .why-header {
