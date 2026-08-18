@@ -22,7 +22,7 @@ export const AIMatchingVisual = () => {
 
   return (
     <div ref={ref} className={`feature-visual feature-visual--ai ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="ai-core-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.35" />
@@ -48,7 +48,7 @@ export const AIMatchingVisual = () => {
           <circle cx="240" cy="160" r="48" fill="url(#ai-core-glow)" opacity="0.6" />
           <circle cx="240" cy="160" r="32" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
           <circle cx="240" cy="160" r="16" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <circle cx="240" cy="160" r="6" fill="var(--color-primary)" />
+          <circle cx="240" cy="160" r="5" fill="var(--color-primary)" />
           <circle cx="240" cy="160" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" strokeDasharray="4 3" className="ai-core-ring" />
         </g>
 
@@ -87,8 +87,8 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-match-card">
-          <rect x="330" y="40" width="110" height="36" rx="8" fill="url(#badge-grad)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="385" y="62" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">92% Profile Match</text>
+          <rect x="320" y="40" width="110" height="36" rx="8" fill="url(#badge-grad)" stroke="var(--color-primary)" strokeWidth="1" />
+          <text x="375" y="62" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">92% Match</text>
         </g>
       </svg>
 

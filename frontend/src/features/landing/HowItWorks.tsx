@@ -116,20 +116,13 @@ export const HowItWorks = () => {
   return (
     <section className="how-section" ref={sectionRef} aria-labelledby="how-it-works-title">
       <div className="how-header">
-        <span className="how-header__eyebrow">Process</span>
-        <h2 id="how-it-works-title" className="how-header__title">
-          How it works
-        </h2>
-        <p className="how-header__subtitle">
-          From creating your profile to discovering the right opportunity, Gradture AI keeps the journey simple.
-        </p>
+        <h2 id="how-it-works-title" className="section-title gradient-text gradient-text--subtle">How it works</h2>
+        <p className="section-subtitle">From creating your profile to discovering the right opportunity, Gradture AI keeps the journey simple.</p>
       </div>
 
       <div className="journey">
         <div className="journey__track" aria-hidden="true">
-          <div className="journey__track-line">
-            <div className="journey__track-fill" style={{ '--track-progress': `${(activeStep / (STEPS.length - 1)) * 100}%` } as React.CSSProperties} />
-          </div>
+          <div className="journey__line" style={{ '--track-progress': `${activeStep / (STEPS.length - 1)}` } as React.CSSProperties} />
         </div>
 
         <div className="journey__steps">
@@ -154,7 +147,7 @@ export const HowItWorks = () => {
                     <span className="journey-step__number">{step.number}</span>
                   </div>
                   {!isLast && (
-                    <div className="journey-step__connector" aria-hidden="true">
+                    <div className="journey-step__connector">
                       <div className="journey-step__connector-line" />
                     </div>
                   )}

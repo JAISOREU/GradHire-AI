@@ -7,7 +7,7 @@ const useInView = (options?: IntersectionObserverInit) => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const observer = new IntersectionObserver(([entry] ) => {
+    const observer = new IntersectionObserver(([entry]) => {
       setInView(entry.isIntersecting);
     }, { threshold: 0.2, ...options });
     observer.observe(el);
@@ -22,7 +22,7 @@ export const PrivacyFirstVisual = () => {
 
   return (
     <div ref={ref} className={`feature-visual feature-visual--privacy ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="shield-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.25" />
@@ -36,39 +36,43 @@ export const PrivacyFirstVisual = () => {
 
         <g className="priv-data priv-data--1">
           <rect x="50" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="90" y="77" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="500">Profile</text>
+          <circle cx="72" cy="73" r="3" fill="var(--color-success)" />
+          <text x="90" y="77" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Profile</text>
         </g>
 
         <g className="priv-data priv-data--2">
           <rect x="270" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="310" y="77" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="500">Resume</text>
+          <circle cx="292" cy="73" r="3" fill="var(--color-success)" />
+          <text x="310" y="77" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Resume</text>
         </g>
 
         <g className="priv-data priv-data--3">
           <rect x="50" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="90" y="197" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="500">Messages</text>
+          <circle cx="72" cy="193" r="3" fill="var(--color-success)" />
+          <text x="90" y="197" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Messages</text>
         </g>
 
         <g className="priv-data priv-data--4">
           <rect x="270" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="310" y="197" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="500">Applications</text>
+          <circle cx="292" cy="193" r="3" fill="var(--color-success)" />
+          <text x="310" y="197" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Applications</text>
         </g>
 
         <g className="priv-shield">
-          <circle cx="200" cy="130" r="44" fill="url(#shield-glow)" opacity="0.5" />
-          <circle cx="200" cy="130" r="36" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" />
-          <rect x="162" y="96" width="76" height="68" rx="16" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <path d="M 186 118 L 200 108 L 214 118 L 214 142 L 186 142 Z" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <circle cx="200" cy="128" r="5" fill="var(--color-primary)" />
-          <text x="200" y="160" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Protected</text>
+          <circle cx="200" cy="140" r="44" fill="url(#shield-glow)" opacity="0.5" />
+          <circle cx="200" cy="140" r="36" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" />
+          <rect x="162" y="104" width="76" height="72" rx="16" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <path d="M 186 126 L 200 116 L 214 126 L 214 152 L 186 152 Z" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <circle cx="200" cy="136" r="5" fill="var(--color-primary)" />
+          <text x="200" y="168" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Protected</text>
         </g>
 
         <g className="priv-ring priv-ring--1">
-          <circle cx="200" cy="130" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.15" strokeDasharray="4 6" />
+          <circle cx="200" cy="140" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.15" strokeDasharray="4 6" />
         </g>
 
         <g className="priv-ring priv-ring--2">
-          <circle cx="200" cy="130" r="54" fill="none" stroke="var(--color-info)" strokeWidth="1" opacity="0.1" strokeDasharray="2 8" />
+          <circle cx="200" cy="140" r="54" fill="none" stroke="var(--color-info)" strokeWidth="1" opacity="0.1" strokeDasharray="2 8" />
         </g>
       </svg>
 

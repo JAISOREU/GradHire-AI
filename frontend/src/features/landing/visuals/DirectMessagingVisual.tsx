@@ -22,7 +22,7 @@ export const DirectMessagingVisual = () => {
 
   return (
     <div ref={ref} className={`feature-visual feature-visual--messaging ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="chat-bg" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="var(--color-surface-muted)" />
@@ -35,33 +35,33 @@ export const DirectMessagingVisual = () => {
         </defs>
 
         <g className="chat-window">
-          <rect x="40" y="30" width="320" height="200" rx="14" fill="url(#chat-bg)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="40" y="30" width="320" height="36" rx="14" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="40" y="54" width="320" height="12" fill="var(--color-surface-muted)" stroke="none" />
-          <text x="60" y="54" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="700">Hiring Team</text>
-          <circle cx="320" cy="46" r="4" fill="var(--color-success)" />
-          <text x="330" y="50" textAnchor="start" fill="var(--color-success)" fontSize="8" fontWeight="600">Online</text>
+          <rect x="40" y="30" width="320" height="220" rx="14" fill="url(#chat-bg)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="40" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="40" y="56" width="320" height="14" fill="var(--color-surface-muted)" stroke="none" />
+          <text x="60" y="58" textAnchor="start" fill="var(--color-text)" fontSize="12" fontWeight="700">Hiring Team</text>
+          <circle cx="340" cy="50" r="5" fill="var(--color-success)" />
+          <text x="352" y="54" textAnchor="start" fill="var(--color-success)" fontSize="9" fontWeight="700">Online</text>
         </g>
 
         <g className="msg-candidate">
-          <rect x="200" y="80" width="140" height="36" rx="10" fill="url(#msg-candidate)" />
-          <text x="328" y="103" textAnchor="end" fill="var(--color-primary-text)" fontSize="9" fontWeight="600">Hi, I'm interested in this role.</text>
+          <rect x="200" y="86" width="140" height="40" rx="10" fill="url(#msg-candidate)" />
+          <text x="328" y="110" textAnchor="end" fill="var(--color-primary-text)" fontSize="10" fontWeight="600">Hi, I'm interested in this role.</text>
         </g>
 
         <g className="msg-typing">
-          <circle cx="330" cy="136" r="3" fill="var(--color-text-muted)" opacity="0.6" />
-          <circle cx="340" cy="136" r="3" fill="var(--color-text-muted)" opacity="0.6" />
-          <circle cx="350" cy="136" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="330" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="340" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="350" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
         </g>
 
         <g className="msg-employer">
-          <rect x="60" y="160" width="160" height="36" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="72" y="183" textAnchor="start" fill="var(--color-text-secondary)" fontSize="9" fontWeight="500">Thanks! We'd like to continue.</text>
+          <rect x="60" y="170" width="160" height="40" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="72" y="194" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
         </g>
 
         <g className="msg-status">
-          <rect x="60" y="210" width="120" height="10" rx="5" fill="var(--color-success-soft)" />
-          <text x="120" y="219" textAnchor="middle" fill="var(--color-success)" fontSize="8" fontWeight="700">Conversation continued ✓</text>
+          <rect x="60" y="222" width="140" height="12" rx="6" fill="var(--color-success-soft)" />
+          <text x="130" y="232" textAnchor="middle" fill="var(--color-success)" fontSize="9" fontWeight="700">Conversation continued</text>
         </g>
       </svg>
 

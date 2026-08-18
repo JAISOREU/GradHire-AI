@@ -18,7 +18,7 @@ export const HomePage = () => (
       <div className="hero-inner">
         <div className="hero-content">
           <div className="hero-anim hero-anim--logo">
-            <AnimatedLogo size={80} showText={true} />
+            <AnimatedLogo size={96} showText={true} />
           </div>
           <h1 className="hero-title gradient-text gradient-text--hero hero-anim hero-anim--title">
             Find the career you always wanted
