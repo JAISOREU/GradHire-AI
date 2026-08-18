@@ -149,8 +149,11 @@ export const WhyGradture = () => {
     <section className="why-section" ref={sectionRef} aria-labelledby="why-gradture-title">
       <div className="why-header">
         <div className="why-header__text">
-          <h2 id="why-gradture-title" className="section-title gradient-text gradient-text--subtle">Why Gradture?</h2>
-          <p className="section-subtitle">
+          <span className="why-header__eyebrow">Platform capabilities</span>
+          <h2 id="why-gradture-title" className="why-header__title">
+            Why Gradture?
+          </h2>
+          <p className="why-header__subtitle">
             Everything you need to discover opportunities, showcase your potential, and move your career forward.
           </p>
         </div>
@@ -169,8 +172,10 @@ export const WhyGradture = () => {
             >
               <div className="feature-story__glow" aria-hidden="true" />
               <div className="feature-story__content">
-                <span className="feature-story__number">{feature.number}</span>
-                <span className="feature-story__label">{feature.label}</span>
+                <div className="feature-story__header">
+                  <span className="feature-story__number">{feature.number}</span>
+                  <span className="feature-story__label">{feature.label}</span>
+                </div>
                 <h3 className="feature-story__title">
                   {feature.title.split(' ').map((word, i, arr) => {
                     const isLast = i === arr.length - 1;
