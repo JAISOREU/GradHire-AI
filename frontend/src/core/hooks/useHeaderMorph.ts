@@ -84,8 +84,9 @@ export const useHeaderMorph = (enabled = true) => {
 
   const isMorphed = enabled ? p >= 0.5 : false;
 
-  const surfaceColor = theme === 'dark' ? '15, 23, 42' : '255, 255, 255';
-  const borderColor = theme === 'dark' ? '148, 163, 184' : '226, 232, 240';
+  const surfaceColor = theme === 'dark' ? '10, 15, 30' : '255, 255, 255';
+  const borderColor = theme === 'dark' ? '30, 42, 58' : '232, 226, 216';
+  const shadowColor = theme === 'dark' ? '0, 0, 0' : '26, 24, 20';
 
   return {
     progress: p,
@@ -115,5 +116,6 @@ export const useHeaderMorph = (enabled = true) => {
     reducedMotion: reducedMotion.current,
     surfaceColor,
     borderColor,
+    shadowColor,
   };
 };

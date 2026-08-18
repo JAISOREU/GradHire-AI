@@ -5,6 +5,7 @@ type Theme = 'light' | 'dark';
 type ThemeContextValue = {
   theme: Theme;
   toggleTheme: () => void;
+  isTransitioning: boolean;
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -20,17 +21,28 @@ const getInitialTheme = (): Theme => {
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    const html = document.documentElement;
+    setIsTransitioning(true);
+    html.setAttribute('data-theme', theme);
+    html.classList.add('theme-transitioning');
     window.localStorage.setItem(STORAGE_KEY, theme);
+
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+      html.classList.remove('theme-transitioning');
+    }, 700);
+
+    return () => clearTimeout(timer);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   }, []);
 
-  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
+  const value = useMemo(() => ({ theme, toggleTheme, isTransitioning }), [theme, toggleTheme, isTransitioning]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

@@ -45,7 +45,7 @@ export const DirectMessagingVisual = () => {
 
         <g className="msg-candidate">
           <rect x="200" y="80" width="140" height="36" rx="10" fill="url(#msg-candidate)" />
-          <text x="328" y="103" textAnchor="end" fill="#fff" fontSize="9" fontWeight="600">Hi, I'm interested in this role.</text>
+          <text x="328" y="103" textAnchor="end" fill="var(--color-primary-text)" fontSize="9" fontWeight="600">Hi, I'm interested in this role.</text>
         </g>
 
         <g className="msg-typing">

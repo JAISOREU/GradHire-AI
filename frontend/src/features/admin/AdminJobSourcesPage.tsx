@@ -22,19 +22,19 @@ const parserTypeLabels: Record<JobSourceParserType, string> = {
 };
 
 const healthStatusColors: Record<JobSourceHealthStatus, string> = {
-  HEALTHY: '#22c55e',
-  DEGRADED: '#f59e0b',
-  FAILING: '#ef4444',
-  DISABLED: '#6b7280',
-  NEVER_TESTED: '#888888',
+  HEALTHY: 'status-healthy',
+  DEGRADED: 'status-degraded',
+  FAILING: 'status-failing',
+  DISABLED: 'status-disabled',
+  NEVER_TESTED: 'status-never-tested',
 };
 
 const statusColors: Record<string, string> = {
-  ACTIVE: '#22c55e',
-  PAUSED: '#f59e0b',
-  ERROR: '#ef4444',
-  RATE_LIMITED: '#a855f7',
-  RUNNING: '#3b82f6',
+  ACTIVE: 'status-active',
+  PAUSED: 'status-paused',
+  ERROR: 'status-error',
+  RATE_LIMITED: 'status-rate-limited',
+  RUNNING: 'status-running',
 };
 
 export const AdminJobSourcesPage = () => {
@@ -170,7 +170,7 @@ export const AdminJobSourcesPage = () => {
         <div className="card" style={{ marginBottom: '1rem', padding: '1rem' }}>
           <div style={{ display: 'grid', gap: '0.75rem', maxWidth: '600px' }}>
             {error && (
-              <div style={{ padding: '0.75rem', background: '#fef2f2', color: '#991b1b', borderRadius: '0.25rem' }}>
+              <div className="message message--error">
                 {error}
               </div>
             )}
@@ -256,9 +256,9 @@ export const AdminJobSourcesPage = () => {
                   <div className="list-item__meta">
                     <span>{s.company}</span>
                     <span>{sourceTypeLabels[s.sourceType]}</span>
-                    <span style={{ color: statusColors[s.status] || '#888' }}>{s.status}</span>
-                    <span style={{ color: healthStatusColors[health] || '#888' }}>{health}</span>
-                    <span style={{ color: s.enabled ? '#22c55e' : '#ef4444' }}>{s.enabled ? 'Enabled' : 'Disabled'}</span>
+                     <span className={statusColors[s.status] || 'status-never-tested'}>{s.status}</span>
+                     <span className={healthStatusColors[health] || 'status-never-tested'}>{health}</span>
+                     <span className={s.enabled ? 'status-active' : 'status-failing'}>{s.enabled ? 'Enabled' : 'Disabled'}</span>
                     <span>Parser: {parserTypeLabels[s.parserType ?? 'GENERIC']}</span>
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export const AdminJobSourcesPage = () => {
                   <button className="btn btn--sm btn--danger" onClick={() => handleDelete(s.id)}>Delete</button>
                 </div>
               </div>
-              <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
+              <div className="text-secondary text-sm" style={{ marginTop: '0.5rem' }}>
                 <a href={s.feedUrl} target="_blank" rel="noreferrer">{s.feedUrl}</a>
                 <span style={{ marginLeft: '1rem' }}>Interval: {s.crawlInterval}m</span>
                 <span style={{ marginLeft: '1rem' }}>Failures: {s.failureCount}</span>
@@ -279,17 +279,17 @@ export const AdminJobSourcesPage = () => {
                 <span style={{ marginLeft: '1rem' }}>Last success: {formatTimeSince(s.lastSuccessAt)}</span>
               </div>
               {s.lastError && (
-                <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#ef4444' }}>
+                <div className="text-danger text-sm" style={{ marginTop: '0.5rem' }}>
                   Error: {s.lastError}
                 </div>
               )}
               {testResult && (
-                <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: testResult.success ? '#22c55e' : '#ef4444' }}>
+                <div className="text-sm" style={{ marginTop: '0.5rem', color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)' }}>
                   Test: {testResult.message} {testResult.discovered > 0 ? `(${testResult.discovered} jobs)` : ''}
                 </div>
               )}
               <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
-                <button className="btn btn--sm" onClick={() => handleToggle(s.id, s.enabled)} style={{ background: s.enabled ? '#f59e0b' : '#22c55e', color: '#fff', border: 'none' }}>
+                <button className={`btn btn--sm ${s.enabled ? 'btn--warning' : 'btn--success'}`} onClick={() => handleToggle(s.id, s.enabled)}>
                   {s.enabled ? 'Disable' : 'Enable'}
                 </button>
               </div>

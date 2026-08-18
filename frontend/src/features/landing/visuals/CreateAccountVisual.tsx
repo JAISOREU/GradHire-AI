@@ -56,7 +56,7 @@ export const CreateAccountVisual = () => {
 
         <g className="acc-btn">
           <rect x="80" y="172" width="160" height="10" rx="5" fill="url(#account-btn)" />
-          <text x="160" y="181" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="700">Create account</text>
+          <text x="160" y="181" textAnchor="middle" fill="var(--color-primary-text)" fontSize="8" fontWeight="700">Create account</text>
         </g>
 
         <g className="acc-check">

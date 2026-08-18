@@ -16,24 +16,28 @@
 :root {
   /* Dawn — light mode */
   --background: #ffffff;
-  --background-secondary: #f8fafc;
+  --background-secondary: #fefcf8;
   --surface: #ffffff;
   --surface-elevated: #ffffff;
-  --surface-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --surface-hover: #fdf8f0;
+  --border: #e8e2d8;
+  --text-primary: #1a1814;
+  --text-secondary: #5c5852;
+  --text-muted: #8c8680;
   --accent: #4f46e5;
   --accent-soft: #eef2ff;
   --success: #059669;
   --warning: #d97706;
   --danger: #dc2626;
-  --shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(26 24 20 / 0.05), 0 1px 2px -1px rgb(26 24 20 / 0.04);
   --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  --gradient-atmosphere: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79, 70, 229, 0.06) 0%, transparent 60%);
-  --gradient-glow: radial-gradient(ellipse 60% 40% at 50% -20%, rgba(79, 70, 229, 0.08) 0%, transparent 60%);
+  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #fefcf8 100%);
+  --gradient-atmosphere: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(251, 191, 36, 0.06) 0%, transparent 60%);
+  --gradient-glow: radial-gradient(ellipse 60% 40% at 50% -20%, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+  --gradient-sunrise: radial-gradient(ellipse 120% 80% at 50% -30%, rgba(251, 191, 36, 0.04) 0%, transparent 70%);
+  --gradient-warm: radial-gradient(ellipse 100% 60% at 50% 100%, rgba(251, 191, 36, 0.03) 0%, transparent 60%);
+  --atmosphere-star-opacity: 0;
+  --atmosphere-glow-opacity: 0.5;
 
   /* Brand */
   --color-primary: #4f46e5;
@@ -51,12 +55,12 @@
   /* Neutrals */
   --color-bg: #ffffff;
   --color-surface-rgb: 255, 255, 255;
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
-  --color-surface-muted: #f8fafc;
-  --color-text: #0f172a;
-  --color-text-tertiary: #64748b;
-  --color-text-faint: #cbd5e1;
+  --color-border: #e8e2d8;
+  --color-border-strong: #d5cfc6;
+  --color-surface-muted: #fefcf8;
+  --color-text: #1a1814;
+  --color-text-tertiary: #7a756e;
+  --color-text-faint: #c4bfb7;
 
   /* Gradients */
   --gradient-brand: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -101,10 +105,10 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
-  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.06), 0 2px 4px -2px rgb(15 23 42 / 0.04);
-  --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.06), 0 4px 6px -4px rgb(15 23 42 / 0.04);
+  --shadow-xs: 0 1px 2px 0 rgb(26 24 20 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(26 24 20 / 0.05), 0 1px 2px -1px rgb(26 24 20 / 0.04);
+  --shadow-md: 0 4px 6px -1px rgb(26 24 20 / 0.05), 0 2px 4px -2px rgb(26 24 20 / 0.04);
+  --shadow-lg: 0 10px 15px -3px rgb(26 24 20 / 0.05), 0 4px 6px -4px rgb(26 24 20 / 0.04);
   --shadow-focus: 0 0 0 3px var(--color-primary-soft);
 
   /* Layout */
@@ -121,6 +125,7 @@
   --transition-morph: 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   --transition-reveal: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   --transition-journey: 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-theme: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Breakpoints (reference) */
   --bp-sm: 640px;
@@ -132,25 +137,29 @@
 
 /* Night — dark mode */
 [data-theme='dark'] {
-  --background: #0f172a;
-  --background-secondary: #1e293b;
-  --surface: #1e293b;
-  --surface-elevated: #334155;
-  --surface-hover: #334155;
-  --border: #334155;
-  --text-primary: #f8fafc;
+  --background: #000000;
+  --background-secondary: #020617;
+  --surface: #0a0f1e;
+  --surface-elevated: #111827;
+  --surface-hover: #1a2332;
+  --border: #1e2a3a;
+  --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-muted: #8b9cb6;
   --accent: #818cf8;
   --accent-soft: #1e1b4b;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
-  --shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
   --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  --gradient-surface: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  --gradient-surface: linear-gradient(180deg, #000000 0%, #0a0f1e 100%);
   --gradient-atmosphere: radial-gradient(ellipse 100% 60% at 50% -20%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
   --gradient-glow: radial-gradient(ellipse 50% 30% at 50% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
+  --gradient-sunrise: radial-gradient(ellipse 120% 80% at 50% -30%, rgba(99, 102, 241, 0.02) 0%, transparent 70%);
+  --gradient-warm: radial-gradient(ellipse 100% 60% at 50% 100%, rgba(99, 102, 241, 0.02) 0%, transparent 60%);
+  --atmosphere-star-opacity: 1;
+  --atmosphere-glow-opacity: 0.6;
 
   --color-primary: #818cf8;
   --color-primary-hover: #6366f1;
@@ -163,20 +172,20 @@
   --color-info: #60a5fa;
   --color-info-soft: #172554;
 
-  --color-bg: #0f172a;
-  --color-surface-rgb: 30, 41, 59;
-  --color-border: #475569;
-  --color-border-strong: #64748b;
-  --color-surface-muted: #1e293b;
-  --color-text: #f8fafc;
-  --color-text-tertiary: #94a3b8;
-  --color-text-faint: #475569;
+  --color-bg: #000000;
+  --color-surface-rgb: 10, 15, 30;
+  --color-border: #1e2a3a;
+  --color-border-strong: #2d3a4d;
+  --color-surface-muted: #0a0f1e;
+  --color-text: #f1f5f9;
+  --color-text-tertiary: #8b9cb6;
+  --color-text-faint: #3d4a5c;
 
   --gradient-brand: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   --shadow-focus: 0 0 0 3px rgba(129, 140, 248, 0.3);
 }
 
@@ -193,7 +202,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 body {
@@ -207,7 +216,7 @@ body {
   background-attachment: fixed;
   min-width: 320px;
   min-height: 100vh;
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: background-color var(--transition-theme), color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 body::before {
@@ -217,7 +226,7 @@ body::before {
   background: var(--gradient-atmosphere);
   pointer-events: none;
   z-index: -1;
-  transition: opacity 0.6s ease;
+  transition: opacity var(--transition-theme), background var(--transition-theme);
   animation: atmosphere-shift 20s ease-in-out infinite;
 }
 
@@ -225,19 +234,43 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(79, 70, 229, 0.04) 0%, transparent 70%);
+  background: var(--gradient-warm);
   pointer-events: none;
   z-index: -1;
-  transition: opacity 0.6s ease;
+  transition: opacity var(--transition-theme), background var(--transition-theme);
   animation: horizon-shift 25s ease-in-out infinite;
 }
 
+/* Night sky stars */
 [data-theme='dark'] body::before {
-  background: var(--gradient-atmosphere);
+  background:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.06) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 45%, rgba(255,255,255,0.07) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 70% 35%, rgba(255,255,255,0.05) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 85%, rgba(255,255,255,0.09) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.06) 0%, transparent 100%),
+    var(--gradient-atmosphere);
+  opacity: var(--atmosphere-star-opacity);
 }
 
 [data-theme='dark'] body::after {
   background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+  opacity: var(--atmosphere-glow-opacity);
+}
+
+[data-theme='light'] body::before {
+  background: var(--gradient-sunrise);
+  opacity: var(--atmosphere-glow-opacity);
+}
+
+[data-theme='light'] body::after {
+  background: var(--gradient-warm);
+  opacity: 0.4;
 }
 
 @keyframes atmosphere-shift {
@@ -255,9 +288,27 @@ body::after {
   body::after {
     animation: none;
   }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* Typography — clear hierarchy */
+/* Theme transition helper — applied to major UI surfaces */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: background-color var(--transition-theme) !important;
+  transition: border-color var(--transition-theme) !important;
+  transition: box-shadow var(--transition-theme) !important;
+  transition: color var(--transition-theme) !important;
+}
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   line-height: 1.3;
@@ -706,8 +757,8 @@ button {
 
 /* Text colors */
 .text-primary { color: var(--color-primary); }
-.text-white { color: #ffffff; }
-.text-black { color: #000000; }
+.text-white { color: var(--color-primary-text); }
+.text-black { color: var(--color-text); }
 .text-current { color: currentColor; }
 
 /* Background colors */
@@ -796,7 +847,7 @@ button {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: var(--space-6);
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-theme);
 }
 
 .card--compact {
@@ -943,6 +994,7 @@ button {
   border: 1px solid var(--color-border);
   padding: var(--space-10) var(--space-6);
   text-align: center;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
 }
 
 .cta-section::before {
@@ -1066,7 +1118,7 @@ button {
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
@@ -1218,6 +1270,7 @@ button {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 .badge--hiring { color: var(--color-success); background: var(--color-success-soft); }
@@ -1243,6 +1296,22 @@ button {
   width: 100%;
   height: 100%;
 }
+
+/* Status color helpers for admin data */
+.status-healthy { color: var(--color-success); }
+.status-degraded { color: var(--color-warning); }
+.status-failing { color: var(--color-danger); }
+.status-disabled { color: var(--color-text-muted); }
+.status-never-tested { color: var(--color-text-faint); }
+.status-active { color: var(--color-success); }
+.status-paused { color: var(--color-warning); }
+.status-error { color: var(--color-danger); }
+.status-rate-limited { color: var(--color-primary); }
+.status-running { color: var(--color-info); }
+.status-pending { color: var(--color-warning); }
+.status-success { color: var(--color-success); }
+.status-partial { color: var(--color-warning); }
+.status-failed { color: var(--color-danger); }
 
 /* ============================================================
    Form System — clean, accessible
@@ -1327,7 +1396,7 @@ button {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-theme);
   cursor: text;
 }
 
@@ -1428,7 +1497,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-theme);
 }
 
 .list-item--compact {
@@ -1541,6 +1610,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-full);
   background: var(--color-surface-muted);
   overflow: hidden;
+  transition: background-color var(--transition-theme);
 }
 
 .match-score__fill {
@@ -1595,6 +1665,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .status-card__label {
@@ -1628,6 +1699,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .stat-card__top {
@@ -1675,7 +1747,7 @@ input[type='file']::file-selector-button:hover {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-theme);
 }
 
 .kpi-card:hover {
@@ -1813,6 +1885,7 @@ input[type='file']::file-selector-button:hover {
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
   -webkit-overflow-scrolling: touch;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .table-container::-webkit-scrollbar {
@@ -1870,6 +1943,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .data-table {
@@ -1922,7 +1996,7 @@ input[type='file']::file-selector-button:hover {
   display: grid;
   grid-auto-columns: minmax(100px, 1fr);
   border-bottom: 1px solid var(--color-border);
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), background-color var(--transition-theme);
 }
 
 .data-table__row:last-child {
@@ -1963,7 +2037,7 @@ input[type='file']::file-selector-button:hover {
   background: var(--color-primary);
   border-radius: 2px 2px 0 0;
   opacity: 0.8;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--transition-fast), background-color var(--transition-theme);
 }
 
 .sparkline:hover .sparkline__bar {
@@ -1986,6 +2060,7 @@ input[type='file']::file-selector-button:hover {
   border-top: 1px solid var(--color-border);
   background: var(--color-surface-muted);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
 }
 
 .pagination__info {
@@ -2023,6 +2098,7 @@ input[type='file']::file-selector-button:hover {
   border: 1px dashed var(--color-danger);
   border-radius: var(--radius-lg);
   background: var(--color-danger-soft);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
 }
 
 .error-state__icon {
@@ -2059,6 +2135,7 @@ input[type='file']::file-selector-button:hover {
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme);
 }
 
 .empty-state__icon {
@@ -2145,6 +2222,7 @@ input[type='file']::file-selector-button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: border-color var(--transition-theme);
 }
 
 .spinner--sm {
@@ -2171,6 +2249,7 @@ input[type='file']::file-selector-button:hover {
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite;
   border-radius: var(--radius-md);
+  transition: background-color var(--transition-theme);
 }
 
 @keyframes shimmer {
@@ -2193,6 +2272,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-6);
   box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .skeleton-card__title {
@@ -2232,6 +2312,7 @@ input[type='file']::file-selector-button:hover {
   font-size: var(--text-sm);
   font-weight: 500;
   border: 1px solid transparent;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme);
 }
 
 .message--success {
@@ -2266,12 +2347,12 @@ input[type='file']::file-selector-button:hover {
 .auth-card {
   width: 100%;
   max-width: 420px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
   padding: var(--space-8);
-  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .auth-card__header {
@@ -2314,12 +2395,13 @@ input[type='file']::file-selector-button:hover {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: var(--space-4);
   animation: fadeIn 0.15s ease;
+  transition: background-color var(--transition-theme);
 }
 
 .auth-modal {
@@ -2384,6 +2466,7 @@ input[type='file']::file-selector-button:hover {
   padding: var(--space-1);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-5);
+  transition: background-color var(--transition-theme);
 }
 
 .auth-tab {
@@ -2395,7 +2478,7 @@ input[type='file']::file-selector-button:hover {
   font-size: var(--text-sm);
   color: var(--color-text-tertiary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), background-color var(--transition-theme), color var(--transition-theme);
 }
 
 .auth-tab.is-active {
@@ -2420,7 +2503,7 @@ input[type='file']::file-selector-button:hover {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), background-color var(--transition-theme), border-color var(--transition-theme);
 }
 
 .role-option:hover {
@@ -2454,7 +2537,7 @@ input[type='file']::file-selector-button:hover {
   position: sticky;
   top: 0;
   height: 100vh;
-  transition: width var(--transition-base);
+  transition: width var(--transition-base), background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
   overflow: visible;
   border-right: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -2479,6 +2562,7 @@ input[type='file']::file-selector-button:hover {
   min-height: 64px;
   background: var(--color-surface);
   position: relative;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme);
 }
 
 .sidebar__head-text {
@@ -2497,7 +2581,7 @@ input[type='file']::file-selector-button:hover {
   cursor: pointer;
   color: var(--color-text-muted);
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), color var(--transition-theme);
   flex-shrink: 0;
   display: none;
 }
@@ -2547,6 +2631,7 @@ input[type='file']::file-selector-button:hover {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-muted);
+  transition: color var(--transition-theme);
 }
 
 .sidebar__link {
@@ -2559,7 +2644,7 @@ input[type='file']::file-selector-button:hover {
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), background-color var(--transition-theme), color var(--transition-theme);
   white-space: nowrap;
   text-decoration: none;
   position: relative;
@@ -2610,7 +2695,7 @@ input[type='file']::file-selector-button:hover {
   justify-content: center;
   padding: var(--space-1);
   border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), background-color var(--transition-theme);
 }
 
 .sidebar-user__meta {
@@ -2680,7 +2765,7 @@ input[type='file']::file-selector-button:hover {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transition: opacity var(--transition-fast), transform var(--transition-fast), background-color var(--transition-theme), color var(--transition-theme);
   z-index: 100;
   box-shadow: var(--shadow-md);
 }
@@ -2717,6 +2802,7 @@ input[type='file']::file-selector-button:hover {
   width: 24px;
   height: 1px;
   background: var(--color-border);
+  transition: background-color var(--transition-theme);
 }
 
 /* Mobile sidebar drawer */
@@ -2765,6 +2851,7 @@ input[type='file']::file-selector-button:hover {
     border-top: 1px solid var(--color-border);
     padding-top: var(--space-1);
     margin-top: var(--space-1);
+    transition: border-color var(--transition-theme);
   }
 
   .sidebar__section-label {
@@ -2819,11 +2906,11 @@ input[type='file']::file-selector-button:hover {
   position: fixed;
   inset: 0;
   top: 0;
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 45;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-base);
+  transition: opacity var(--transition-base), background-color var(--transition-theme);
 }
 
 .sidebar-overlay.is-open {
@@ -2849,7 +2936,7 @@ input[type='file']::file-selector-button:hover {
   height: var(--header-height);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  transition: width var(--transition-morph), max-width var(--transition-morph), height var(--transition-morph), border-radius var(--transition-morph), padding var(--transition-morph), background var(--transition-morph), border-color var(--transition-morph), box-shadow var(--transition-morph), transform var(--transition-morph);
+  transition: width var(--transition-morph), max-width var(--transition-morph), height var(--transition-morph), border-radius var(--transition-morph), padding var(--transition-morph), background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-morph), transform var(--transition-morph);
   flex-shrink: 0;
 }
 
@@ -2907,6 +2994,7 @@ input[type='file']::file-selector-button:hover {
   color: var(--color-text);
   text-decoration: none;
   flex-shrink: 0;
+  transition: color var(--transition-theme);
 }
 
 .brand-link {
@@ -3320,13 +3408,14 @@ input[type='file']::file-selector-button:hover {
   height: 36px;
   border-radius: var(--radius-full);
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-surface);
   display: grid;
   place-items: center;
   font-weight: 700;
   font-size: var(--text-sm);
   text-transform: uppercase;
   flex-shrink: 0;
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 /* Theme Toggle — animated sun/moon switch */
@@ -3340,23 +3429,23 @@ input[type='file']::file-selector-button:hover {
   padding: 0;
   border: none;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  color: #f59e0b;
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background var(--transition-slow), color var(--transition-slow), box-shadow var(--transition-base), transform var(--transition-fast);
+  transition: background var(--transition-theme), color var(--transition-theme), box-shadow var(--transition-theme), transform var(--transition-fast);
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.25);
+  box-shadow: var(--shadow-sm);
 }
 
 .theme-toggle:hover {
   transform: scale(1.08);
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .theme-toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-soft), 0 1px 4px rgba(245, 158, 11, 0.25);
+  box-shadow: var(--shadow-focus), var(--shadow-sm);
 }
 
 .theme-toggle:active {
@@ -3365,13 +3454,17 @@ input[type='file']::file-selector-button:hover {
 }
 
 .theme-toggle[aria-pressed='true'] {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: #e2e8f0;
-  box-shadow: 0 1px 8px rgba(30, 41, 59, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .theme-toggle[aria-pressed='true']:hover {
-  box-shadow: 0 2px 14px rgba(30, 41, 59, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.theme-toggle--transitioning {
+  transition: background var(--transition-theme), color var(--transition-theme), box-shadow var(--transition-theme), transform var(--transition-fast);
 }
 
 .theme-toggle__bg {
@@ -3379,16 +3472,16 @@ input[type='file']::file-selector-button:hover {
   inset: 0;
   border-radius: var(--radius-full);
   opacity: 0;
-  transition: opacity var(--transition-slow);
+  transition: opacity var(--transition-theme);
 }
 
 .theme-toggle:hover .theme-toggle__bg {
   opacity: 1;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
 }
 
 .theme-toggle[aria-pressed='true']:hover .theme-toggle__bg {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
 }
 
 .theme-toggle__icon-wrap {
@@ -3530,7 +3623,7 @@ input[type='file']::file-selector-button:hover {
   cursor: pointer;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), background-color var(--transition-theme);
   color: inherit;
   font-family: inherit;
 }
@@ -3553,6 +3646,7 @@ input[type='file']::file-selector-button:hover {
   flex-direction: column;
   gap: 2px;
   z-index: 100;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .header-dropdown__menu.is-open {
@@ -3569,7 +3663,7 @@ input[type='file']::file-selector-button:hover {
   font-size: var(--text-sm);
   font-weight: 500;
   text-decoration: none;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), background-color var(--transition-theme), color var(--transition-theme);
   background: none;
   border: none;
   width: 100%;
@@ -3583,12 +3677,14 @@ input[type='file']::file-selector-button:hover {
 
 .header-dropdown__item--danger {
   color: var(--color-danger);
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 .header-dropdown__separator {
   height: 1px;
   background: var(--color-border);
-  margin: var(--space-1) var(--space-3);
+  margin: var(--space-1) 0;
+  transition: background-color var(--transition-theme);
 }
 
 .header-dropdown__menu {
@@ -3600,7 +3696,7 @@ input[type='file']::file-selector-button:hover {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-shrink: 0;
+  transition: opacity var(--transition-morph), gap var(--transition-morph), color var(--transition-theme);
 }
 
 .header-user__meta {
@@ -3628,6 +3724,7 @@ input[type='file']::file-selector-button:hover {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 .public-nav {
@@ -3648,7 +3745,7 @@ input[type='file']::file-selector-button:hover {
   font-weight: 500;
   color: var(--color-text-secondary);
   padding: var(--space-2) var(--space-1);
-  transition: color var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-theme);
 }
 
 .public-nav a:hover {
@@ -3975,6 +4072,7 @@ html {
   color: var(--color-text-tertiary);
   font-size: var(--text-sm);
   text-align: center;
+  transition: border-color var(--transition-theme), color var(--transition-theme);
 }
 
 /* ============================================================
@@ -4004,6 +4102,7 @@ html {
   cursor: pointer;
   animation: slideIn 0.2s ease forwards;
   border: 1px solid transparent;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .toast__close {
@@ -4053,12 +4152,13 @@ html {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: var(--space-4);
   animation: fadeIn 0.15s ease;
+  transition: background-color var(--transition-theme);
 }
 
 .modal {
@@ -4069,6 +4169,7 @@ html {
   box-shadow: var(--shadow-md);
   padding: var(--space-6);
   animation: scaleIn 0.2s ease;
+  transition: background-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
 .modal__body {
@@ -4743,11 +4844,11 @@ html {
   position: fixed;
   inset: 0;
   top: var(--header-height);
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 45;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-base);
+  transition: opacity var(--transition-base), background-color var(--transition-theme);
 }
 
 .public-nav-overlay.is-open {
@@ -4765,17 +4866,17 @@ html {
   position: fixed;
   top: var(--header-height);
   left: 0;
-  width: 280px;
-  height: calc(100vh - var(--header-height));
+  bottom: 0;
+  width: 260px;
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
-  z-index: 50;
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
+  z-index: 50;
   transform: translateX(-100%);
-  transition: transform var(--transition-base);
+  transition: transform var(--transition-base), background-color var(--transition-theme), border-color var(--transition-theme);
   box-shadow: var(--shadow-lg);
 }
 
@@ -4798,7 +4899,7 @@ html {
   color: var(--color-text-secondary);
   font-size: var(--text-base);
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), background-color var(--transition-theme), color var(--transition-theme);
   text-decoration: none;
 }
 

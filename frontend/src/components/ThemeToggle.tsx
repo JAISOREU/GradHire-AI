@@ -1,27 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useTheme } from '../core/theme/ThemeContext';
 import { Icon } from './Icon';
 
 export const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('gradture-theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      return true;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    localStorage.setItem('gradture-theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
-
-  const toggle = () => setIsDark((prev) => !prev);
+  const { theme, toggleTheme, isTransitioning } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <button
       type="button"
-      className="theme-toggle"
-      onClick={toggle}
+      className={`theme-toggle ${isTransitioning ? 'theme-toggle--transitioning' : ''}`}
+      onClick={toggleTheme}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       aria-pressed={isDark}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}

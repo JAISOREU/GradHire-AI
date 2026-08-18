@@ -77,7 +77,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
     paddingRight: `${morph.paddingX}px`,
     background: `rgba(${morph.surfaceColor}, ${morph.backgroundOpacity})`,
     border: `1px solid rgba(${morph.borderColor}, ${morph.borderOpacity})`,
-    boxShadow: morph.shadowOpacity > 0 ? `0 4px 6px -1px rgba(15, 23, 42, ${morph.shadowOpacity})` : 'none',
+    boxShadow: morph.shadowOpacity > 0 ? `0 4px 6px -1px rgba(${morph.shadowColor}, ${morph.shadowOpacity})` : 'none',
     backdropFilter: morph.progress > 0.5 ? 'blur(16px) saturate(180%)' : 'none',
     WebkitBackdropFilter: morph.progress > 0.5 ? 'blur(16px) saturate(180%)' : 'none',
     transition: 'all 0.35s cubic-bezier(0.22, 1, 0.36, 1)',

@@ -52,7 +52,7 @@ export const DiscoverOpportunitiesVisual = () => {
           <text x="58" y="138" fill="var(--color-primary)" fontSize="9" fontWeight="700">Data Analyst</text>
           <text x="58" y="148" fill="var(--color-text-muted)" fontSize="7">Hybrid · Full-time</text>
           <rect x="230" y="128" width="32" height="12" rx="4" fill="var(--color-primary)" />
-          <text x="246" y="137" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700">92%</text>
+          <text x="246" y="137" textAnchor="middle" fill="var(--color-primary-text)" fontSize="7" fontWeight="700">92%</text>
         </g>
 
         <g className="disc-card disc-card--3">
