@@ -40,7 +40,7 @@ export const HomePage = () => (
 
     <section className="section-full">
       <div className="section-inner">
-        <section className="section section--cta">
+        <section className="cta-section">
           <div className="cta-card">
             <h2 className="cta-card__title gradient-text gradient-text--subtle">Ready to get started?</h2>
             <p className="cta-card__subtitle">
