@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma.service';
 import { AiService, NormalizedJobResponse } from '../../ai/ai.service';
 import { RawJobItem } from '../adapters/source-adapter.interface';
 import { Job, JobSource, JobSourceParserType } from '@prisma/client';
+import { sanitizeDatabaseString } from '../../common/utils/sanitize';
 
 export interface NormalizedJob {
   title: string;
@@ -88,7 +89,8 @@ export class NormalizerService {
   private cleanText(input: string | undefined | null): string {
     if (!input) return '';
 
-    let text = input;
+    let text = input.replace(/\0/g, '');
+    text = text.replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
     text = text.replace(/<script[\s\S]*?<\/script>/gi, ' ');
     text = text.replace(/<style[\s\S]*?<\/style>/gi, ' ');

@@ -16,6 +16,7 @@ import { NormalizerService } from './normalizer.service';
 import { DeduplicationService } from './deduplication.service';
 import { QualityService } from './quality.service';
 import { Job, JobSource, JobSourceRun, JobSourceJob, ImportedJobStatus, IngestionJobStatus, JobSourceParserType, JobSourceHealthStatus } from '@prisma/client';
+import { sanitizeDatabaseString } from '../../common/utils/sanitize';
 
 @Injectable()
 export class PipelineService {
@@ -37,7 +38,7 @@ export class PipelineService {
     ashbyAdapter: AshbyAdapter,
     smartRecruitersAdapter: SmartRecruitersAdapter,
     adzunaAdapter: AdzunaAdapter,
-    usajobsAdapter: UsaJobsAdapter,
+    usaJobsAdapter: UsaJobsAdapter,
   ) {
     this.adapters = {
       GENERIC: apiAdapter,
@@ -46,8 +47,30 @@ export class PipelineService {
       ASHBY: ashbyAdapter,
       SMARTRECRUITERS: smartRecruitersAdapter,
       ADZUNA: adzunaAdapter,
-      USAJOBS: usajobsAdapter,
+      USAJOBS: usaJobsAdapter,
     };
+  }
+
+  private sanitizeJobText(job: Record<string, unknown>): Record<string, unknown> {
+    const textFields = [
+      'title', 'company', 'description', 'responsibilities',
+      'requiredQualifications', 'country', 'city', 'sourceUrl', 'applicationUrl',
+    ];
+    const sanitized: Record<string, unknown> = { ...job };
+    for (const field of textFields) {
+      if (field in sanitized && typeof sanitized[field] === 'string') {
+        sanitized[field] = sanitizeDatabaseString(sanitized[field] as string);
+      }
+    }
+    const arrayFields = ['requiredSkills', 'preferredSkills'];
+    for (const field of arrayFields) {
+      if (field in sanitized && Array.isArray(sanitized[field])) {
+        sanitized[field] = (sanitized[field] as unknown[]).map((item) =>
+          typeof item === 'string' ? sanitizeDatabaseString(item) : item,
+        );
+      }
+    }
+    return sanitized;
   }
 
   async runForSource(source: JobSource): Promise<JobSourceRun> {
@@ -151,7 +174,7 @@ export class PipelineService {
 
             await this.prisma.job.update({
               where: { id: existing.jobId },
-              data: {
+              data: this.sanitizeJobText({
                 title: normalized.title,
                 description: normalized.description,
                 company: normalized.company,
@@ -168,7 +191,7 @@ export class PipelineService {
                 sourceUrl: normalized.sourceUrl,
                 sourceName: source.name,
                 updatedAt: new Date(),
-              },
+              }),
             });
             updated++;
             continue;
@@ -185,37 +208,41 @@ export class PipelineService {
             continue;
           }
 
+          const sanitizedJob = this.sanitizeJobText({
+            title: normalized.title,
+            company: normalized.company,
+            description: normalized.description,
+            responsibilities: normalized.description,
+            requiredQualifications: normalized.requiredQualifications ?? '',
+            type: normalized.type,
+            workplaceType: normalized.workplaceType,
+            experienceLevel: normalized.experienceLevel,
+            requiredSkills: normalized.requiredSkills,
+            preferredSkills: normalized.preferredSkills,
+            country: normalized.country,
+            city: normalized.city,
+            salaryMin: normalized.salaryMin,
+            salaryMax: normalized.salaryMax,
+            applicationUrl: normalized.applicationUrl,
+            sourceUrl: normalized.sourceUrl,
+            sourceName: source.name,
+            sourceJobId: raw.externalId,
+            importedAt: new Date(),
+            acceptsFreshGraduates: normalized.acceptsFreshGraduates ?? false,
+            acceptsStudents: normalized.acceptsStudents ?? false,
+            noExperienceRequired: normalized.noExperienceRequired ?? false,
+            internshipAccepted: normalized.internshipAccepted ?? false,
+            salaryUndisclosed: normalized.salaryMin === null && normalized.salaryMax === null,
+            currency: normalized.currency ?? 'PHP',
+          });
+
           const job = await this.prisma.job.create({
             data: {
               employerId: systemEmployer.id,
-              title: normalized.title,
-              company: normalized.company,
-              description: normalized.description,
-              responsibilities: normalized.description,
-              requiredQualifications: normalized.requiredQualifications ?? '',
-              type: normalized.type,
-              workplaceType: normalized.workplaceType,
-              experienceLevel: normalized.experienceLevel,
-              requiredSkills: normalized.requiredSkills,
-              preferredSkills: normalized.preferredSkills,
-              country: normalized.country,
-              city: normalized.city,
-              salaryMin: normalized.salaryMin,
-              salaryMax: normalized.salaryMax,
+              ...sanitizedJob,
               status: 'PUBLISHED',
               publishedAt: new Date(),
               isExternal: true,
-              applicationUrl: normalized.applicationUrl,
-              sourceName: source.name,
-               sourceUrl: normalized.sourceUrl,
-               sourceJobId: raw.externalId,
-               importedAt: new Date(),
-               acceptsFreshGraduates: normalized.acceptsFreshGraduates ?? false,
-               acceptsStudents: normalized.acceptsStudents ?? false,
-               noExperienceRequired: normalized.noExperienceRequired ?? false,
-               internshipAccepted: normalized.internshipAccepted ?? false,
-               salaryUndisclosed: normalized.salaryMin === null && normalized.salaryMax === null,
-               currency: normalized.currency ?? 'PHP',
             } as any,
           });
 

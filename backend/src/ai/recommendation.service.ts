@@ -33,18 +33,17 @@ export class RecommendationService {
       };
     }
 
-    const profileSummary = await this.buildProfileSummary(userId);
     let recommendations: AiRecommendation[] = [];
 
     try {
-      recommendations = await this.ai.getPersonalizedRecommendations(profileSummary, topK);
+      recommendations = await this.ai.getPersonalizedRecommendations(gating.profileSummary, topK);
     } catch (error) {
       this.logger.warn(`AI recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     if (!recommendations.length) {
       try {
-        recommendations = await this.ai.getHeuristicRecommendations(profileSummary, topK);
+        recommendations = await this.ai.getHeuristicRecommendations(gating.profileSummary, topK);
       } catch (error) {
         this.logger.warn(`Heuristic recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
       }
@@ -128,10 +127,5 @@ export class RecommendationService {
         hasPreferences,
       },
     };
-  }
-
-  private async buildProfileSummary(userId: string): Promise<Record<string, unknown>> {
-    const gating = await this.checkReadiness(userId);
-    return gating.profileSummary;
   }
 }

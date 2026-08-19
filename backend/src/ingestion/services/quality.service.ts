@@ -101,7 +101,7 @@ export class QualityService {
     }
 
     const finalScore = Math.max(0, Math.min(1, score));
-    const pass = reasons.length === 0 && finalScore >= this.minScore;
+    const pass = finalScore >= this.minScore;
 
     return { pass, score: finalScore, reasons };
   }
