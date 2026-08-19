@@ -16,7 +16,7 @@ export const MoveForwardVisual = () => {
             <stop offset="100%" stopColor="var(--color-info)" />
           </linearGradient>
           <radialGradient id="forward-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.12" />
             <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0" />
           </radialGradient>
         </defs>

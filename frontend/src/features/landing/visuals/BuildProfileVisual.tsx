@@ -16,7 +16,7 @@ export const BuildProfileVisual = () => {
             <stop offset="100%" stopColor="var(--color-surface)" />
           </linearGradient>
           <radialGradient id="profile-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.12" />
             <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
           </radialGradient>
         </defs>

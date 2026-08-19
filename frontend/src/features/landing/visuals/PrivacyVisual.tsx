@@ -8,7 +8,7 @@ export const PrivacyFirstVisual = () => {
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="shield-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.25" />
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
             <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="data-chip" x1="0%" y1="0%" x2="100%" y2="0%">

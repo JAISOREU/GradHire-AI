@@ -12,7 +12,7 @@ export const DiscoverOpportunitiesVisual = () => {
             <stop offset="100%" stopColor="var(--color-surface)" />
           </linearGradient>
           <radialGradient id="discover-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.1" />
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.08" />
             <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
           </radialGradient>
         </defs>
