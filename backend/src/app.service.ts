@@ -5,6 +5,7 @@ import { AiService, AiRecommendation } from './ai/ai.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from './common/pagination';
 import { CacheService } from './cache/cache.service';
 import { JobQueryDto } from './common/dto/job.dto';
+import { sanitizeDatabaseString } from './common/utils/sanitize';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -56,6 +57,23 @@ export class AppService implements OnModuleInit {
       }
     }
     return normalized;
+  }
+
+  private sanitizeStrings(data: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
+    for (const key of Object.keys(data)) {
+      const value = data[key];
+      if (typeof value === 'string') {
+        sanitized[key] = sanitizeDatabaseString(value);
+      } else if (Array.isArray(value)) {
+        sanitized[key] = value.map((item) =>
+          typeof item === 'string' ? sanitizeDatabaseString(item) : item,
+        );
+      } else {
+        sanitized[key] = value;
+      }
+    }
+    return sanitized;
   }
 
   async onModuleInit() {
@@ -308,14 +326,16 @@ export class AppService implements OnModuleInit {
       profileCompleted,
     };
 
+    const sanitized = this.sanitizeStrings(merged);
+
     const saved = await this.prisma.profile.upsert({
       where: { userId },
-      update: merged,
+      update: sanitized,
       create: {
         userId,
-        name: (merged.name as string) || '',
-        focus: (merged.focus as string) || '',
-        ...merged,
+        name: (sanitized.name as string) || '',
+        focus: (sanitized.focus as string) || '',
+        ...sanitized,
       },
     });
     return {
@@ -365,7 +385,8 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.education.create({ data: { userId, ...normalized } as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.education.create({ data: { userId, ...sanitized } as any });
   }
 
   async updateEducation(userId: string, educationId: string, data: Record<string, unknown>) {
@@ -374,7 +395,8 @@ export class AppService implements OnModuleInit {
     const existing = await this.prisma.education.findFirst({ where: { id: educationId, userId } });
     if (!existing) throw new NotFoundException('Education not found');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.education.update({ where: { id: educationId }, data: normalized as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.education.update({ where: { id: educationId }, data: sanitized as any });
   }
 
   async deleteEducation(userId: string, educationId: string) {
@@ -400,7 +422,8 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.experience.create({ data: { userId, ...normalized } as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.experience.create({ data: { userId, ...sanitized } as any });
   }
 
   async updateExperience(userId: string, experienceId: string, data: Record<string, unknown>) {
@@ -409,7 +432,8 @@ export class AppService implements OnModuleInit {
     const existing = await this.prisma.experience.findFirst({ where: { id: experienceId, userId } });
     if (!existing) throw new NotFoundException('Experience not found');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.experience.update({ where: { id: experienceId }, data: normalized as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.experience.update({ where: { id: experienceId }, data: sanitized as any });
   }
 
   async deleteExperience(userId: string, experienceId: string) {
@@ -434,14 +458,14 @@ export class AppService implements OnModuleInit {
   async createSkill(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    const name = String(data.name ?? '').trim();
+    const name = sanitizeDatabaseString(String(data.name ?? '').trim());
     if (!name) throw new NotFoundException('Skill name is required');
     const normalizedName = name.toLowerCase();
     const existing = await this.prisma.skill.findFirst({ where: { userId, name: { equals: normalizedName, mode: 'insensitive' } } });
     if (existing) {
-      return this.prisma.skill.update({ where: { id: existing.id }, data: data as any });
+      return this.prisma.skill.update({ where: { id: existing.id }, data: { ...this.sanitizeStrings(data), name: normalizedName } as any });
     }
-    return this.prisma.skill.create({ data: { userId, name: normalizedName, ...data } as any });
+    return this.prisma.skill.create({ data: { userId, name: normalizedName, ...this.sanitizeStrings(data) } as any });
   }
 
   async deleteSkill(userId: string, skillId: string) {
@@ -467,7 +491,8 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
-    return this.prisma.certification.create({ data: { userId, ...normalized } as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.certification.create({ data: { userId, ...sanitized } as any });
   }
 
   async updateCertification(userId: string, certificationId: string, data: Record<string, unknown>) {
@@ -476,7 +501,8 @@ export class AppService implements OnModuleInit {
     const existing = await this.prisma.certification.findFirst({ where: { id: certificationId, userId } });
     if (!existing) throw new NotFoundException('Certification not found');
     const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
-    return this.prisma.certification.update({ where: { id: certificationId }, data: normalized as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.certification.update({ where: { id: certificationId }, data: sanitized as any });
   }
 
   async deleteCertification(userId: string, certificationId: string) {
@@ -502,7 +528,8 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.project.create({ data: { userId, ...normalized } as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.project.create({ data: { userId, ...sanitized } as any });
   }
 
   async updateProject(userId: string, projectId: string, data: Record<string, unknown>) {
@@ -511,7 +538,8 @@ export class AppService implements OnModuleInit {
     const existing = await this.prisma.project.findFirst({ where: { id: projectId, userId } });
     if (!existing) throw new NotFoundException('Project not found');
     const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
-    return this.prisma.project.update({ where: { id: projectId }, data: normalized as any });
+    const sanitized = this.sanitizeStrings(normalized);
+    return this.prisma.project.update({ where: { id: projectId }, data: sanitized as any });
   }
 
   async deleteProject(userId: string, projectId: string) {
@@ -537,10 +565,11 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.careerPreference.findFirst({ where: { userId } });
+    const sanitized = this.sanitizeStrings(data);
     if (existing) {
-      return this.prisma.careerPreference.update({ where: { id: existing.id }, data: data as any });
+      return this.prisma.careerPreference.update({ where: { id: existing.id }, data: sanitized as any });
     }
-    return this.prisma.careerPreference.create({ data: { userId, ...data } as any });
+    return this.prisma.careerPreference.create({ data: { userId, ...sanitized } as any });
   }
 
   async getProfileCompleteness(userId: string) {
