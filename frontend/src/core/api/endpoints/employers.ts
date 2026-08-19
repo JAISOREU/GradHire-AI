@@ -1,5 +1,5 @@
 import { api } from '../client';
-import type { Application, EmployerJob, EmployerProfile, EmployerSettings, Interview } from '../../types';
+import type { Application, EmployerJob, EmployerProfile, EmployerSettings, Interview, PaginatedResponse } from '../../types';
 
 export const employersApi = {
   getProfile: () => api<EmployerProfile>('/api/v1/employer/profile'),
@@ -13,13 +13,9 @@ export const employersApi = {
     return api<{ items: Application[] }>(`/api/v1/applications/employer/all?${params.toString()}`).then((r) => r.items ?? []);
   },
 
-  listInterviews: async (page = 1, limit = 20): Promise<Interview[]> => {
-    try {
-      const data = await api<{ items: Interview[] }>(`/api/v1/employer/interviews?page=${page}&limit=${limit}`);
-      return data.items ?? [];
-    } catch {
-      return [];
-    }
+  listInterviews: async (page = 1, limit = 20): Promise<PaginatedResponse<Interview>> => {
+    const data = await api<PaginatedResponse<Interview>>(`/api/v1/interviews/employer/all?page=${page}&limit=${limit}`);
+    return data ?? { items: [], total: 0, page, limit };
   },
 
   getSettings: () => api<EmployerSettings>('/api/v1/settings/me'),

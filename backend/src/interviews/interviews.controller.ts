@@ -25,6 +25,13 @@ export class InterviewsController {
     return this.interviews.getMyInterviews(req.user);
   }
 
+  @Get('employer/all')
+  @UseGuards(EmployerGuard)
+  async employerInterviews(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
+    const pagination = query ? normalizePagination(query) : undefined;
+    return this.interviews.getEmployerInterviews(req.user, pagination);
+  }
+
   @Get('job/:jobId')
   @UseGuards(EmployerGuard)
   async jobInterviews(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string, @Query() query?: Record<string, unknown>) {

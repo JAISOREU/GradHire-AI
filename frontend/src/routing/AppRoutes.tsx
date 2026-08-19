@@ -48,6 +48,7 @@ import { StudentRecommendedJobsPage } from '../features/student/StudentRecommend
 import { StudentNotificationsPage } from '../features/student/StudentNotificationsPage';
 import { StudentMessagesPage } from '../features/student/StudentMessagesPage';
 import { StudentSettingsPage } from '../features/student/StudentSettingsPage';
+import { StudentInterviewsPage } from '../features/student/StudentInterviewsPage';
 import { EmployerDashboardPage } from '../features/employer/EmployerDashboardPage';
 import { EmployerPostJobPage } from '../features/employer/EmployerPostJobPage';
 import { EmployerManageJobsPage } from '../features/employer/EmployerManageJobsPage';
@@ -91,6 +92,7 @@ export const AppRoutes = () => (
         <Route path="/student/recommended" element={<Page><StudentRecommendedJobsPage /></Page>} />
         <Route path="/student/notifications" element={<Page><StudentNotificationsPage /></Page>} />
         <Route path="/student/messages" element={<Page><StudentMessagesPage /></Page>} />
+        <Route path="/student/interviews" element={<Page><StudentInterviewsPage /></Page>} />
         <Route path="/student/settings" element={<Page><StudentSettingsPage /></Page>} />
       </Route>
     </Route>

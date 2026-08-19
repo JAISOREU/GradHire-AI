@@ -24,9 +24,17 @@ function createMockPrisma() {
         return message;
       },
       findUnique: async ({ where }: { where: { id: string } }) => messages.find((m) => m.id === where.id) ?? null,
-      findMany: async ({ where }: { where: { OR: Array<{ senderId: string } | { recipientId: string }> } }) => {
+      findMany: async ({ where, include }: { where: { OR: Array<{ senderId: string } | { recipientId: string }> }; include?: Record<string, unknown> }) => {
         const or = where.OR as Array<{ senderId: string } | { recipientId: string }>;
-        return messages.filter((m) => or.some((c) => 'senderId' in c ? m.senderId === c.senderId : m.recipientId === c.recipientId));
+        const filtered = messages.filter((m) => or.some((c) => 'senderId' in c ? m.senderId === c.senderId : m.recipientId === c.recipientId));
+        if (include?.sender || include?.recipient) {
+          return filtered.map((m) => ({
+            ...m,
+            sender: users.find((u) => u.id === m.senderId),
+            recipient: users.find((u) => u.id === m.recipientId),
+          }));
+        }
+        return filtered;
       },
       update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
         const idx = messages.findIndex((m) => m.id === where.id);

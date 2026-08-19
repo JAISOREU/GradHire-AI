@@ -2,17 +2,19 @@ import { Injectable, ForbiddenException, NotFoundException, Logger } from '@nest
 import { PrismaService } from '../prisma.service';
 import { AuthUser } from '../auth/auth.service';
 import { ScheduleInterviewDto } from '../common/dto/interview.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { PaginationParams, applyPagination } from '../common/pagination';
 
 @Injectable()
 export class InterviewsService {
   private readonly logger = new Logger(InterviewsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly notifications: NotificationsService) {}
 
   async schedule(user: AuthUser, body: ScheduleInterviewDto) {
     const application = await this.prisma.application.findUnique({
       where: { id: body.applicationId },
-      include: { job: true },
+      include: { job: true, student: { select: { id: true } } },
     });
 
     if (!application || application.job.employerId !== user.id) {
@@ -24,7 +26,7 @@ export class InterviewsService {
     });
 
     if (existing) {
-      return this.prisma.interview.update({
+      const interview = await this.prisma.interview.update({
         where: { applicationId: body.applicationId },
         data: {
           type: body.type,
@@ -38,6 +40,20 @@ export class InterviewsService {
           status: 'SCHEDULED',
         },
       });
+
+      await this.prisma.applicationEvent.create({
+        data: {
+          applicationId: body.applicationId,
+          actorId: user.id,
+          actorRole: 'EMPLOYER',
+          action: 'INTERVIEW_RESCHEDULED',
+          metadata: { interviewId: interview.id, scheduledAt: body.scheduledAt },
+        },
+      });
+
+      await this.notifications.create(application.student.id, `Interview rescheduled for ${application.job.title}`, body.applicationId, 'INTERVIEW');
+
+      return interview;
     }
 
     const interview = await this.prisma.interview.create({
@@ -65,6 +81,8 @@ export class InterviewsService {
       },
     });
 
+    await this.notifications.create(application.student.id, `Interview scheduled for ${application.job.title}`, body.applicationId, 'INTERVIEW');
+
     return interview;
   }
 
@@ -82,6 +100,32 @@ export class InterviewsService {
       },
       orderBy: { scheduledAt: 'asc' },
     });
+  }
+
+  async getEmployerInterviews(user: AuthUser, pagination?: PaginationParams) {
+    const { page = 1, limit = 20 } = pagination ?? {};
+    const where = {
+      application: { job: { employerId: user.id } },
+    };
+    const [interviews, total] = await Promise.all([
+      this.prisma.interview.findMany({
+        where,
+        include: {
+          application: {
+            include: {
+              student: { include: { profile: { select: { id: true, name: true, focus: true } } } },
+              job: { select: { id: true, title: true, company: true, location: true } },
+            },
+          },
+        },
+        orderBy: { scheduledAt: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.interview.count({ where }),
+    ]);
+
+    return applyPagination(interviews, total, page, limit);
   }
 
   async getJobInterviews(user: AuthUser, jobId: string) {
@@ -108,7 +152,7 @@ export class InterviewsService {
   async updateStatus(user: AuthUser, interviewId: string, body: { status: string; feedback?: string }) {
     const interview = await this.prisma.interview.findUnique({
       where: { id: interviewId },
-      include: { application: { include: { job: true } } },
+      include: { application: { include: { job: true, student: { select: { id: true } } } } },
     });
 
     if (!interview || interview.application.job.employerId !== user.id) {
@@ -119,25 +163,53 @@ export class InterviewsService {
     if (body.feedback) data.feedback = body.feedback;
     if (body.status === 'COMPLETED') data.endTime = new Date();
 
-    return this.prisma.interview.update({
+    const updated = await this.prisma.interview.update({
       where: { id: interviewId },
       data,
     });
+
+    await this.prisma.applicationEvent.create({
+      data: {
+        applicationId: interview.applicationId,
+        actorId: user.id,
+        actorRole: 'EMPLOYER',
+        action: `INTERVIEW_${body.status}`,
+        metadata: { interviewId },
+      },
+    });
+
+    await this.notifications.create(interview.application.student.id, `Interview ${body.status.toLowerCase()} for ${interview.application.job.title}`, interview.applicationId, 'INTERVIEW');
+
+    return updated;
   }
 
   async cancel(user: AuthUser, interviewId: string) {
     const interview = await this.prisma.interview.findUnique({
       where: { id: interviewId },
-      include: { application: { include: { job: true } } },
+      include: { application: { include: { job: true, student: { select: { id: true } } } } },
     });
 
     if (!interview || interview.application.job.employerId !== user.id) {
       throw new ForbiddenException('You can only cancel interviews for your own jobs');
     }
 
-    return this.prisma.interview.update({
+    const updated = await this.prisma.interview.update({
       where: { id: interviewId },
       data: { status: 'CANCELLED' },
     });
+
+    await this.prisma.applicationEvent.create({
+      data: {
+        applicationId: interview.applicationId,
+        actorId: user.id,
+        actorRole: 'EMPLOYER',
+        action: 'INTERVIEW_CANCELLED',
+        metadata: { interviewId },
+      },
+    });
+
+    await this.notifications.create(interview.application.student.id, `Interview cancelled for ${interview.application.job.title}`, interview.applicationId, 'INTERVIEW');
+
+    return updated;
   }
 }

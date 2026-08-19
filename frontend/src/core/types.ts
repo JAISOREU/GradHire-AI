@@ -346,6 +346,7 @@ export type Application = {
   documents?: ApplicationDocument[];
   answers?: ApplicationAnswer[];
   interview?: Interview | null;
+  lastEvent?: ApplicationStatusHistory | null;
 };
 
 export type Notification = {
@@ -390,8 +391,24 @@ export type ResumeParseResult = {
 
 export type Interview = {
   id: string;
-  job: EmployerJob;
-  candidate: string;
+  applicationId: string;
+  application: {
+    id: string;
+    job: {
+      id: string;
+      title: string;
+      company: string;
+      location: string;
+    };
+    student: {
+      id: string;
+      profile?: {
+        id: string;
+        name: string;
+        focus: string;
+      } | null;
+    };
+  };
   scheduledAt: string;
   status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
   type?: InterviewType;

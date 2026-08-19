@@ -13,7 +13,7 @@ export class MessagesService {
 
   constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway, private readonly notifications: NotificationsService) {}
 
-  async listForUser(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<{ id: string; from: string; to: string; body: string; createdAt: string; read: boolean }>> {
+  async listForUser(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<{ id: string; from: string; to: string; fromName?: string; toName?: string; body: string; createdAt: string; read: boolean }>> {
     const { page = 1, limit = 20 } = pagination ?? {};
     const where = { OR: [{ senderId: user.id }, { recipientId: user.id }] as { senderId: string }[] };
     const [messages, total] = await Promise.all([
@@ -22,15 +22,32 @@ export class MessagesService {
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
-      }),
+        include: {
+          sender: { select: { id: true, email: true } },
+          recipient: { select: { id: true, email: true } },
+        },
+      }) as Promise<
+        Array<{
+          id: string;
+          senderId: string;
+          recipientId: string;
+          body: string;
+          createdAt: Date;
+          read: boolean;
+          sender: { id: string; email: string };
+          recipient: { id: string; email: string };
+        }>
+      >,
       this.prisma.message.count({ where }),
     ]);
 
     return applyPagination(
-      messages.map((m: { id: string; senderId: string; recipientId: string; body: string; createdAt: Date; read: boolean }) => ({
+      messages.map((m) => ({
         id: m.id,
         from: m.senderId,
         to: m.recipientId,
+        fromName: m.sender.email,
+        toName: m.recipient.email,
         body: m.body,
         createdAt: m.createdAt.toISOString(),
         read: m.read,

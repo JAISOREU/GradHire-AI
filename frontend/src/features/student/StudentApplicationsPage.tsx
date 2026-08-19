@@ -62,6 +62,12 @@ export const StudentApplicationsPage = () => {
                     </Button>
                   )}
                 </div>
+                {(app as any).lastEvent && (
+                  <div className="text-sm text-secondary section--mt" style={{ paddingLeft: '1rem', borderLeft: '2px solid var(--color-border)' }}>
+                    <strong>{(app as any).lastEvent.newStatus}</strong> — {(app as any).lastEvent.message || 'Status updated'}
+                    <div className="text-xs text-faint">{new Date((app as any).lastEvent.createdAt).toLocaleString()}</div>
+                  </div>
+                )}
               </article>
             ))}
           </div>

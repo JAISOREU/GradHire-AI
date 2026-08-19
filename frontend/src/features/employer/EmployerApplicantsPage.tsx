@@ -158,7 +158,6 @@ export const EmployerApplicantsPage = () => {
                           <option value="OFFER">Offer</option>
                           <option value="HIRED">Hire</option>
                           <option value="REJECTED">Reject</option>
-                          <option value="WITHDRAWN">Withdraw</option>
                         </select>
                       </div>
                     </td>

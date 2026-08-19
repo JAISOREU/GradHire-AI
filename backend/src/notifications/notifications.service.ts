@@ -9,32 +9,16 @@ export class NotificationsService {
   constructor(private readonly prisma: PrismaService, private readonly gateway: NotificationsGateway) {}
 
   async create(recipientId: string, message: string, applicationId?: string, type = 'GENERIC') {
-    let notification;
-    if (applicationId) {
-      notification = await this.prisma.notification.upsert({
-        where: { applicationId },
-        update: { message, read: false, type },
-        create: { recipientId, message, applicationId, read: false, type },
-        include: {
-          application: {
-            include: {
-              job: { select: { id: true, title: true, company: true } },
-            },
+    const notification = await this.prisma.notification.create({
+      data: { recipientId, message, applicationId: applicationId ?? null, read: false, type },
+      include: {
+        application: {
+          include: {
+            job: { select: { id: true, title: true, company: true } },
           },
         },
-      });
-    } else {
-      notification = await this.prisma.notification.create({
-        data: { recipientId, message, applicationId: null, read: false, type },
-        include: {
-          application: {
-            include: {
-              job: { select: { id: true, title: true, company: true } },
-            },
-          },
-        },
-      });
-    }
+      },
+    });
 
     const payload = {
       id: notification.id,

@@ -1,4 +1,4 @@
-import { messagesApi, employersApi } from '../../core/api/endpoints/employers';
+import { messagesApi } from '../../core/api/endpoints/messages';
 import { useRealtimeQuery } from '../../core/hooks/useRealtimeQuery';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
@@ -6,10 +6,9 @@ import { Button } from '../../components/Button';
 import { FormInput, FormSelect } from '../../components/FormField';
 import { Card } from '../../components/Card';
 import { useState, useEffect } from 'react';
-import type { Message } from '../../core/types';
 
 export const EmployerMessagesPage = () => {
-  const { data: messages, loading, reload } = useRealtimeQuery(() => messagesApi.listMine<Message>(), [], { eventName: 'message' });
+  const { data: messages, loading, reload } = useRealtimeQuery(() => messagesApi.listMine(), [], { eventName: 'message' });
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ to: '', body: '' });
   const [candidates, setCandidates] = useState<{ id: string; name: string }[]>([]);
@@ -20,7 +19,7 @@ export const EmployerMessagesPage = () => {
     const loadCandidates = async () => {
       setLoadingCandidates(true);
       try {
-        const data = await employersApi.listApplicants(undefined, 1, 50);
+        const data = await (await import('../../core/api/endpoints/employers')).employersApi.listApplicants(undefined, 1, 50);
         const unique = Array.from(new Map((data as any[]).map((a) => [a.student?.id, { id: a.student?.id, name: a.student?.profile?.name ?? a.student?.email }])).values());
         setCandidates(unique.filter((c): c is { id: string; name: string } => Boolean(c.id)));
       } catch {
@@ -84,12 +83,12 @@ export const EmployerMessagesPage = () => {
       <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading messages…" />
-        ) : messages && messages.length > 0 ? (
-          messages.map((m) => (
+        ) : messages && (messages as any).items?.length > 0 ? (
+          (messages as any).items.map((m: any) => (
             <article key={m.id} className="list-item">
               <div className="flex justify-between items-center">
                 <div>
-                  <strong>{m.from}</strong>
+                  <strong>{m.fromName || m.from}</strong>
                   <span className="text-xs text-faint block">{new Date(m.createdAt).toLocaleString()}</span>
                   {!m.read && <span className="text-xs font-medium text-warning">Unread</span>}
                 </div>

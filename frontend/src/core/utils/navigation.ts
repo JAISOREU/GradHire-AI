@@ -26,6 +26,7 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
     items: [
       { to: '/student/account', label: 'Profile', icon: 'profile' },
       { to: '/student/messages', label: 'Messages', icon: 'messages' },
+      { to: '/student/interviews', label: 'Interviews', icon: 'calendar' },
       { to: '/student/notifications', label: 'Notifications', icon: 'notifications' },
       { to: '/student/settings', label: 'Settings', icon: 'settings' },
     ],
@@ -41,6 +42,7 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
       { to: '/employer/dashboard', label: 'Dashboard', icon: 'dashboard' },
       { to: '/employer/jobs', label: 'Jobs', icon: 'jobs' },
       { to: '/employer/applicants', label: 'Applicants', icon: 'users' },
+      { to: '/employer/interviews', label: 'Interviews', icon: 'calendar' },
     ],
   },
   {
