@@ -1,11 +1,21 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
 import { AdminListPage } from '../../components/AdminListPage';
+import { Button } from '../../components/Button';
 
 export const AdminCompaniesPage = () => {
-  const { data, loading } = useAsync(() => adminApi.companies(), []);
+  const { data, loading, reload } = useAsync(() => adminApi.companies(), []);
 
   const companies = data?.items ?? [];
+
+  const handleVerify = async (companyId: string, verified: boolean | undefined) => {
+    try {
+      await adminApi.updateCompany(companyId, { verified: !verified });
+      reload();
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <div className="page fade-in">
@@ -22,6 +32,9 @@ export const AdminCompaniesPage = () => {
                   <span>{c.location}</span>
                 </div>
               </div>
+              <Button variant={c.verified ? 'secondary' : 'primary'} size="sm" onClick={() => handleVerify(c.id, c.verified)}>
+                {c.verified ? 'Verified' : 'Verify'}
+              </Button>
             </div>
           </div>
         )}
@@ -33,6 +46,3 @@ export const AdminCompaniesPage = () => {
     </div>
   );
 };
-
-
-

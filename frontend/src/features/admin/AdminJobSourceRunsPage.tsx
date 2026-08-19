@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobSourcesApi } from '../../core/api/endpoints/jobSources';
 import { AdminListPage } from '../../components/AdminListPage';
+import { EmptyState } from '../../components/EmptyState';
 
 const statusColors: Record<string, string> = {
   PENDING: 'status-pending',
@@ -13,7 +14,17 @@ const statusColors: Record<string, string> = {
 
 export const AdminJobSourceRunsPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, loading } = useAsync(() => jobSourcesApi.getRuns(id!), [id]);
+
+  if (!id) {
+    return (
+      <div className="page fade-in">
+        <h1 className="page-title page-title--admin">Ingestion Runs</h1>
+        <EmptyState icon="⚠️" title="Missing source" text="No source ID was provided." />
+      </div>
+    );
+  }
+
+  const { data, loading } = useAsync(() => jobSourcesApi.getRuns(id), [id]);
 
   const runs = data ?? [];
 
@@ -28,7 +39,7 @@ export const AdminJobSourceRunsPage = () => {
         emptyIcon="🔄"
         emptyTitle="No runs"
         emptyText="No ingestion runs found for this source."
-        renderItem={(run: any) => (
+        renderItem={(run) => (
           <div className="list-item">
             <div className="list-item__head">
               <div>
@@ -45,10 +56,10 @@ export const AdminJobSourceRunsPage = () => {
               </div>
             </div>
              {run.errors && Object.keys(run.errors).length > 0 && (
-               <div className="message message--error" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
-                 <strong>Errors:</strong> {JSON.stringify(run.errors)}
-               </div>
-             )}
+              <div className="message message--error" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                <strong>Errors:</strong> {JSON.stringify(run.errors)}
+              </div>
+            )}
           </div>
         )}
       />

@@ -44,7 +44,6 @@ export const AdminDashboardPage = () => {
           label="Total users"
           value={stats.users}
           icon="👥"
-          trend={{ direction: 'up', value: `${stats.students + stats.employers}`, label: 'active accounts' }}
           action={
             <Link to="/admin/users"><Button variant="ghost" size="sm">Manage</Button></Link>
           }

@@ -3,9 +3,18 @@ import { adminApi } from '../../core/api/endpoints/admin';
 import { AdminListPage } from '../../components/AdminListPage';
 
 export const AdminApplicationsPage = () => {
-  const { data, loading } = useAsync(() => adminApi.applications(), []);
+  const { data, loading, reload } = useAsync(() => adminApi.applications(), []);
 
   const applications = data?.items ?? [];
+
+  const handleStatusChange = async (applicationId: string, status: string) => {
+    try {
+      await adminApi.updateApplication(applicationId, { status });
+      reload();
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <div className="page fade-in">
@@ -20,9 +29,18 @@ export const AdminApplicationsPage = () => {
                 <div className="list-item__meta">
                   <span>{a.student?.email}</span>
                   <span>{a.job?.company}</span>
-                  <span>{a.status}</span>
                   <span>{new Date(a.createdAt).toLocaleDateString()}</span>
                 </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <select className="select" value={a.status} onChange={(e) => handleStatusChange(a.id, e.target.value)}>
+                  <option value="PENDING">Pending</option>
+                  <option value="REVIEWED">Reviewed</option>
+                  <option value="INTERVIEW">Interview</option>
+                  <option value="ACCEPTED">Accepted</option>
+                  <option value="REJECTED">Rejected</option>
+                  <option value="WITHDRAWN">Withdrawn</option>
+                </select>
               </div>
             </div>
           </div>
@@ -35,6 +53,3 @@ export const AdminApplicationsPage = () => {
     </div>
   );
 };
-
-
-

@@ -74,8 +74,31 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
     label: 'Management',
     items: [
       { to: '/admin/job-sources', label: 'Sources', icon: 'jobs' },
+      { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'jobs' },
       { to: '/admin/applications', label: 'Applications', icon: 'applications' },
       { to: '/admin/companies', label: 'Companies', icon: 'company' },
+    ],
+  },
+  {
+    label: 'Monitoring',
+    items: [
+      { to: '/admin/reports', label: 'Reports', icon: 'dashboard' },
+      { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' },
+      { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'dashboard' },
+      { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'security' },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { to: '/admin/database', label: 'Database', icon: 'settings' },
+      { to: '/admin/api-keys', label: 'API Keys', icon: 'settings' },
+      { to: '/admin/email-templates', label: 'Email Templates', icon: 'settings' },
+      { to: '/admin/cms', label: 'CMS', icon: 'settings' },
+      { to: '/admin/feature-flags', label: 'Feature Flags', icon: 'settings' },
+      { to: '/admin/backups', label: 'Backups', icon: 'settings' },
+      { to: '/admin/security', label: 'Security', icon: 'security' },
+      { to: '/admin/developer-tools', label: 'Developer Tools', icon: 'settings' },
     ],
   },
   {

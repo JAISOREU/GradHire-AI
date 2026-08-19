@@ -3,11 +3,6 @@ import { PrismaService } from '../prisma.service';
 
 export function auditLoggingMiddleware(prisma: PrismaService) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const url = req.originalUrl || req.url;
-    if (!url.startsWith('/api/v1/admin')) {
-      return next();
-    }
-
     const user = (req as Request & { user?: { id?: string; email?: string } }).user;
     const start = Date.now();
 
@@ -16,6 +11,7 @@ export function auditLoggingMiddleware(prisma: PrismaService) {
         return;
       }
 
+      const url = req.originalUrl || req.url;
       const metadata: Record<string, unknown> = {
         method: req.method,
         path: url,

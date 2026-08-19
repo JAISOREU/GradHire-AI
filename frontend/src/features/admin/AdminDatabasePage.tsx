@@ -1,19 +1,11 @@
-import { AdminListPage } from '../../components/AdminListPage';
+import { EmptyState } from '../../components/EmptyState';
 
 export const AdminDatabasePage = () => (
   <div className="page fade-in">
     <h1 className="page-title page-title--admin">Database</h1>
-    <p className="card__subtitle card__subtitle card__subtitle--mt">Database management and migrations.</p>
-    <AdminListPage
-      items={[]}
-      renderItem={() => null}
-      loading={false}
-      emptyIcon="🗄️"
-      emptyTitle="No database entries"
-      emptyText="Database entries will appear here."
-    />
+    <p className="card__subtitle card__subtitle--mt">Database management and migrations.</p>
+    <div className="section--mt">
+      <EmptyState icon="🗄️" title="No database entries" text="Database management tools will appear here." />
+    </div>
   </div>
 );
-
-
-

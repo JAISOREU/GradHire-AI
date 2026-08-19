@@ -133,7 +133,7 @@ export const AdminJobSourcesPage = () => {
 
   const handleSync = async (id: string) => {
     await jobSourcesApi.sync(id);
-    setTimeout(reload, 1000);
+    setTimeout(reload, 3000);
   };
 
   const handleToggle = async (id: string, enabled: boolean) => {

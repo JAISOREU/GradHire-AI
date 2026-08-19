@@ -1,15 +1,16 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
-import { notificationsApi } from '../../core/api/endpoints/notifications';
 import { AdminListPage } from '../../components/AdminListPage';
 import { Button } from '../../components/Button';
+import type { PaginatedResponse } from '../../core/types';
 
 export const AdminNotificationsPage = () => {
   const { data: notifications, loading, reload } = useAsync(() => adminApi.notifications(), []);
+  const items = (notifications as PaginatedResponse<{ id: string; message: string; recipient: { email: string }; read: boolean; createdAt: string }> | undefined)?.items ?? [];
 
   const handleMarkRead = async (id: string) => {
     try {
-      await notificationsApi.markRead(id);
+      await adminApi.markNotificationRead(id);
       reload();
     } catch {
       // ignore
@@ -20,7 +21,7 @@ export const AdminNotificationsPage = () => {
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Notifications</h1>
       <AdminListPage
-        items={notifications ?? []}
+        items={items}
         renderItem={(n) => (
           <div className="list-item">
             <div className="list-item__head">

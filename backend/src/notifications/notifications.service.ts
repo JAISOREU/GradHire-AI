@@ -97,5 +97,19 @@ export class NotificationsService {
     });
     return { id: updated.id, read: updated.read };
   }
+
+  async markReadAny(notificationId: string): Promise<{ id: string; read: boolean }> {
+    const notification = await this.prisma.notification.findUnique({
+      where: { id: notificationId },
+    });
+    if (!notification) {
+      throw new NotFoundException('Notification not found');
+    }
+    const updated = await this.prisma.notification.update({
+      where: { id: notificationId },
+      data: { read: true },
+    });
+    return { id: updated.id, read: updated.read };
+  }
 }
 

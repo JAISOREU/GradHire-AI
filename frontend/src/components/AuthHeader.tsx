@@ -138,14 +138,20 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       case 'ADMIN':
         return [
           { to: '/admin/account', label: 'Admin profile', icon: 'profile' as const },
+          { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' as const },
           { to: '/admin/users', label: 'Users', icon: 'users' as const },
           { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' as const },
           { to: '/admin/applications', label: 'Applications', icon: 'applications' as const },
           { to: '/admin/companies', label: 'Companies', icon: 'company' as const },
+          { to: '/admin/reports', label: 'Reports', icon: 'dashboard' as const },
+          { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' as const },
+          { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'dashboard' as const },
           { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' as const },
           { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' as const },
+          { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'jobs' as const },
           { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' as const },
           { to: '/admin/settings', label: 'Settings', icon: 'settings' as const },
+          { to: '/admin/security', label: 'Security', icon: 'security' as const },
         ];
       default:
         return [];

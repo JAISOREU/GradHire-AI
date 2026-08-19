@@ -2,6 +2,7 @@ import { Controller, Get, Param, Put, Query, Req, UseGuards } from '@nestjs/comm
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
 import { NotificationsService } from './notifications.service';
 import { normalizePagination } from '../common/pagination';
 
@@ -23,5 +24,11 @@ export class NotificationsController {
   @Put(':id/read')
   async markRead(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.notifications.markRead(req.user, id);
+  }
+
+  @Put('admin/:id/read')
+  @UseGuards(AdminGuard)
+  async adminMarkRead(@Param('id') id: string) {
+    return this.notifications.markReadAny(id);
   }
 }

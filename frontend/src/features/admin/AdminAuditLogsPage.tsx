@@ -1,15 +1,17 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
 import { AdminListPage } from '../../components/AdminListPage';
+import type { PaginatedResponse } from '../../core/types';
 
 export const AdminAuditLogsPage = () => {
   const { data: logs, loading } = useAsync(() => adminApi.auditLogs(), []);
+  const items = (logs as PaginatedResponse<{ id: string; action: string; user: { email: string }; createdAt: string }> | undefined)?.items ?? [];
 
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Audit Logs</h1>
       <AdminListPage
-        items={logs ?? []}
+        items={items}
         renderItem={(log) => (
           <div className="list-item">
             <div className="list-item__head">
