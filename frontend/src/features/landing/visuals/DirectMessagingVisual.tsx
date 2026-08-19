@@ -27,19 +27,19 @@ export const DirectMessagingVisual = () => {
         </g>
 
         <g className="msg-candidate">
-          <rect x="210" y="84" width="140" height="36" rx="10" fill="url(#msg-candidate)" />
-          <text x="338" y="107" textAnchor="end" fill="var(--color-primary-text)" fontSize="10" fontWeight="600">Hi, I'm interested in this role.</text>
+          <rect x="210" y="86" width="140" height="40" rx="10" fill="url(#msg-candidate)" />
+          <text x="338" y="110" textAnchor="end" fill="var(--color-primary-text)" fontSize="10" fontWeight="600">Hi, I'm interested in this role.</text>
         </g>
 
         <g className="msg-typing">
-          <circle cx="330" cy="138" r="3" fill="var(--color-text-muted)" opacity="0.6" />
-          <circle cx="340" cy="138" r="3" fill="var(--color-text-muted)" opacity="0.6" />
-          <circle cx="350" cy="138" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="330" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="340" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
+          <circle cx="350" cy="144" r="3" fill="var(--color-text-muted)" opacity="0.6" />
         </g>
 
         <g className="msg-employer">
-          <rect x="70" y="168" width="160" height="36" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <text x="82" y="191" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
+          <rect x="70" y="170" width="160" height="40" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <text x="82" y="194" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
         </g>
 
         <g className="msg-status">
@@ -55,7 +55,7 @@ export const DirectMessagingVisual = () => {
         .feature-visual--messaging .msg-employer,
         .feature-visual--messaging .msg-status {
           opacity: 0;
-          transform: translateY(8px);
+          transform: translateY(10px);
           transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .feature-visual--messaging.is-animated .chat-window { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }

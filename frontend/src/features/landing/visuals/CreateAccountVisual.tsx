@@ -16,7 +16,7 @@ export const CreateAccountVisual = () => {
             <stop offset="100%" stopColor="var(--color-info)" />
           </linearGradient>
           <radialGradient id="account-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.2" />
             <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0" />
           </radialGradient>
         </defs>
