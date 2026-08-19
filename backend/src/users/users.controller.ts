@@ -32,12 +32,15 @@ export class UsersController {
     return this.users.deleteAvatar(req.user.id);
   }
 
-  @Throttle({ default: { ttl: 60000, limit: 30 } })
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   @Get('avatar/:id')
   async getPublicAvatar(@Param('id') userId: string, @Res() res: Response) {
     const result = await this.users.serveAvatar(userId);
     if (!result) {
-      throw new NotFoundException('Avatar not found');
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="#e2e8f0" width="100" height="100"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#94a3b8" font-size="40">?</text></svg>');
+      return;
     }
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Cache-Control', 'public, max-age=86400');

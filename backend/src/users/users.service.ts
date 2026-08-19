@@ -10,6 +10,24 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
+const MAGIC_BYTES: Record<string, number[][]> = {
+  'image/jpeg': [
+    [0xff, 0xd8, 0xff],
+  ],
+  'image/png': [
+    [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  ],
+  'image/webp': [
+    [0x52, 0x49, 0x46, 0x46],
+  ],
+};
+
+function verifyMagicBytes(buffer: Buffer, mimeType: string): boolean {
+  const signatures = MAGIC_BYTES[mimeType];
+  if (!signatures || signatures.length === 0) return false;
+  return signatures.some((sig) => buffer.length >= sig.length && sig.every((byte, i) => buffer[i] === byte));
+}
+
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -41,6 +59,10 @@ export class UsersService {
 
     if (file.size > MAX_FILE_SIZE) {
       throw new BadRequestException('File is too large. Maximum size is 5 MB.');
+    }
+
+    if (!verifyMagicBytes(file.buffer, file.mimetype)) {
+      throw new BadRequestException('Invalid file content. Please upload a valid image file.');
     }
 
     const user = await this.prisma.user.findUnique({

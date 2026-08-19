@@ -27,6 +27,7 @@ export type AuthUser = {
   role: string;
   name?: string;
   avatarUrl?: string;
+  tokenVersion?: number;
 };
 
 @Injectable()
@@ -123,7 +124,7 @@ export class AuthService {
   async login(body: { email: string; password: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
     const user = await this.prisma.user.findUnique({
       where: { email: body.email.toLowerCase() },
-      select: { id: true, email: true, role: true, passwordHash: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+      select: { id: true, email: true, role: true, passwordHash: true, avatarUrl: true, tokenVersion: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
     });
 
     if (!user) {
@@ -135,12 +136,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { tokenVersion: { increment: 1 } },
+    });
+
     const authResponse = this.buildAuthResponse({
       id: user.id,
       email: user.email,
       role: user.role,
       name: user.profile?.name || user.employerProfile?.companyName,
       avatarUrl: user.avatarUrl ?? undefined,
+      tokenVersion: user.tokenVersion + 1,
     });
 
     if (res) {
@@ -151,17 +158,17 @@ export class AuthService {
   }
 
   private buildAuthResponse(user: AuthUser): { accessToken: string; user: AuthUser } {
-    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name, avatarUrl: user.avatarUrl };
+    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name, avatarUrl: user.avatarUrl, tokenVersion: user.tokenVersion };
     return {
-      accessToken: this.jwt.sign(payload, { secret: JWT_SECRET, expiresIn: JWT_EXPIRES_IN }),
+      accessToken: this.jwt.sign(payload, { secret: JWT_SECRET, expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' }),
       user,
     };
   }
 
   async validateToken(token: string): Promise<AuthUser> {
-    let payload: { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
+    let payload: { sub: string; email: string; role: string; name?: string; avatarUrl?: string; tokenVersion: number };
     try {
-      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; name?: string; avatarUrl?: string };
+      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; name?: string; avatarUrl?: string; tokenVersion: number };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.warn(`JWT verification failed: ${message}`);
@@ -170,11 +177,16 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+      select: { id: true, email: true, role: true, avatarUrl: true, tokenVersion: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
     });
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
+
+    if (payload.tokenVersion !== user.tokenVersion) {
+      throw new UnauthorizedException('Token has been revoked');
+    }
+
     return {
       id: user.id,
       email: user.email,
@@ -251,31 +263,26 @@ export class AuthService {
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
     this.validatePasswordComplexity(newPassword);
 
-    const candidates = await this.prisma.user.findMany({
+    const candidate = await this.prisma.user.findFirst({
       where: {
         resetTokenExpires: { gte: new Date() },
         resetTokenHash: { not: null },
       },
       select: { id: true, resetTokenHash: true },
       orderBy: { updatedAt: 'desc' },
-      take: 100,
     });
 
-    let matchedUser = null;
-    for (const user of candidates) {
-      if (user.resetTokenHash && await bcrypt.compare(token, user.resetTokenHash)) {
-        matchedUser = user;
-        break;
-      }
-    }
-
-    if (!matchedUser) {
+    if (!candidate?.resetTokenHash || !bcrypt.compareSync(token, candidate.resetTokenHash)) {
+      await this.prisma.user.updateMany({
+        where: { resetTokenExpires: { gte: new Date() }, resetTokenHash: { not: null } },
+        data: { resetTokenHash: null, resetTokenExpires: null },
+      });
       throw new BadRequestException('Invalid or expired reset token');
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
     await this.prisma.user.update({
-      where: { id: matchedUser.id },
+      where: { id: candidate.id },
       data: { passwordHash, resetTokenHash: null, resetTokenExpires: null },
     });
 

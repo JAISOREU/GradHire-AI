@@ -269,7 +269,7 @@ export class AdminController {
       throw new BadRequestException('Email already exists');
     }
     const bcrypt = await import('bcryptjs');
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 12);
     const user = await this.prisma.user.create({
       data: { email, passwordHash, role: role as Role },
       select: { id: true, email: true, role: true, createdAt: true },

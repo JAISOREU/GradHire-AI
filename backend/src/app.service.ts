@@ -76,6 +76,16 @@ export class AppService implements OnModuleInit {
     return sanitized;
   }
 
+  private allowlist(data: Record<string, unknown>, allowedFields: string[]): Record<string, unknown> {
+    const filtered: Record<string, unknown> = {};
+    for (const key of allowedFields) {
+      if (key in data) {
+        filtered[key] = data[key];
+      }
+    }
+    return filtered;
+  }
+
   async onModuleInit() {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
@@ -394,7 +404,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.education.findFirst({ where: { id: educationId, userId } });
     if (!existing) throw new NotFoundException('Education not found');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['institution', 'degree', 'fieldOfStudy', 'startDate', 'endDate', 'currentlyStudying', 'description']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.education.update({ where: { id: educationId }, data: sanitized as any });
   }
@@ -431,7 +442,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.experience.findFirst({ where: { id: experienceId, userId } });
     if (!existing) throw new NotFoundException('Experience not found');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['jobTitle', 'company', 'employmentType', 'location', 'startDate', 'endDate', 'currentlyWorking', 'description', 'skillsUsed']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.experience.update({ where: { id: experienceId }, data: sanitized as any });
   }
@@ -500,7 +512,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.certification.findFirst({ where: { id: certificationId, userId } });
     if (!existing) throw new NotFoundException('Certification not found');
-    const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
+    const allowed = this.allowlist(data, ['name', 'issuer', 'issuedAt', 'expiresAt', 'credentialId', 'url']);
+    const normalized = this.normalizeDates(allowed, ['issuedAt', 'expiresAt']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.certification.update({ where: { id: certificationId }, data: sanitized as any });
   }
@@ -537,7 +550,8 @@ export class AppService implements OnModuleInit {
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.project.findFirst({ where: { id: projectId, userId } });
     if (!existing) throw new NotFoundException('Project not found');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['name', 'description', 'url', 'startDate', 'endDate', 'skillsUsed']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.project.update({ where: { id: projectId }, data: sanitized as any });
   }

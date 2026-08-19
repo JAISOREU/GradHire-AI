@@ -18,12 +18,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { StudentGuard } from '../auth/student.guard';
 import { ResumesService } from './resumes.service';
 import type { UploadedFile as ResumeFile } from './resume.types';
 import { normalizePagination } from '../common/pagination';
 
 @Controller('resumes')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, StudentGuard)
 export class ResumesController {
   constructor(private readonly resumes: ResumesService) {}
 

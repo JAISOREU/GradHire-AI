@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put, Query, Req, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Query, Req, UseGuards, Body, ForbiddenException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
@@ -20,6 +20,9 @@ export class MessagesController {
   @Throttle({ default: { ttl: 60000, limit: 20 } })
   @Post()
   async send(@Req() req: Request & { user: AuthUser }, @Body() payload: { to: string; body: string }) {
+    if (req.user.role === 'ADMIN') {
+      throw new ForbiddenException('Admins cannot send messages');
+    }
     return this.messages.create(req.user.id, payload.to, payload.body);
   }
 
