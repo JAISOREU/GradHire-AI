@@ -55,6 +55,10 @@ export class AuthService {
   }
 
   clearAuthCookie(res: Response): void {
+    this.clearSessionCookie(res);
+  }
+
+  clearSessionCookie(res: Response): void {
     const options = this.getCookieOptions();
     res.clearCookie('access_token', {
       path: '/',
@@ -181,7 +185,15 @@ export class AuthService {
   }
 
   async refresh(token: string, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
-    const payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
+    let payload: { sub: string; email: string; role: string };
+    try {
+      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
+    } catch (err) {
+      if (res) {
+        this.clearSessionCookie(res);
+      }
+      throw new UnauthorizedException('Invalid or expired token');
+    }
 
     if (!payload?.sub) {
       throw new UnauthorizedException('Invalid token');

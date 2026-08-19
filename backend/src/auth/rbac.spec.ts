@@ -7,6 +7,9 @@ import { AdminGuard } from './admin.guard';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 
 function createMockContext(user?: { role: string }, token?: string) {
+  const response = {
+    clearCookie: () => {},
+  };
   return {
     switchToHttp: () => ({
       getRequest: () => ({
@@ -14,6 +17,7 @@ function createMockContext(user?: { role: string }, token?: string) {
         headers: token ? { authorization: `Bearer ${token}` } : {},
         cookies: token ? { access_token: token } : {},
       }),
+      getResponse: () => response,
     }),
   } as never;
 }

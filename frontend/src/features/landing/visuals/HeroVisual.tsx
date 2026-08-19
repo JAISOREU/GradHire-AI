@@ -45,7 +45,7 @@ export const HeroVisual = () => {
 
   return (
     <div ref={ref} className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`} style={visualStyle} aria-hidden="true">
-      <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="hero-glow-1" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.3" />

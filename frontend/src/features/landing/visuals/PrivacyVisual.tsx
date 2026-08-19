@@ -1,28 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-
-const useInView = (options?: IntersectionObserverInit) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      setInView(entry.isIntersecting);
-    }, { threshold: 0.2, ...options });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [options]);
-
-  return { ref, inView };
-};
+import { useInView } from '../../../core/hooks/useInView';
 
 export const PrivacyFirstVisual = () => {
   const { ref, inView } = useInView();
 
   return (
     <div ref={ref} className={`feature-visual feature-visual--privacy ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="shield-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.25" />
@@ -59,20 +42,20 @@ export const PrivacyFirstVisual = () => {
         </g>
 
         <g className="priv-shield">
-          <circle cx="200" cy="140" r="44" fill="url(#shield-glow)" opacity="0.5" />
-          <circle cx="200" cy="140" r="36" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" />
-          <rect x="162" y="104" width="76" height="72" rx="16" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <path d="M 186 126 L 200 116 L 214 126 L 214 152 L 186 152 Z" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <circle cx="200" cy="136" r="5" fill="var(--color-primary)" />
-          <text x="200" y="168" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Protected</text>
+          <circle cx="210" cy="140" r="44" fill="url(#shield-glow)" opacity="0.5" />
+          <circle cx="210" cy="140" r="36" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" />
+          <rect x="172" y="104" width="76" height="72" rx="16" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <path d="M 196 126 L 210 116 L 224 126 L 224 152 L 196 152 Z" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <circle cx="210" cy="136" r="5" fill="var(--color-primary)" />
+          <text x="210" y="168" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Protected</text>
         </g>
 
         <g className="priv-ring priv-ring--1">
-          <circle cx="200" cy="140" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.15" strokeDasharray="4 6" />
+          <circle cx="210" cy="140" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.15" strokeDasharray="4 6" />
         </g>
 
         <g className="priv-ring priv-ring--2">
-          <circle cx="200" cy="140" r="54" fill="none" stroke="var(--color-info)" strokeWidth="1" opacity="0.1" strokeDasharray="2 8" />
+          <circle cx="210" cy="140" r="54" fill="none" stroke="var(--color-info)" strokeWidth="1" opacity="0.1" strokeDasharray="2 8" />
         </g>
       </svg>
 
@@ -91,6 +74,13 @@ export const PrivacyFirstVisual = () => {
         .feature-visual--privacy.is-animated .priv-shield { opacity: 1; transform: scale(1); transition-delay: 0.55s; }
         .feature-visual--privacy.is-animated .priv-ring--1 { opacity: 1; transform: scale(1); transition-delay: 0.7s; }
         .feature-visual--privacy.is-animated .priv-ring--2 { opacity: 1; transform: scale(1); transition-delay: 0.85s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .feature-visual--privacy * {
+            transition-duration: 0.01ms !important;
+            animation: none !important;
+          }
+        }
       `}</style>
     </div>
   );

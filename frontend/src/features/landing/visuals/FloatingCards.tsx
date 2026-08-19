@@ -34,6 +34,10 @@ export const FloatingCards = () => {
         <div className="floating-card__title">Frontend Developer</div>
         <div className="floating-card__meta">Remote · Philippines</div>
       </div>
+      <div className="floating-card floating-card--4">
+        <div className="floating-card__title">Product Designer</div>
+        <div className="floating-card__meta">Hybrid · Singapore</div>
+      </div>
 
       <style>{`
         .floating-cards {
@@ -41,6 +45,7 @@ export const FloatingCards = () => {
           inset: 0;
           pointer-events: none;
           z-index: 0;
+          overflow: hidden;
         }
 
         .floating-card {
@@ -56,26 +61,32 @@ export const FloatingCards = () => {
         }
 
         .floating-cards--animated .floating-card {
-          opacity: 0.9;
+          opacity: 0.95;
           transform: translateY(0);
         }
 
         .floating-card--1 {
-          top: 20%;
-          left: -10%;
+          top: 12%;
+          left: 2%;
           transition-delay: 0.2s;
         }
 
         .floating-card--2 {
-          top: 55%;
-          right: -8%;
+          top: 48%;
+          right: 2%;
           transition-delay: 0.4s;
         }
 
         .floating-card--3 {
-          bottom: 15%;
-          left: 5%;
+          bottom: 12%;
+          left: 8%;
           transition-delay: 0.6s;
+        }
+
+        .floating-card--4 {
+          top: 28%;
+          right: 4%;
+          transition-delay: 0.8s;
         }
 
         .floating-card__title {
@@ -120,7 +131,7 @@ export const FloatingCards = () => {
           .floating-card {
             transition-duration: 0.01ms !important;
             transition-delay: 0ms !important;
-            opacity: 0.9;
+            opacity: 0.95;
             transform: none;
           }
         }

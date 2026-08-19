@@ -1,21 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-
-const useInView = (options?: IntersectionObserverInit) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      setInView(entry.isIntersecting);
-    }, { threshold: 0.2, ...options });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [options]);
-
-  return { ref, inView };
-};
+import { useInView } from '../../../core/hooks/useInView';
 
 export const AIMatchingVisual = () => {
   const { ref, inView } = useInView();
@@ -52,6 +35,31 @@ export const AIMatchingVisual = () => {
           <circle cx="240" cy="160" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" strokeDasharray="4 3" className="ai-core-ring" />
         </g>
 
+        <g className="ai-skill-chips">
+          <rect x="140" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <text x="170" y="124" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">React</text>
+          <rect x="140" y="138" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <text x="170" y="152" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Python</text>
+          <rect x="140" y="166" width="60" height="20" rx="6" fill="var(--color-info-soft)" stroke="var(--color-info)" strokeWidth="1" />
+          <text x="170" y="180" textAnchor="middle" fill="var(--color-info)" fontSize="9" fontWeight="700">SQL</text>
+
+          <rect x="280" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <text x="310" y="124" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Remote</text>
+          <rect x="280" y="138" width="60" height="20" rx="6" fill="var(--color-info-soft)" stroke="var(--color-info)" strokeWidth="1" />
+          <text x="310" y="152" textAnchor="middle" fill="var(--color-info)" fontSize="9" fontWeight="700">Full-time</text>
+          <rect x="280" y="166" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <text x="310" y="180" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Internship</text>
+        </g>
+
+        <g className="ai-conns">
+          <path d="M206 148 Q230 120 248 130" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M206 160 Q230 160 248 160" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M206 172 Q230 200 248 190" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M272 130 Q290 120 308 110" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M272 160 Q290 160 308 160" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M272 190 Q290 200 308 188" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+        </g>
+
         <g className="ai-candidate">
           <circle cx="90" cy="160" r="26" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
           <circle cx="90" cy="152" r="8" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
@@ -77,15 +85,6 @@ export const AIMatchingVisual = () => {
           <text x="380" y="264" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Designer</text>
         </g>
 
-        <g className="ai-conns">
-          <path d="M114 148 Q160 120 208 140" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M114 160 Q160 160 208 160" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M114 172 Q160 200 208 180" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M272 140 Q320 120 358 88" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M272 160 Q320 160 358 160" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M272 180 Q320 200 358 232" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-        </g>
-
         <g className="ai-match-card">
           <rect x="320" y="40" width="110" height="36" rx="8" fill="url(#badge-grad)" stroke="var(--color-primary)" strokeWidth="1" />
           <text x="375" y="62" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">92% Match</text>
@@ -95,6 +94,7 @@ export const AIMatchingVisual = () => {
       <style>{`
         .feature-visual--ai .ai-ambient,
         .feature-visual--ai .ai-core,
+        .feature-visual--ai .ai-skill-chips,
         .feature-visual--ai .ai-candidate,
         .feature-visual--ai .ai-opp,
         .feature-visual--ai .ai-conns,
@@ -105,12 +105,20 @@ export const AIMatchingVisual = () => {
         }
         .feature-visual--ai.is-animated .ai-ambient { opacity: 1; transform: scale(1); transition-delay: 0.05s; }
         .feature-visual--ai.is-animated .ai-core { opacity: 1; transform: scale(1); transition-delay: 0.1s; }
-        .feature-visual--ai.is-animated .ai-candidate { opacity: 1; transform: scale(1); transition-delay: 0.2s; }
+        .feature-visual--ai.is-animated .ai-skill-chips { opacity: 1; transform: scale(1); transition-delay: 0.2s; }
         .feature-visual--ai.is-animated .ai-conns { opacity: 1; transform: scale(1); transition-delay: 0.35s; }
-        .feature-visual--ai.is-animated .ai-opp--1 { opacity: 1; transform: scale(1); transition-delay: 0.45s; }
-        .feature-visual--ai.is-animated .ai-opp--2 { opacity: 1; transform: scale(1); transition-delay: 0.55s; }
-        .feature-visual--ai.is-animated .ai-opp--3 { opacity: 1; transform: scale(1); transition-delay: 0.65s; }
-        .feature-visual--ai.is-animated .ai-match-card { opacity: 1; transform: scale(1); transition-delay: 0.8s; }
+        .feature-visual--ai.is-animated .ai-candidate { opacity: 1; transform: scale(1); transition-delay: 0.45s; }
+        .feature-visual--ai.is-animated .ai-opp--1 { opacity: 1; transform: scale(1); transition-delay: 0.55s; }
+        .feature-visual--ai.is-animated .ai-opp--2 { opacity: 1; transform: scale(1); transition-delay: 0.65s; }
+        .feature-visual--ai.is-animated .ai-opp--3 { opacity: 1; transform: scale(1); transition-delay: 0.75s; }
+        .feature-visual--ai.is-animated .ai-match-card { opacity: 1; transform: scale(1); transition-delay: 0.9s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .feature-visual--ai * {
+            transition-duration: 0.01ms !important;
+            animation: none !important;
+          }
+        }
       `}</style>
     </div>
   );
