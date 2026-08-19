@@ -14,6 +14,7 @@ export const EmployerMessagesPage = () => {
   const [form, setForm] = useState({ to: '', body: '' });
   const [candidates, setCandidates] = useState<{ id: string; name: string }[]>([]);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
+  const [sendError, setSendError] = useState('');
 
   useEffect(() => {
     const loadCandidates = async () => {
@@ -35,12 +36,13 @@ export const EmployerMessagesPage = () => {
     e.preventDefault();
     if (!form.to.trim() || !form.body.trim()) return;
     setSending(true);
+    setSendError('');
     try {
       await messagesApi.send(form.to.trim(), form.body.trim());
       setForm({ to: '', body: '' });
       reload();
-    } catch {
-      alert('Failed to send message. Please try again.');
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'Failed to send message. Please try again.');
     } finally {
       setSending(false);
     }
@@ -75,6 +77,7 @@ export const EmployerMessagesPage = () => {
           />
           <FormInput label="Message" id="msg-body" required value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} placeholder="Write your message…" />
           <Button type="submit" disabled={sending}>{sending ? 'Sending…' : 'Send'}</Button>
+          {sendError && <div className="message message--error" role="alert">{sendError}</div>}
         </form>
       </Card>
 

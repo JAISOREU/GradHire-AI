@@ -6,17 +6,19 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
+import { useState } from 'react';
 
 export const EmployerManageJobsPage = () => {
   const { data: jobs, loading, reload } = useAsync(() => jobsApi.listForEmployer(), []);
+  const [archiveError, setArchiveError] = useState('');
 
   const handleArchive = async (id: string) => {
+    setArchiveError('');
     try {
       await jobsApi.archive(id);
       reload();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to archive job';
-      alert(message);
+      setArchiveError(err instanceof Error ? err.message : 'Failed to archive job');
     }
   };
 
@@ -29,6 +31,7 @@ export const EmployerManageJobsPage = () => {
       />
 
       <div className="section--mt">
+        {archiveError && <div className="message message--error" role="alert">{archiveError}</div>}
         {loading ? (
           <Skeleton variant="table" lines={5} />
         ) : jobs && jobs.length > 0 ? (

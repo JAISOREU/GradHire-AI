@@ -884,19 +884,22 @@ function ProfileVisibilitySection({ profile, onUpdate }: { profile: Record<strin
 function ResumeSection() {
   const { data: resumes, loading, reload } = useAsync<Resume[]>(() => resumesApi.listMine(), []);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   const handleView = async (id: string) => {
+    setError('');
     try {
       const resume = await resumesApi.getById(id);
       if (resume.fileUrl) {
         window.open(resume.fileUrl, '_blank', 'noopener,noreferrer');
       }
     } catch {
-      alert('Unable to open resume. Please try again.');
+      setError('Unable to open resume. Please try again.');
     }
   };
 
   const handleDownload = async (id: string) => {
+    setError('');
     try {
       const resume = await resumesApi.getById(id);
       if (resume.fileUrl) {
@@ -909,18 +912,19 @@ function ResumeSection() {
         document.body.removeChild(a);
       }
     } catch {
-      alert('Unable to download resume. Please try again.');
+      setError('Unable to download resume. Please try again.');
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this resume? This action cannot be undone.')) return;
     setDeletingId(id);
+    setError('');
     try {
       await resumesApi.delete(id);
       reload();
     } catch {
-      alert('Failed to delete resume. Please try again.');
+      setError('Failed to delete resume. Please try again.');
     } finally {
       setDeletingId(null);
     }
@@ -981,6 +985,7 @@ function ResumeSection() {
           />
         </label>
       </div>
+      {error && <div className="message message--error section--mt" role="alert">{error}</div>}
     </Card>
   );
 }
