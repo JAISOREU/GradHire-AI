@@ -24,6 +24,7 @@ const STATUS_OPTIONS: { value: ApplicationStatus | 'ALL'; label: string }[] = [
   { value: 'ALL', label: 'All' },
   { value: 'SUBMITTED', label: 'New' },
   { value: 'UNDER_REVIEW', label: 'Reviewed' },
+  { value: 'ASSESSMENT', label: 'Assessment' },
   { value: 'SHORTLISTED', label: 'Shortlisted' },
   { value: 'INTERVIEW', label: 'Interview' },
   { value: 'OFFER', label: 'Offer' },
@@ -33,7 +34,8 @@ const STATUS_OPTIONS: { value: ApplicationStatus | 'ALL'; label: string }[] = [
 ];
 
 export const EmployerApplicantsPage = () => {
-  const { data: applicants, loading, reload } = useAsync(() => employersApi.listApplicants(), []);
+  const [jobId, setJobId] = useState('');
+  const { data: applicants, loading, reload } = useAsync(() => employersApi.listApplicants(jobId || undefined), [jobId]);
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'ALL'>('ALL');
   const [search, setSearch] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -75,6 +77,14 @@ export const EmployerApplicantsPage = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         </div>
+        <input
+          type="text"
+          className="input"
+          placeholder="Filter by job ID (optional)"
+          value={jobId}
+          onChange={(e) => setJobId(e.target.value)}
+          style={{ width: '220px' }}
+        />
         <select
           className="select"
           value={statusFilter}
@@ -142,11 +152,13 @@ export const EmployerApplicantsPage = () => {
                         >
                           <option value="">Move stage</option>
                           <option value="UNDER_REVIEW">Review</option>
+                          <option value="ASSESSMENT">Assessment</option>
                           <option value="SHORTLISTED">Shortlist</option>
                           <option value="INTERVIEW">Interview</option>
                           <option value="OFFER">Offer</option>
                           <option value="HIRED">Hire</option>
                           <option value="REJECTED">Reject</option>
+                          <option value="WITHDRAWN">Withdraw</option>
                         </select>
                       </div>
                     </td>

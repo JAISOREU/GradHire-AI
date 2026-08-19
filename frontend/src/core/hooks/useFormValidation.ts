@@ -16,6 +16,7 @@ interface UseFormValidationReturn<T extends Record<string, unknown>> {
   isSubmitting: boolean;
   formError: string;
   setFormError: (error: string) => void;
+  setValues: (values: T | ((prev: T) => T)) => void;
   handleChange: (field: keyof T, value: unknown) => void;
   handleBlur: (field: keyof T) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
@@ -118,5 +119,5 @@ export function useFormValidation<T extends Record<string, unknown>>({
     setFormError('');
   };
 
-  return { values, errors, touched, isSubmitting, formError, setFormError, handleChange, handleBlur, handleSubmit, reset };
+  return { values, errors, touched, isSubmitting, formError, setFormError, setValues, handleChange, handleBlur, handleSubmit, reset };
 }

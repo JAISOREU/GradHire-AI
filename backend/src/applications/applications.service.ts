@@ -337,9 +337,12 @@ export class ApplicationsService {
     return { id: updated.id, status: updated.status };
   }
 
-  async listForEmployer(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async listForEmployer(user: AuthUser, pagination?: PaginationParams, jobId?: string): Promise<PaginatedResponse<Record<string, unknown>>> {
     const { page = 1, limit = 20 } = pagination ?? {};
-    const where = { job: { employerId: user.id } };
+    const where: Record<string, unknown> = { job: { employerId: user.id } };
+    if (jobId) {
+      where.jobId = jobId;
+    }
     const [apps, total] = await Promise.all([
       this.prisma.application.findMany({
         where,

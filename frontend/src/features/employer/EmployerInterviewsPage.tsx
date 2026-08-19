@@ -9,7 +9,7 @@ export const EmployerInterviewsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Interview scheduling</h1>
-      <p className="card__subtitle card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
+      <p className="card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
 
       <div className="list mt-4">
         {loading ? (

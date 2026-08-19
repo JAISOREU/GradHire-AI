@@ -32,7 +32,8 @@ export class ApplicationsController {
   @UseGuards(EmployerGuard)
   async allForEmployer(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
     const pagination = query ? normalizePagination(query) : undefined;
-    return this.applications.listForEmployer(req.user, pagination);
+    const jobId = typeof query?.jobId === 'string' ? query.jobId : undefined;
+    return this.applications.listForEmployer(req.user, pagination, jobId);
   }
 
   @Get(':id')

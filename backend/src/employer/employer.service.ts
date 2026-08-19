@@ -246,11 +246,18 @@ export class EmployerService {
         take: limit,
         include: {
           companyRef: { select: { name: true, industry: true, logo: true } },
+          _count: { select: { applications: true } },
         },
       }),
       this.prisma.job.count({ where }),
     ]);
-    return applyPagination(jobs, total, page, limit);
+
+    const items = jobs.map((job) => ({
+      ...job,
+      applicantCount: (job as any)._count?.applications ?? 0,
+    }));
+
+    return applyPagination(items, total, page, limit);
   }
 
   async getAnalytics(user: AuthUser) {

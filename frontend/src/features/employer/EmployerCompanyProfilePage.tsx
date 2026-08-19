@@ -8,6 +8,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { Progress } from '../../components/Progress';
 
 type Profile = {
+  companyName?: string;
   name?: string;
   industry?: string;
   location?: string;
@@ -30,7 +31,7 @@ export const EmployerCompanyProfilePage = () => {
 
   useEffect(() => {
     if (profile) {
-      setName((profile as Profile).name ?? '');
+      setName((profile as any).companyName ?? (profile as any).name ?? '');
       setIndustry((profile as Profile).industry ?? '');
       setLocation((profile as Profile).location ?? '');
       setDescription((profile as Profile).description ?? '');
@@ -53,8 +54,8 @@ export const EmployerCompanyProfilePage = () => {
     setSubmitting(true);
     setMessage('');
     try {
-      const updated = await employersApi.updateProfile({ name, industry, location, description, website, phone });
-      setMessage(`Saved company profile for ${(updated as Profile).name ?? name}.`);
+      const updated = await employersApi.updateProfile({ companyName: name, industry, location, description, website, phone });
+      setMessage(`Saved company profile for ${(updated as Profile).companyName ?? name}.`);
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to save.');
     } finally {

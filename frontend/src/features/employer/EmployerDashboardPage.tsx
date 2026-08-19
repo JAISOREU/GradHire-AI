@@ -156,7 +156,7 @@ export const EmployerDashboardPage = () => {
                     <td className="font-medium">{job.title}</td>
                     <td className="text-secondary text-sm">{job.location}</td>
                     <td><Badge kind={resolveBadgeKind(job.status)}>{job.status}</Badge></td>
-                    <td className="text-secondary text-sm">{job.publishedAt ? new Date(job.publishedAt).toLocaleDateString() : '—'}</td>
+                    <td className="text-secondary text-sm">{(job as any).applicantCount ?? 0}</td>
                   </tr>
                 ))}
               </tbody>

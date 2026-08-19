@@ -58,6 +58,7 @@ import { EmployerAnalyticsPage } from '../features/employer/EmployerAnalyticsPag
 import { EmployerNotificationsPage } from '../features/employer/EmployerNotificationsPage';
 import { EmployerCompanyProfilePage } from '../features/employer/EmployerCompanyProfilePage';
 import { EmployerSettingsPage } from '../features/employer/EmployerSettingsPage';
+import { EmployerEditJobPage } from '../features/employer/EmployerEditJobPage';
 
 const Page = ({ children }: { children: React.ReactNode }) => <PageTransition>{children}</PageTransition>;
 
@@ -100,6 +101,7 @@ export const AppRoutes = () => (
         <Route path="/employer/dashboard" element={<Page><EmployerDashboardPage /></Page>} />
         <Route path="/employer/account" element={<Page><AccountPage /></Page>} />
         <Route path="/employer/post-job" element={<Page><EmployerPostJobPage /></Page>} />
+        <Route path="/employer/edit-job/:id" element={<Page><EmployerEditJobPage /></Page>} />
         <Route path="/employer/company-profile" element={<Page><EmployerCompanyProfilePage /></Page>} />
         <Route path="/employer/jobs" element={<Page><EmployerManageJobsPage /></Page>} />
         <Route path="/employer/applicants" element={<Page><EmployerApplicantsPage /></Page>} />

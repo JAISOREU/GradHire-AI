@@ -498,7 +498,14 @@ export type StudentSettings = {
 };
 
 export type EmployerSettings = {
+  userId: string;
+  emailNotifications: boolean;
   applicationAlerts: boolean;
+  recommendationAlerts: boolean;
+  messageAlerts: boolean;
+  interviewAlerts: boolean;
+  weeklyDigest: boolean;
+  defaultFocus: string | null;
 };
 
 export type PaginatedResponse<T> = {

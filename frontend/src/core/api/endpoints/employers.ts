@@ -1,14 +1,17 @@
 import { api } from '../client';
-import type { Application, EmployerJob, EmployerSettings, Interview } from '../../types';
+import type { Application, EmployerJob, EmployerProfile, EmployerSettings, Interview } from '../../types';
 
 export const employersApi = {
-  getProfile: () => api<EmployerJob>('/api/v1/employer/profile'),
+  getProfile: () => api<EmployerProfile>('/api/v1/employer/profile'),
   updateProfile: (payload: { companyName?: string; name?: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) =>
-    api<EmployerJob>('/api/v1/employer/profile', { method: 'PUT', json: payload }),
+    api<EmployerProfile>('/api/v1/employer/profile', { method: 'PUT', json: payload }),
   listJobs: (page = 1, limit = 20): Promise<EmployerJob[]> =>
     api<{ items: EmployerJob[] }>(`/api/v1/employer/jobs?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
-  listApplicants: (page = 1, limit = 20): Promise<Application[]> =>
-    api<{ items: Application[] }>(`/api/v1/applications/employer/all?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
+  listApplicants: (jobId?: string, page = 1, limit = 20): Promise<Application[]> => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (jobId) params.set('jobId', jobId);
+    return api<{ items: Application[] }>(`/api/v1/applications/employer/all?${params.toString()}`).then((r) => r.items ?? []);
+  },
 
   listInterviews: async (page = 1, limit = 20): Promise<Interview[]> => {
     try {

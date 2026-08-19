@@ -60,6 +60,7 @@ export const EmployerManageJobsPage = () => {
                     <td>
                       <div className="flex gap-1">
                         <Link to={`/jobs/${job.id}`}><Button variant="ghost" size="sm">View</Button></Link>
+                        <Link to={`/employer/edit-job/${job.id}`}><Button variant="ghost" size="sm">Edit</Button></Link>
                         <Link to={`/employer/applicants?jobId=${job.id}`}><Button variant="ghost" size="sm">Applicants</Button></Link>
                         {job.status !== 'ARCHIVED' && (
                           <Button variant="danger" size="sm" onClick={() => void handleArchive(job.id)}>Archive</Button>
