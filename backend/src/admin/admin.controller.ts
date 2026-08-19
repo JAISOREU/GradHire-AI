@@ -6,6 +6,7 @@ import { AuthUser } from '../auth/auth.service';
 import { Request } from 'express';
 import { PrismaService } from '../prisma.service';
 import { normalizePagination, PaginatedResponse, applyPagination } from '../common/pagination';
+import { Role } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -270,7 +271,7 @@ export class AdminController {
     const bcrypt = await import('bcryptjs');
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
-      data: { email, passwordHash, role },
+      data: { email, passwordHash, role: role as Role },
       select: { id: true, email: true, role: true, createdAt: true },
     });
     return user;
