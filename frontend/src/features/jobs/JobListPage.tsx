@@ -108,7 +108,7 @@ export const JobListPage = () => {
       <section className="section-full">
         <div className="section-inner">
           <div className="card section--mt" style={{ padding: 'var(--space-5)' }}>
-            <div className="filter-bar">
+            <div className="filter-bar" style={{ flexWrap: 'wrap' }}>
               <input
                 className="input"
                 type="search"
@@ -165,7 +165,7 @@ export const JobListPage = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
               <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-                Showing {total} of {total} results
+                Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} results
               </span>
               <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                 <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>

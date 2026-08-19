@@ -23,10 +23,10 @@ export const CompaniesPage = () => {
               <LoadingState label="Loading companies…" />
             ) : companies && companies.length > 0 ? (
               <div className="list">
-                {companies.map((c) => (
+                 {companies.map((c) => (
                   <Link key={c.id} to={`/companies/${encodeURIComponent(c.name)}`} className="list-item card--hover link-reset">
                     <div className="list-item__head">
-                      <div className="list-item__head">
+                      <div>
                         <div>
                           <h3 className="list-item__title">{c.name}</h3>
                           <div className="list-item__meta">

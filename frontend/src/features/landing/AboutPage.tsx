@@ -37,10 +37,10 @@ export const AboutPage = () => (
             <p className="card__subtitle">
               Gradture AI was designed and built by a single developer who believes great tools can come from focused, thoughtful work. Every part of the platform — from the AI matching engine to the responsive interface — was crafted to keep things simple, reliable, and genuinely useful for both talent and employers.
             </p>
-            <p className="card__subtitle mt-3">
-              You can view my background and experience here:{' '}
-              <a href="https://drive.google.com/file/d/1s-B5VpM5q9Xp5vX9xYzZ8w7x6c5v4b3n2m1/view" target="_blank" rel="noreferrer">My CV</a>
-            </p>
+             <p className="card__subtitle mt-3">
+               You can view my background and experience here:{' '}
+               <a href="https://drive.google.com/file/d/1s-B5VpM5q9Xp5vX9xYzZ8w7x6c5v4b3n2m1/view" target="_blank" rel="noopener noreferrer">My CV</a>
+             </p>
           </div>
         </section>
       </div>

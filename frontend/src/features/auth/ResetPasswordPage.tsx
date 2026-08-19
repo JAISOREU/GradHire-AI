@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
@@ -21,6 +21,7 @@ export const ResetPasswordPage = () => {
   const token = searchParams.get('token') || '';
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { values, errors, touched, isSubmitting, formError, handleChange, handleBlur, handleSubmit } = useFormValidation({
     schema: resetPasswordSchema,
     initialValues: { password: '', confirmPassword: '' },
@@ -30,9 +31,17 @@ export const ResetPasswordPage = () => {
       }
       await authApi.resetPassword(token, values.password);
       setSuccess(true);
-      setTimeout(() => navigate('/login', { replace: true }), 2000);
+      timeoutRef.current = setTimeout(() => navigate('/login', { replace: true }), 2000);
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!token) {
     return (

@@ -4,6 +4,7 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi, usersApi } from '../../core/api/endpoints/students';
 import { resumesApi } from '../../core/api/endpoints/resumes';
 import { employersApi } from '../../core/api/endpoints/employers';
+import { Link } from 'react-router-dom';
 import { getRoleLabel } from '../../core/utils/roleLabels';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -1375,11 +1376,11 @@ export const AccountPage = () => {
                 { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' },
                 { to: '/admin/settings', label: 'Settings', icon: 'settings' },
               ].map((item) => (
-                <a key={item.to} href={item.to} className="card card--compact card--hover flex items-center gap-3">
+                <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <Icon name={item.icon as any} size={18} />
                   <span className="text-sm font-medium">{item.label}</span>
                   <Icon name="chevron-right" size={16} className="ml-auto text-muted" />
-                </a>
+                </Link>
               ))}
             </div>
           </Card>

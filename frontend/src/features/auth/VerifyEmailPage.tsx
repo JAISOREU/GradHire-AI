@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { authApi } from '../../core/api/endpoints/auth';
@@ -9,6 +9,7 @@ export const VerifyEmailPage = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     if (!token) {
@@ -21,12 +22,18 @@ export const VerifyEmailPage = () => {
       .then(() => {
         setStatus('success');
         setMessage('Email verified successfully.');
-        setTimeout(() => navigate('/login', { replace: true }), 2000);
+        timeoutRef.current = setTimeout(() => navigate('/login', { replace: true }), 2000);
       })
       .catch(() => {
         setStatus('error');
         setMessage('Invalid or expired verification token.');
       });
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [token, navigate]);
 
   return (

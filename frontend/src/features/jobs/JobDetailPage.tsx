@@ -28,16 +28,18 @@ export const JobDetailPage = () => {
   const { data: job, loading, reload } = useAsync(() => jobsApi.getById(id ?? ''), [id]);
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
+  const [error, setError] = useState('');
 
   const handleApply = async () => {
     if (!user || !id) return;
     setApplying(true);
+    setError('');
     try {
       await applicationsApi.submit({ jobId: id });
       setApplied(true);
       reload();
-    } catch {
-      alert('Failed to submit application. Please try again.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit application. Please try again.');
     } finally {
       setApplying(false);
     }
@@ -131,6 +133,7 @@ export const JobDetailPage = () => {
             <Link to="/login"><Button>Sign in to apply</Button></Link>
           )}
         </div>
+        {error && <div className="message message--error section--mt" role="alert">{error}</div>}
       </div>
 
       {job.description && (
