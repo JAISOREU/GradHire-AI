@@ -62,20 +62,20 @@ export const StudentAiResumeBuilderPage = () => {
             </div>
             {error && <div className="message message--error">{error}</div>}
 
-            {recommendations.length > 0 && (
-              <div className="recommendation-list section--mt">
-                <h3 className="card__title">Suggested roles</h3>
-                {recommendations.map((rec, idx) => (
-                  <div key={`${rec.tag}-${idx}`} className="recommendation-item">
-                    <div className="recommendation-item__icon">{rec.icon}</div>
-                    <div className="recommendation-item__body">
-                      <div className="recommendation-item__title">{rec.tag}</div>
-                      <div className="recommendation-item__tag">{rec.tag} role</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+             {recommendations.length > 0 && (
+               <div className="recommendation-list section--mt">
+                 <h3 className="card__title">Suggested categories</h3>
+                 {recommendations.map((rec, idx) => (
+                   <div key={`${rec.tag}-${idx}`} className="recommendation-item">
+                     <div className="recommendation-item__icon">{rec.icon}</div>
+                     <div className="recommendation-item__body">
+                       <div className="recommendation-item__title">{rec.tag}</div>
+                       <div className="recommendation-item__tag">Explore {rec.tag.toLowerCase()} roles</div>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
           </div>
         </Card>
       </div>

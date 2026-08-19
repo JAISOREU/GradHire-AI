@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -25,6 +26,7 @@ const jobSchema = z.object({
 type JobValues = z.infer<typeof jobSchema>;
 
 export const EmployerPostJobPage = () => {
+  const [success, setSuccess] = useState('');
   const { values, errors, touched, isSubmitting, formError, handleChange, handleBlur, handleSubmit } = useFormValidation({
     schema: jobSchema,
     initialValues: {
@@ -34,7 +36,7 @@ export const EmployerPostJobPage = () => {
       type: 'HIRING' as const,
       experienceLevel: 'ENTRY_LEVEL' as const,
       workplaceType: 'ONSITE' as const,
-      requiredSkills: [''],
+      requiredSkills: [],
       preferredSkills: [],
       description: '',
       responsibilities: '',
@@ -52,11 +54,13 @@ export const EmployerPostJobPage = () => {
       if (payload.salaryMin === undefined || isNaN(Number(payload.salaryMin))) delete payload.salaryMin;
       if (payload.salaryMax === undefined || isNaN(Number(payload.salaryMax))) delete payload.salaryMax;
       await jobsApi.create(payload);
+      setSuccess('Job published successfully.');
     },
   });
 
   const renderList = (field: 'requiredSkills' | 'preferredSkills' | 'benefits', label: string, placeholder: string) => {
     const list = values[field] as string[];
+    const addLabel = field === 'benefits' ? '+ Add benefit' : `+ Add ${label.toLowerCase()}`;
     return (
       <div className="stack">
         {list.map((item, idx) => (
@@ -81,7 +85,7 @@ export const EmployerPostJobPage = () => {
           </div>
         ))}
         <Button variant="ghost" size="sm" type="button" onClick={() => handleChange(field, [...list, ''])}>
-          + Add {label.toLowerCase()}
+          {addLabel}
         </Button>
       </div>
     );
@@ -151,6 +155,7 @@ export const EmployerPostJobPage = () => {
             <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Publishing…' : 'Publish job'}</Button>
           </div>
           {formError && <div className="message message--error" role="alert">{formError}</div>}
+          {success && <div className="message message--success" role="status">{success}</div>}
         </form>
       </div>
     </div>

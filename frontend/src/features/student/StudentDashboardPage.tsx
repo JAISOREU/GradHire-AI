@@ -16,17 +16,17 @@ import type { AiRecommendation } from '../../core/types';
 
 export const StudentDashboardPage = () => {
   const { user } = useAuth();
-  const { data: _jobs, loading: jobsLoading, error: jobsError } = useAsync(() => jobsApi.list(''), []);
-  const { data: profile, error: profileError } = useAsync(() => studentsApi.getProfile(), []);
+  const { data: _jobs, loading: _jobsLoading, error: jobsError } = useAsync(() => jobsApi.list(''), []);
+  const { data: _profile, error: profileError } = useAsync(() => studentsApi.getProfile(), []);
   const { data: applications, loading: appsLoading, error: appsError } = useAsync(() => studentsApi.listApplications(), []);
   const { data: savedJobs } = useAsync(() => savedJobsApi.listMine<{ id: string }>(), []);
-  const { data: recommendationResult } = useAsync(() => recommendationsApi.ai(6), []);
+  const { data: recommendationResult, loading: aiLoading } = useAsync(() => recommendationsApi.ai(6), []);
   const { data: aiReadiness } = useAsync(() => studentsApi.getAiReadiness(), []);
+  const { data: completeness } = useAsync(() => studentsApi.getProfileCompleteness(), []);
 
   const appCount = applications?.length ?? 0;
   const savedCount = savedJobs?.length ?? 0;
-  const focusWords = profile?.focus ? profile.focus.split(' ').filter(Boolean).length : 0;
-  const profileCompletePct = Math.min(100, Math.round((focusWords / 5) * 100));
+  const profileCompletePct = completeness?.percentage ?? 0;
   const hasRecommendationAccess = aiReadiness?.ready ?? false;
   const recommendations = recommendationResult?.recommendations ?? [];
 
@@ -127,7 +127,7 @@ export const StudentDashboardPage = () => {
         className="section--mt"
       >
         {hasRecommendationAccess ? (
-          jobsLoading ? (
+          aiLoading ? (
             <Skeleton variant="table" lines={3} />
           ) : recommendations.length > 0 ? (
             recommendations.slice(0, 3).map((job: AiRecommendation) => (
@@ -138,7 +138,7 @@ export const StudentDashboardPage = () => {
                     <div className="list-item__meta">
                       <span>{job.company || 'Not specified'}</span>
                       <span>{job.location || 'Remote'}</span>
-                      <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
+                      <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}</Badge>
                     </div>
                   </div>
                 </div>
@@ -159,8 +159,8 @@ export const StudentDashboardPage = () => {
                 const link = missingSectionLinks[key];
                 if (!link) return null;
                 return (
-                  <Link key={key} to={link.to} className="btn btn--secondary btn--sm" style={{ alignSelf: 'flex-start' }}>
-                    {link.label}
+                  <Link key={key} to={link.to} style={{ alignSelf: 'flex-start', textDecoration: 'none' }}>
+                    <Button variant="secondary" size="sm">{link.label}</Button>
                   </Link>
                 );
               })}

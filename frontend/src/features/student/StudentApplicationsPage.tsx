@@ -10,17 +10,19 @@ import { useState } from 'react';
 export const StudentApplicationsPage = () => {
   const { data: applications, loading, error, reload } = useAsync(() => studentsApi.listApplications(), []);
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
+  const [withdrawError, setWithdrawError] = useState('');
 
   const handleWithdraw = async (applicationId: string) => {
     if (!window.confirm('Are you sure you want to withdraw this application?')) {
       return;
     }
     setWithdrawingId(applicationId);
+    setWithdrawError('');
     try {
       await studentsApi.withdraw(applicationId);
       reload();
-    } catch {
-      alert('Failed to withdraw application. Please try again.');
+    } catch (err) {
+      setWithdrawError((err as any)?.message ?? 'Failed to withdraw application. Please try again.');
     } finally {
       setWithdrawingId(null);
     }
@@ -32,7 +34,7 @@ export const StudentApplicationsPage = () => {
 
       {error && (
         <div className="message message--error" role="alert">
-          Failed to load applications. <button onClick={reload} className="link">Retry</button>
+          {(error as any)?.message ?? 'Failed to load applications.'} <button onClick={reload} className="link">Retry</button>
         </div>
       )}
 
@@ -41,6 +43,7 @@ export const StudentApplicationsPage = () => {
           <Skeleton variant="table" lines={5} />
         ) : applications && applications.length > 0 ? (
           <div className="list">
+            {withdrawError && <div className="message message--error" role="alert">{withdrawError}</div>}
             {applications.map((app) => (
               <article key={app.id} className="list-item">
                 <div className="list-item__head">

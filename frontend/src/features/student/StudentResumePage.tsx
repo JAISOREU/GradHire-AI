@@ -61,14 +61,19 @@ export const StudentResumePage = () => {
   };
 
   const handleView = (id: string) => {
-    window.open(resumesApi.view(id), '_blank', 'noopener,noreferrer');
+    const url = resumesApi.view(id);
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleDownload = (id: string) => {
+    const url = resumesApi.download(id);
+    if (!url) return;
     const a = document.createElement('a');
-    a.href = resumesApi.download(id);
+    a.href = url;
     a.download = '';
     a.target = '_blank';
+    a.rel = 'noopener noreferrer';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

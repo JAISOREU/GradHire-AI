@@ -7,11 +7,17 @@ import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { PageHeader } from '../../components/PageHeader';
 
 export const StudentSavedJobsPage = () => {
-  const { data: saved, loading } = useAsync(() => savedJobsApi.listMine<{ id: string; job: { id: string; title: string; company: string; location: string; type: string; companyRef?: { name?: string } | null }; savedAt: string }>(), []);
+  const { data: saved, loading, error, reload } = useAsync(() => savedJobsApi.listMine<{ id: string; job: { id: string; title: string; company: string; location: string; type: string; companyRef?: { name?: string } | null }; savedAt: string }>(), []);
 
   return (
     <div className="page fade-in">
       <PageHeader title="Saved jobs" subtitle="Bookmark roles you want to revisit." />
+
+      {error && (
+        <div className="message message--error" role="alert">
+          {(error as any)?.message ?? 'Failed to load saved jobs.'} <button onClick={reload} className="link">Retry</button>
+        </div>
+      )}
 
       <div className="list-container">
         {loading ? (

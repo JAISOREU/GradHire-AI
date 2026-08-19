@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 export const StudentRecommendedJobsPage = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const { data: recommendationResult, loading: aiLoading, reload } = useAsync(() => recommendationsApi.ai(6), []);
+  const { data: recommendationResult, loading: aiLoading, error, reload } = useAsync(() => recommendationsApi.ai(6), []);
 
   const ready = recommendationResult?.ready ?? false;
   const missing = recommendationResult?.missing ?? [];
@@ -31,7 +31,7 @@ export const StudentRecommendedJobsPage = () => {
     title: rec.title,
     company: rec.company || 'Not specified',
     location: rec.location || 'Remote',
-    type: rec.type as 'HIRING' | 'INTERNSHIP',
+    type: rec.type,
     matchScore: Math.round(rec.score * 100),
     description: rec.description,
     matchReasons: rec.matchReasons ?? [],
@@ -68,6 +68,12 @@ export const StudentRecommendedJobsPage = () => {
         }
       />
 
+      {error && (
+        <div className="message message--error" role="alert">
+          {(error as any)?.message ?? 'Failed to load recommendations.'} <button onClick={reload} className="link">Retry</button>
+        </div>
+      )}
+
       {fallback && ready && (
         <div className="alert alert--info" style={{ marginBottom: '1rem' }}>
           Recommendations are based on profile matching. AI enrichment will be applied when available.
@@ -86,7 +92,7 @@ export const StudentRecommendedJobsPage = () => {
                   <div className="list-item__meta">
                     <span>{job.company}</span>
                     <span>{job.location}</span>
-                    <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
+                    <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}</Badge>
                   </div>
                 </div>
                 <div className="match-score" role="progressbar" aria-valuenow={job.matchScore} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${job.matchScore}% match score`} aria-label={`Match score ${job.matchScore}%`}>
@@ -110,11 +116,7 @@ export const StudentRecommendedJobsPage = () => {
           <EmptyState
             icon="✨"
             title="No recommendations yet"
-            text={
-              fallback
-                ? 'We could not find matching roles right now. Try broadening your profile or check back later.'
-                : 'We could not find matching roles right now. Try broadening your profile or check back later.'
-            }
+            text="We could not find matching roles right now. Try broadening your profile or check back later."
             action={
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <Link to="/student/account"><Button size="sm">Update profile</Button></Link>
@@ -136,8 +138,8 @@ export const StudentRecommendedJobsPage = () => {
                 const link = missingSectionLinks[key];
                 if (!link) return null;
                 return (
-                  <Link key={key} to={link.to} className="btn btn--secondary btn--sm" style={{ alignSelf: 'flex-start' }}>
-                    {link.label}
+                  <Link key={key} to={link.to} style={{ alignSelf: 'flex-start', textDecoration: 'none' }}>
+                    <Button variant="secondary" size="sm">{link.label}</Button>
                   </Link>
                 );
               })}

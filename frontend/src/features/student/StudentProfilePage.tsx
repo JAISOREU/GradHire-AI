@@ -28,8 +28,10 @@ export const StudentProfilePage = () => {
     setSubmitting(true);
     setMessage('');
     try {
-      const updated = await studentsApi.updateProfile({ name: name || getRoleLabel('STUDENT'), focus });
-      setMessage(`Saved profile for ${updated.name}.`);
+      const updated = await studentsApi.updateProfile({ name: name.trim() || undefined, focus });
+      setName(updated.name ?? '');
+      setFocus(updated.focus ?? '');
+      setMessage('Profile saved.');
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to save.');
     } finally {

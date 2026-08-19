@@ -7,7 +7,7 @@ import { FormInput } from '../../components/FormField';
 import { PageHeader } from '../../components/PageHeader';
 
 export const StudentSettingsPage = () => {
-  const { data: settings, loading } = useAsync(() => studentsApi.getSettings(), []);
+  const { data: settings, loading, error, reload } = useAsync(() => studentsApi.getSettings(), []);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [applicationAlerts, setApplicationAlerts] = useState(true);
   const [recommendationAlerts, setRecommendationAlerts] = useState(true);
@@ -60,6 +60,12 @@ export const StudentSettingsPage = () => {
     <div className="page fade-in">
       <PageHeader title="Settings" subtitle="Manage your account preferences." />
 
+      {error && (
+        <div className="message message--error" role="alert">
+          {(error as any)?.message ?? 'Failed to load settings.'} <button onClick={reload} className="link">Retry</button>
+        </div>
+      )}
+
       <div className="form-container">
         <Card title="Notification preferences">
           <form onSubmit={handleSubmit} className="stack">
@@ -99,7 +105,7 @@ export const StudentSettingsPage = () => {
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save settings'}</Button>
             </div>
-            {message && <div className="message message--info" role="status">{message}</div>}
+            {message && <div className={`message ${message.includes('Failed') || message.includes('Failed') ? 'message--error' : 'message--info'}`} role="status">{message}</div>}
           </form>
         </Card>
       </div>
