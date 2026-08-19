@@ -972,11 +972,11 @@ function ResumeSection() {
                 const maxSize = 5 * 1024 * 1024;
                 const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
                 if (file.size > maxSize) {
-                  alert('File size must be under 5 MB.');
+                  setError('File size must be under 5 MB.');
                   return;
                 }
                 if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt)$/i)) {
-                  alert('Invalid file type. Please upload PDF, DOCX, or TXT.');
+                  setError('Invalid file type. Please upload PDF, DOCX, or TXT.');
                   return;
                 }
                 resumesApi.upload(file).then(() => reload());
@@ -1076,6 +1076,7 @@ export const AccountPage = () => {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [completeness, setCompleteness] = useState<ProfileCompleteness | null>(null);
   const [aiReadiness, setAiReadiness] = useState<AiReadiness | null>(null);
+  const [avatarError, setAvatarError] = useState('');
 
   const reloadProfile = async () => {
     setProfileLoading(true);
@@ -1196,17 +1197,18 @@ export const AccountPage = () => {
                       const maxSize = 5 * 1024 * 1024;
                       const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
                       if (!allowedTypes.includes(file.type)) {
-                        alert('Invalid file type. Please upload JPEG, PNG, or WebP.');
+                        setAvatarError('Invalid file type. Please upload JPEG, PNG, or WebP.');
                         return;
                       }
                       if (file.size > maxSize) {
-                        alert('File size must be under 5 MB.');
+                        setAvatarError('File size must be under 5 MB.');
                         return;
                       }
+                      setAvatarError('');
                       usersApi.uploadAvatar(file).then(() => {
                         reloadProfile();
                         refreshUser();
-                      }).catch(() => alert('Failed to upload avatar. Please try again.'));
+                      }).catch(() => setAvatarError('Failed to upload avatar. Please try again.'));
                     }
                   }}
                 />
@@ -1220,10 +1222,11 @@ export const AccountPage = () => {
                 </Button>
               )}
             </div>
-            <p className="text-xs text-tertiary mt-2">JPEG, PNG or WebP. Max 5 MB.</p>
-          </div>
+          <p className="text-xs text-tertiary mt-2">JPEG, PNG or WebP. Max 5 MB.</p>
+          {avatarError && <div className="message message--error section--mt" role="alert">{avatarError}</div>}
         </div>
-      </Card>
+      </div>
+    </Card>
 
       {/* Role-specific sections */}
       {role === 'STUDENT' && user?.id && (
