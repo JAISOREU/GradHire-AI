@@ -12,6 +12,8 @@ export const PublicLayout = () => {
   const { user, isAuthenticated } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const mobileNavToggleRef = useRef<HTMLButtonElement>(null);
   const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user?.role);
 
@@ -31,6 +33,45 @@ export const PublicLayout = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileNavOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const drawer = mobileNavRef.current;
+    if (!drawer) return;
+    const focusable = drawer.querySelectorAll<HTMLElement>('a, button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    first.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileNavOpen]);
 
   const headerClassName = [
     'app-header',
@@ -127,6 +168,7 @@ export const PublicLayout = () => {
             onClick={() => setMobileNavOpen((prev) => !prev)}
             aria-label="Toggle navigation"
             aria-expanded={mobileNavOpen}
+            ref={mobileNavToggleRef}
           >
             <Icon name="menu" size={22} />
           </button>
@@ -137,7 +179,7 @@ export const PublicLayout = () => {
             <Link to="/about">About</Link>
           </nav>
           <div className={`public-nav-overlay ${mobileNavOpen ? 'is-open' : ''}`} onClick={() => setMobileNavOpen(false)} aria-hidden="true" />
-          <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`}>
+          <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`} ref={mobileNavRef} role="dialog" aria-modal="true" aria-label="Navigation menu" aria-labelledby="mobile-nav-toggle">
             <Link to="/" onClick={() => setMobileNavOpen(false)}>Home</Link>
             <Link to="/jobs" onClick={() => setMobileNavOpen(false)}>Jobs</Link>
             <Link to="/companies" onClick={() => setMobileNavOpen(false)}>Companies</Link>

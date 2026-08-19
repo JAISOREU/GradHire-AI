@@ -9,9 +9,10 @@ export default defineConfig({
     sourcemap: 'hidden',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-        },
+      manualChunks: {
+        vendor: ['react', 'react-dom', 'react-router-dom'],
+        ui: ['@sentry/react'],
+      },
       },
     },
   },

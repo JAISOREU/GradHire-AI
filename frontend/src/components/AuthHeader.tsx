@@ -22,6 +22,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   const [confirmLogout, setConfirmLogout] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const logoutModalRef = useRef<HTMLDivElement>(null);
   const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user.role as UserRole);
 
@@ -36,6 +37,19 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       if (event.key === 'Escape') {
         setDropdownOpen(false);
       }
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const items = dropdownRef.current?.querySelectorAll<HTMLElement>('.header-dropdown__item');
+        if (!items || items.length === 0) return;
+        const currentIndex = Array.from(items).findIndex((item) => item === document.activeElement);
+        let nextIndex: number;
+        if (event.key === 'ArrowDown') {
+          nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        } else {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        }
+        items[nextIndex].focus();
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleKeyDown);
@@ -44,6 +58,37 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownOpen]);
+
+  useEffect(() => {
+    if (!confirmLogout) return;
+    const modal = logoutModalRef.current;
+    if (!modal) return;
+    const focusable = modal.querySelectorAll<HTMLElement>('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setConfirmLogout(false);
+      }
+      if (event.key === 'Tab') {
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    first.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [confirmLogout]);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -210,23 +255,23 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
             >
               <Avatar src={user.avatarUrl} name={displayName} size="sm" />
             </button>
-            <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="list">
-              <Link to={homeRoute} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
+            <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="menu">
+              <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
                 <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
                 <span>Dashboard</span>
               </Link>
-              <Link to="/" className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
+              <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
                 <span aria-hidden="true"><Icon name="home" size={18} /></span>
                 <span>Home</span>
               </Link>
               {roleMenuItems.map((item) => (
-                <Link key={item.to} to={item.to} className="header-dropdown__item" role="listitem" onClick={() => setDropdownOpen(false)}>
+                <Link key={item.to} to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
                   {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
                   <span>{item.label}</span>
                 </Link>
               ))}
               <div className="header-dropdown__separator" role="separator" />
-              <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={() => setConfirmLogout(true)} role="listitem">
+              <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={() => setConfirmLogout(true)} role="menuitem" tabIndex={dropdownOpen ? 0 : -1}>
                 <span>Log out</span>
               </button>
             </div>
@@ -235,9 +280,9 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       </div>
 
       {confirmLogout && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm logout">
-          <div className="modal">
-            <h3 className="card__title">Log out?</h3>
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title" aria-label="Confirm logout">
+          <div className="modal" ref={logoutModalRef}>
+            <h3 id="logout-modal-title" className="card__title">Log out?</h3>
             <p className="card__subtitle">You will need to sign in again to access your dashboard.</p>
             <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-5)' }}>
               <Button variant="secondary" onClick={() => setConfirmLogout(false)}>Cancel</Button>

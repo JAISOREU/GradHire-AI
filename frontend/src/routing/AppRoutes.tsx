@@ -1,149 +1,158 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PublicLayout } from '../layouts/PublicLayout';
 import { StudentLayout } from '../layouts/StudentLayout';
 import { EmployerLayout } from '../layouts/EmployerLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PageTransition } from '../components/PageTransition';
-import { HomePage } from '../features/landing/HomePage';
-import { AboutPage } from '../features/landing/AboutPage';
-import { CompaniesPage } from '../features/landing/CompaniesPage';
-import { CompanyDetailPage } from '../features/landing/CompanyDetailPage';
-import { NotFoundPage } from '../features/landing/NotFoundPage';
-import { AdminDashboardPage } from '../features/admin/AdminDashboardPage';
-import { AdminUsersPage } from '../features/admin/AdminUsersPage';
-import { AdminJobsPage } from '../features/admin/AdminJobsPage';
-import { AdminApplicationsPage } from '../features/admin/AdminApplicationsPage';
-import { AdminCompaniesPage } from '../features/admin/AdminCompaniesPage';
-import { AdminReportsPage } from '../features/admin/AdminReportsPage';
-import { AdminAnalyticsPage } from '../features/admin/AdminAnalyticsPage';
-import { AdminAiMonitoringPage } from '../features/admin/AdminAiMonitoringPage';
-import { AdminNotificationsPage } from '../features/admin/AdminNotificationsPage';
-import { AdminAuditLogsPage } from '../features/admin/AdminAuditLogsPage';
-import { AdminSettingsPage } from '../features/admin/AdminSettingsPage';
-import { AdminDatabasePage } from '../features/admin/AdminDatabasePage';
-import { AdminApiKeysPage } from '../features/admin/AdminApiKeysPage';
-import { AdminEmailTemplatesPage } from '../features/admin/AdminEmailTemplatesPage';
-import { AdminCmsPage } from '../features/admin/AdminCmsPage';
-import { AdminFeatureFlagsPage } from '../features/admin/AdminFeatureFlagsPage';
-import { AdminBackupsPage } from '../features/admin/AdminBackupsPage';
-import { AdminSecurityPage } from '../features/admin/AdminSecurityPage';
-import { AdminDeveloperToolsPage } from '../features/admin/AdminDeveloperToolsPage';
-import { AdminJobSourcesPage } from '../features/admin/AdminJobSourcesPage';
-import { AdminJobSourceRunsPage } from '../features/admin/AdminJobSourceRunsPage';
-import { AdminLayout } from '../layouts/AdminLayout';
-import { AccountPage } from '../features/account/AccountPage';
-import { JobListPage } from '../features/jobs/JobListPage';
-import { JobDetailPage } from '../features/jobs/JobDetailPage';
-import { LoginPage } from '../features/auth/LoginPage';
-import { RegisterPage } from '../features/auth/RegisterPage';
-import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage';
-import { ResetPasswordPage } from '../features/auth/ResetPasswordPage';
-import { VerifyEmailPage } from '../features/auth/VerifyEmailPage';
-import { StudentDashboardPage } from '../features/student/StudentDashboardPage';
-import { StudentResumePage } from '../features/student/StudentResumePage';
-import { StudentApplicationsPage } from '../features/student/StudentApplicationsPage';
-import { StudentSavedJobsPage } from '../features/student/StudentSavedJobsPage';
-import { StudentAiResumeBuilderPage } from '../features/student/StudentAiResumeBuilderPage';
-import { StudentRecommendedJobsPage } from '../features/student/StudentRecommendedJobsPage';
-import { StudentNotificationsPage } from '../features/student/StudentNotificationsPage';
-import { StudentMessagesPage } from '../features/student/StudentMessagesPage';
-import { StudentSettingsPage } from '../features/student/StudentSettingsPage';
-import { StudentInterviewsPage } from '../features/student/StudentInterviewsPage';
-import { EmployerDashboardPage } from '../features/employer/EmployerDashboardPage';
-import { EmployerPostJobPage } from '../features/employer/EmployerPostJobPage';
-import { EmployerManageJobsPage } from '../features/employer/EmployerManageJobsPage';
-import { EmployerApplicantsPage } from '../features/employer/EmployerApplicantsPage';
-import { EmployerInterviewsPage } from '../features/employer/EmployerInterviewsPage';
-import { EmployerMessagesPage } from '../features/employer/EmployerMessagesPage';
-import { EmployerAnalyticsPage } from '../features/employer/EmployerAnalyticsPage';
-import { EmployerNotificationsPage } from '../features/employer/EmployerNotificationsPage';
-import { EmployerCompanyProfilePage } from '../features/employer/EmployerCompanyProfilePage';
-import { EmployerSettingsPage } from '../features/employer/EmployerSettingsPage';
-import { EmployerEditJobPage } from '../features/employer/EmployerEditJobPage';
+import { LoadingState } from '../components/LoadingState';
+
+const HomePage = lazy(() => import('../features/landing/HomePage').then((m) => ({ default: m.HomePage })));
+const AboutPage = lazy(() => import('../features/landing/AboutPage').then((m) => ({ default: m.AboutPage })));
+const CompaniesPage = lazy(() => import('../features/landing/CompaniesPage').then((m) => ({ default: m.CompaniesPage })));
+const CompanyDetailPage = lazy(() => import('../features/landing/CompanyDetailPage').then((m) => ({ default: m.CompanyDetailPage })));
+const NotFoundPage = lazy(() => import('../features/landing/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
+const AdminDashboardPage = lazy(() => import('../features/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })));
+const AdminUsersPage = lazy(() => import('../features/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
+const AdminJobsPage = lazy(() => import('../features/admin/AdminJobsPage').then((m) => ({ default: m.AdminJobsPage })));
+const AdminApplicationsPage = lazy(() => import('../features/admin/AdminApplicationsPage').then((m) => ({ default: m.AdminApplicationsPage })));
+const AdminCompaniesPage = lazy(() => import('../features/admin/AdminCompaniesPage').then((m) => ({ default: m.AdminCompaniesPage })));
+const AdminReportsPage = lazy(() => import('../features/admin/AdminReportsPage').then((m) => ({ default: m.AdminReportsPage })));
+const AdminAnalyticsPage = lazy(() => import('../features/admin/AdminAnalyticsPage').then((m) => ({ default: m.AdminAnalyticsPage })));
+const AdminAiMonitoringPage = lazy(() => import('../features/admin/AdminAiMonitoringPage').then((m) => ({ default: m.AdminAiMonitoringPage })));
+const AdminNotificationsPage = lazy(() => import('../features/admin/AdminNotificationsPage').then((m) => ({ default: m.AdminNotificationsPage })));
+const AdminAuditLogsPage = lazy(() => import('../features/admin/AdminAuditLogsPage').then((m) => ({ default: m.AdminAuditLogsPage })));
+const AdminSettingsPage = lazy(() => import('../features/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })));
+const AdminDatabasePage = lazy(() => import('../features/admin/AdminDatabasePage').then((m) => ({ default: m.AdminDatabasePage })));
+const AdminApiKeysPage = lazy(() => import('../features/admin/AdminApiKeysPage').then((m) => ({ default: m.AdminApiKeysPage })));
+const AdminEmailTemplatesPage = lazy(() => import('../features/admin/AdminEmailTemplatesPage').then((m) => ({ default: m.AdminEmailTemplatesPage })));
+const AdminCmsPage = lazy(() => import('../features/admin/AdminCmsPage').then((m) => ({ default: m.AdminCmsPage })));
+const AdminFeatureFlagsPage = lazy(() => import('../features/admin/AdminFeatureFlagsPage').then((m) => ({ default: m.AdminFeatureFlagsPage })));
+const AdminBackupsPage = lazy(() => import('../features/admin/AdminBackupsPage').then((m) => ({ default: m.AdminBackupsPage })));
+const AdminSecurityPage = lazy(() => import('../features/admin/AdminSecurityPage').then((m) => ({ default: m.AdminSecurityPage })));
+const AdminDeveloperToolsPage = lazy(() => import('../features/admin/AdminDeveloperToolsPage').then((m) => ({ default: m.AdminDeveloperToolsPage })));
+const AdminJobSourcesPage = lazy(() => import('../features/admin/AdminJobSourcesPage').then((m) => ({ default: m.AdminJobSourcesPage })));
+const AdminJobSourceRunsPage = lazy(() => import('../features/admin/AdminJobSourceRunsPage').then((m) => ({ default: m.AdminJobSourceRunsPage })));
+const AdminLayout = lazy(() => import('../layouts/AdminLayout').then((m) => ({ default: m.AdminLayout })));
+const AccountPage = lazy(() => import('../features/account/AccountPage').then((m) => ({ default: m.AccountPage })));
+const JobListPage = lazy(() => import('../features/jobs/JobListPage').then((m) => ({ default: m.JobListPage })));
+const JobDetailPage = lazy(() => import('../features/jobs/JobDetailPage').then((m) => ({ default: m.JobDetailPage })));
+const LoginPage = lazy(() => import('../features/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import('../features/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })));
+const ForgotPasswordPage = lazy(() => import('../features/auth/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = lazy(() => import('../features/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
+const VerifyEmailPage = lazy(() => import('../features/auth/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
+const StudentDashboardPage = lazy(() => import('../features/student/StudentDashboardPage').then((m) => ({ default: m.StudentDashboardPage })));
+const StudentResumePage = lazy(() => import('../features/student/StudentResumePage').then((m) => ({ default: m.StudentResumePage })));
+const StudentApplicationsPage = lazy(() => import('../features/student/StudentApplicationsPage').then((m) => ({ default: m.StudentApplicationsPage })));
+const StudentSavedJobsPage = lazy(() => import('../features/student/StudentSavedJobsPage').then((m) => ({ default: m.StudentSavedJobsPage })));
+const StudentAiResumeBuilderPage = lazy(() => import('../features/student/StudentAiResumeBuilderPage').then((m) => ({ default: m.StudentAiResumeBuilderPage })));
+const StudentRecommendedJobsPage = lazy(() => import('../features/student/StudentRecommendedJobsPage').then((m) => ({ default: m.StudentRecommendedJobsPage })));
+const StudentNotificationsPage = lazy(() => import('../features/student/StudentNotificationsPage').then((m) => ({ default: m.StudentNotificationsPage })));
+const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
+const StudentSettingsPage = lazy(() => import('../features/student/StudentSettingsPage').then((m) => ({ default: m.StudentSettingsPage })));
+const StudentInterviewsPage = lazy(() => import('../features/student/StudentInterviewsPage').then((m) => ({ default: m.StudentInterviewsPage })));
+const EmployerDashboardPage = lazy(() => import('../features/employer/EmployerDashboardPage').then((m) => ({ default: m.EmployerDashboardPage })));
+const EmployerPostJobPage = lazy(() => import('../features/employer/EmployerPostJobPage').then((m) => ({ default: m.EmployerPostJobPage })));
+const EmployerManageJobsPage = lazy(() => import('../features/employer/EmployerManageJobsPage').then((m) => ({ default: m.EmployerManageJobsPage })));
+const EmployerApplicantsPage = lazy(() => import('../features/employer/EmployerApplicantsPage').then((m) => ({ default: m.EmployerApplicantsPage })));
+const EmployerInterviewsPage = lazy(() => import('../features/employer/EmployerInterviewsPage').then((m) => ({ default: m.EmployerInterviewsPage })));
+const EmployerMessagesPage = lazy(() => import('../features/employer/EmployerMessagesPage').then((m) => ({ default: m.EmployerMessagesPage })));
+const EmployerAnalyticsPage = lazy(() => import('../features/employer/EmployerAnalyticsPage').then((m) => ({ default: m.EmployerAnalyticsPage })));
+const EmployerNotificationsPage = lazy(() => import('../features/employer/EmployerNotificationsPage').then((m) => ({ default: m.EmployerNotificationsPage })));
+const EmployerCompanyProfilePage = lazy(() => import('../features/employer/EmployerCompanyProfilePage').then((m) => ({ default: m.EmployerCompanyProfilePage })));
+const EmployerSettingsPage = lazy(() => import('../features/employer/EmployerSettingsPage').then((m) => ({ default: m.EmployerSettingsPage })));
+const EmployerEditJobPage = lazy(() => import('../features/employer/EmployerEditJobPage').then((m) => ({ default: m.EmployerEditJobPage })));
 
 const Page = ({ children }: { children: React.ReactNode }) => <PageTransition>{children}</PageTransition>;
+
+const LazyPage = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<LoadingState label="Loading…" />}>
+    {children}
+  </Suspense>
+);
 
 export const AppRoutes = () => (
   <Routes>
     {/* Public */}
     <Route element={<PublicLayout />}>
-      <Route path="/" element={<Page><HomePage /></Page>} />
-      <Route path="/about" element={<Page><AboutPage /></Page>} />
-      <Route path="/jobs" element={<Page><JobListPage /></Page>} />
-      <Route path="/jobs/:id" element={<Page><JobDetailPage /></Page>} />
-      <Route path="/companies" element={<Page><CompaniesPage /></Page>} />
-      <Route path="/companies/:id" element={<Page><CompanyDetailPage /></Page>} />
-      <Route path="/login" element={<Page><LoginPage /></Page>} />
-      <Route path="/register" element={<Page><RegisterPage /></Page>} />
-      <Route path="/forgot-password" element={<Page><ForgotPasswordPage /></Page>} />
-      <Route path="/reset-password" element={<Page><ResetPasswordPage /></Page>} />
-      <Route path="/verify-email" element={<Page><VerifyEmailPage /></Page>} />
+      <Route path="/" element={<LazyPage><Page><HomePage /></Page></LazyPage>} />
+      <Route path="/about" element={<LazyPage><Page><AboutPage /></Page></LazyPage>} />
+      <Route path="/jobs" element={<LazyPage><Page><JobListPage /></Page></LazyPage>} />
+      <Route path="/jobs/:id" element={<LazyPage><Page><JobDetailPage /></Page></LazyPage>} />
+      <Route path="/companies" element={<LazyPage><Page><CompaniesPage /></Page></LazyPage>} />
+      <Route path="/companies/:id" element={<LazyPage><Page><CompanyDetailPage /></Page></LazyPage>} />
+      <Route path="/login" element={<LazyPage><Page><LoginPage /></Page></LazyPage>} />
+      <Route path="/register" element={<LazyPage><Page><RegisterPage /></Page></LazyPage>} />
+      <Route path="/forgot-password" element={<LazyPage><Page><ForgotPasswordPage /></Page></LazyPage>} />
+      <Route path="/reset-password" element={<LazyPage><Page><ResetPasswordPage /></Page></LazyPage>} />
+      <Route path="/verify-email" element={<LazyPage><Page><VerifyEmailPage /></Page></LazyPage>} />
     </Route>
 
     {/* Student (protected) */}
     <Route element={<ProtectedRoute role="STUDENT" />}>
       <Route element={<StudentLayout />}>
-        <Route path="/student/dashboard" element={<Page><StudentDashboardPage /></Page>} />
-        <Route path="/student/account" element={<Page><AccountPage /></Page>} />
-        <Route path="/student/resume" element={<Page><StudentResumePage /></Page>} />
-        <Route path="/student/applications" element={<Page><StudentApplicationsPage /></Page>} />
-        <Route path="/student/saved" element={<Page><StudentSavedJobsPage /></Page>} />
-        <Route path="/student/ai-resume-builder" element={<Page><StudentAiResumeBuilderPage /></Page>} />
-        <Route path="/student/recommended" element={<Page><StudentRecommendedJobsPage /></Page>} />
-        <Route path="/student/notifications" element={<Page><StudentNotificationsPage /></Page>} />
-        <Route path="/student/messages" element={<Page><StudentMessagesPage /></Page>} />
-        <Route path="/student/interviews" element={<Page><StudentInterviewsPage /></Page>} />
-        <Route path="/student/settings" element={<Page><StudentSettingsPage /></Page>} />
+        <Route path="/student/dashboard" element={<LazyPage><Page><StudentDashboardPage /></Page></LazyPage>} />
+        <Route path="/student/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
+        <Route path="/student/resume" element={<LazyPage><Page><StudentResumePage /></Page></LazyPage>} />
+        <Route path="/student/applications" element={<LazyPage><Page><StudentApplicationsPage /></Page></LazyPage>} />
+        <Route path="/student/saved" element={<LazyPage><Page><StudentSavedJobsPage /></Page></LazyPage>} />
+        <Route path="/student/ai-resume-builder" element={<LazyPage><Page><StudentAiResumeBuilderPage /></Page></LazyPage>} />
+        <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
+        <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
+        <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
+        <Route path="/student/interviews" element={<LazyPage><Page><StudentInterviewsPage /></Page></LazyPage>} />
+        <Route path="/student/settings" element={<LazyPage><Page><StudentSettingsPage /></Page></LazyPage>} />
       </Route>
     </Route>
 
     {/* Employer (protected) */}
     <Route element={<ProtectedRoute role="EMPLOYER" />}>
       <Route element={<EmployerLayout />}>
-        <Route path="/employer/dashboard" element={<Page><EmployerDashboardPage /></Page>} />
-        <Route path="/employer/account" element={<Page><AccountPage /></Page>} />
-        <Route path="/employer/post-job" element={<Page><EmployerPostJobPage /></Page>} />
-        <Route path="/employer/edit-job/:id" element={<Page><EmployerEditJobPage /></Page>} />
-        <Route path="/employer/company-profile" element={<Page><EmployerCompanyProfilePage /></Page>} />
-        <Route path="/employer/jobs" element={<Page><EmployerManageJobsPage /></Page>} />
-        <Route path="/employer/applicants" element={<Page><EmployerApplicantsPage /></Page>} />
-        <Route path="/employer/interviews" element={<Page><EmployerInterviewsPage /></Page>} />
-        <Route path="/employer/messages" element={<Page><EmployerMessagesPage /></Page>} />
-        <Route path="/employer/analytics" element={<Page><EmployerAnalyticsPage /></Page>} />
-        <Route path="/employer/notifications" element={<Page><EmployerNotificationsPage /></Page>} />
-        <Route path="/employer/settings" element={<Page><EmployerSettingsPage /></Page>} />
+        <Route path="/employer/dashboard" element={<LazyPage><Page><EmployerDashboardPage /></Page></LazyPage>} />
+        <Route path="/employer/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
+        <Route path="/employer/post-job" element={<LazyPage><Page><EmployerPostJobPage /></Page></LazyPage>} />
+        <Route path="/employer/edit-job/:id" element={<LazyPage><Page><EmployerEditJobPage /></Page></LazyPage>} />
+        <Route path="/employer/company-profile" element={<LazyPage><Page><EmployerCompanyProfilePage /></Page></LazyPage>} />
+        <Route path="/employer/jobs" element={<LazyPage><Page><EmployerManageJobsPage /></Page></LazyPage>} />
+        <Route path="/employer/applicants" element={<LazyPage><Page><EmployerApplicantsPage /></Page></LazyPage>} />
+        <Route path="/employer/interviews" element={<LazyPage><Page><EmployerInterviewsPage /></Page></LazyPage>} />
+        <Route path="/employer/messages" element={<LazyPage><Page><EmployerMessagesPage /></Page></LazyPage>} />
+        <Route path="/employer/analytics" element={<LazyPage><Page><EmployerAnalyticsPage /></Page></LazyPage>} />
+        <Route path="/employer/notifications" element={<LazyPage><Page><EmployerNotificationsPage /></Page></LazyPage>} />
+        <Route path="/employer/settings" element={<LazyPage><Page><EmployerSettingsPage /></Page></LazyPage>} />
       </Route>
     </Route>
 
     {/* Admin (hidden) */}
     <Route element={<ProtectedRoute role="ADMIN" />}>
       <Route element={<AdminLayout />}>
-        <Route path="/admin/dashboard" element={<Page><AdminDashboardPage /></Page>} />
-        <Route path="/admin/account" element={<Page><AccountPage /></Page>} />
-        <Route path="/admin/users" element={<Page><AdminUsersPage /></Page>} />
-        <Route path="/admin/jobs" element={<Page><AdminJobsPage /></Page>} />
-        <Route path="/admin/applications" element={<Page><AdminApplicationsPage /></Page>} />
-        <Route path="/admin/companies" element={<Page><AdminCompaniesPage /></Page>} />
-        <Route path="/admin/reports" element={<Page><AdminReportsPage /></Page>} />
-        <Route path="/admin/analytics" element={<Page><AdminAnalyticsPage /></Page>} />
-        <Route path="/admin/ai-monitoring" element={<Page><AdminAiMonitoringPage /></Page>} />
-        <Route path="/admin/notifications" element={<Page><AdminNotificationsPage /></Page>} />
-        <Route path="/admin/audit-logs" element={<Page><AdminAuditLogsPage /></Page>} />
-        <Route path="/admin/settings" element={<Page><AdminSettingsPage /></Page>} />
-        <Route path="/admin/database" element={<Page><AdminDatabasePage /></Page>} />
-        <Route path="/admin/api-keys" element={<Page><AdminApiKeysPage /></Page>} />
-        <Route path="/admin/email-templates" element={<Page><AdminEmailTemplatesPage /></Page>} />
-        <Route path="/admin/cms" element={<Page><AdminCmsPage /></Page>} />
-        <Route path="/admin/feature-flags" element={<Page><AdminFeatureFlagsPage /></Page>} />
-        <Route path="/admin/backups" element={<Page><AdminBackupsPage /></Page>} />
-        <Route path="/admin/security" element={<Page><AdminSecurityPage /></Page>} />
-        <Route path="/admin/developer-tools" element={<Page><AdminDeveloperToolsPage /></Page>} />
-        <Route path="/admin/job-sources" element={<Page><AdminJobSourcesPage /></Page>} />
-        <Route path="/admin/job-sources/:id/runs" element={<Page><AdminJobSourceRunsPage /></Page>} />
+        <Route path="/admin/dashboard" element={<LazyPage><Page><AdminDashboardPage /></Page></LazyPage>} />
+        <Route path="/admin/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
+        <Route path="/admin/users" element={<LazyPage><Page><AdminUsersPage /></Page></LazyPage>} />
+        <Route path="/admin/jobs" element={<LazyPage><Page><AdminJobsPage /></Page></LazyPage>} />
+        <Route path="/admin/applications" element={<LazyPage><Page><AdminApplicationsPage /></Page></LazyPage>} />
+        <Route path="/admin/companies" element={<LazyPage><Page><AdminCompaniesPage /></Page></LazyPage>} />
+        <Route path="/admin/reports" element={<LazyPage><Page><AdminReportsPage /></Page></LazyPage>} />
+        <Route path="/admin/analytics" element={<LazyPage><Page><AdminAnalyticsPage /></Page></LazyPage>} />
+        <Route path="/admin/ai-monitoring" element={<LazyPage><Page><AdminAiMonitoringPage /></Page></LazyPage>} />
+        <Route path="/admin/notifications" element={<LazyPage><Page><AdminNotificationsPage /></Page></LazyPage>} />
+        <Route path="/admin/audit-logs" element={<LazyPage><Page><AdminAuditLogsPage /></Page></LazyPage>} />
+        <Route path="/admin/settings" element={<LazyPage><Page><AdminSettingsPage /></Page></LazyPage>} />
+        <Route path="/admin/database" element={<LazyPage><Page><AdminDatabasePage /></Page></LazyPage>} />
+        <Route path="/admin/api-keys" element={<LazyPage><Page><AdminApiKeysPage /></Page></LazyPage>} />
+        <Route path="/admin/email-templates" element={<LazyPage><Page><AdminEmailTemplatesPage /></Page></LazyPage>} />
+        <Route path="/admin/cms" element={<LazyPage><Page><AdminCmsPage /></Page></LazyPage>} />
+        <Route path="/admin/feature-flags" element={<LazyPage><Page><AdminFeatureFlagsPage /></Page></LazyPage>} />
+        <Route path="/admin/backups" element={<LazyPage><Page><AdminBackupsPage /></Page></LazyPage>} />
+        <Route path="/admin/security" element={<LazyPage><Page><AdminSecurityPage /></Page></LazyPage>} />
+        <Route path="/admin/developer-tools" element={<LazyPage><Page><AdminDeveloperToolsPage /></Page></LazyPage>} />
+        <Route path="/admin/job-sources" element={<LazyPage><Page><AdminJobSourcesPage /></Page></LazyPage>} />
+        <Route path="/admin/job-sources/:id/runs" element={<LazyPage><Page><AdminJobSourceRunsPage /></Page></LazyPage>} />
       </Route>
     </Route>
 
     {/* Fallback */}
-    <Route path="*" element={<Page><NotFoundPage /></Page>} />
+    <Route path="*" element={<LazyPage><Page><NotFoundPage /></Page></LazyPage>} />
   </Routes>
 );
