@@ -22,6 +22,7 @@ export const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<UserRole>('STUDENT');
+  const [showPassword, setShowPassword] = useState(false);
   const { values, errors, touched, isSubmitting, formError, handleChange, handleBlur, handleSubmit } = useFormValidation({
     schema: registerSchema,
     initialValues: { email: '', password: '', name: '', role: 'STUDENT' },
@@ -51,7 +52,12 @@ export const RegisterPage = () => {
           </div>
            <FormInput label="Name (optional)" id="reg-name" value={values.name} onChange={(e) => handleChange('name', e.target.value.trim())} onBlur={() => handleBlur('name')} placeholder="Your name" error={touched.name ? errors.name : undefined} />
            <FormInput label="Email" id="reg-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
-           <FormInput label="Password" id="reg-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="At least 8 characters" hint="Use at least 8 characters" error={touched.password ? errors.password : undefined} />
+           <div style={{ position: 'relative' }}>
+             <FormInput label="Password" id="reg-password" type={showPassword ? 'text' : 'password'} required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="At least 8 characters" hint="Use at least 8 characters" error={touched.password ? errors.password : undefined} />
+             <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '1.75rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+               {showPassword ? 'Hide' : 'Show'}
+             </button>
+           </div>
           {formError && <div className="message message--error" role="alert">{formError}</div>}
           <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Creating…' : 'Create account'}</Button>
         </form>

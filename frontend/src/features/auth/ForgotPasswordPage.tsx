@@ -31,7 +31,7 @@ export const ForgotPasswordPage = () => {
           <p className="card__subtitle">Enter your email and we will send you a reset link.</p>
         </div>
         {sent ? (
-          <p className="message message--success">If an account exists, a reset email will be sent.</p>
+          <p className="message message--success">If an account exists, a reset email will be sent. Please check your inbox and spam/junk folder.</p>
         ) : (
           <form onSubmit={handleSubmit} className="stack mt-4">
             <FormInput label="Email" id="forgot-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
