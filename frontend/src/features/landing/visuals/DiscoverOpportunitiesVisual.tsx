@@ -20,18 +20,18 @@ export const DiscoverOpportunitiesVisual = () => {
         <circle cx="210" cy="150" r="140" fill="url(#discover-glow)" opacity="0.5" className="disc-glow" />
 
         <g className="disc-panel">
-          <rect x="50" y="30" width="320" height="240" rx="14" fill="url(#discover-panel)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="50" y="30" width="320" height="240" rx="14" fill="url(#discover-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
         </g>
 
         <g className="disc-search">
-          <rect x="70" y="50" width="280" height="32" rx="8" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="70" y="50" width="280" height="32" rx="8" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="88" cy="66" r="5" stroke="var(--color-text-muted)" strokeWidth="1.5" fill="none" />
           <line x1="91" y1="69" x2="96" y2="74" stroke="var(--color-text-muted)" strokeWidth="1.5" strokeLinecap="round" />
           <text x="110" y="70" fill="var(--color-text-muted)" fontSize="10">Search opportunities...</text>
         </g>
 
         <g className="disc-filter">
-          <rect x="70" y="92" width="60" height="24" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <rect x="70" y="92" width="60" height="24" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
           <text x="100" y="108" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Remote</text>
           <rect x="136" y="92" width="60" height="24" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border)" strokeWidth="1" />
           <text x="166" y="108" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Full-time</text>
@@ -44,17 +44,17 @@ export const DiscoverOpportunitiesVisual = () => {
           <circle cx="94" cy="149" r="8" fill="var(--color-border)" />
           <text x="114" y="145" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Software Engineer</text>
           <text x="114" y="159" fill="var(--color-text-muted)" fontSize="9">Remote · Full-time</text>
-          <rect x="306" y="141" width="24" height="14" rx="4" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <rect x="306" y="141" width="24" height="14" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
           <text x="318" y="151" textAnchor="middle" fill="var(--color-primary)" fontSize="8" fontWeight="700">95%</text>
         </g>
 
         <g className="disc-card disc-card--2">
-          <rect x="70" y="180" width="280" height="42" rx="10" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <rect x="70" y="180" width="280" height="42" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
           <circle cx="94" cy="201" r="8" fill="var(--color-primary)" />
           <text x="114" y="197" fill="var(--color-primary)" fontSize="10" fontWeight="700">Data Analyst</text>
           <text x="114" y="211" fill="var(--color-text-muted)" fontSize="9">Hybrid · Full-time</text>
           <rect x="306" y="193" width="24" height="14" rx="4" fill="var(--color-primary)" />
-          <text x="318" y="203" textAnchor="middle" fill="var(--color-primary-text)" fontSize="8" fontWeight="700">92%</text>
+          <text x="318" y="203" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
         </g>
 
         <g className="disc-card disc-card--3">
@@ -93,3 +93,4 @@ export const DiscoverOpportunitiesVisual = () => {
     </div>
   );
 };
+

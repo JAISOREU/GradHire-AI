@@ -18,25 +18,25 @@ export const PrivacyFirstVisual = () => {
         </defs>
 
         <g className="priv-data priv-data--1">
-          <rect x="50" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="50" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="72" cy="73" r="3" fill="var(--color-success)" />
           <text x="90" y="77" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Profile</text>
         </g>
 
         <g className="priv-data priv-data--2">
-          <rect x="270" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="270" y="60" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="292" cy="73" r="3" fill="var(--color-success)" />
           <text x="310" y="77" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Resume</text>
         </g>
 
         <g className="priv-data priv-data--3">
-          <rect x="50" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="50" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="72" cy="193" r="3" fill="var(--color-success)" />
           <text x="90" y="197" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Messages</text>
         </g>
 
         <g className="priv-data priv-data--4">
-          <rect x="270" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="270" y="180" width="80" height="26" rx="6" fill="url(#data-chip)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="292" cy="193" r="3" fill="var(--color-success)" />
           <text x="310" y="197" textAnchor="start" fill="var(--color-text-secondary)" fontSize="10" fontWeight="500">Applications</text>
         </g>
@@ -45,7 +45,7 @@ export const PrivacyFirstVisual = () => {
           <circle cx="210" cy="140" r="44" fill="url(#shield-glow)" opacity="0.5" />
           <circle cx="210" cy="140" r="36" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" />
           <rect x="172" y="104" width="76" height="72" rx="16" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <path d="M 196 126 L 210 116 L 224 126 L 224 152 L 196 152 Z" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <path d="M 196 126 L 210 116 L 224 126 L 224 152 L 196 152 Z" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
           <circle cx="210" cy="136" r="5" fill="var(--color-primary)" />
           <text x="210" y="168" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Protected</text>
         </g>
@@ -85,3 +85,4 @@ export const PrivacyFirstVisual = () => {
     </div>
   );
 };
+

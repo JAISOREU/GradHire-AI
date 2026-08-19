@@ -18,8 +18,8 @@ export const RealTimeNotificationsVisual = () => {
         </defs>
 
         <g className="notif-panel">
-          <rect x="50" y="30" width="320" height="220" rx="14" fill="url(#panel-grad)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="50" y="30" width="320" height="220" rx="14" fill="url(#panel-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="56" width="320" height="14" fill="var(--color-surface-muted)" stroke="none" />
           <text x="70" y="58" textAnchor="start" fill="var(--color-text)" fontSize="12" fontWeight="700">Notifications</text>
           <circle cx="340" cy="50" r="5" fill="var(--color-success)" />
@@ -35,7 +35,7 @@ export const RealTimeNotificationsVisual = () => {
         </g>
 
         <g className="notif-row notif-row--2">
-          <rect x="65" y="138" width="290" height="40" rx="8" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
+          <rect x="65" y="138" width="290" height="40" rx="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
           <circle cx="84" cy="158" r="4" fill="var(--color-primary)" />
           <text x="98" y="155" textAnchor="start" fill="var(--color-primary)" fontSize="10" fontWeight="700">New opportunity matched</text>
           <text x="98" y="167" textAnchor="start" fill="var(--color-text-muted)" fontSize="9">92% profile match · Now</text>
@@ -71,3 +71,4 @@ export const RealTimeNotificationsVisual = () => {
     </div>
   );
 };
+

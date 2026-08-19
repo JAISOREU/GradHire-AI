@@ -8,20 +8,20 @@ export const AIMatchingVisual = () => {
       <svg viewBox="0 0 480 320" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="ai-core-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="conn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="var(--color-info)" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.8" />
           </linearGradient>
           <linearGradient id="badge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary-soft)" />
-            <stop offset="100%" stopColor="var(--color-info-soft)" />
+            <stop offset="0%" stopColor="var(--color-primary-soft, #eef2ff)" />
+            <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
           </linearGradient>
           <radialGradient id="ai-ambient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -29,26 +29,26 @@ export const AIMatchingVisual = () => {
 
         <g className="ai-core">
           <circle cx="240" cy="160" r="48" fill="url(#ai-core-glow)" opacity="0.6" />
-          <circle cx="240" cy="160" r="32" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="240" cy="160" r="16" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <circle cx="240" cy="160" r="5" fill="var(--color-primary)" />
-          <circle cx="240" cy="160" r="48" fill="none" stroke="var(--color-primary)" strokeWidth="1" opacity="0.2" strokeDasharray="4 3" className="ai-core-ring" />
+          <circle cx="240" cy="160" r="32" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="240" cy="160" r="16" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <circle cx="240" cy="160" r="5" fill="var(--color-primary, #4f46e5)" />
+          <circle cx="240" cy="160" r="48" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.2" strokeDasharray="4 3" className="ai-core-ring" />
         </g>
 
         <g className="ai-skill-chips">
-          <rect x="140" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="170" y="124" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">React</text>
-          <rect x="140" y="138" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="170" y="152" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Python</text>
-          <rect x="140" y="166" width="60" height="20" rx="6" fill="var(--color-info-soft)" stroke="var(--color-info)" strokeWidth="1" />
-          <text x="170" y="180" textAnchor="middle" fill="var(--color-info)" fontSize="9" fontWeight="700">SQL</text>
+          <rect x="140" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="170" y="124" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">React</text>
+          <rect x="140" y="138" width="60" height="20" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="170" y="152" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Python</text>
+          <rect x="140" y="166" width="60" height="20" rx="6" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
+          <text x="170" y="180" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="9" fontWeight="700">SQL</text>
 
-          <rect x="280" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="310" y="124" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Remote</text>
-          <rect x="280" y="138" width="60" height="20" rx="6" fill="var(--color-info-soft)" stroke="var(--color-info)" strokeWidth="1" />
-          <text x="310" y="152" textAnchor="middle" fill="var(--color-info)" fontSize="9" fontWeight="700">Full-time</text>
-          <rect x="280" y="166" width="60" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="310" y="180" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Internship</text>
+          <rect x="280" y="110" width="60" height="20" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="310" y="124" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Remote</text>
+          <rect x="280" y="138" width="60" height="20" rx="6" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
+          <text x="310" y="152" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="9" fontWeight="700">Full-time</text>
+          <rect x="280" y="166" width="60" height="20" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="310" y="180" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Internship</text>
         </g>
 
         <g className="ai-conns">
@@ -61,33 +61,33 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-candidate">
-          <circle cx="90" cy="160" r="26" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <circle cx="90" cy="152" r="8" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1" />
-          <path d="M78 162 Q90 170 102 162" stroke="var(--color-text-secondary)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <text x="90" y="178" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">You</text>
+          <circle cx="90" cy="160" r="26" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="90" cy="152" r="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <path d="M78 162 Q90 170 102 162" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          <text x="90" y="178" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">You</text>
         </g>
 
         <g className="ai-opp ai-opp--1">
-          <circle cx="380" cy="80" r="26" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="364" y="72" width="32" height="5" rx="2.5" fill="var(--color-border)" />
-          <text x="380" y="104" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Engineer</text>
+          <circle cx="380" cy="80" r="26" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="364" y="72" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="380" y="104" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Engineer</text>
         </g>
 
         <g className="ai-opp ai-opp--2">
-          <circle cx="390" cy="160" r="26" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="374" y="152" width="32" height="5" rx="2.5" fill="var(--color-border)" />
-          <text x="390" y="184" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Analyst</text>
+          <circle cx="390" cy="160" r="26" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="374" y="152" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="390" y="184" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Analyst</text>
         </g>
 
         <g className="ai-opp ai-opp--3">
-          <circle cx="380" cy="240" r="26" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
-          <rect x="364" y="232" width="32" height="5" rx="2.5" fill="var(--color-border)" />
-          <text x="380" y="264" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Designer</text>
+          <circle cx="380" cy="240" r="26" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="364" y="232" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="380" y="264" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Designer</text>
         </g>
 
         <g className="ai-match-card">
-          <rect x="320" y="40" width="110" height="36" rx="8" fill="url(#badge-grad)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="375" y="62" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">92% Match</text>
+          <rect x="320" y="40" width="110" height="36" rx="8" fill="url(#badge-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="375" y="62" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">92% Match</text>
         </g>
       </svg>
 
@@ -123,3 +123,4 @@ export const AIMatchingVisual = () => {
     </div>
   );
 };
+

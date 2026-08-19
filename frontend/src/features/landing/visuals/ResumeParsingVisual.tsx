@@ -8,59 +8,59 @@ export const ResumeParsingVisual = () => {
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="scan-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0" />
-            <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
+            <stop offset="50%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="resume-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-surface-muted)" />
-            <stop offset="100%" stopColor="var(--color-surface)" />
+            <stop offset="0%" stopColor="var(--color-surface-muted, #fefcf8)" />
+            <stop offset="100%" stopColor="var(--color-surface, #ffffff)" />
           </linearGradient>
           <linearGradient id="skill-tag" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary-soft)" />
-            <stop offset="100%" stopColor="var(--color-info-soft)" />
+            <stop offset="0%" stopColor="var(--color-primary-soft, #eef2ff)" />
+            <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
           </linearGradient>
         </defs>
 
         <g className="resume-document">
-          <rect x="50" y="40" width="150" height="200" rx="10" fill="url(#resume-gradient)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-          <circle cx="80" cy="70" r="12" fill="var(--color-border)" opacity="0.5" />
-          <rect x="66" y="90" width="88" height="6" rx="3" fill="var(--color-border)" />
-          <rect x="66" y="104" width="60" height="6" rx="3" fill="var(--color-border)" opacity="0.7" />
-          <rect x="66" y="124" width="88" height="6" rx="3" fill="var(--color-primary-soft)" />
-          <rect x="66" y="138" width="70" height="6" rx="3" fill="var(--color-border)" />
-          <rect x="66" y="152" width="80" height="6" rx="3" fill="var(--color-border)" opacity="0.6" />
-          <rect x="66" y="172" width="88" height="6" rx="3" fill="var(--color-border)" />
-          <rect x="66" y="186" width="60" height="6" rx="3" fill="var(--color-border)" opacity="0.7" />
-          <rect x="66" y="206" width="70" height="6" rx="3" fill="var(--color-border)" />
+          <rect x="50" y="40" width="150" height="200" rx="10" fill="url(#resume-gradient)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="80" cy="70" r="12" fill="var(--color-border, #e8e2d8)" opacity="0.5" />
+          <rect x="66" y="90" width="88" height="6" rx="3" fill="var(--color-border, #e8e2d8)" />
+          <rect x="66" y="104" width="60" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.7" />
+          <rect x="66" y="124" width="88" height="6" rx="3" fill="var(--color-primary-soft, #eef2ff)" />
+          <rect x="66" y="138" width="70" height="6" rx="3" fill="var(--color-border, #e8e2d8)" />
+          <rect x="66" y="152" width="80" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
+          <rect x="66" y="172" width="88" height="6" rx="3" fill="var(--color-border, #e8e2d8)" />
+          <rect x="66" y="186" width="60" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.7" />
+          <rect x="66" y="206" width="70" height="6" rx="3" fill="var(--color-border, #e8e2d8)" />
         </g>
 
         <g className="resume-scan">
           <rect x="50" y="40" width="150" height="200" rx="10" fill="url(#scan-gradient)" />
-          <rect x="50" y="40" width="150" height="2" rx="1" fill="var(--color-primary)" opacity="0.6" className="resume-scan-line" />
+          <rect x="50" y="40" width="150" height="2" rx="1" fill="var(--color-primary, #4f46e5)" opacity="0.6" className="resume-scan-line" />
         </g>
 
         <g className="resume-skill-tags">
-          <rect x="230" y="60" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="300" y="74" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">React</text>
-          <rect x="230" y="88" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="300" y="102" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Python</text>
-          <rect x="230" y="116" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="300" y="130" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">SQL</text>
-          <rect x="230" y="144" width="140" height="20" rx="6" fill="var(--color-primary-soft)" stroke="var(--color-info)" strokeWidth="1" />
-          <text x="300" y="158" textAnchor="middle" fill="var(--color-info)" fontSize="9" fontWeight="700">TypeScript</text>
+          <rect x="230" y="60" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="300" y="74" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">React</text>
+          <rect x="230" y="88" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="300" y="102" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Python</text>
+          <rect x="230" y="116" width="140" height="20" rx="6" fill="url(#skill-tag)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="300" y="130" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">SQL</text>
+          <rect x="230" y="144" width="140" height="20" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
+          <text x="300" y="158" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="9" fontWeight="700">TypeScript</text>
         </g>
 
         <g className="resume-arrow">
-          <path d="M 200 130 L 230 130" stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="3 3" />
-          <polygon points="230,130 224,126 224,134" fill="var(--color-primary)" />
+          <path d="M 200 130 L 230 130" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <polygon points="230,130 224,126 224,134" fill="var(--color-primary, #4f46e5)" />
         </g>
 
         <g className="resume-profile">
-          <rect x="230" y="180" width="140" height="60" rx="10" fill="url(#resume-gradient)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <rect x="246" y="196" width="108" height="6" rx="3" fill="var(--color-primary)" />
-          <rect x="246" y="210" width="80" height="6" rx="3" fill="var(--color-border)" />
-          <rect x="246" y="224" width="60" height="6" rx="3" fill="var(--color-success)" opacity="0.7" />
+          <rect x="230" y="180" width="140" height="60" rx="10" fill="url(#resume-gradient)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <rect x="246" y="196" width="108" height="6" rx="3" fill="var(--color-primary, #4f46e5)" />
+          <rect x="246" y="210" width="80" height="6" rx="3" fill="var(--color-border, #e8e2d8)" />
+          <rect x="246" y="224" width="60" height="6" rx="3" fill="var(--color-success, #059669)" opacity="0.7" />
         </g>
       </svg>
 
@@ -99,3 +99,4 @@ export const ResumeParsingVisual = () => {
     </div>
   );
 };
+

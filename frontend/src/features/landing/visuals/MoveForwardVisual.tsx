@@ -25,7 +25,7 @@ export const MoveForwardVisual = () => {
 
         <g className="fwd-step fwd-step--1">
           <rect x="40" y="50" width="100" height="56" rx="12" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="90" cy="78" r="12" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <circle cx="90" cy="78" r="12" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
           <text x="90" y="102" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Applied</text>
           <text x="90" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Today</text>
         </g>
@@ -36,8 +36,8 @@ export const MoveForwardVisual = () => {
         </g>
 
         <g className="fwd-step fwd-step--2">
-          <rect x="180" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-          <circle cx="230" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+          <rect x="180" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="230" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
           <text x="230" y="102" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Reviewed</text>
           <text x="230" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Yesterday</text>
         </g>
@@ -48,8 +48,8 @@ export const MoveForwardVisual = () => {
         </g>
 
         <g className="fwd-step fwd-step--3">
-          <rect x="320" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-          <circle cx="370" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+          <rect x="320" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="370" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
           <text x="370" y="102" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Interview</text>
           <text x="370" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Upcoming</text>
         </g>
@@ -59,17 +59,17 @@ export const MoveForwardVisual = () => {
         </g>
 
         <g className="fwd-next">
-          <rect x="290" y="140" width="160" height="40" rx="12" fill="var(--color-primary-soft)" stroke="var(--color-primary)" strokeWidth="1.5" />
+          <rect x="290" y="140" width="160" height="40" rx="12" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
           <circle cx="320" cy="160" r="8" fill="var(--color-success)" />
           <text x="370" y="164" textAnchor="middle" fill="var(--color-primary)" fontSize="11" fontWeight="700">Next step</text>
         </g>
 
         <g className="fwd-status">
-          <rect x="90" y="200" width="240" height="32" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong)" strokeWidth="1" />
+          <rect x="90" y="200" width="240" height="32" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="118" cy="216" r="4" fill="var(--color-success)" />
           <text x="130" y="220" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Application in progress</text>
           <rect x="270" y="208" width="48" height="16" rx="4" fill="var(--color-primary)" />
-          <text x="294" y="220" textAnchor="middle" fill="var(--color-primary-text)" fontSize="9" fontWeight="700">Active</text>
+          <text x="294" y="220" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Active</text>
         </g>
       </svg>
 
@@ -103,3 +103,4 @@ export const MoveForwardVisual = () => {
     </div>
   );
 };
+

@@ -98,7 +98,7 @@ export const FloatingCards = () => {
 
         .floating-card__meta {
           font-size: var(--text-xs);
-          color: var(--color-text-tertiary);
+          color: var(--color-text-tertiary, #8c8680);
           margin-top: var(--space-1);
           white-space: nowrap;
         }
@@ -139,3 +139,4 @@ export const FloatingCards = () => {
     </div>
   );
 };
+

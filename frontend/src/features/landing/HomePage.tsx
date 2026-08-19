@@ -2,7 +2,6 @@ import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { AnimatedLogo } from '../../components/AnimatedLogo';
 import { HeroVisual } from './visuals/HeroVisual';
-import { FloatingCards } from './visuals/FloatingCards';
 import { WhyGradture } from './WhyGradture';
 import { HowItWorks } from './HowItWorks';
 
@@ -44,7 +43,6 @@ export const HomePage = () => (
         </div>
         <div className="hero-visual-wrap hero-anim hero-anim--visual">
           <HeroVisual />
-          <FloatingCards />
         </div>
       </div>
       <div className="scroll-cue" aria-hidden="true">
