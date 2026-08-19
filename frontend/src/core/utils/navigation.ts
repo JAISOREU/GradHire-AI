@@ -16,116 +16,79 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
     label: 'Main',
     items: [
       { to: '/student/dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { to: '/jobs', label: 'Browse Jobs', icon: 'jobs' },
       { to: '/student/applications', label: 'Applications', icon: 'applications' },
-      { to: '/student/recommended', label: 'Recommended', icon: 'star' },
+      { to: '/student/saved', label: 'Saved Jobs', icon: 'saved' },
     ],
   },
   {
     label: 'Profile',
     items: [
-      { to: '/student/account', label: 'Account', icon: 'profile' },
-      { to: '/student/resume', label: 'Resume', icon: 'resume' },
-      { to: '/student/saved', label: 'Saved Jobs', icon: 'saved' },
+      { to: '/student/account', label: 'Profile', icon: 'profile' },
+      { to: '/student/messages', label: 'Messages', icon: 'messages' },
+      { to: '/student/notifications', label: 'Notifications', icon: 'notifications' },
       { to: '/student/settings', label: 'Settings', icon: 'settings' },
     ],
   },
 ];
 
-export const STUDENT_HEADER_ACTIONS: NavItem[] = [
-  { to: '/student/messages', label: 'Messages', icon: 'messages' },
-  { to: '/student/notifications', label: 'Notifications', icon: 'notifications' },
-];
+export const STUDENT_HEADER_ACTIONS: NavItem[] = [];
 
 export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
       { to: '/employer/dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' },
+      { to: '/employer/jobs', label: 'Jobs', icon: 'jobs' },
       { to: '/employer/applicants', label: 'Applicants', icon: 'users' },
-      { to: '/employer/jobs', label: 'Manage Jobs', icon: 'jobs' },
-    ],
-  },
-  {
-    label: 'Insights',
-    items: [
-      { to: '/employer/analytics', label: 'Analytics', icon: 'analytics' },
-      { to: '/employer/interviews', label: 'Interviews', icon: 'interviews' },
     ],
   },
   {
     label: 'Company',
     items: [
-      { to: '/employer/company-profile', label: 'Company Profile', icon: 'company' },
+      { to: '/employer/company-profile', label: 'Company', icon: 'company' },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/employer/account', label: 'Account', icon: 'profile' },
+      { to: '/employer/messages', label: 'Messages', icon: 'messages' },
+      { to: '/employer/notifications', label: 'Notifications', icon: 'notifications' },
       { to: '/employer/settings', label: 'Settings', icon: 'settings' },
     ],
   },
 ];
 
-export const EMPLOYER_HEADER_ACTIONS: NavItem[] = [
-  { to: '/employer/messages', label: 'Messages', icon: 'messages' },
-  { to: '/employer/notifications', label: 'Notifications', icon: 'notifications' },
-];
+export const EMPLOYER_HEADER_ACTIONS: NavItem[] = [];
 
 export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
-    label: 'Overview',
+    label: 'Main',
     items: [
       { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
       { to: '/admin/users', label: 'Users', icon: 'users' },
       { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
-      { to: '/admin/reports', label: 'Reports', icon: 'reports' },
-      { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
     ],
   },
   {
-    label: 'Monitoring',
+    label: 'Management',
     items: [
+      { to: '/admin/job-sources', label: 'Sources', icon: 'jobs' },
       { to: '/admin/applications', label: 'Applications', icon: 'applications' },
       { to: '/admin/companies', label: 'Companies', icon: 'company' },
-      { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'audit' },
-      { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'ai' },
-    ],
-  },
-  {
-    label: 'Ingestion',
-    items: [
-      { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' },
-    ],
-  },
-  {
-    label: 'System',
-    items: [
-      { to: '/admin/database', label: 'Database', icon: 'database' },
-      { to: '/admin/api-keys', label: 'API Keys', icon: 'api' },
-      { to: '/admin/email-templates', label: 'Email Templates', icon: 'email' },
-      { to: '/admin/cms', label: 'CMS', icon: 'cms' },
-      { to: '/admin/feature-flags', label: 'Feature Flags', icon: 'feature' },
-      { to: '/admin/backups', label: 'Backups', icon: 'backup' },
-      { to: '/admin/security', label: 'Security', icon: 'security' },
-      { to: '/admin/developer-tools', label: 'Developer Tools', icon: 'developer' },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/admin/account', label: 'Account', icon: 'profile' },
+      { to: '/admin/account', label: 'Profile', icon: 'profile' },
       { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' },
-      { to: '/admin/settings', label: 'System Settings', icon: 'settings' },
+      { to: '/admin/settings', label: 'Settings', icon: 'settings' },
     ],
   },
 ];
 
-export const ADMIN_HEADER_ACTIONS: NavItem[] = [
-  { to: '/admin/account', label: 'Profile', icon: 'profile' },
-  { to: '/admin/developer-tools', label: 'Dev Tools', icon: 'developer' },
-];
+export const ADMIN_HEADER_ACTIONS: NavItem[] = [];
 
 export const roleHomePath = (role: UserRole | undefined): string => {
   if (role === 'EMPLOYER') return '/employer/dashboard';
