@@ -120,6 +120,8 @@ def health_check() -> dict[str, str]:
 class RecommendRequest(BaseModel):
     focus: str
     top_k: int = 5
+    profile: Optional[dict] = None
+    fallback: bool = False
 
 
 class EmbedRequest(BaseModel):
@@ -148,20 +150,66 @@ def get_recommendations(payload: RecommendRequest) -> dict:
     warm_up_embeddings()
     if not payload.focus or not isinstance(payload.focus, str):
         return {"recommendations": [], "error": "Invalid focus text"}
+
+    profile_skills = []
+    profile_education = ""
+    profile_experience = ""
+    if payload.profile:
+        profile_skills = [s.lower() for s in payload.profile.get("skills", []) if isinstance(s, str)]
+        edu = payload.profile.get("education")
+        if isinstance(edu, dict):
+            profile_education = f"{edu.get('institution', '')} {edu.get('degree', '')} {edu.get('fieldOfStudy', '')}".lower()
+        exp = payload.profile.get("experience")
+        if isinstance(exp, dict):
+            profile_experience = f"{exp.get('jobTitle', '')} {exp.get('company', '')}".lower()
+
     try:
-        query_embedding = model.encode(payload.focus, convert_to_numpy=True)
+        query_text = payload.focus
+        if payload.profile:
+            focus = payload.profile.get("focus", "")
+            summary = payload.profile.get("summary", "")
+            skills_text = " ".join(payload.profile.get("skills", []))
+            query_text = f"{focus} {summary} {skills_text}".strip() or payload.focus
+
+        query_embedding = model.encode(query_text, convert_to_numpy=True)
         scores = cosine_similarity([query_embedding], job_embeddings)[0]
         ranked = sorted(zip(job_ids, scores), key=lambda x: x[1], reverse=True)[: payload.top_k]
         results = []
         for jid, score in ranked:
             if jid in job_data:
+                job = job_data[jid]
+                rec_text = f"{job['title']} {job.get('description', '')} {job.get('company', '')}".lower()
+                match_reasons = []
+                matched_skills = []
+                matched_education = []
+                matched_experience = []
+
+                for skill in profile_skills:
+                    if skill in rec_text:
+                        matched_skills.append(skill)
+                        match_reasons.append(f"Skill match: {skill}")
+
+                if profile_education and any(part in rec_text for part in profile_education.split() if len(part) > 3):
+                    matched_education.append(profile_education[:100])
+                    match_reasons.append("Education background match")
+
+                if profile_experience and any(part in rec_text for part in profile_experience.split() if len(part) > 3):
+                    matched_experience.append(profile_experience[:100])
+                    match_reasons.append("Experience background match")
+
                 results.append(
                     {
                         "id": jid,
-                        "title": job_data[jid]["title"],
-                        "type": job_data[jid]["type"],
+                        "title": job["title"],
+                        "type": job["type"],
                         "score": round(float(score), 4),
-                        "description": job_data[jid]["description"],
+                        "description": job.get("description", ""),
+                        "company": job.get("company", ""),
+                        "location": "",
+                        "matchReasons": match_reasons[:3],
+                        "matchedSkills": matched_skills[:5],
+                        "matchedEducation": matched_education[:2],
+                        "matchedExperience": matched_experience[:2],
                     }
                 )
             else:

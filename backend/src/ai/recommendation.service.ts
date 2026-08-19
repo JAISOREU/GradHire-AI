@@ -15,6 +15,7 @@ export interface PersonalizedRecommendationsResult {
   checks: { key: string; required: boolean; ready: boolean }[];
   recommendations: AiRecommendation[];
   profileSummary: Record<string, unknown>;
+  fallback: boolean;
 }
 
 @Injectable()
@@ -30,20 +31,35 @@ export class RecommendationService {
       return {
         ...gating,
         recommendations: [],
+        fallback: false,
       };
     }
 
     let recommendations: AiRecommendation[] = [];
+    let fallback = false;
 
     try {
       recommendations = await this.ai.getPersonalizedRecommendations(gating.profileSummary, topK);
     } catch (error) {
       this.logger.warn(`AI recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+      fallback = true;
+    }
+
+    if (!recommendations.length) {
+      try {
+        recommendations = await this.ai.getLocalRecommendations(gating.profileSummary, topK);
+        if (recommendations.length > 0) {
+          fallback = true;
+        }
+      } catch (error) {
+        this.logger.warn(`Local recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
 
     if (!recommendations.length) {
       try {
         recommendations = await this.ai.getHeuristicRecommendations(gating.profileSummary, topK);
+        fallback = true;
       } catch (error) {
         this.logger.warn(`Heuristic recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
       }
@@ -51,7 +67,14 @@ export class RecommendationService {
 
     return {
       ...gating,
-      recommendations,
+      recommendations: recommendations.map((rec) => ({
+        ...rec,
+        matchReasons: rec.matchReasons ?? [],
+        matchedSkills: rec.matchedSkills ?? [],
+        matchedEducation: rec.matchedEducation ?? [],
+        matchedExperience: rec.matchedExperience ?? [],
+      })),
+      fallback,
     };
   }
 
@@ -74,8 +97,8 @@ export class RecommendationService {
     checks.push({ key: 'Education', required: true, ready: hasEducation });
     if (!hasEducation) missing.push('education');
 
-    const skills = await this.prisma.skill.findFirst({ where: { userId } });
-    const hasSkills = skills !== null;
+    const skills = await this.prisma.skill.findMany({ where: { userId }, orderBy: { name: 'asc' } });
+    const hasSkills = skills.length > 0;
     checks.push({ key: 'Skills', required: true, ready: hasSkills });
     if (!hasSkills) missing.push('skills');
 
@@ -105,9 +128,21 @@ export class RecommendationService {
         name: profile.name,
         focus: profile.focus,
         summary: profile.summary,
-        skills: profile.skills,
-        education: profile.education,
-        experience: profile.experience,
+        skills: skills.map((s) => s.name),
+        education: education
+          ? {
+              institution: education.institution,
+              degree: education.degree,
+              fieldOfStudy: education.fieldOfStudy,
+            }
+          : null,
+        experience: experience
+          ? {
+              jobTitle: experience.jobTitle,
+              company: experience.company,
+              employmentType: experience.employmentType,
+            }
+          : null,
         location: profile.location,
         availability: profile.availability,
         workAuthorization: profile.workAuthorization,

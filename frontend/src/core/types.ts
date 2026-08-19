@@ -127,6 +127,10 @@ export type AiRecommendation = {
   company?: string;
   location?: string;
   workplaceType?: string;
+  matchReasons?: string[];
+  matchedSkills?: string[];
+  matchedEducation?: string[];
+  matchedExperience?: string[];
 };
 
 export type AiRecommendationResponse = {
@@ -139,6 +143,7 @@ export type PersonalizedRecommendationsResponse = {
   checks: { key: string; required: boolean; ready: boolean }[];
   recommendations: AiRecommendation[];
   profileSummary: Record<string, unknown>;
+  fallback: boolean;
 };
 
 export type StudentProfile = {

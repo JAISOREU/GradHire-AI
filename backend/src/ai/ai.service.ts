@@ -8,6 +8,13 @@ export interface AiRecommendation {
   type: string;
   score: number;
   description: string;
+  company?: string;
+  location?: string;
+  workplaceType?: string;
+  matchReasons?: string[];
+  matchedSkills?: string[];
+  matchedEducation?: string[];
+  matchedExperience?: string[];
 }
 
 export interface RecommendationMetrics {
@@ -106,6 +113,61 @@ export class AiService {
       return response.status === 200;
     } catch {
       return false;
+    }
+  }
+
+  async getLocalRecommendations(profile: Record<string, unknown>, topK = 5): Promise<AiRecommendation[]> {
+    const focus = String(profile.focus ?? '');
+    if (!focus) return [];
+
+    const profileSkills = Array.isArray(profile.skills) ? profile.skills.map((s) => String(s).toLowerCase()) : [];
+    const profileEducation = String(profile.education ?? '').toLowerCase();
+    const profileExperience = String(profile.experience ?? '').toLowerCase();
+    const profileFocus = focus.toLowerCase();
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.baseUrl}/recommendations`, { focus, top_k: topK * 2 }),
+      );
+      const recommendations = (response.data.recommendations ?? []) as AiRecommendation[];
+      return recommendations.slice(0, topK).map((rec) => {
+        const recText = `${rec.title} ${rec.description ?? ''} ${rec.company ?? ''}`.toLowerCase();
+        const reasons: string[] = [];
+        const matchedSkills: string[] = [];
+        const matchedEducation: string[] = [];
+        const matchedExperience: string[] = [];
+
+        for (const skill of profileSkills) {
+          if (recText.includes(skill)) {
+            matchedSkills.push(skill);
+            reasons.push(`Skill match: ${skill}`);
+          }
+        }
+
+        if (profileEducation && recText.includes(profileEducation.slice(0, 20))) {
+          matchedEducation.push(profileEducation.slice(0, 50));
+          reasons.push('Education background match');
+        }
+
+        if (profileExperience && recText.includes(profileExperience.slice(0, 20))) {
+          matchedExperience.push(profileExperience.slice(0, 50));
+          reasons.push('Experience background match');
+        }
+
+        if (profileFocus && recText.includes(profileFocus)) {
+          reasons.push(`Matches your focus: ${profileFocus}`);
+        }
+
+        return {
+          ...rec,
+          matchReasons: reasons.slice(0, 3),
+          matchedSkills: matchedSkills.slice(0, 5),
+          matchedEducation: matchedEducation.slice(0, 2),
+          matchedExperience: matchedExperience.slice(0, 2),
+        };
+      });
+    } catch {
+      return [];
     }
   }
 }
