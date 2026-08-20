@@ -61,10 +61,10 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-you">
-          <circle cx="80" cy="220" r="28" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <circle cx="80" cy="212" r="9" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <path d="M66 224 Q80 234 94 224" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <text x="80" y="242" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">You</text>
+          <circle cx="80" cy="238" r="28" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="80" cy="230" r="9" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <path d="M66 242 Q80 252 94 242" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          <text x="80" y="260" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">You</text>
         </g>
 
         <g className="ai-match-card">
@@ -73,28 +73,28 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-opp ai-opp--1">
-          <circle cx="320" cy="290" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="304" y="282" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="320" y="312" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Teacher</text>
+          <circle cx="370" cy="290" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="354" y="282" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="370" y="312" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Teacher</text>
         </g>
 
         <g className="ai-opp ai-opp--2">
-          <circle cx="460" cy="200" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="444" y="192" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="460" y="222" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Developer</text>
+          <circle cx="400" cy="210" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="384" y="202" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="400" y="232" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Developer</text>
         </g>
 
         <g className="ai-opp ai-opp--3">
-          <circle cx="440" cy="300" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="424" y="292" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="440" y="322" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Nurse</text>
+          <circle cx="440" cy="260" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="424" y="252" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="440" y="282" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Nurse</text>
         </g>
 
         <g className="ai-flow-conns">
-          <path d="M108 220 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L438 200" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L298 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L418 300" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M108 238 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L378 210" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L348 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L418 260" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
         </g>
       </svg>
 
