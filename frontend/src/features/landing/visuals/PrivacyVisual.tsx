@@ -52,9 +52,9 @@ export const PrivacyFirstVisual = () => {
         </g>
 
         <g className="priv-badge priv-badge--2">
-          <rect x="45" y="72" width="90" height="28" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="62" cy="86" r="3.5" fill="var(--color-success, #059669)" />
-          <text x="80" y="90" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Private</text>
+          <rect x="45" y="200" width="90" height="28" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="62" cy="214" r="3.5" fill="var(--color-success, #059669)" />
+          <text x="80" y="218" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Private</text>
         </g>
 
         <g className="priv-badge priv-badge--3">
@@ -73,7 +73,7 @@ export const PrivacyFirstVisual = () => {
 
         <g className="priv-conns">
           <path d="M135 52 L175 115" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
-          <path d="M135 86 L175 130" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
+          <path d="M135 214 L175 165" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
           <path d="M295 58 L245 118" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
           <path d="M295 220 L245 175" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.8" />
         </g>
