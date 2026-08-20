@@ -85,24 +85,17 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-opp ai-opp--3">
-          <circle cx="380" cy="300" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="364" y="292" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="380" y="322" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Designer</text>
-        </g>
-
-        <g className="ai-opp ai-opp--4">
-          <circle cx="460" cy="290" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="444" y="282" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="460" y="312" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Analyst</text>
+          <circle cx="440" cy="260" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="424" y="252" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="440" y="282" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Nurse</text>
         </g>
 
         <g className="ai-flow-conns">
           <path d="M108 238 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M108 234 Q148 218 185 234" stroke="url(#conn-grad)" strokeWidth="1.5" strokeDasharray="4 3" fill="none" opacity="0.7" />
           <path d="M295 238 L378 210" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
           <path d="M295 238 L348 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
           <path d="M295 238 L418 260" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L360 300" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L438 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
         </g>
       </svg>
 
@@ -128,8 +121,7 @@ export const AIMatchingVisual = () => {
         .feature-visual--ai.is-animated .ai-opp--1 { opacity: 1; transform: scale(1); transition-delay: 0.65s; }
         .feature-visual--ai.is-animated .ai-opp--2 { opacity: 1; transform: scale(1); transition-delay: 0.75s; }
         .feature-visual--ai.is-animated .ai-opp--3 { opacity: 1; transform: scale(1); transition-delay: 0.85s; }
-        .feature-visual--ai.is-animated .ai-opp--4 { opacity: 1; transform: scale(1); transition-delay: 0.95s; }
-        .feature-visual--ai.is-animated .ai-flow-conns { opacity: 1; transform: scale(1); transition-delay: 1s; }
+        .feature-visual--ai.is-animated .ai-flow-conns { opacity: 1; transform: scale(1); transition-delay: 0.9s; }
 
         @media (prefers-reduced-motion: reduce) {
           .feature-visual--ai * {
