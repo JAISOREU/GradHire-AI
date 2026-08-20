@@ -17,10 +17,6 @@ This repository contains the initial SDLC-driven blueprint for the Gradture plat
 
 ### Operations & Reliability
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- [docs/PRODUCTION_MANUAL_STEPS.md](docs/PRODUCTION_MANUAL_STEPS.md)
-- [docs/PRODUCTION-CHECKLIST.md](docs/PRODUCTION-CHECKLIST.md)
-- [docs/BUGS.md](docs/BUGS.md)
-- [docs/LESSONS-LEARNED.md](docs/LESSONS-LEARNED.md)
 - [docs/13_Monitoring_and_Alerting.md](docs/13_Monitoring_and_Alerting.md)
 - [docs/09_Testing_Strategy.md](docs/09_Testing_Strategy.md)
 
