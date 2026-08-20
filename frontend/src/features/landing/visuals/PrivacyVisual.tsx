@@ -41,27 +41,29 @@ export const PrivacyFirstVisual = () => {
         </g>
 
         <g className="priv-badge priv-badge--1">
-          <rect x="35" y="35" width="100" height="40" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="58" cy="55" r="5" fill="var(--color-success, #059669)" />
-          <text x="75" y="52" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Encrypted</text>
-        </g>
-
-        <g className="priv-badge priv-badge--2">
-          <rect x="285" y="35" width="110" height="40" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="308" cy="55" r="5" fill="var(--color-success, #059669)" />
-          <text x="325" y="52" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Access Control</text>
+          <rect x="55" y="85" width="80" height="36" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="74" cy="100" r="3" fill="var(--color-success, #059669)" />
+          <text x="90" y="97" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Encrypted</text>
         </g>
 
         <g className="priv-badge priv-badge--3">
-          <rect x="35" y="215" width="90" height="40" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="58" cy="235" r="5" fill="var(--color-success, #059669)" />
-          <text x="75" y="232" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Private</text>
+          <rect x="55" y="125" width="80" height="36" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="74" cy="140" r="3" fill="var(--color-success, #059669)" />
+          <text x="90" y="137" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Private</text>
+        </g>
+
+        <g className="priv-badge priv-badge--2">
+          <rect x="285" y="85" width="90" height="44" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="304" cy="100" r="3" fill="var(--color-success, #059669)" />
+          <text x="330" y="98" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Access</text>
+          <text x="330" y="112" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Control</text>
         </g>
 
         <g className="priv-badge priv-badge--4">
-          <rect x="255" y="215" width="130" height="40" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="278" cy="235" r="5" fill="var(--color-success, #059669)" />
-          <text x="295" y="232" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Minimal Exposure</text>
+          <rect x="275" y="135" width="110" height="44" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="294" cy="150" r="3" fill="var(--color-success, #059669)" />
+          <text x="330" y="148" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Minimal</text>
+          <text x="330" y="162" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="700">Exposure</text>
         </g>
       </svg>
 
