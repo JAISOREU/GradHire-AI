@@ -27,18 +27,18 @@ export const DirectMessagingVisual = () => {
         </g>
 
         <g className="msg-candidate">
-          <rect x="140" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
+          <rect x="210" y="86" width="150" height="40" rx="10" fill="url(#msg-candidate)" />
           <text x="340" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
         </g>
 
         <g className="msg-typing">
-          <circle cx="310" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
-          <circle cx="320" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
-          <circle cx="330" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
+          <circle cx="310" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
+          <circle cx="320" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
+          <circle cx="330" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
         </g>
 
         <g className="msg-employer">
-          <rect x="60" y="170" width="240" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="60" y="170" width="190" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <text x="80" y="194" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
         </g>
 
@@ -68,6 +68,26 @@ export const DirectMessagingVisual = () => {
           .feature-visual--messaging * {
             transition-duration: 0.01ms !important;
             animation: none !important;
+          }
+        }
+
+        .feature-visual--messaging .typing-dot {
+          animation: typing-bounce 1.4s infinite ease-in-out;
+        }
+        .feature-visual--messaging .typing-dot:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .feature-visual--messaging .typing-dot:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+        @keyframes typing-bounce {
+          0%, 60%, 100% {
+            transform: translateY(0);
+            opacity: 0.6;
+          }
+          30% {
+            transform: translateY(-4px);
+            opacity: 1;
           }
         }
       `}</style>
