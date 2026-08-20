@@ -29,12 +29,12 @@ export const PrivacyFirstVisual = () => {
 
         <g className="priv-shield">
           <rect x="175" y="95" width="70" height="100" rx="16" fill="url(#shield-bg)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" />
-          <path d="M210 105 L240 123 L240 158 Q240 175 210 186 Q180 175 180 158 L180 123 Z" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <rect x="198" y="134" width="24" height="20" rx="4" fill="url(#lock-shine)" />
-          <path d="M204 134 L204 123 Q204 114 210 114 Q216 114 216 123 L216 134" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <circle cx="210" cy="144" r="3" fill="var(--color-surface, #ffffff)" />
-          <text x="210" y="182" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Security</text>
-          <text x="210" y="194" textAnchor="middle" fill="var(--color-text-muted, #8c8680)" fontSize="9" fontWeight="600">08</text>
+          <path d="M210 102 L240 123 L240 158 Q240 175 210 186 Q180 175 180 158 L180 123 Z" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <rect x="195" y="145" width="30" height="25" rx="4" fill="url(#lock-shine)" />
+          <path d="M204 144 L204 125 Q210 105 216 125 L216 144" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <circle cx="210" cy="155" r="3" fill="var(--color-surface, #ffffff)" />
+          <text x="210" y="210" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Security</text>
+          <text x="210" y="220" textAnchor="middle" fill="var(--color-text-muted, #8c8680)" fontSize="9" fontWeight="600">08</text>
         </g>
 
         <g className="priv-ring priv-ring--1">
