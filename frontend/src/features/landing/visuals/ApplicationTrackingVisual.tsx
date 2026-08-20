@@ -5,7 +5,7 @@ export const ApplicationTrackingVisual = () => {
 
   return (
     <div ref={ref} className={`feature-visual feature-visual--tracking ${inView ? 'is-animated' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 480 300" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="track-line" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" />
@@ -14,44 +14,42 @@ export const ApplicationTrackingVisual = () => {
         </defs>
 
         <g className="track-header">
-          <rect x="50" y="30" width="320" height="32" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="70" y="50" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Application Tracking</text>
-          <circle cx="340" cy="46" r="6" fill="var(--color-success, #059669)" />
-          <text x="352" y="50" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">3 Active</text>
+          <rect x="60" y="30" width="360" height="36" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="85" y="52" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Application Tracking</text>
         </g>
 
         <g className="track-progress">
-          <line x1="64" y1="98" x2="64" y2="238" stroke="url(#track-line)" strokeWidth="2" strokeDasharray="4 3" opacity="0.5" />
+          <line x1="74" y1="100" x2="74" y2="248" stroke="url(#track-line)" strokeWidth="2" strokeDasharray="4 3" opacity="0.5" />
         </g>
 
         <g className="track-step track-step--0">
-          <rect x="40" y="74" width="320" height="32" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <circle cx="64" cy="90" r="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <text x="88" y="88" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Applied</text>
-          <text x="88" y="100" fill="var(--color-text-muted, #8c8680)" fontSize="8">Today</text>
-          <rect x="310" y="82" width="36" height="16" rx="4" fill="var(--color-primary, #4f46e5)" />
-          <text x="328" y="94" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">Sent</text>
+          <rect x="40" y="80" width="400" height="36" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="74" cy="98" r="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <text x="100" y="96" fill="var(--color-primary, #4f46e5)" fontSize="11" fontWeight="700">Applied</text>
+          <text x="100" y="110" fill="var(--color-text-muted, #8c8680)" fontSize="9">Today</text>
+          <rect x="376" y="90" width="40" height="18" rx="4" fill="var(--color-primary, #4f46e5)" />
+          <text x="396" y="104" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Sent</text>
         </g>
 
         <g className="track-step track-step--1">
-          <rect x="40" y="118" width="320" height="32" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="64" cy="134" r="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="88" y="132" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Viewed</text>
-          <text x="88" y="144" fill="var(--color-text-muted, #8c8680)" fontSize="8">Yesterday</text>
+          <rect x="40" y="128" width="400" height="36" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="74" cy="146" r="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <text x="100" y="144" fill="var(--color-text-secondary, #5c5852)" fontSize="11" fontWeight="600">Viewed</text>
+          <text x="100" y="158" fill="var(--color-text-muted, #8c8680)" fontSize="9">Yesterday</text>
         </g>
 
         <g className="track-step track-step--2">
-          <rect x="40" y="162" width="320" height="32" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="64" cy="178" r="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="88" y="176" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Review</text>
-          <text x="88" y="188" fill="var(--color-text-muted, #8c8680)" fontSize="8">Pending</text>
+          <rect x="40" y="176" width="400" height="36" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="74" cy="194" r="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <text x="100" y="192" fill="var(--color-text-secondary, #5c5852)" fontSize="11" fontWeight="600">Review</text>
+          <text x="100" y="206" fill="var(--color-text-muted, #8c8680)" fontSize="9">Pending</text>
         </g>
 
         <g className="track-step track-step--3">
-          <rect x="40" y="206" width="320" height="32" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="64" cy="222" r="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="88" y="220" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Interview</text>
-          <text x="88" y="232" fill="var(--color-text-muted, #8c8680)" fontSize="8">Upcoming</text>
+          <rect x="40" y="224" width="400" height="36" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="74" cy="242" r="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <text x="100" y="240" fill="var(--color-text-secondary, #5c5852)" fontSize="11" fontWeight="600">Interview</text>
+          <text x="100" y="254" fill="var(--color-text-muted, #8c8680)" fontSize="9">Upcoming</text>
         </g>
       </svg>
 
@@ -80,4 +78,3 @@ export const ApplicationTrackingVisual = () => {
     </div>
   );
 };
-
