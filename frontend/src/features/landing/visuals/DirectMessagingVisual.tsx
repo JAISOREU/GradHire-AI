@@ -22,13 +22,13 @@ export const DirectMessagingVisual = () => {
           <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="56" width="320" height="14" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
           <text x="70" y="58" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Hiring Team</text>
-          <circle cx="340" cy="50" r="5" fill="var(--color-success, #059669)" />
-          <text x="348" y="54" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Online</text>
+          <circle cx="300" cy="50" r="5" fill="var(--color-success, #059669)" />
+          <text x="308" y="54" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Online</text>
         </g>
 
         <g className="msg-candidate">
-          <rect x="140" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
-          <text x="340" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
+          <rect x="110" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
+          <text x="310" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
         </g>
 
         <g className="msg-typing">
@@ -38,8 +38,8 @@ export const DirectMessagingVisual = () => {
         </g>
 
         <g className="msg-employer">
-          <rect x="100" y="170" width="240" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="120" y="194" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
+          <rect x="60" y="170" width="240" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="80" y="194" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
         </g>
 
         <g className="msg-status">

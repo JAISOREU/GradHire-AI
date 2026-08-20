@@ -12,63 +12,63 @@ export const BuildProfileVisual = () => {
             <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
           </linearGradient>
           <linearGradient id="chip-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-surface-muted)" />
-            <stop offset="100%" stopColor="var(--color-surface)" />
+            <stop offset="0%" stopColor="var(--color-surface-muted, #fefcf8)" />
+            <stop offset="100%" stopColor="var(--color-surface, #ffffff)" />
           </linearGradient>
           <radialGradient id="profile-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
         <circle cx="210" cy="150" r="140" fill="url(#profile-glow)" opacity="0.6" className="prof-glow" />
 
         <g className="prof-card">
-          <rect x="140" y="50" width="140" height="160" rx="14" fill="url(#profile-card)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="210" cy="90" r="22" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="210" y="130" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Profile Ready</text>
-          <rect x="158" y="142" width="104" height="6" rx="3" fill="var(--color-border)" opacity="0.6" />
-          <rect x="166" y="154" width="88" height="6" rx="3" fill="var(--color-border)" opacity="0.4" />
+          <rect x="140" y="50" width="140" height="160" rx="14" fill="url(#profile-card)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="210" cy="90" r="22" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="210" y="130" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Profile Ready</text>
+          <rect x="158" y="142" width="104" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
+          <rect x="166" y="154" width="88" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.4" />
           <rect x="158" y="170" width="104" height="6" rx="3" fill="var(--color-primary-soft, #eef2ff)" />
-          <rect x="166" y="182" width="88" height="6" rx="3" fill="var(--color-border)" opacity="0.5" />
+          <rect x="166" y="182" width="88" height="6" rx="3" fill="var(--color-border, #e8e2d8)" opacity="0.5" />
         </g>
 
         <g className="prof-skill prof-skill--1">
           <rect x="40" y="60" width="80" height="28" rx="7" fill="url(#chip-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="80" y="78" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">React</text>
+          <text x="80" y="78" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Leadership</text>
         </g>
 
         <g className="prof-skill prof-skill--2">
           <rect x="300" y="60" width="80" height="28" rx="7" fill="url(#chip-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="340" y="78" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Python</text>
+          <text x="340" y="78" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Communication</text>
         </g>
 
         <g className="prof-skill prof-skill--3">
           <rect x="40" y="190" width="80" height="28" rx="7" fill="url(#chip-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="80" y="208" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">SQL</text>
+          <text x="80" y="208" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Resume</text>
         </g>
 
         <g className="prof-skill prof-skill--4">
           <rect x="300" y="190" width="80" height="28" rx="7" fill="url(#chip-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="340" y="208" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Resume</text>
+          <text x="340" y="208" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Education</text>
         </g>
 
         <g className="prof-skill prof-skill--5">
-          <rect x="130" y="240" width="80" height="28" rx="7" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="170" y="256" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Education</text>
+          <rect x="130" y="240" width="80" height="28" rx="7" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="170" y="256" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Experience</text>
         </g>
 
         <g className="prof-skill prof-skill--6">
-          <rect x="220" y="240" width="80" height="28" rx="7" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info)" strokeWidth="1" />
-          <text x="260" y="256" textAnchor="middle" fill="var(--color-info)" fontSize="10" fontWeight="700">Experience</text>
+          <rect x="220" y="240" width="80" height="28" rx="7" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
+          <text x="260" y="256" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="10" fontWeight="700">Projects</text>
         </g>
 
         <g className="prof-conns">
-          <line x1="120" y1="74" x2="140" y2="90" stroke="var(--color-primary)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="300" y1="74" x2="280" y2="90" stroke="var(--color-primary)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="120" y1="204" x2="140" y2="170" stroke="var(--color-primary)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="300" y1="204" x2="280" y2="170" stroke="var(--color-primary)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
-          <line x1="210" y1="130" x2="210" y2="140" stroke="var(--color-border)" strokeWidth="1" strokeDasharray="2 2" opacity="0.4" />
+          <line x1="120" y1="74" x2="140" y2="90" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="300" y1="74" x2="280" y2="90" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="120" y1="204" x2="140" y2="170" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="300" y1="204" x2="280" y2="170" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.6" />
+          <line x1="210" y1="130" x2="210" y2="140" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" strokeDasharray="2 2" opacity="0.4" />
         </g>
       </svg>
 
@@ -101,4 +101,3 @@ export const BuildProfileVisual = () => {
     </div>
   );
 };
-

@@ -79,11 +79,11 @@ export const HeroVisual = () => {
         {/* Profile node */}
         <g className="hero-visual__node hero-visual__node--profile">
           <circle cx="160" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="160" cy="168" r="22" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <path d="M132 216 Q160 234 188 216" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="2" strokeLinecap="round" fill="none" />
-          <rect x="126" y="244" width="68" height="9" rx="4.5" fill="var(--color-border, #e8e2d8)" />
-          <rect x="136" y="260" width="48" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
-          <text x="160" y="292" textAnchor="middle" fill="var(--color-text-tertiary, #8c8680)" fontSize="12" fontWeight="600">Profile</text>
+          <circle cx="160" cy="148" r="22" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <path d="M132 196 Q160 214 188 196" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="2" strokeLinecap="round" fill="none" />
+          <rect x="126" y="224" width="68" height="9" rx="4.5" fill="var(--color-border, #e8e2d8)" />
+          <rect x="136" y="240" width="48" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
+          <text x="160" y="272" textAnchor="middle" fill="var(--color-text-tertiary, #8c8680)" fontSize="12" fontWeight="600">Profile</text>
         </g>
 
         {/* Skills node */}
