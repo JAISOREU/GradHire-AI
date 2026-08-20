@@ -21,20 +21,19 @@ export const DirectMessagingVisual = () => {
           <rect x="50" y="30" width="320" height="220" rx="14" fill="url(#chat-bg)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="56" width="320" height="14" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
-          <text x="185" y="58" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Hiring Team</text>
-          <circle cx="280" cy="50" r="5" fill="var(--color-success, #059669)" />
-          <text x="288" y="54" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Online</text>
+          <text x="210" y="58" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Hiring Team</text>
+          <circle cx="330" cy="50" r="5" fill="var(--color-success, #059669)" />
+          <text x="338" y="54" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Online</text>
         </g>
 
         <g className="msg-candidate">
-          <rect x="80" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
-          <text x="280" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
+          <text x="100" y="110" textAnchor="start" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
         </g>
 
         <g className="msg-typing">
+          <circle cx="280" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
           <circle cx="290" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
           <circle cx="300" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
-          <circle cx="310" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" />
         </g>
 
         <g className="msg-employer">
@@ -74,4 +73,3 @@ export const DirectMessagingVisual = () => {
     </div>
   );
 };
-
