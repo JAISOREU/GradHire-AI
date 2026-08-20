@@ -91,10 +91,10 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-flow-conns">
-          <path d="M108 238 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L378 210" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L348 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M295 238 L418 260" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M108 238 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="1" />
+          <path d="M295 238 L378 210" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="1" />
+          <path d="M295 238 L348 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="1" />
+          <path d="M295 238 L418 260" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="1" />
         </g>
       </svg>
 
