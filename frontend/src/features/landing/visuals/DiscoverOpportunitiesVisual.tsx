@@ -58,10 +58,10 @@ export const DiscoverOpportunitiesVisual = () => {
         </g>
 
         <g className="disc-card disc-card--3">
-          <rect x="70" y="232" width="280" height="28" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="94" cy="246" r="6" fill="var(--color-border, #e8e2d8)" />
-          <text x="114" y="244" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Operations Coordinator</text>
-          <text x="240" y="244" fill="var(--color-text-muted, #8c8680)" fontSize="9">On-site · Contract</text>
+          <rect x="70" y="232" width="280" height="42" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="94" cy="253" r="8" fill="var(--color-border, #e8e2d8)" />
+          <text x="114" y="249" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Operations Coordinator</text>
+          <text x="240" y="249" fill="var(--color-text-muted, #8c8680)" fontSize="9">On-site · Contract</text>
         </g>
       </svg>
 

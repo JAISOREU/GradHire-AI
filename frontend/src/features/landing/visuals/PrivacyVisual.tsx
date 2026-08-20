@@ -26,9 +26,9 @@ export const PrivacyFirstVisual = () => {
         <g className="priv-shield">
           <rect x="155" y="75" width="110" height="130" rx="22" fill="url(#shield-bg)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" />
           <path d="M210 95 L250 118 L250 170 Q250 192 210 205 Q170 192 170 170 L170 118 Z" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <rect x="196" y="150" width="28" height="22" rx="5" fill="url(#lock-shine)" />
-          <path d="M205 150 L205 140 Q205 130 210 130 Q215 130 215 140 L215 150" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <circle cx="210" cy="162" r="3" fill="var(--color-surface, #ffffff)" />
+          <rect x="190" y="148" width="40" height="30" rx="6" fill="url(#lock-shine)" />
+          <path d="M200 148 L200 134 Q200 122 210 122 Q220 122 220 134 L220 148" stroke="var(--color-primary, #4f46e5)" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+          <circle cx="210" cy="164" r="4" fill="var(--color-surface, #ffffff)" />
           <text x="210" y="232" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="11" fontWeight="700">Encrypted &amp; Secure</text>
         </g>
 
