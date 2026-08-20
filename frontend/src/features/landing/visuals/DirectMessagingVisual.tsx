@@ -27,8 +27,8 @@ export const DirectMessagingVisual = () => {
         </g>
 
         <g className="msg-candidate">
-          <rect x="140" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
-          <text x="340" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
+          <rect x="160" y="86" width="210" height="40" rx="10" fill="url(#msg-candidate)" />
+          <text x="360" y="110" textAnchor="end" fill="var(--color-primary-text, #ffffff)" fontSize="10" fontWeight="600">Interested in this role.</text>
         </g>
 
         <g className="msg-typing">
