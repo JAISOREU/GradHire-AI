@@ -28,13 +28,13 @@ export const PrivacyFirstVisual = () => {
         <circle cx="210" cy="140" r="90" fill="url(#shield-glow)" opacity="0.6" className="priv-glow" />
 
         <g className="priv-shield">
-          <rect x="175" y="95" width="70" height="90" rx="16" fill="url(#shield-bg)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" />
-          <path d="M210 112 L240 130 L240 165 Q240 182 210 193 Q180 182 180 165 L180 130 Z" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <rect x="198" y="152" width="24" height="18" rx="4" fill="url(#lock-shine)" />
-          <path d="M204 152 L204 141 Q204 132 210 132 Q216 132 216 141 L216 152" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <circle cx="210" cy="162" r="3" fill="var(--color-surface, #ffffff)" />
-          <text x="210" y="212" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Security</text>
-          <text x="210" y="226" textAnchor="middle" fill="var(--color-text-muted, #8c8680)" fontSize="9" fontWeight="600">08</text>
+          <rect x="175" y="95" width="70" height="100" rx="16" fill="url(#shield-bg)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" />
+          <path d="M210 105 L240 123 L240 158 Q240 175 210 186 Q180 175 180 158 L180 123 Z" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <rect x="198" y="134" width="24" height="20" rx="4" fill="url(#lock-shine)" />
+          <path d="M204 134 L204 123 Q204 114 210 114 Q216 114 216 123 L216 134" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <circle cx="210" cy="144" r="3" fill="var(--color-surface, #ffffff)" />
+          <text x="210" y="182" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Security</text>
+          <text x="210" y="194" textAnchor="middle" fill="var(--color-text-muted, #8c8680)" fontSize="9" fontWeight="600">08</text>
         </g>
 
         <g className="priv-ring priv-ring--1">
