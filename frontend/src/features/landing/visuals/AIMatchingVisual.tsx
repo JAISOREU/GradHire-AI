@@ -60,18 +60,11 @@ export const AIMatchingVisual = () => {
           <path d="M288 170 L330 156" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.95" />
         </g>
 
-        <g className="ai-candidate">
-          <circle cx="60" cy="120" r="28" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="60" cy="112" r="9" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <path d="M46 124 Q60 134 74 124" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <text x="60" y="142" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Profile</text>
-        </g>
-
         <g className="ai-you">
-          <circle cx="90" cy="200" r="28" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <circle cx="90" cy="192" r="9" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <path d="M76 204 Q90 214 104 204" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <text x="90" y="222" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">You</text>
+          <circle cx="80" cy="220" r="28" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="80" cy="212" r="9" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <path d="M66 224 Q80 234 94 224" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          <text x="80" y="242" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">You</text>
         </g>
 
         <g className="ai-match-card">
@@ -80,28 +73,28 @@ export const AIMatchingVisual = () => {
         </g>
 
         <g className="ai-opp ai-opp--1">
-          <circle cx="420" cy="140" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="404" y="132" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="420" y="162" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Teacher</text>
+          <circle cx="320" cy="290" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="304" y="282" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="320" y="312" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Teacher</text>
         </g>
 
         <g className="ai-opp ai-opp--2">
-          <circle cx="400" cy="260" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="384" y="252" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="400" y="282" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Nurse</text>
+          <circle cx="460" cy="200" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="444" y="192" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="460" y="222" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Developer</text>
         </g>
 
         <g className="ai-opp ai-opp--3">
-          <circle cx="300" cy="290" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="284" y="282" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
-          <text x="300" y="312" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Retail Mgr</text>
+          <circle cx="440" cy="300" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="424" y="292" width="32" height="5" rx="2.5" fill="var(--color-border, #e8e2d8)" />
+          <text x="440" y="322" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Nurse</text>
         </g>
 
         <g className="ai-flow-conns">
-          <path d="M118 200 Q170 200 200 220 Q230 240 240 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M240 238 Q280 220 330 180 Q380 140 400 145" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M240 238 Q270 250 310 255 Q350 260 380 260" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
-          <path d="M240 238 Q250 270 260 280 Q280 290 290 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M108 220 L185 238" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L438 200" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L298 290" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
+          <path d="M295 238 L418 300" stroke="url(#conn-grad)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.9" />
         </g>
       </svg>
 
@@ -109,7 +102,6 @@ export const AIMatchingVisual = () => {
         .feature-visual--ai .ai-ambient,
         .feature-visual--ai .ai-core,
         .feature-visual--ai .ai-skill-chips,
-        .feature-visual--ai .ai-candidate,
         .feature-visual--ai .ai-you,
         .feature-visual--ai .ai-opp,
         .feature-visual--ai .ai-conns,
@@ -123,8 +115,7 @@ export const AIMatchingVisual = () => {
         .feature-visual--ai.is-animated .ai-core { opacity: 1; transform: scale(1); transition-delay: 0.1s; }
         .feature-visual--ai.is-animated .ai-skill-chips { opacity: 1; transform: scale(1); transition-delay: 0.2s; }
         .feature-visual--ai.is-animated .ai-conns { opacity: 1; transform: scale(1); transition-delay: 0.35s; }
-        .feature-visual--ai.is-animated .ai-candidate { opacity: 1; transform: scale(1); transition-delay: 0.45s; }
-        .feature-visual--ai.is-animated .ai-you { opacity: 1; transform: scale(1); transition-delay: 0.5s; }
+        .feature-visual--ai.is-animated .ai-you { opacity: 1; transform: scale(1); transition-delay: 0.45s; }
         .feature-visual--ai.is-animated .ai-match-card { opacity: 1; transform: scale(1); transition-delay: 0.55s; }
         .feature-visual--ai.is-animated .ai-opp--1 { opacity: 1; transform: scale(1); transition-delay: 0.65s; }
         .feature-visual--ai.is-animated .ai-opp--2 { opacity: 1; transform: scale(1); transition-delay: 0.75s; }
