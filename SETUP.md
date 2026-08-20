@@ -1,4 +1,4 @@
-# Gradture AI — Local Setup Guide
+# Gradture — Local Setup Guide
 
 ## Problem
 Sign in and registration return "Request failed. Please try again." because the backend cannot connect to PostgreSQL.
@@ -54,7 +54,7 @@ PostgreSQL is not installed or running on this machine. The backend requires a P
    docker-compose up --build
    ```
 
-This will start PostgreSQL, backend, AI service, and frontend automatically.
+This will start PostgreSQL, backend, recommendation service, and frontend automatically.
 
 ### Option C: Use a cloud database (Railway/Supabase)
 

@@ -1,5 +1,5 @@
 /**
- * GradHire AI — End-to-End Workflow QA Test Suite
+ * GradTure — End-to-End Workflow QA Test Suite
  * Tests complete real-world workflows against the running API.
  */
 
@@ -253,13 +253,13 @@ async function testTalentWorkflow() {
     log('FAIL', `Saved jobs failed: ${savedRes.status} - ${JSON.stringify(savedRes.data)}`);
   }
 
-  // 12. Get AI recommendations
-  log('info', 'Step 12: Get AI recommendations');
+  // 12. Get recommendations
+  log('info', 'Step 12: Get recommendations');
   const recsRes = await api('/recommendations/ai?top_k=5', { token: talentToken });
   if (recsRes.status === 200) {
-    log('PASS', `AI recommendations: ${recsRes.status}, ready: ${(recsRes.data as any)?.ready}`);
+    log('PASS', `recommendations: ${recsRes.status}, ready: ${(recsRes.data as any)?.ready}`);
   } else {
-    log('FAIL', `AI recommendations failed: ${recsRes.status} - ${JSON.stringify(recsRes.data)}`);
+    log('FAIL', `recommendations failed: ${recsRes.status} - ${JSON.stringify(recsRes.data)}`);
   }
 
   // 13. Add education
@@ -830,7 +830,7 @@ async function testRoleSecurity() {
 // ============================================================
 
 async function main() {
-  console.log(`${colors.blue}GradHire AI — End-to-End Workflow QA Test Suite${colors.reset}`);
+  console.log(`${colors.blue}GradTure — End-to-End Workflow QA Test Suite${colors.reset}`);
   console.log(`${colors.blue}Base URL: ${BASE_URL}${colors.reset}\n`);
 
   try {

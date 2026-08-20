@@ -190,7 +190,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           { to: '/admin/companies', label: 'Companies', icon: 'company' as const },
           { to: '/admin/reports', label: 'Reports', icon: 'dashboard' as const },
           { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' as const },
-          { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'dashboard' as const },
+          { to: '/admin/ai-monitoring', label: 'Monitoring', icon: 'dashboard' as const },
           { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' as const },
           { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' as const },
           { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'jobs' as const },

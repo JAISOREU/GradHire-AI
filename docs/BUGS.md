@@ -1,4 +1,4 @@
-# Gradture AI — Issue Tracking
+# Gradture — Issue Tracking
 
 This document is the single source of truth for production bugs, known issues, and their resolution status.
 
@@ -51,7 +51,7 @@ Regression Verification: ...
 
 ## Categories
 
-Authentication, Authorization/RBAC, Profile, Resume, Jobs, Job Ingestion, Applications, Messaging, Notifications, Interviews, AI, Employer, Admin, Database, API, Frontend, Backend, Storage, Email, Deployment, Security, Performance, UX, Testing, Technical Debt
+Authentication, Authorization/RBAC, Profile, Resume, Jobs, Job Ingestion, Applications, Messaging, Notifications, Interviews, Recommendations, Employer, Admin, Database, API, Frontend, Backend, Storage, Email, Deployment, Security, Performance, UX, Testing, Technical Debt
 
 ---
 
@@ -441,13 +441,13 @@ Regression Verification:
 
 ---
 
-### BUG-008: AI Service Placeholder Implementation
+### BUG-008: Service Placeholder Implementation
 
 ID: BUG-008
-Title: AI service README and main.py contain placeholder/static data
+Title: recommendation service README and main.py contain placeholder/static data
 Severity: P2
 Priority: Medium
-Category: AI / Backend
+Category: Backend
 Affected Role: Student, Employer, Admin
 Affected Platform: All
 Environment: Production
@@ -456,23 +456,23 @@ Detected: 2026-08-17
 Symptoms:
 - `ai-service/README.md` says "Placeholder for the FastAPI-based resume parsing and recommendation service"
 - `ai-service/main.py` has hardcoded `JOB_DESCRIPTIONS` and `JOB_TITLES` dictionaries with 5 static jobs
-- AI recommendations may return stale or irrelevant results if the service is used in production
+- recommendations may return stale or irrelevant results if the service is used in production
 
 Root Cause:
-- AI service was scaffolded but not fully connected to live database or real job data.
+- recommendation service was scaffolded but not fully connected to live database or real job data.
 
 Expected Behavior:
-- AI service queries the database for real jobs and returns relevant recommendations.
-- AI service health check reflects actual database connectivity.
+- recommendation service queries the database for real jobs and returns relevant recommendations.
+- recommendation service health check reflects actual database connectivity.
 
 Actual Behavior:
-- AI service serves static placeholder data.
+- recommendation service serves static placeholder data.
 
 Fix:
 - Remove hardcoded `JOB_DESCRIPTIONS` and `JOB_TITLES`.
 - Implement database-backed job loading in `load_jobs_from_db()`.
-- Wire AI service to backend `/api/v1/recommendations/ai` endpoint.
-- Add integration tests for AI recommendation quality.
+- Wire recommendation service to backend `/api/v1/recommendations/ai` endpoint.
+- Add integration tests for recommendation quality.
 
 Files Changed:
 - `ai-service/main.py`
@@ -480,17 +480,17 @@ Files Changed:
 - `backend/src/ai/ai.service.ts`
 
 Tests:
-- AI service pytest suite
+- recommendation service pytest suite
 - Backend integration tests for `/api/v1/recommendations/ai`
 
 Deployment Verification:
-- [ ] AI service connects to production PostgreSQL
+- [ ] recommendation service connects to production PostgreSQL
 - [ ] Recommendations are based on live job data
 - [ ] Backend `/api/v1/recommendations/ai` returns real recommendations
 
 Regression Verification:
-- [ ] Frontend recommended jobs page works with live AI data
-- [ ] AI monitoring page shows real metrics
+- [ ] Frontend recommended jobs page works with live recommendation data
+- [ ] recommendation monitoring page shows real metrics
 
 ---
 
@@ -564,7 +564,7 @@ Fix: Recovery migration `20260816000000_recover_job_ingestion_state` created and
 ### Deployment Failure
 
 ```markdown
-**Service:** Backend | Frontend | AI Service
+**Service:** Backend | Frontend | Recommendation Service
 
 **Environment:** Production | Staging
 

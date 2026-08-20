@@ -52,7 +52,7 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Install AI service dependencies
+      - name: Install recommendation service dependencies
         working-directory: ai-service
         run: pip install -r requirements.txt
 
@@ -80,9 +80,9 @@ jobs:
         env:
           DATABASE_URL: postgresql://gradhire:gradhire@localhost:5432/gradhire
 
-      - name: Run AI service tests
+      - name: Run recommendation service tests
         working-directory: ai-service
-        run: pytest test_*.py -v || echo "No AI tests found"
+        run: pytest test_*.py -v || echo "No recommendation tests found"
 
       - name: Security audit - frontend
         working-directory: frontend
@@ -138,7 +138,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: false
-          tags: gradhire/frontend:${{ github.sha }}
+          tags: gradture/frontend:${{ github.sha }}
 
       - name: Build backend image
         uses: docker/build-push-action@v5
@@ -146,15 +146,15 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false
-          tags: gradhire/backend:${{ github.sha }}
+          tags: gradture/backend:${{ github.sha }}
 
-      - name: Build AI service image
+      - name: Build recommendation service image
         uses: docker/build-push-action@v5
         with:
           context: ./ai-service
           file: ./ai-service/Dockerfile
           push: false
-          tags: gradhire/ai-service:${{ github.sha }}
+          tags: gradture/recommendation-service:${{ github.sha }}
 
   load-test:
     name: Load Test

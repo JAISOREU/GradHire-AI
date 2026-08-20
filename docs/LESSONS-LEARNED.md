@@ -1,4 +1,4 @@
-# Gradture AI — Lessons Learned
+# Gradture — Lessons Learned
 
 Record of recurring failures, near-misses, and corrective actions taken. This document prevents the same mistakes from being repeated by future contributors and deployment runs.
 
@@ -210,21 +210,21 @@ Frontend SPA routing worked on Vercel but could fail on other platforms (Netlify
 ## Lesson 10: Health Checks Must Be Fast and Independent
 
 **Problem:**
-Health check endpoint `/health` (later changed to `/api/v1/health`) was slow because it checked all dependencies including AI service and email. If an optional dependency was down, the health check returned `unhealthy`, triggering unnecessary alerts and potential Railway restarts.
+Health check endpoint `/health` (later changed to `/api/v1/health`) was slow because it checked all dependencies including recommendation service and email. If an optional dependency was down, the health check returned `unhealthy`, triggering unnecessary alerts and potential Railway restarts.
 
 **Root Cause:**
-- Health check treated optional dependencies (Redis, AI, Email) as required for `healthy` status.
-- Slow AI service health check added latency to every health probe.
+- Health check treated optional dependencies (Redis, Recommendation, Email) as required for `healthy` status.
+- Slow recommendation service health check added latency to every health probe.
 
 **Corrective Action:**
 1. Refined health check to return `degraded` when optional dependencies are down, and `unhealthy` only when required dependencies (database, storage, websockets) are down.
-2. Made AI service health check non-blocking with a timeout.
+2. Made recommendation service health check non-blocking with a timeout.
 3. Configured Railway health check path to `/api/v1/health` with appropriate timeout.
 
 **Preventive Check:**
 - Health check must complete in under 1 second.
 - Required dependencies: database, storage, websockets.
-- Optional dependencies: Redis, AI, email.
+- Optional dependencies: Redis, email.
 - Monitor health check latency as a metric.
 
 ---

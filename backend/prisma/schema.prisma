@@ -1,4 +1,4 @@
-// Gradture AI — Prisma schema
+// Gradture — Prisma schema
 // Core entities for recruitment marketplace + ATS
 
 generator client {

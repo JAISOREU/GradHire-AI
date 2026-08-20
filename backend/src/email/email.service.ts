@@ -38,7 +38,7 @@ export class EmailService {
       return { id, status: 'DRY_RUN' };
     }
 
-    const from = process.env.SMTP_FROM ?? 'GradHire AI <noreply@gradture.ai>';
+    const from = process.env.SMTP_FROM ?? 'GradTure <noreply@gradture.ai>';
 
     let lastError: Error | undefined;
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {

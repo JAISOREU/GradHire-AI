@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { AIMatchingVisual } from './visuals/AIMatchingVisual';
+import { SmartMatchingVisual } from './visuals/SmartMatchingVisual';
 import { ResumeParsingVisual } from './visuals/ResumeParsingVisual';
 import { JobHubVisual } from './visuals/JobHubVisual';
 import { RealTimeNotificationsVisual } from './visuals/RealTimeNotificationsVisual';
@@ -12,8 +12,8 @@ const FEATURES = [
   {
     id: 'ai-matches',
     number: '01',
-    label: 'AI Matching',
-    title: 'AI-guided matches',
+    label: 'Smart Matching',
+    title: 'Smart matches',
     text: 'Find opportunities matched to your skills, interests, and goals — not just keywords.',
   },
   {
@@ -21,7 +21,7 @@ const FEATURES = [
     number: '02',
     label: 'Resume Intelligence',
     title: 'Resume parsing',
-    text: 'Upload your resume and Gradture AI understands it, extracting skills, experience, and education.',
+    text: 'Upload your resume and Gradture understands it, extracting skills, experience, and education.',
   },
   {
     id: 'job-hub',
@@ -192,7 +192,7 @@ export const WhyGradture = () => {
                 <p className="feature-story__text">{feature.text}</p>
               </div>
               <div className="feature-story__visual" ref={(el) => { visualRefs.current[index] = el; }}>
-                {index === 0 && <AIMatchingVisual />}
+                {index === 0 && <SmartMatchingVisual />}
                 {index === 1 && <ResumeParsingVisual />}
                 {index === 2 && <JobHubVisual />}
                  {index === 3 && <RealTimeNotificationsVisual />}

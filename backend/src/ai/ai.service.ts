@@ -46,7 +46,7 @@ export class AiService {
   private readonly baseUrl: string;
 
   constructor(private readonly http: HttpService) {
-    this.baseUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    this.baseUrl = process.env.SERVICE_URL || 'http://localhost:8000';
   }
 
   async getRecommendations(focus: string, topK = 5): Promise<AiRecommendation[]> {
@@ -56,7 +56,7 @@ export class AiService {
       );
       return response.data.recommendations ?? [];
     } catch (error) {
-      this.logger.warn('AI service unavailable, falling back to heuristic recommendations');
+      this.logger.warn('recommendation service unavailable, falling back to heuristic recommendations');
       return [];
     }
   }

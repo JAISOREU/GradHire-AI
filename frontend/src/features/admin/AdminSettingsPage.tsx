@@ -12,7 +12,7 @@ type PlatformSettings = {
 
 export const AdminSettingsPage = () => {
   const { data: settings, loading } = useAsync(() => adminApi.settings(), []);
-  const [platformName, setPlatformName] = useState('Gradture AI');
+  const [platformName, setPlatformName] = useState('Gradture');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(true);
   const [message, setMessage] = useState('');
@@ -21,7 +21,7 @@ export const AdminSettingsPage = () => {
   useEffect(() => {
     if (settings) {
       const s = settings as PlatformSettings;
-      setPlatformName(s.platformName ?? 'Gradture AI');
+      setPlatformName(s.platformName ?? 'Gradture');
       setMaintenanceMode(s.maintenanceMode ?? false);
       setRegistrationOpen(s.registrationOpen ?? true);
     }
@@ -55,7 +55,7 @@ export const AdminSettingsPage = () => {
           <form onSubmit={handleSubmit} className="stack">
             <div className="form-group">
               <label className="form-label" htmlFor="platform-name">Platform name</label>
-              <input id="platform-name" className="input" value={platformName} onChange={(e) => setPlatformName(e.target.value)} placeholder="Gradture AI" />
+              <input id="platform-name" className="input" value={platformName} onChange={(e) => setPlatformName(e.target.value)} placeholder="Gradture" />
             </div>
             <div className="form-group">
               <label className="form-checkbox">

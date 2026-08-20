@@ -1,5 +1,5 @@
 /* ============================================================
-   Gradture AI — Design System
+   Gradture — Design System
    ============================================================
    Principles:
    - Clean, minimal, professional
@@ -3196,7 +3196,7 @@ input[type='file']::file-selector-button:hover {
 }
 
 /* ============================================================
-   Animated Logo — Gradture AI
+   Animated Logo — Gradture
    ============================================================ */
 .animated-logo {
   display: inline-flex;

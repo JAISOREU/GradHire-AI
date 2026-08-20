@@ -1,4 +1,4 @@
-# Oracle Cloud Free Tier — GradHire AI Deployment Guide
+# Oracle Cloud Free Tier — GradTure Deployment Guide
 
 ## Prerequisites
 - Oracle Cloud account with PayPal verification (or credit card)
@@ -89,13 +89,13 @@ FRONTEND_URL=https://gradture.ai
 
 # Email - Resend
 RESEND_API_KEY=re_...
-SMTP_FROM=GradHire AI <noreply@gradture.ai>
+SMTP_FROM=GradTure <noreply@gradture.ai>
 
 # Redis - use external free Redis (Upstash or Redis Cloud)
 REDIS_URL=redis://<host>:6379
 
-# AI Service
-AI_SERVICE_URL=http://ai-service:8000
+# Recommendation Service
+SERVICE_URL=http://ai-service:8000
 
 # Storage - Cloudflare R2
 STORAGE_PROVIDER=r2

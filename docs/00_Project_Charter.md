@@ -1,10 +1,10 @@
 # Document 00 — Project Charter
 
 ## Purpose
-This document defines the strategic intent of the Gradture AI platform and establishes the business and technical context for the project.
+This document defines the strategic intent of the Gradture platform and establishes the business and technical context for the project.
 
 ## Problem Statement
-Students and employers need a faster, more intelligent hiring experience. The platform should simplify job discovery, improve candidate matching, and reduce manual screening effort through AI-assisted workflows.
+Students and employers need a faster, more intelligent hiring experience. The platform should simplify job discovery, improve candidate matching, and reduce manual screening effort through intelligent workflows.
 
 ## Vision
 Create a trustworthy, scalable hiring platform that connects students with relevant opportunities through intelligent recommendations and strong user experience.
@@ -22,7 +22,7 @@ Create a trustworthy, scalable hiring platform that connects students with relev
 In scope:
 - Student profiles and job discovery
 - Employer job posting and candidate review
-- AI-based matching and recommendation features
+- Smart matching and recommendation features
 - Authentication, authorization, and secure data handling
 - Role-based sign-in and sign-up for employers, students, and fresh grads
 - Resume upload, parsing, and automatic profile population
@@ -37,13 +37,13 @@ Out of scope for v1:
 ## Stakeholders
 - Product owner
 - Engineering lead
-- AI engineering team
+- engineering team
 - Design team
 - Security and compliance reviewers
 - End users: students and employers
 
 ## Risks
-- AI recommendation quality may not meet user expectations initially
+- recommendation quality may not meet user expectations initially
 - Ambiguous requirements could cause rework
 - Security and privacy concerns require early attention
 - Integration complexity may impact delivery timelines

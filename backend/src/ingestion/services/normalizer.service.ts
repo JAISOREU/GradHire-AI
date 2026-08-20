@@ -46,7 +46,7 @@ export class NormalizerService {
           enriched = enrichedData;
         }
       } catch {
-        this.logger.warn(`AI enrichment failed for source ${source.id}, using provider normalization`);
+        this.logger.warn(`enrichment failed for source ${source.id}, using provider normalization`);
       }
     }
 

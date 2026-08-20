@@ -84,7 +84,7 @@ export class HealthService {
       checks.email.status = 'down';
     }
 
-    // AI service (optional - falls back to heuristics)
+    // recommendation service (optional - falls back to heuristics)
     try {
       const start = Date.now();
       const healthy = await this.ai.healthCheck();

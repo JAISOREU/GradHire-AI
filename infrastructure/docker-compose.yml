@@ -65,8 +65,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-gradhire}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-change-me-in-production}
       RESEND_API_KEY: ${RESEND_API_KEY:-change-me-in-production}
-      SMTP_FROM: ${SMTP_FROM:-GradHire AI <noreply@gradture.ai>}
-      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai-service:8000}
+      SMTP_FROM: ${SMTP_FROM:-GradTure <noreply@gradture.ai>}
+      SERVICE_URL: ${SERVICE_URL:-http://ai-service:8000}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
       SENTRY_DSN: ${SENTRY_DSN:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}

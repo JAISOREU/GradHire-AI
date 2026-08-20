@@ -1,4 +1,4 @@
-# Gradture AI — Staging Deployment Guide
+# Gradture — Staging Deployment Guide
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ AWS_SECRET_ACCESS_KEY=your-secret
 ```
 REDIS_URL=redis://localhost:6379
 SENTRY_DSN=https://...
-AI_SERVICE_URL=http://localhost:8000
+SERVICE_URL=http://localhost:8000
 ```
 
 ## Database Setup

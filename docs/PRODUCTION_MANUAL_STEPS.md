@@ -1,4 +1,4 @@
-# Gradture AI — Production Manual Steps
+# Gradture — Production Manual Steps
 
 **Production URLs**
 - Frontend: https://grad-hire-ai.vercel.app
@@ -133,7 +133,7 @@ If the test fails:
 1. Click **Sync Now** for the source
 2. This triggers a full ingestion run:
    - Fetch raw jobs from source
-   - Normalize via AI/heuristic
+   - Normalize via heuristic
    - Deduplicate against existing jobs
    - Validate quality
    - Import into `Job` table
@@ -196,7 +196,7 @@ If the test fails:
 | Variable | Value |
 |----------|-------|
 | `RESEND_API_KEY` | re_your_resend_api_key |
-| `SMTP_FROM` | `GradHire AI <noreply@gradture.ai>` |
+| `SMTP_FROM` | `GradTure <noreply@gradture.ai>` |
 
 7. Save and Railway will redeploy
 
@@ -426,7 +426,7 @@ Check the backend code for the actual setup endpoint path and required headers b
 - Verify `JobSource` exists and `enabled = true`
 - Verify `feedUrl` is publicly accessible
 - Check Railway logs for adapter errors
-- Verify `AI_SERVICE_URL` is set if using AI normalization
+- Verify `SERVICE_URL` is set if using normalization
 
 ---
 

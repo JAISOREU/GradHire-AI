@@ -70,7 +70,7 @@ export const StudentDashboardPage = () => {
           }
         />
         <KPICard
-          label="AI Matches"
+          label="Matches"
           value={hasRecommendationAccess ? 'Available' : 'Locked'}
           icon="✨"
           trend={{ direction: hasRecommendationAccess ? 'up' : 'neutral', value: hasRecommendationAccess ? 'Active' : 'Complete profile', label: 'recommendations' }}
@@ -119,8 +119,8 @@ export const StudentDashboardPage = () => {
       </DashboardSection>
 
       <DashboardSection
-        title={hasRecommendationAccess ? "Top matches for you" : "Unlock AI recommendations"}
-        subtitle={hasRecommendationAccess ? "AI-ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
+        title={hasRecommendationAccess ? "Top matches for you" : "Unlock recommendations"}
+        subtitle={hasRecommendationAccess ? "ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
         action={
           <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm">{hasRecommendationAccess ? 'View all →' : 'Complete profile'}</Button></Link>
         }
@@ -145,7 +145,7 @@ export const StudentDashboardPage = () => {
               </Link>
             ))
           ) : (
-            <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see AI-matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
+            <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
           )
         ) : (
           <div className="card" style={{ padding: '1rem' }}>

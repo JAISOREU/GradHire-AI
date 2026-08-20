@@ -159,7 +159,7 @@ export const PublicLayout = () => {
               </svg>
             </span>
             <span className="header-logo__text" style={titleStyle}>
-              <span className="header-logo__inner">Gradture <span className="header-logo__ai">AI</span></span>
+              <span className="header-logo__inner">Gradture</span>
             </span>
           </Link>
           <button
@@ -212,7 +212,7 @@ export const PublicLayout = () => {
       </main>
 
       <footer className="app-footer">
-        Gradture AI — connecting talent with opportunities.
+        Gradture — connecting talent with opportunities.
       </footer>
     </div>
   );

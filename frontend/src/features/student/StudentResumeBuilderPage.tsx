@@ -13,7 +13,7 @@ type Recommendation = {
   icon: string;
 };
 
-export const StudentAiResumeBuilderPage = () => {
+export const StudentResumeBuilderPage = () => {
   const { data: profile, loading: profileLoading } = useAsync(() => studentsApi.getProfile(), []);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export const StudentAiResumeBuilderPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="AI Resume Builder" subtitle="Generate a tailored resume from your profile and focus area." />
+      <PageHeader title="Resume Builder" subtitle="Generate a tailored resume from your profile and focus area." />
 
       <div className="form-container">
         <Card title="Build your resume">

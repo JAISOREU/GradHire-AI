@@ -8,7 +8,7 @@ Use containerized, cloud-ready deployment with automation for reliable releases.
 - Docker Compose for local development
 - GitHub Actions for CI/CD
 - **Vercel** for frontend hosting (static SPA, free tier)
-- **Railway** or **Fly.io** for backend and AI services (Docker-native, managed)
+- **Railway** or **Fly.io** for backend and recommendation services (Docker-native, managed)
 - **Supabase** or **Railway Postgres** for managed PostgreSQL
 - **Upstash** or **Redis Cloud** for managed Redis
 - **SendGrid** or **AWS SES** for email notifications
@@ -27,7 +27,7 @@ vercel --prod
 - Set `VITE_API_URL` to your backend URL in Vercel environment variables
 - Connect GitHub repo for automatic deployments on `main` branch
 
-### 2. Backend + AI Service (Railway)
+### 2. Backend + Recommendation Service (Railway)
 ```bash
 # Install Railway CLI
 npm i -g @railway/cli
@@ -55,7 +55,7 @@ cd backend
 fly launch
 fly secrets set DATABASE_URL=... JWT_SECRET=...
 
-# Deploy AI service
+# Deploy recommendation service
 cd ../ai-service
 fly launch
 ```
@@ -66,7 +66,7 @@ Copy `.env.production.example` to `.env` and fill in real values:
 - `JWT_SECRET` — secure random string (min 32 chars)
 - `SMTP_*` — email provider credentials
 - `CORS_ORIGIN` — frontend domain
-- `AI_SERVICE_URL` — AI service endpoint
+- `SERVICE_URL` — recommendation service endpoint
 
 ### 5. Domain and SSL
 - Vercel provides automatic HTTPS and CDN

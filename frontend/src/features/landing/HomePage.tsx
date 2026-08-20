@@ -6,7 +6,7 @@ import { WhyGradture } from './WhyGradture';
 import { HowItWorks } from './HowItWorks';
 
 const HERO_INDICATORS = [
-  'AI-powered matching',
+  'Smart matching',
   'Real opportunities',
   'Profile-based recommendations',
 ];
@@ -73,7 +73,7 @@ export const HomePage = () => (
           <div className="cta-card">
             <h2 className="cta-card__title gradient-text gradient-text--subtle">Ready to get started?</h2>
             <p className="cta-card__subtitle">
-              Join talent and employers already using Gradture AI.
+              Join talent and employers already using Gradture.
             </p>
             <div className="hero-actions">
               <Button to="/register">Create account</Button>

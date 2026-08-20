@@ -36,9 +36,8 @@ export const SkillMatchingVisual = () => {
           <path d="M138 123 L141 126 L146 120" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
 
           <rect x="40" y="144" width="110" height="26" rx="6" fill="url(#skill-chip-candidate)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="95" y="161" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Project Mgmt</text>
-          <circle cx="142" cy="157" r="6" fill="var(--color-success, #059669)" />
-          <path d="M138 157 L141 160 L146 154" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <text x="95" y="161" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Developing</text>
+          <circle cx="142" cy="157" r="6" fill="var(--color-border, #e8e2d8)" />
 
           <rect x="40" y="178" width="110" height="26" rx="6" fill="url(#skill-chip-candidate)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <text x="95" y="195" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Teamwork</text>
@@ -49,35 +48,35 @@ export const SkillMatchingVisual = () => {
           <rect x="240" y="40" width="150" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <text x="315" y="56" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Role requirements</text>
 
-          <rect x="250" y="76" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="305" y="93" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Leadership</text>
-          <circle cx="362" cy="89" r="6" fill="var(--color-success, #059669)" />
-          <path d="M358 89 L361 92 L366 86" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <rect x="270" y="76" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="320" y="93" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Leadership</text>
+          <circle cx="370" cy="89" r="6" fill="var(--color-success, #059669)" />
+          <path d="M365 89 L369 92 L374 86" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
 
-          <rect x="250" y="110" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="305" y="127" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Communication</text>
-          <circle cx="362" cy="123" r="6" fill="var(--color-success, #059669)" />
-          <path d="M358 123 L361 126 L366 120" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <rect x="270" y="110" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="320" y="127" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Communication</text>
+          <circle cx="370" cy="123" r="6" fill="var(--color-success, #059669)" />
+          <path d="M365 123 L369 126 L374 120" stroke="var(--color-surface, #ffffff)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
 
-          <rect x="250" y="144" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="305" y="161" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Problem Solving</text>
-          <circle cx="362" cy="157" r="6" fill="var(--color-border, #e8e2d8)" />
+          <rect x="270" y="144" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="320" y="161" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Problem Solving</text>
+          <circle cx="370" cy="157" r="6" fill="var(--color-border, #e8e2d8)" />
 
-          <rect x="250" y="178" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="305" y="195" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Customer Service</text>
-          <circle cx="362" cy="191" r="6" fill="var(--color-border, #e8e2d8)" />
+          <rect x="270" y="178" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="320" y="195" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Customer Service</text>
+          <circle cx="370" cy="191" r="6" fill="var(--color-border, #e8e2d8)" />
         </g>
 
         <g className="skill-conns">
-          <line x1="150" y1="89" x2="250" y2="89" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
-          <line x1="150" y1="123" x2="250" y2="123" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
-          <line x1="150" y1="157" x2="250" y2="157" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
-          <line x1="150" y1="191" x2="250" y2="191" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.2" strokeDasharray="4 3" opacity="0.5" />
+          <line x1="152" y1="89" x2="270" y2="89" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
+          <line x1="152" y1="123" x2="270" y2="123" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
+          <line x1="152" y1="157" x2="270" y2="157" stroke="var(--color-primary, #d5cfc6)" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.9" />
+          <line x1="152" y1="191" x2="270" y2="191" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.2" strokeDasharray="4 3" opacity="0.5" />
         </g>
 
         <g className="match-badge">
-          <circle cx="210" cy="140" r="40" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <circle cx="210" cy="140" r="32" fill="none" stroke="url(#match-ring)" strokeWidth="4" strokeDasharray="160" strokeDashoffset="24" strokeLinecap="round" transform="rotate(-90 210 140)" />
+          <circle cx="210" cy="140" r="45" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="210" cy="140" r="36" fill="none" stroke="url(#match-ring)" strokeWidth="4" strokeDasharray="190" strokeDashoffset="24" strokeLinecap="round" transform="rotate(-90 210 140)" />
           <text x="210" y="136" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="15" fontWeight="700">75%</text>
           <text x="210" y="152" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Profile Match</text>
         </g>

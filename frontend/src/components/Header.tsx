@@ -119,7 +119,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
             </svg>
           </span>
           <span className="header-logo__text" style={titleStyle}>
-            <span className="header-logo__inner">Gradture <span className="header-logo__ai">AI</span></span>
+            <span className="header-logo__inner">Gradture</span>
           </span>
         </div>
 

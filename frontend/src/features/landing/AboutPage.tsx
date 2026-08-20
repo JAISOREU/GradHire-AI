@@ -4,7 +4,7 @@ export const AboutPage = () => (
   <div className="public-page">
     <section className="section-full">
       <div className="section-inner">
-        <PageHeader title="About Gradture AI" subtitle="We help talent discover opportunities and help employers find great people." />
+        <PageHeader title="About Gradture" subtitle="We help talent discover opportunities and help employers find great people." />
       </div>
     </section>
 
@@ -15,7 +15,7 @@ export const AboutPage = () => (
             <div className="card">
               <h3 className="card__title">Our mission</h3>
               <p className="card__subtitle">
-                Reduce the time-to-match between talent and employers through intelligent, AI-assisted workflows.
+                Reduce the time-to-match between talent and employers through intelligent, intelligent workflows.
               </p>
             </div>
             <div className="card">
@@ -35,7 +35,7 @@ export const AboutPage = () => (
           <div className="card text-center">
             <h3 className="card__title">Built with care</h3>
             <p className="card__subtitle">
-              Gradture AI was designed and built by a single developer who believes great tools can come from focused, thoughtful work. Every part of the platform — from the AI matching engine to the responsive interface — was crafted to keep things simple, reliable, and genuinely useful for both talent and employers.
+              Gradture was designed and built by a single developer who believes great tools can come from focused, thoughtful work. Every part of the platform — from the matching engine to the responsive interface — was crafted to keep things simple, reliable, and genuinely useful for both talent and employers.
             </p>
              <p className="card__subtitle mt-3">
                You can view my background and experience here:{' '}

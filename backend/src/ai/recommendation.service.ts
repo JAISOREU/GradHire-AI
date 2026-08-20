@@ -41,7 +41,7 @@ export class RecommendationService {
     try {
       recommendations = await this.ai.getPersonalizedRecommendations(gating.profileSummary, topK);
     } catch (error) {
-      this.logger.warn(`AI recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
       fallback = true;
     }
 

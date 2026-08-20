@@ -1,4 +1,4 @@
-# Gradture AI — Clean Architecture & Role Separation Refactor
+# Gradture — Clean Architecture & Role Separation Refactor
 
 ## Guiding Principles
 - Clean Architecture, SOLID, feature-based folder structure.
@@ -32,7 +32,7 @@
 
 ### Phase 3 — Layouts (`frontend/src/layouts/`)
 - [x] `PublicLayout.tsx` — header + footer for guest pages
-- [x] `StudentLayout.tsx` — sidebar (Dashboard, Profile, Resume, Applications, Saved Jobs, AI Resume Builder, Recommended Jobs, Notifications, Messages, Settings)
+- [x] `StudentLayout.tsx` — sidebar (Dashboard, Profile, Resume, Applications, Saved Jobs, Resume Builder, Recommended Jobs, Notifications, Messages, Settings)
 - [x] `EmployerLayout.tsx` — sidebar (Dashboard, Company Profile, Post Job, Manage Jobs, Applicants, Interview Scheduling, Messages, Analytics, Notifications, Settings)
 
 ### Phase 4 — Routing + Guards (`frontend/src/routing/`)
@@ -49,7 +49,7 @@
 #### Student (`frontend/src/features/student/*`)
 - [x] Dashboard (Profile Completion, Recommended Jobs, Latest Jobs, Interview Invitations, Application Status, Skills Progress, Quick Apply)
 - [x] Profile, Resume, Applications, Saved Jobs
-- [x] AI Resume Builder, Recommended Jobs, Notifications, Messages, Settings
+- [x] Resume Builder, Recommended Jobs, Notifications, Messages, Settings
 
 #### Employer (`frontend/src/features/employer/*`)
 - [x] Dashboard (Active Jobs, Applications Today, Views, Pending Interviews, Hiring Funnel)
@@ -79,7 +79,7 @@
 - [x] Student: Saved Jobs page (list saved jobs)
 - [x] Student: Notifications page (list, mark read)
 - [x] Student: Messages page (list messages)
-- [x] Student: AI Resume Builder (call AI service)
+- [x] Student: Resume Builder (call recommendation service)
 - [x] Employer: Company Profile page (fetch/update)
 - [x] Employer: Post Job page (create job)
 - [x] Employer: Manage Jobs page (list, update, archive)
@@ -104,14 +104,14 @@
 - [x] Add ADMIN to backend Role enum
 - [x] Block ADMIN from public registration
 - [x] Create AdminGuard for /admin/* routes
-- [x] Create AdminModule (dashboard, users, jobs, applications, companies, reports, analytics, AI monitoring, notifications, audit logs, settings, database, API keys, email templates, CMS, feature flags, backups, security, developer tools, profile)
+- [x] Create AdminModule (dashboard, users, jobs, applications, companies, reports, analytics, recommendation monitoring, notifications, audit logs, settings, database, API keys, email templates, CMS, feature flags, backups, security, developer tools, profile)
 - [x] Create AdminLayout with full sidebar
 - [x] Wire admin routes under /admin/*
 - [x] Ensure admin routes are hidden from public navigation 
 - [x] Verify builds and E2E tests pass
 
 ### Phase 13 — Deployment & CI/CD (completed)
-- [x] Add multi-stage Dockerfiles for frontend, backend, and AI service
+- [x] Add multi-stage Dockerfiles for frontend, backend, and recommendation service
 - [x] Add nginx.conf for frontend container (SPA routing, API proxy, gzip)
 - [x] Create docker-compose.yml with Postgres, Redis, all services
 - [x] Add .dockerignore files for all services
@@ -132,12 +132,12 @@
 - [x] Add Prometheus metrics endpoint to backend
 - [x] Add monitoring and alerting runbook
 
-### Phase 15 — AI Matching & Notifications (completed)
-- [x] Add sentence-transformers embedding service to AI microservice
+### Phase 15 — Smart Matching & Notifications (completed)
+- [x] Add sentence-transformers embedding service to recommendation microservice
 - [x] Implement semantic job recommendations via cosine similarity
-- [x] Add AI recommendations endpoint to backend (`/api/v1/recommendations/ai`)
-- [x] Wire AI service into frontend recommended jobs page
-- [x] Add evaluation metrics endpoint to AI service
+- [x] Add recommendations endpoint to backend (`/api/v1/recommendations/ai`)
+- [x] Wire recommendation service into frontend recommended jobs page
+- [x] Add evaluation metrics endpoint to recommendation service
 - [x] Expand notification preferences (recommendations, messages, interviews, weekly digest)
 - [x] Add email delivery retry logic with exponential backoff
 - [x] Upgrade password hashing from bcryptjs to Argon2id
@@ -147,7 +147,7 @@
 - [x] Add global exception filter with sanitized error responses
 - [x] Add image upload rejection to resume parser
 - [x] Add Sentry error tracking initialization
-- [x] Add 5 critical E2E tests (register/login, job/apply, resume upload, messaging, AI recommendations)
+- [x] Add 5 critical E2E tests (register/login, job/apply, resume upload, messaging, recommendations)
 - [x] Add OpenAPI/Swagger spec for all endpoints
 - [x] Add Redis caching for job listings
 - [x] Add request tracing (x-correlation-id)
@@ -167,6 +167,6 @@
 - [x] Fix backend docker-entrypoint to use `prisma migrate deploy` instead of `prisma db push`
 - [ ] Run PostgreSQL migrations on production database
 - [ ] Deploy backend to Railway
-- [ ] Deploy AI service to Railway
+- [ ] Deploy recommendation service to Railway
 - [ ] Deploy frontend to Vercel
 - [ ] Verify production health checks pass

@@ -32,7 +32,7 @@ function writeSettingsFile(data: Record<string, string>) {
 }
 
 const DEFAULT_SETTINGS: Record<string, string> = {
-  platformName: 'Gradture AI',
+  platformName: 'Gradture',
   maintenanceMode: 'false',
   registrationOpen: 'true',
 };
@@ -228,7 +228,7 @@ export class AdminController {
   async settings() {
     const data = { ...DEFAULT_SETTINGS, ...readSettingsFile() };
     return {
-      platformName: data.platformName ?? 'Gradture AI',
+      platformName: data.platformName ?? 'Gradture',
       maintenanceMode: data.maintenanceMode === 'true',
       registrationOpen: data.registrationOpen !== 'false',
     };

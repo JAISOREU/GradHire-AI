@@ -39,9 +39,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            gradhire/frontend
-            gradhire/backend
-            gradhire/ai-service
+            gradture/frontend
+            gradture/backend
+            gradture/recommendation-service
           tags: |
             type=sha,prefix={{branch}}-
             type=ref,event=tag
@@ -53,8 +53,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=gradhire/frontend:buildcache
-          cache-to: type=registry,ref=gradhire/frontend:buildcache,mode=max
+          cache-from: type=registry,ref=gradture/frontend:buildcache
+          cache-to: type=registry,ref=gradture/frontend:buildcache,mode=max
 
       - name: Build and push backend
         uses: docker/build-push-action@v5
@@ -63,18 +63,18 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=gradhire/backend:buildcache
-          cache-to: type=registry,ref=gradhire/backend:buildcache,mode=max
+          cache-from: type=registry,ref=gradture/backend:buildcache
+          cache-to: type=registry,ref=gradture/backend:buildcache,mode=max
 
-      - name: Build and push AI service
+      - name: Build and push recommendation service
         uses: docker/build-push-action@v5
         with:
           context: ./ai-service
           file: ./ai-service/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=gradhire/ai-service:buildcache
-          cache-to: type=registry,ref=gradhire/ai-service:buildcache,mode=max
+          cache-from: type=registry,ref=gradture/recommendation-service:buildcache
+          cache-to: type=registry,ref=gradture/recommendation-service:buildcache,mode=max
 
   rollback:
     name: Rollback Production
@@ -108,7 +108,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: false
-          tags: gradhire/frontend:${{ github.event.inputs.tag }}
+          tags: gradture/frontend:${{ github.event.inputs.tag }}
 
       - name: Rollback backend
         uses: docker/build-push-action@v5
@@ -116,12 +116,12 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false
-          tags: gradhire/backend:${{ github.event.inputs.tag }}
+          tags: gradture/backend:${{ github.event.inputs.tag }}
 
-      - name: Rollback AI service
+      - name: Rollback recommendation service
         uses: docker/build-push-action@v5
         with:
           context: ./ai-service
           file: ./ai-service/Dockerfile
           push: false
-          tags: gradhire/ai-service:${{ github.event.inputs.tag }}
+          tags: gradture/recommendation-service:${{ github.event.inputs.tag }}

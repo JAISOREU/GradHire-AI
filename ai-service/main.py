@@ -9,7 +9,7 @@ import os
 import asyncpg
 from typing import List, Optional
 
-app = FastAPI(title="Gradture AI Service")
+app = FastAPI(title="Gradture Service")
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -19,7 +19,7 @@ JOB_DESCRIPTIONS = {
     "1": "Join our internship program to build real-world software engineering skills.",
     "2": "Analyze business data and deliver actionable insights to stakeholders.",
     "3": "Shape product experiences through user research and visual design.",
-    "4": "Work at the intersection of AI and product to ship impactful features.",
+    "4": "Work at the intersection of intelligent products to ship impactful features.",
     "5": "Build and scale full-stack products in a fast-moving team.",
 }
 
@@ -27,7 +27,7 @@ JOB_TITLES = {
     "1": "Software Engineer Intern",
     "2": "Data Analyst",
     "3": "Product Designer",
-    "4": "AI Product Engineer",
+    "4": "Intelligent Products Engineer",
     "5": "Full-Stack Developer",
 }
 
@@ -141,7 +141,7 @@ class NormalizeJobRequest(BaseModel):
 def normalize_job(payload: NormalizeJobRequest) -> dict:
     return {
         "status": "fallback",
-        "message": "AI normalization is not configured. Use provider normalization.",
+        "message": "Recommendation normalization is not configured. Use provider normalization.",
     }
 
 

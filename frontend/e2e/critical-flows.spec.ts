@@ -118,7 +118,7 @@ Education: BS Computer Science`;
     expect(notifs.items.length).toBeGreaterThan(0);
   });
 
-  test('get AI recommendations', async ({ request }) => {
+  test('get recommendations', async ({ request }) => {
     const student = await registerUser(request, 'STUDENT');
     const profileRes = await request.get(`${API_BASE}/students/me`, {
       headers: { Authorization: `Bearer ${student.token}` },

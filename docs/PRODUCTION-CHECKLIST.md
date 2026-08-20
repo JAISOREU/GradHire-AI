@@ -1,4 +1,4 @@
-# Gradture AI — Production Regression Checklist
+# Gradture — Production Regression Checklist
 
 Use this checklist for every production deployment, staging promotion, or major release.
 
@@ -96,13 +96,13 @@ Check for each:
 
 ### Dashboard
 
-- [ ] Dashboard loads with KPI cards (Applications, Profile %, AI Matches, Saved Jobs)
+- [ ] Dashboard loads with KPI cards (Applications, Profile %, Matches, Saved Jobs)
 - [ ] Applications count matches actual applications
 - [ ] Profile completion percentage calculates correctly
-- [ ] AI Matches shows "Available" or "Locked" based on profile completeness
+- [ ] Matches shows "Available" or "Locked" based on profile completeness
 - [ ] Recent applications list shows last 5 applications with status badges
-- [ ] AI recommendations section shows matches when profile is complete
-- [ ] AI recommendations section shows "Complete profile" when profile is incomplete
+- [ ] recommendations section shows matches when profile is complete
+- [ ] recommendations section shows "Complete profile" when profile is incomplete
 - [ ] Missing profile sections show actionable links
 - [ ] Error strip appears when dashboard data fails to load
 
@@ -154,9 +154,9 @@ Check for each:
 - [ ] Withdraw removes application with confirmation
 - [ ] Only own applications are visible
 
-### AI Recommendations
+### Recommendations
 
-- [ ] AI recommendations page loads
+- [ ] recommendations page loads
 - [ ] Recommendations do NOT activate merely by opening the page
 - [ ] Recommendations require complete profile (education, skills, experience)
 - [ ] Recommendations are based on actual profile data, not just page visit

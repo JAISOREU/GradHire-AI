@@ -107,7 +107,7 @@ export const HowItWorks = () => {
     <section className="how-section" ref={sectionRef} aria-labelledby="how-it-works-title">
       <div className="how-header">
         <h2 id="how-it-works-title" className="section-title gradient-text gradient-text--subtle">How it works</h2>
-        <p className="section-subtitle">From creating your profile to discovering the right opportunity, Gradture AI keeps the journey simple.</p>
+        <p className="section-subtitle">From creating your profile to discovering the right opportunity, Gradture keeps the journey simple.</p>
       </div>
 
       <div className="journey">
