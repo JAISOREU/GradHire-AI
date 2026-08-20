@@ -20,48 +20,52 @@ export const DiscoverOpportunitiesVisual = () => {
         <circle cx="210" cy="150" r="140" fill="url(#discover-glow)" opacity="0.5" className="disc-glow" />
 
         <g className="disc-panel">
-          <rect x="50" y="30" width="320" height="240" rx="14" fill="url(#discover-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="40" y="20" width="340" height="260" rx="16" fill="url(#discover-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
         </g>
 
         <g className="disc-search">
-          <rect x="70" y="50" width="280" height="32" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="88" cy="66" r="5" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" fill="none" />
-          <line x1="91" y1="69" x2="96" y2="74" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" strokeLinecap="round" />
-          <text x="110" y="70" fill="var(--color-text-muted, #8c8680)" fontSize="10">Search opportunities...</text>
+          <rect x="60" y="42" width="300" height="36" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="80" cy="60" r="6" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" fill="none" />
+          <line x1="83" y1="63" x2="88" y2="68" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" strokeLinecap="round" />
+          <text x="105" y="64" fill="var(--color-text-muted, #8c8680)" fontSize="11">Search opportunities...</text>
         </g>
 
         <g className="disc-filter">
-          <rect x="70" y="92" width="60" height="24" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="100" y="108" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Remote</text>
-          <rect x="136" y="92" width="60" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <text x="166" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Full-time</text>
-          <rect x="202" y="92" width="60" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <text x="232" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Internship</text>
+          <rect x="60" y="90" width="64" height="28" rx="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="92" y="108" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Remote</text>
+          <rect x="130" y="90" width="64" height="28" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <text x="162" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Full-time</text>
+          <rect x="200" y="90" width="64" height="28" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <text x="232" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Internship</text>
+          <rect x="270" y="90" width="64" height="28" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <text x="302" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Entry-level</text>
         </g>
 
         <g className="disc-card disc-card--1">
-          <rect x="70" y="128" width="280" height="42" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="94" cy="149" r="8" fill="var(--color-border, #e8e2d8)" />
-          <text x="114" y="145" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Program Manager</text>
-          <text x="114" y="159" fill="var(--color-text-muted, #8c8680)" fontSize="9">Remote · Full-time</text>
-          <rect x="306" y="141" width="24" height="14" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="318" y="151" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="8" fontWeight="700">95%</text>
+          <rect x="60" y="130" width="300" height="50" rx="12" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="90" cy="155" r="10" fill="var(--color-border, #e8e2d8)" />
+          <text x="112" y="150" fill="var(--color-text-secondary, #5c5852)" fontSize="11" fontWeight="600">Program Manager</text>
+          <text x="112" y="166" fill="var(--color-text-muted, #8c8680)" fontSize="10">Remote · Full-time</text>
+          <rect x="326" y="145" width="28" height="18" rx="5" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="340" y="158" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">95%</text>
         </g>
 
         <g className="disc-card disc-card--2">
-          <rect x="70" y="180" width="280" height="42" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <circle cx="94" cy="201" r="8" fill="var(--color-primary, #4f46e5)" />
-          <text x="114" y="197" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Marketing Specialist</text>
-          <text x="114" y="211" fill="var(--color-text-muted, #8c8680)" fontSize="9">Hybrid · Full-time</text>
-          <rect x="306" y="193" width="24" height="14" rx="4" fill="var(--color-primary, #4f46e5)" />
-          <text x="318" y="203" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
+          <rect x="60" y="190" width="300" height="50" rx="12" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="90" cy="215" r="10" fill="var(--color-primary, #4f46e5)" />
+          <text x="112" y="210" fill="var(--color-primary, #4f46e5)" fontSize="11" fontWeight="700">Marketing Specialist</text>
+          <text x="112" y="226" fill="var(--color-text-muted, #8c8680)" fontSize="10">Hybrid · Full-time</text>
+          <rect x="326" y="205" width="28" height="18" rx="5" fill="var(--color-primary, #4f46e5)" />
+          <text x="340" y="218" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">92%</text>
         </g>
 
         <g className="disc-card disc-card--3">
-          <rect x="70" y="232" width="280" height="42" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="94" cy="253" r="8" fill="var(--color-border, #e8e2d8)" />
-          <text x="114" y="249" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Operations Coordinator</text>
-          <text x="240" y="249" fill="var(--color-text-muted, #8c8680)" fontSize="9">On-site · Contract</text>
+          <rect x="60" y="250" width="300" height="50" rx="12" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="90" cy="275" r="10" fill="var(--color-border, #e8e2d8)" />
+          <text x="112" y="270" fill="var(--color-text-secondary, #5c5852)" fontSize="11" fontWeight="600">Operations Coordinator</text>
+          <text x="260" y="270" fill="var(--color-text-muted, #8c8680)" fontSize="10">On-site · Contract</text>
+          <rect x="326" y="265" width="28" height="18" rx="5" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="340" y="278" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="700">88%</text>
         </g>
       </svg>
 
