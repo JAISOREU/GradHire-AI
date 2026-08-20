@@ -42,11 +42,11 @@ export const RegisterPage = () => {
         <form onSubmit={handleSubmit} className="stack mt-4">
           <div className="role-picker">
             <button type="button" className={`role-option ${selectedRole === 'STUDENT' ? 'is-selected' : ''}`} onClick={() => { setSelectedRole('STUDENT'); handleChange('role', 'STUDENT'); }}>
-              <strong>🎓 {getRoleLabel('STUDENT')}</strong>
+              <strong>{getRoleLabel('STUDENT')}</strong>
               <span>Browse jobs, apply, get AI recommendations</span>
             </button>
             <button type="button" className={`role-option ${selectedRole === 'EMPLOYER' ? 'is-selected' : ''}`} onClick={() => { setSelectedRole('EMPLOYER'); handleChange('role', 'EMPLOYER'); }}>
-              <strong>🏢 Employer</strong>
+              <strong>{getRoleLabel('EMPLOYER')}</strong>
               <span>Post jobs and review applicants</span>
             </button>
           </div>
