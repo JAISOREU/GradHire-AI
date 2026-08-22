@@ -34,154 +34,210 @@ export const HeroVisual = () => {
     >
       <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <radialGradient id="hero-glow-1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.3" />
+          {/* Focused glow behind AI engine */}
+          <radialGradient id="hero-glow-ai" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.1" />
             <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
           </radialGradient>
-          <radialGradient id="hero-glow-2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.25" />
+          <radialGradient id="hero-glow-secondary" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.2" />
             <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0" />
           </radialGradient>
-          <linearGradient id="hero-conn" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.9" />
+
+          {/* Connection streams */}
+          <linearGradient id="stream-left" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.1" />
           </linearGradient>
-          <linearGradient id="hero-card" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-surface-muted, #fefcf8)" />
-            <stop offset="100%" stopColor="var(--color-surface, #ffffff)" />
+          <linearGradient id="stream-right" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-success, #059669)" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="var(--color-success, #059669)" stopOpacity="0.8" />
           </linearGradient>
-          <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="var(--color-primary, #4f46e5)" floodOpacity="0.2" />
-          </filter>
-          <linearGradient id="hero-btn" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" />
-            <stop offset="100%" stopColor="var(--color-info, #2563eb)" />
+          <linearGradient id="stream-center" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="var(--color-success, #059669)" stopOpacity="0.3" />
+          </linearGradient>
+
+          {/* Node gradients */}
+          <linearGradient id="ai-engine-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.3" />
           </linearGradient>
           <linearGradient id="profile-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.25" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.15" />
           </linearGradient>
-          <linearGradient id="skills-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+          <linearGradient id="job-card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-surface, #ffffff)" />
+            <stop offset="100%" stopColor="var(--color-surface-muted, #fefcf8)" />
           </linearGradient>
-          <linearGradient id="opportunity-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-success, #059669)" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+          <linearGradient id="match-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-success-soft, #ecfdf5)" />
+            <stop offset="100%" stopColor="var(--color-primary-soft, #eef2ff)" />
           </linearGradient>
+
+          {/* Shadows */}
+          <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="var(--color-primary, #4f46e5)" floodOpacity="0.15" />
+          </filter>
+          <filter id="hero-shadow-strong" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="16" floodColor="var(--color-primary, #4f46e5)" floodOpacity="0.25" />
+          </filter>
+
+          {/* Clips */}
           <clipPath id="profile-clip">
-            <circle cx="160" cy="200" r="60" />
+            <circle cx="170" cy="340" r="56" />
           </clipPath>
-          <clipPath id="skills-clip">
-            <circle cx="400" cy="120" r="52" />
-          </clipPath>
-          <clipPath id="opportunity-clip">
-            <circle cx="640" cy="200" r="60" />
+          <clipPath id="engine-clip">
+            <circle cx="400" cy="130" r="78" />
           </clipPath>
         </defs>
 
-        {/* Ambient glows */}
-        <circle cx="400" cy="300" r="280" fill="url(#hero-glow-1)" opacity="0.5" className="hero-visual__glow" />
-        <circle cx="400" cy="300" r="200" fill="url(#hero-glow-2)" opacity="0.4" className="hero-visual__glow" />
+        {/* Background glows - focused on AI engine */}
+        <circle cx="400" cy="130" r="200" fill="url(#hero-glow-ai)" opacity="0.6" className="hero-visual__glow" />
+        <circle cx="400" cy="130" r="140" fill="url(#hero-glow-secondary)" opacity="0.4" className="hero-visual__glow" />
 
-        {/* Profile node */}
+        {/* ===== LEFT: Profile Node ===== */}
         <g className="hero-visual__node hero-visual__node--profile">
-          <circle cx="160" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="160" cy="200" r="68" fill="url(#profile-grad)" className="hero-visual__profile-bg" />
+          <circle cx="170" cy="340" r="70" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" filter="url(#hero-shadow)" />
+          <circle cx="170" cy="340" r="66" fill="url(#profile-grad)" className="hero-visual__profile-bg" />
+
           <g clipPath="url(#profile-clip)">
-            <circle cx="160" cy="200" r="60" fill="var(--color-surface, #ffffff)" />
-            <circle cx="160" cy="200" r="28" fill="var(--color-primary-soft, #eef2ff)" className="hero-visual__profile-avatar" />
-            <circle cx="160" cy="200" r="12" fill="var(--color-primary, #4f46e5)" className="hero-visual__profile-core" />
+            <circle cx="170" cy="340" r="56" fill="var(--color-surface, #ffffff)" />
+            <circle cx="170" cy="340" r="24" fill="var(--color-primary-soft, #eef2ff)" className="hero-visual__profile-avatar" />
+            <circle cx="170" cy="340" r="10" fill="var(--color-primary, #4f46e5)" className="hero-visual__profile-core" />
+
+            {/* Orbiting skill chips */}
             <g className="hero-visual__profile-orbit">
-              <circle cx="160" cy="168" r="4" fill="var(--color-info, #2563eb)" />
-              <circle cx="192" cy="200" r="3" fill="var(--color-primary, #4f46e5)" />
-              <circle cx="160" cy="232" r="3.5" fill="var(--color-success, #059669)" />
-              <circle cx="128" cy="200" r="4" fill="var(--color-primary, #4f46e5)" />
+              <g transform="translate(170, 310)">
+                <rect x="-16" y="-7" width="32" height="14" rx="7" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="7" fontWeight="600">React</text>
+              </g>
+              <g transform="translate(210, 340)">
+                <rect x="-16" y="-7" width="32" height="14" rx="7" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="7" fontWeight="600">Python</text>
+              </g>
+              <g transform="translate(170, 370)">
+                <rect x="-16" y="-7" width="32" height="14" rx="7" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="7" fontWeight="600">SQL</text>
+              </g>
+              <g transform="translate(130, 340)">
+                <rect x="-16" y="-7" width="32" height="14" rx="7" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="7" fontWeight="600">Design</text>
+              </g>
             </g>
           </g>
-          <circle cx="160" cy="200" r="72" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__profile-ring" />
-          <text x="160" y="264" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Profile</text>
+
+          <circle cx="170" cy="340" r="70" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__profile-ring" />
+          <text x="170" y="410" textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="600">Your Profile</text>
         </g>
 
-        {/* Skills node */}
-        <g className="hero-visual__node hero-visual__node--skills">
-          <circle cx="400" cy="120" r="64" fill="var(--color-surface, #ffffff)" stroke="var(--color-info, #2563eb)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="400" cy="120" r="60" fill="url(#skills-grad)" className="hero-visual__skills-bg" />
-          <g clipPath="url(#skills-clip)">
-            <circle cx="400" cy="120" r="52" fill="var(--color-surface, #ffffff)" />
-            <circle cx="400" cy="120" r="6" fill="var(--color-primary, #4f46e5)" className="hero-visual__skills-center" />
-            <g className="hero-visual__skills-orbit">
-              <circle cx="400" cy="88" r="5" fill="var(--color-info, #2563eb)" />
-              <circle cx="428" cy="104" r="4" fill="var(--color-primary, #4f46e5)" />
-              <circle cx="428" cy="136" r="5" fill="var(--color-success, #059669)" />
-              <circle cx="400" cy="152" r="4" fill="var(--color-info, #2563eb)" />
-              <circle cx="372" cy="136" r="5" fill="var(--color-primary, #4f46e5)" />
-              <circle cx="372" cy="104" r="4" fill="var(--color-success, #059669)" />
-            </g>
+        {/* ===== CENTER: AI Engine ===== */}
+        <g className="hero-visual__node hero-visual__node--engine">
+          {/* Outer glow ring */}
+          <circle cx="400" cy="130" r="95" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="8 6" opacity="0.3" className="hero-visual__engine-ring" />
+
+          {/* Main engine body */}
+          <circle cx="400" cy="130" r="88" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" filter="url(#hero-shadow-strong)" />
+          <circle cx="400" cy="130" r="82" fill="url(#ai-engine-grad)" className="hero-visual__engine-bg" />
+
+          {/* Neural network pattern */}
+          <g clipPath="url(#engine-clip)">
+            <circle cx="400" cy="130" r="78" fill="var(--color-surface, #ffffff)" />
+            {/* Connection lines */}
+            <line x1="400" y1="130" x2="360" y2="100" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.3" />
+            <line x1="400" y1="130" x2="440" y2="100" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.3" />
+            <line x1="400" y1="130" x2="360" y2="160" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.3" />
+            <line x1="400" y1="130" x2="440" y2="160" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.3" />
+            <line x1="360" y1="100" x2="440" y2="100" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.2" />
+            <line x1="360" y1="160" x2="440" y2="160" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.2" />
+            <line x1="360" y1="100" x2="360" y2="160" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.2" />
+            <line x1="440" y1="100" x2="440" y2="160" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.2" />
+
+            {/* Network nodes */}
+            <circle cx="400" cy="130" r="8" fill="var(--color-primary, #4f46e5)" className="hero-visual__engine-core" />
+            <circle cx="360" cy="100" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node" />
+            <circle cx="440" cy="100" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node" />
+            <circle cx="360" cy="160" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node" />
+            <circle cx="440" cy="160" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node" />
+            <circle cx="400" cy="85" r="3" fill="var(--color-primary, #4f46e5)" opacity="0.6" className="hero-visual__engine-node" />
+            <circle cx="400" cy="175" r="3" fill="var(--color-primary, #4f46e5)" opacity="0.6" className="hero-visual__engine-node" />
           </g>
-          <circle cx="400" cy="120" r="64" fill="none" stroke="var(--color-info, #2563eb)" strokeWidth="1" strokeDasharray="4 6" className="hero-visual__skills-ring" />
-          <text x="400" y="168" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Skills</text>
+
+          {/* Pulsing ring */}
+          <circle cx="400" cy="130" r="88" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.3" className="hero-visual__engine-pulse" />
+
+          <text x="400" y="95" textAnchor="middle" fill="var(--color-text)" fontSize="13" fontWeight="700">Gradture AI</text>
+          <text x="400" y="175" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="9" fontWeight="500">Matching Engine</text>
         </g>
 
-        {/* Job node */}
-        <g className="hero-visual__node hero-visual__node--job">
-          <circle cx="640" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-success, #059669)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="640" cy="200" r="68" fill="url(#opportunity-grad)" className="hero-visual__opportunity-bg" />
-          <g clipPath="url(#opportunity-clip)">
-            <circle cx="640" cy="200" r="60" fill="var(--color-surface, #ffffff)" />
-            <rect x="612" y="185" width="56" height="6" rx="3" fill="var(--color-border-strong, #d5cfc6)" className="hero-visual__opportunity-line" />
-            <rect x="612" y="200" width="40" height="6" rx="3" fill="var(--color-border, #e8e2d8)" className="hero-visual__opportunity-line" />
-            <rect x="612" y="215" width="48" height="6" rx="3" fill="var(--color-border-strong, #d5cfc6)" className="hero-visual__opportunity-line" />
-            <circle cx="658" cy="235" r="12" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1.5" className="hero-visual__opportunity-check" />
-            <path d="M654 235 L657 238 L662 232" stroke="var(--color-success, #059669)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" className="hero-visual__opportunity-check" />
+        {/* ===== RIGHT: Matched Jobs ===== */}
+        <g className="hero-visual__node hero-visual__node--jobs">
+          <circle cx="630" cy="340" r="70" fill="var(--color-surface, #ffffff)" stroke="var(--color-success, #059669)" strokeWidth="1.5" filter="url(#hero-shadow)" />
+          <circle cx="630" cy="340" r="66" fill="url(#profile-grad)" className="hero-visual__jobs-bg" />
+
+          <g clipPath="url(#profile-clip)">
+            <circle cx="630" cy="340" r="56" fill="var(--color-surface, #ffffff)" />
+            {/* Mini job card 1 */}
+            <rect x="590" y="315" width="80" height="22" rx="4" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
+            <circle cx="600" cy="326" r="5" fill="var(--color-primary-soft, #eef2ff)" />
+            <text x="615" y="322" fill="var(--color-text)" fontSize="7" fontWeight="600">Frontend Dev</text>
+            <text x="615" y="332" fill="var(--color-text-secondary, var(--color-text))" fontSize="6">Acme Corp</text>
+            <circle cx="658" cy="326" r="8" fill="var(--color-success-soft, #ecfdf5)" />
+            <text x="658" y="329" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="7" fontWeight="700">94%</text>
+
+            {/* Mini job card 2 */}
+            <rect x="590" y="345" width="80" height="22" rx="4" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
+            <circle cx="600" cy="356" r="5" fill="var(--color-info-soft, #eff6ff)" />
+            <text x="615" y="352" fill="var(--color-text)" fontSize="7" fontWeight="600">UI Designer</text>
+            <text x="615" y="362" fill="var(--color-text-secondary, var(--color-text))" fontSize="6">Globex</text>
+            <circle cx="658" cy="356" r="8" fill="var(--color-success-soft, #ecfdf5)" />
+            <text x="658" y="359" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="7" fontWeight="700">87%</text>
           </g>
-          <circle cx="640" cy="200" r="72" fill="none" stroke="var(--color-success, #059669)" strokeWidth="1" strokeDasharray="8 4" className="hero-visual__opportunity-ring" />
-          <text x="640" y="250" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Opportunity</text>
+
+          <circle cx="630" cy="340" r="70" fill="none" stroke="var(--color-success, #059669)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__jobs-ring" />
+          <text x="630" y="410" textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="600">Top Matches</text>
         </g>
 
-        {/* Match node */}
+        {/* ===== BOTTOM: Match Score ===== */}
         <g className="hero-visual__node hero-visual__node--match">
-          <circle cx="400" cy="420" r="84" fill="url(#hero-card)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" filter="url(#hero-shadow)" />
-          <circle cx="400" cy="420" r="64" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.2" strokeWidth="1" strokeDasharray="4 3" />
-          <text x="405" y="412" textAnchor="middle" fill="var(--color-text)" fontSize="36" fontWeight="700">96%</text>
-          <text x="400" y="432" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="12" fontWeight="600">Match</text>
-          <circle cx="400" cy="420" r="84" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.3" className="hero-visual__pulse" />
+          <circle cx="400" cy="500" r="76" fill="url(#match-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" filter="url(#hero-shadow)" />
+          <circle cx="400" cy="500" r="60" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.15" strokeWidth="1" strokeDasharray="4 3" />
+          <text x="400" y="494" textAnchor="middle" fill="var(--color-text)" fontSize="40" fontWeight="700">96%</text>
+          <text x="400" y="512" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="10" fontWeight="600">AI-Powered Match</text>
+          <circle cx="400" cy="500" r="76" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.3" className="hero-visual__pulse" />
         </g>
 
-        {/* Apply button */}
-        <g className="hero-visual__node hero-visual__node--apply">
-          <rect x="340" y="440" width="120" height="36" rx="18" fill="url(#hero-btn)" filter="url(#hero-shadow)" />
-          <text x="400" y="463" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="12" fontWeight="700">Apply Now</text>
-        </g>
-
-        {/* Scanning line */}
-        <g className="hero-visual__scan" opacity="0.4">
-          <rect x="80" y="60" width="640" height="3" rx="1.5" fill="url(#hero-conn)" className="hero-visual__scan-line" />
-        </g>
-
-        {/* Connection lines */}
+        {/* ===== DATA STREAMS ===== */}
         <g className="hero-visual__connections">
-          <path d="M232 172 Q300 140 340 150" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
-          <path d="M460 156 Q520 140 568 172" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
-          <path d="M228 228 Q300 280 340 360" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
-          <path d="M572 228 Q500 280 460 360" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
+          {/* Profile → AI Engine (3 streams) */}
+          <path d="M240 310 Q320 200 340 160" stroke="url(#stream-left)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.6" className="hero-visual__stream" />
+          <path d="M240 340 Q320 240 340 190" stroke="url(#stream-left)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.5" className="hero-visual__stream" />
+          <path d="M240 370 Q320 280 340 220" stroke="url(#stream-left)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.4" className="hero-visual__stream" />
+
+          {/* AI Engine → Jobs (3 streams) */}
+          <path d="M460 160 Q480 200 560 310" stroke="url(#stream-right)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.6" className="hero-visual__stream" />
+          <path d="M460 190 Q480 240 560 340" stroke="url(#stream-right)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.5" className="hero-visual__stream" />
+          <path d="M460 220 Q480 280 560 370" stroke="url(#stream-right)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.4" className="hero-visual__stream" />
+
+          {/* AI Engine → Match (center stream) */}
+          <path d="M400 218 L400 424" stroke="url(#stream-center)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.5" className="hero-visual__stream" />
         </g>
 
-        {/* Traveling light particles */}
+        {/* Traveling data particles */}
         <g className="hero-visual__particles">
-          <circle cx="280" cy="280" r="3" fill="var(--color-primary, #4f46e5)" className="hero-visual__particle hero-visual__particle--1" />
-          <circle cx="340" cy="300" r="2.5" fill="var(--color-info, #2563eb)" className="hero-visual__particle hero-visual__particle--2" />
-          <circle cx="460" cy="260" r="3" fill="var(--color-primary, #4f46e5)" className="hero-visual__particle hero-visual__particle--3" />
-          <circle cx="520" cy="320" r="2.5" fill="var(--color-info, #2563eb)" className="hero-visual__particle hero-visual__particle--4" />
-          <circle cx="380" cy="360" r="2" fill="var(--color-success, #059669)" className="hero-visual__particle hero-visual__particle--5" />
+          <circle cx="280" cy="240" r="2.5" fill="var(--color-primary, #4f46e5)" className="hero-visual__particle hero-visual__particle--1" />
+          <circle cx="320" cy="280" r="2" fill="var(--color-info, #2563eb)" className="hero-visual__particle hero-visual__particle--2" />
+          <circle cx="480" cy="280" r="2" fill="var(--color-success, #059669)" className="hero-visual__particle hero-visual__particle--3" />
+          <circle cx="520" cy="240" r="2.5" fill="var(--color-primary, #4f46e5)" className="hero-visual__particle hero-visual__particle--4" />
+          <circle cx="400" cy="320" r="2" fill="var(--color-info, #2563eb)" className="hero-visual__particle hero-visual__particle--5" />
         </g>
 
         {/* Floating accent elements */}
-        <circle cx="280" cy="360" r="4" fill="var(--color-primary, #4f46e5)" opacity="0.4" className="hero-visual__float" />
-        <circle cx="520" cy="370" r="3.5" fill="var(--color-info, #2563eb)" opacity="0.4" className="hero-visual__float" />
-        <circle cx="260" cy="500" r="3" fill="var(--color-success, #059669)" opacity="0.3" className="hero-visual__float" />
-        <circle cx="540" cy="500" r="3.5" fill="var(--color-primary, #4f46e5)" opacity="0.3" className="hero-visual__float" />
-        <circle cx="400" cy="260" r="2.5" fill="var(--color-info, #2563eb)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="260" cy="420" r="3" fill="var(--color-primary, #4f46e5)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="540" cy="420" r="3" fill="var(--color-success, #059669)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="400" cy="200" r="2.5" fill="var(--color-info, #2563eb)" opacity="0.4" className="hero-visual__float" />
       </svg>
 
       <style>{`
@@ -197,6 +253,7 @@ export const HeroVisual = () => {
           display: block;
         }
 
+        /* Glow */
         .hero-visual__glow {
           opacity: 0;
           transform: scale(0.8);
@@ -208,6 +265,7 @@ export const HeroVisual = () => {
           transform: scale(1);
         }
 
+        /* Nodes */
         .hero-visual__node {
           opacity: 0;
           transform: translateY(20px) scale(0.9);
@@ -215,11 +273,11 @@ export const HeroVisual = () => {
         }
 
         .hero-visual--animated .hero-visual__node--profile { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.1s; }
-        .hero-visual--animated .hero-visual__node--skills { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.25s; }
-        .hero-visual--animated .hero-visual__node--job { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.4s; }
-        .hero-visual--animated .hero-visual__node--match { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.55s; }
-        .hero-visual--animated .hero-visual__node--apply { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.7s; }
+        .hero-visual--animated .hero-visual__node--engine { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.35s; }
+        .hero-visual--animated .hero-visual__node--jobs { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.5s; }
+        .hero-visual--animated .hero-visual__node--match { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.65s; }
 
+        /* Connection streams */
         .hero-visual__connections path {
           stroke-dasharray: 240;
           stroke-dashoffset: 240;
@@ -230,26 +288,28 @@ export const HeroVisual = () => {
           stroke-dashoffset: 0;
         }
 
-        .hero-visual--animated .hero-visual__connections path:nth-child(1) { transition-delay: 0.3s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(1) { transition-delay: 0.4s; }
         .hero-visual--animated .hero-visual__connections path:nth-child(2) { transition-delay: 0.5s; }
-        .hero-visual--animated .hero-visual__connections path:nth-child(3) { transition-delay: 0.7s; }
-        .hero-visual--animated .hero-visual__connections path:nth-child(4) { transition-delay: 0.9s; }
-        .hero-visual--animated .hero-visual__connections path:nth-child(5) { transition-delay: 1.1s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(3) { transition-delay: 0.6s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(4) { transition-delay: 0.5s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(5) { transition-delay: 0.6s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(6) { transition-delay: 0.7s; }
+        .hero-visual--animated .hero-visual__connections path:nth-child(7) { transition-delay: 0.7s; }
 
+        /* Floating elements */
         .hero-visual__float {
           animation: hero-float 6s ease-in-out infinite;
         }
 
-        .hero-visual__float:nth-child(2) { animation-delay: 1.5s; }
-        .hero-visual__float:nth-child(3) { animation-delay: 3s; }
-        .hero-visual__float:nth-child(4) { animation-delay: 4.5s; }
-        .hero-visual__float:nth-child(5) { animation-delay: 2s; }
+        .hero-visual__float:nth-child(2) { animation-delay: 2s; }
+        .hero-visual__float:nth-child(3) { animation-delay: 4s; }
 
         @keyframes hero-float {
           0%, 100% { transform: translateY(0); opacity: 0.3; }
-          50% { transform: translateY(-10px); opacity: 0.6; }
+          50% { transform: translateY(-8px); opacity: 0.5; }
         }
 
+        /* Pulse */
         .hero-visual__pulse {
           animation: hero-pulse 3s ease-in-out infinite;
           transform-origin: center;
@@ -257,20 +317,10 @@ export const HeroVisual = () => {
 
         @keyframes hero-pulse {
           0%, 100% { transform: scale(1); opacity: 0.3; }
-          50% { transform: scale(1.15); opacity: 0; }
+          50% { transform: scale(1.12); opacity: 0; }
         }
 
-        .hero-visual__scan-line {
-          animation: hero-scan 4s ease-in-out infinite;
-        }
-
-        @keyframes hero-scan {
-          0%, 100% { transform: translateY(0); opacity: 0; }
-          10% { opacity: 0.6; }
-          90% { opacity: 0.6; }
-          50% { transform: translateY(480px); }
-        }
-
+        /* Particles */
         .hero-visual__particle {
           opacity: 0;
           animation: particle-travel 3s ease-in-out infinite;
@@ -284,9 +334,9 @@ export const HeroVisual = () => {
 
         @keyframes particle-travel {
           0% { opacity: 0; transform: translate(0, 0); }
-          20% { opacity: 0.8; }
-          80% { opacity: 0.8; }
-          100% { opacity: 0; transform: translate(50px, -40px); }
+          20% { opacity: 0.7; }
+          80% { opacity: 0.7; }
+          100% { opacity: 0; transform: translate(40px, -30px); }
         }
 
         /* Profile animations */
@@ -331,8 +381,8 @@ export const HeroVisual = () => {
 
         .hero-visual--animated .hero-visual__profile-orbit {
           opacity: 1;
-          animation: profile-orbit 8s linear infinite;
-          transform-origin: 160px 200px;
+          animation: profile-orbit 10s linear infinite;
+          transform-origin: 170px 340px;
         }
 
         .hero-visual__profile-ring {
@@ -352,101 +402,98 @@ export const HeroVisual = () => {
           to { transform: rotate(360deg); }
         }
 
-        /* Skills animations */
-        .hero-visual__skills-bg {
+        /* AI Engine animations */
+        .hero-visual__engine-bg {
           opacity: 0;
-          transform: scale(0.8);
+          transform: scale(0.85);
           transition: opacity 0.8s ease 0.2s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
         }
 
-        .hero-visual--animated .hero-visual__skills-bg {
+        .hero-visual--animated .hero-visual__engine-bg {
           opacity: 1;
           transform: scale(1);
         }
 
-        .hero-visual__skills-center {
+        .hero-visual__engine-core {
           opacity: 0;
           transform: scale(0);
           transition: opacity 0.4s ease 0.4s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
         }
 
-        .hero-visual--animated .hero-visual__skills-center {
+        .hero-visual--animated .hero-visual__engine-core {
           opacity: 1;
           transform: scale(1);
         }
 
-        .hero-visual__skills-orbit {
+        .hero-visual__engine-node {
           opacity: 0;
-          transform: rotate(0deg);
-          transition: opacity 0.6s ease 0.5s;
+          transform: scale(0);
+          transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .hero-visual--animated .hero-visual__skills-orbit {
+        .hero-visual--animated .hero-visual__engine-node {
           opacity: 1;
-          animation: skills-orbit 6s linear infinite;
-          transform-origin: 400px 120px;
+          transform: scale(1);
         }
 
-        .hero-visual__skills-ring {
+        .hero-visual--animated .hero-visual__engine-node:nth-child(1) { transition-delay: 0.5s; }
+        .hero-visual--animated .hero-visual__engine-node:nth-child(2) { transition-delay: 0.55s; }
+        .hero-visual--animated .hero-visual__engine-node:nth-child(3) { transition-delay: 0.6s; }
+        .hero-visual--animated .hero-visual__engine-node:nth-child(4) { transition-delay: 0.65s; }
+        .hero-visual--animated .hero-visual__engine-node:nth-child(5) { transition-delay: 0.7s; }
+        .hero-visual--animated .hero-visual__engine-node:nth-child(6) { transition-delay: 0.75s; }
+
+        .hero-visual__engine-ring {
           opacity: 0;
           stroke-dasharray: 12 8;
-          stroke-dashoffset: 50;
+          stroke-dashoffset: 60;
           transition: opacity 0.6s ease 0.3s, stroke-dashoffset 2s ease 0.3s;
         }
 
-        .hero-visual--animated .hero-visual__skills-ring {
+        .hero-visual--animated .hero-visual__engine-ring {
           opacity: 0.5;
           stroke-dashoffset: 0;
         }
 
-        @keyframes skills-orbit {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(-360deg); }
+        .hero-visual__engine-pulse {
+          animation: engine-pulse 4s ease-in-out infinite;
+          transform-origin: 400px 130px;
         }
 
-        /* Opportunity animations */
-        .hero-visual__opportunity-bg {
+        @keyframes engine-pulse {
+          0%, 100% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.08); opacity: 0.1; }
+        }
+
+        /* Jobs animations */
+        .hero-visual__jobs-bg {
           opacity: 0;
           transform: scale(0.8);
-          transition: opacity 0.8s ease 0.3s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+          transition: opacity 0.8s ease 0.25s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
         }
 
-        .hero-visual--animated .hero-visual__opportunity-bg {
+        .hero-visual--animated .hero-visual__jobs-bg {
           opacity: 1;
           transform: scale(1);
         }
 
-        .hero-visual__opportunity-line {
+        .hero-visual__job-card {
           opacity: 0;
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+          transform: translateY(8px);
+          transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .hero-visual--animated .hero-visual__opportunity-line:nth-child(1) { opacity: 1; transform: scaleX(1); transition-delay: 0.5s; }
-        .hero-visual--animated .hero-visual__opportunity-line:nth-child(2) { opacity: 0.7; transform: scaleX(1); transition-delay: 0.65s; }
-        .hero-visual--animated .hero-visual__opportunity-line:nth-child(3) { opacity: 0.5; transform: scaleX(1); transition-delay: 0.8s; }
+        .hero-visual--animated .hero-visual__job-card:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
+        .hero-visual--animated .hero-visual__job-card:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.75s; }
 
-        .hero-visual__opportunity-check {
+        .hero-visual__jobs-ring {
           opacity: 0;
-          transform: scale(0) rotate(-90deg);
-          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .hero-visual--animated .hero-visual__opportunity-check {
-          opacity: 1;
-          transform: scale(1) rotate(0deg);
-          transition-delay: 1s;
-        }
-
-        .hero-visual__opportunity-ring {
-          opacity: 0;
-          stroke-dasharray: 16 8;
+          stroke-dasharray: 8 6;
           stroke-dashoffset: 80;
-          transition: opacity 0.6s ease 0.4s, stroke-dashoffset 2.5s ease 0.4s;
+          transition: opacity 0.6s ease 0.3s, stroke-dashoffset 2s ease 0.3s;
         }
 
-        .hero-visual--animated .hero-visual__opportunity-ring {
+        .hero-visual--animated .hero-visual__jobs-ring {
           opacity: 0.5;
           stroke-dashoffset: 0;
         }
@@ -466,19 +513,17 @@ export const HeroVisual = () => {
             animation: none;
             opacity: 0.3;
           }
-          .hero-visual__scan-line {
+          .hero-visual__engine-pulse {
             animation: none;
-            opacity: 0;
           }
-          .hero-visual__profile-orbit,
-          .hero-visual__skills-orbit {
+          .hero-visual__profile-orbit {
             animation: none;
           }
           .hero-visual__profile-avatar,
           .hero-visual__profile-core,
-          .hero-visual__skills-center,
-          .hero-visual__opportunity-line,
-          .hero-visual__opportunity-check {
+          .hero-visual__engine-core,
+          .hero-visual__engine-node,
+          .hero-visual__job-card {
             opacity: 1 !important;
             transform: none !important;
           }
