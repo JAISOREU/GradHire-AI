@@ -17,6 +17,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
+RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app
 
 USER appuser
 EXPOSE 3000
