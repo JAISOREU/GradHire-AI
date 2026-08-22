@@ -27,7 +27,7 @@ export const TrendIndicator = ({ direction, value, label }: TrendIndicatorProps)
 
 type KPICardProps = {
   label: string;
-  value: string | number;
+  value: ReactNode;
   icon?: string;
   trend?: { direction: TrendDirection; value: string; label?: string };
   hint?: string;

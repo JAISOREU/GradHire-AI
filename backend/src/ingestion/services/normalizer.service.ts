@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { AiService, NormalizedJobResponse } from '../../ai/ai.service';
+import { AiService } from '../../ai/ai.service';
+import { NormalizedJobResponse } from '../../ai/ai.types';
 import { RawJobItem } from '../adapters/source-adapter.interface';
 import { Job, JobSource, JobSourceParserType } from '@prisma/client';
 import { sanitizeDatabaseString } from '../../common/utils/sanitize';

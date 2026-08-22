@@ -2009,7 +2009,86 @@ input[type='file']::file-selector-button:hover {
 }
 
 /* ============================================================
-   Data Table — clean, scannable
+   Dashboard Animations
+   ============================================================ */
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 70, 229, 0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.kpi-card:hover::after {
+  opacity: 1;
+}
+
+.kpi-card__value {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kpi-card:hover .kpi-card__value {
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   Job Card Micro-interactions
+   ============================================================ */
+.list-item--hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.list-item--hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-info));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 0 2px 2px 0;
+}
+
+.list-item--hover:hover::before {
+  transform: scaleY(1);
+}
+
+.list-item__title {
+  transition: color var(--transition-fast);
+}
+
+.list-item--hover:hover .list-item__title {
+  color: var(--color-primary);
+}
+
+.list-item__meta .badge {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-item--hover:hover .list-item__meta .badge {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   Data Table
    ============================================================ */
 .table-container {
   overflow-x: auto;

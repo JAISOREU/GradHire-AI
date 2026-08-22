@@ -12,6 +12,7 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
+import { ScrollReveal, AnimatedCounter } from '../../animations';
 import type { AiRecommendation } from '../../core/types';
 
 export const StudentDashboardPage = () => {
@@ -45,49 +46,51 @@ export const StudentDashboardPage = () => {
         subtitle="Your job search at a glance."
       />
 
-      <div className="status-strip status-strip--4 section--mt">
-        {(jobsError || appsError || profileError) && (
-          <div className="message message--error" role="alert">
-            Some dashboard data failed to load. Please refresh the page.
-          </div>
-        )}
-        <KPICard
-          label="Applications"
-          value={appCount}
-          icon="📨"
-          trend={{ direction: appCount > 0 ? 'up' : 'neutral', value: `${appCount} sent`, label: 'total' }}
-          action={
-            <Link to="/student/applications"><Button variant="ghost" size="sm">View all</Button></Link>
-          }
-        />
-        <KPICard
-          label="Profile"
-          value={`${profileCompletePct}%`}
-          icon="🎯"
-          trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
-          action={
-            <Link to="/student/account"><Button variant="ghost" size="sm">Update</Button></Link>
-          }
-        />
-        <KPICard
-          label="Matches"
-          value={hasRecommendationAccess ? 'Available' : 'Locked'}
-          icon="✨"
-          trend={{ direction: hasRecommendationAccess ? 'up' : 'neutral', value: hasRecommendationAccess ? 'Active' : 'Complete profile', label: 'recommendations' }}
-          action={
-            <Link to="/student/recommended"><Button variant="ghost" size="sm">Explore</Button></Link>
-          }
-        />
-        <KPICard
-          label="Saved Jobs"
-          value={savedCount}
-          icon="🔖"
-          trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
-          action={
-            <Link to="/student/saved"><Button variant="ghost" size="sm">Browse</Button></Link>
-          }
-        />
-      </div>
+      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '1200ms', distance: '20px', direction: 'up' }}>
+        <div className="status-strip section--mt">
+          {(jobsError || appsError || profileError) && (
+            <div className="message message--error" role="alert">
+              Some dashboard data failed to load. Please refresh the page.
+            </div>
+          )}
+          <KPICard
+            label="Applications"
+            value={<AnimatedCounter to={appCount} duration={1200} delay={0} />}
+            icon="📨"
+            trend={{ direction: appCount > 0 ? 'up' : 'neutral', value: `${appCount} total`, label: 'applications' }}
+            action={
+              <Link to="/student/applications"><Button variant="ghost" size="sm">View all</Button></Link>
+            }
+          />
+          <KPICard
+            label="Profile"
+            value={<AnimatedCounter to={profileCompletePct} duration={1200} delay={100} format={(v) => `${Math.round(v)}%`} />}
+            icon="🎯"
+            trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
+            action={
+              <Link to="/student/account"><Button variant="ghost" size="sm">Update</Button></Link>
+            }
+          />
+          <KPICard
+            label="Matches"
+            value={hasRecommendationAccess ? 'Available' : 'Locked'}
+            icon="✨"
+            trend={{ direction: hasRecommendationAccess ? 'up' : 'neutral', value: hasRecommendationAccess ? 'Active' : 'Complete profile', label: 'recommendations' }}
+            action={
+              <Link to="/student/recommended"><Button variant="ghost" size="sm">Explore</Button></Link>
+            }
+          />
+          <KPICard
+            label="Saved Jobs"
+            value={<AnimatedCounter to={savedCount} duration={1200} delay={200} />}
+            icon="🔖"
+            trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
+            action={
+              <Link to="/student/saved"><Button variant="ghost" size="sm">Browse</Button></Link>
+            }
+          />
+        </div>
+      </ScrollReveal>
 
       <DashboardSection
         title="Recent applications"
@@ -104,7 +107,9 @@ export const StudentDashboardPage = () => {
             <div key={app.id} className="list-item">
               <div className="list-item__head">
                 <div>
-                   <h3 className="list-item__title">{app.job?.title ?? 'Unknown'} <span className="text-muted">at {app.job?.company ?? 'Unknown'}</span></h3>
+                   <h3 className="list-item__title">
+                    {app.job?.title || app.job?.company ? `${app.job?.title ?? 'Unknown'} at ${app.job?.company ?? 'Unknown'}` : 'Untitled application'}
+                  </h3>
                   <div className="list-item__meta">
                     <Badge kind={resolveBadgeKind(app.status)}>{app.status}</Badge>
                     <span>{new Date(app.createdAt).toLocaleDateString()}</span>

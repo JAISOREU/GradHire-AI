@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { AiService, AiRecommendation } from '../ai/ai.service';
+import { AiService } from './ai.service';
+import { AiRecommendation } from './ai.types';
 
 export interface RecommendationGatingResult {
   ready: boolean;
@@ -41,27 +42,18 @@ export class RecommendationService {
     try {
       recommendations = await this.ai.getPersonalizedRecommendations(gating.profileSummary, topK);
     } catch (error) {
-      this.logger.warn(`recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(`AI recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
       fallback = true;
     }
 
     if (!recommendations.length) {
       try {
-        recommendations = await this.ai.getLocalRecommendations(gating.profileSummary, topK);
+        recommendations = await this.ai.getRecommendations(String(gating.profileSummary.focus || ''), topK);
         if (recommendations.length > 0) {
           fallback = true;
         }
       } catch (error) {
-        this.logger.warn(`Local recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
-      }
-    }
-
-    if (!recommendations.length) {
-      try {
-        recommendations = await this.ai.getHeuristicRecommendations(gating.profileSummary, topK);
-        fallback = true;
-      } catch (error) {
-        this.logger.warn(`Heuristic recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(`AI fallback recommendations failed for user ${userId}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 

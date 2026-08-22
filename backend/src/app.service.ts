@@ -1,7 +1,8 @@
 import { Injectable, Logger, OnModuleInit, NotFoundException, ServiceUnavailableException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { WorkAuthorizationStatus } from '@prisma/client';
-import { AiService, AiRecommendation } from './ai/ai.service';
+import { AiService } from './ai/ai.service';
+import { AiRecommendation } from './ai/ai.types';
 import { PaginationParams, PaginatedResponse, applyPagination } from './common/pagination';
 import { CacheService } from './cache/cache.service';
 import { JobQueryDto } from './common/dto/job.dto';
@@ -257,7 +258,18 @@ export class AppService implements OnModuleInit {
   }
 
   async getAiRecommendations(focus: string, topK = 5): Promise<AiRecommendation[]> {
-    return this.ai.getRecommendations(focus, topK);
+    if (this.ai.isReady()) {
+      try {
+        return await this.ai.getRecommendations(focus, topK);
+      } catch {
+        // fall through to legacy
+      }
+    }
+    try {
+      return await this.ai.getRecommendations(focus, topK);
+    } catch {
+      return [];
+    }
   }
 
   async getStudentProfile(userId: string): Promise<Record<string, unknown>> {
