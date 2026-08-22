@@ -1,4 +1,4 @@
-import { AIMatchingVisual } from './visuals/AIMatchingVisual';
+import { SmartMatchingVisual } from './visuals/SmartMatchingVisual';
 import { ResumeParsingVisual } from './visuals/ResumeParsingVisual';
 import { JobHubVisual } from './visuals/JobHubVisual';
 import { RealTimeNotificationsVisual } from './visuals/RealTimeNotificationsVisual';
@@ -123,7 +123,7 @@ export const FeatureSlide = ({ feature, index }: { feature: Feature; index: numb
         </ul>
       </div>
       <div className="feature-story__visual">
-        {index === 0 && <AIMatchingVisual />}
+        {index === 0 && <SmartMatchingVisual />}
         {index === 1 && <ResumeParsingVisual />}
         {index === 2 && <JobHubVisual />}
         {index === 3 && <RealTimeNotificationsVisual />}
