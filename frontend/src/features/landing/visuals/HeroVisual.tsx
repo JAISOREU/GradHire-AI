@@ -1,36 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useInView } from '../../../core/hooks/useInView';
 
-const AnimatedIconProfile = () => (
-  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-lottie hero-lottie--profile">
-    <circle cx="60" cy="40" r="16" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="2" />
-    <path d="M32 100c0-15.5 12.5-28 28-28s28 12.5 28 28" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="2" />
-    <circle cx="60" cy="40" r="6" fill="var(--color-primary)" className="hero-lottie__dot" />
-    <path d="M60 54v12M52 68h16" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
-  </svg>
-);
-
-const AnimatedIconSkills = () => (
-  <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-lottie hero-lottie--skills">
-    <rect x="18" y="28" width="54" height="34" rx="8" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info)" strokeWidth="2" />
-    <circle cx="36" cy="45" r="6" fill="var(--color-info)" className="hero-lottie__dot" />
-    <rect x="50" y="41" width="24" height="4" rx="2" fill="var(--color-info)" opacity="0.35" />
-    <rect x="50" y="49" width="16" height="4" rx="2" fill="var(--color-info)" opacity="0.25" />
-    <path d="M30 20l8-8M58 20l-8-8M72 38l8 0M72 54l8 0" stroke="var(--color-info)" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
-  </svg>
-);
-
-const AnimatedIconOpportunity = () => (
-  <svg viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-lottie hero-lottie--opportunity">
-    <rect x="30" y="42" width="90" height="66" rx="12" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success)" strokeWidth="2" />
-    <path d="M46 68h58M46 82h42" stroke="var(--color-success)" strokeWidth="3" strokeLinecap="round" opacity="0.45" />
-    <rect x="46" y="56" width="58" height="4" rx="2" fill="var(--color-success)" opacity="0.35" />
-    <path d="M60 30l12-12M90 30l-12-12" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
-    <circle cx="105" cy="100" r="10" fill="var(--color-success)" className="hero-lottie__dot" />
-    <path d="M101 100l3 3 6-7" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 export const HeroVisual = () => {
   const { ref, inView } = useInView();
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -50,13 +20,18 @@ export const HeroVisual = () => {
     return () => el.removeEventListener('mousemove', handleMouseMove);
   }, [ref]);
 
-  const visualStyle = {
+  const visualStyle: React.CSSProperties = {
     transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)`,
     transition: 'transform 0.2s ease-out',
-  } as React.CSSProperties;
+  };
 
   return (
-    <div ref={ref} className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`} style={visualStyle} aria-hidden="true">
+    <div
+      ref={ref}
+      className={`hero-visual ${inView ? 'hero-visual--animated' : ''}`}
+      style={visualStyle}
+      aria-hidden="true"
+    >
       <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="hero-glow-1" cx="50%" cy="50%" r="50%">
@@ -82,6 +57,27 @@ export const HeroVisual = () => {
             <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" />
             <stop offset="100%" stopColor="var(--color-info, #2563eb)" />
           </linearGradient>
+          <linearGradient id="profile-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.25" />
+          </linearGradient>
+          <linearGradient id="skills-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+          </linearGradient>
+          <linearGradient id="opportunity-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-success, #059669)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.15" />
+          </linearGradient>
+          <clipPath id="profile-clip">
+            <circle cx="160" cy="200" r="60" />
+          </clipPath>
+          <clipPath id="skills-clip">
+            <circle cx="400" cy="120" r="52" />
+          </clipPath>
+          <clipPath id="opportunity-clip">
+            <circle cx="640" cy="200" r="60" />
+          </clipPath>
         </defs>
 
         {/* Ambient glows */}
@@ -91,33 +87,55 @@ export const HeroVisual = () => {
         {/* Profile node */}
         <g className="hero-visual__node hero-visual__node--profile">
           <circle cx="160" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <foreignObject x="100" y="140" width="120" height="120">
-            <div className="hero-visual__lottie-wrap">
-              <AnimatedIconProfile />
-            </div>
-          </foreignObject>
+          <circle cx="160" cy="200" r="68" fill="url(#profile-grad)" className="hero-visual__profile-bg" />
+          <g clipPath="url(#profile-clip)">
+            <circle cx="160" cy="200" r="60" fill="var(--color-surface, #ffffff)" />
+            <circle cx="160" cy="200" r="28" fill="var(--color-primary-soft, #eef2ff)" className="hero-visual__profile-avatar" />
+            <circle cx="160" cy="200" r="12" fill="var(--color-primary, #4f46e5)" className="hero-visual__profile-core" />
+            <g className="hero-visual__profile-orbit">
+              <circle cx="160" cy="168" r="4" fill="var(--color-info, #2563eb)" />
+              <circle cx="192" cy="200" r="3" fill="var(--color-primary, #4f46e5)" />
+              <circle cx="160" cy="232" r="3.5" fill="var(--color-success, #059669)" />
+              <circle cx="128" cy="200" r="4" fill="var(--color-primary, #4f46e5)" />
+            </g>
+          </g>
+          <circle cx="160" cy="200" r="72" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__profile-ring" />
           <text x="160" y="264" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Profile</text>
         </g>
 
         {/* Skills node */}
         <g className="hero-visual__node hero-visual__node--skills">
           <circle cx="400" cy="120" r="64" fill="var(--color-surface, #ffffff)" stroke="var(--color-info, #2563eb)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <foreignObject x="360" y="65" width="90" height="90">
-            <div className="hero-visual__lottie-wrap">
-              <AnimatedIconSkills />
-            </div>
-          </foreignObject>
+          <circle cx="400" cy="120" r="60" fill="url(#skills-grad)" className="hero-visual__skills-bg" />
+          <g clipPath="url(#skills-clip)">
+            <circle cx="400" cy="120" r="52" fill="var(--color-surface, #ffffff)" />
+            <circle cx="400" cy="120" r="6" fill="var(--color-primary, #4f46e5)" className="hero-visual__skills-center" />
+            <g className="hero-visual__skills-orbit">
+              <circle cx="400" cy="88" r="5" fill="var(--color-info, #2563eb)" />
+              <circle cx="428" cy="104" r="4" fill="var(--color-primary, #4f46e5)" />
+              <circle cx="428" cy="136" r="5" fill="var(--color-success, #059669)" />
+              <circle cx="400" cy="152" r="4" fill="var(--color-info, #2563eb)" />
+              <circle cx="372" cy="136" r="5" fill="var(--color-primary, #4f46e5)" />
+              <circle cx="372" cy="104" r="4" fill="var(--color-success, #059669)" />
+            </g>
+          </g>
+          <circle cx="400" cy="120" r="64" fill="none" stroke="var(--color-info, #2563eb)" strokeWidth="1" strokeDasharray="4 6" className="hero-visual__skills-ring" />
           <text x="400" y="168" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Skills</text>
         </g>
 
-        {/* Opportunity node */}
+        {/* Job node */}
         <g className="hero-visual__node hero-visual__node--job">
           <circle cx="640" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-success, #059669)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <foreignObject x="562" y="115" width="150" height="150">
-            <div className="hero-visual__lottie-wrap">
-              <AnimatedIconOpportunity />
-            </div>
-          </foreignObject>
+          <circle cx="640" cy="200" r="68" fill="url(#opportunity-grad)" className="hero-visual__opportunity-bg" />
+          <g clipPath="url(#opportunity-clip)">
+            <circle cx="640" cy="200" r="60" fill="var(--color-surface, #ffffff)" />
+            <rect x="612" y="185" width="56" height="6" rx="3" fill="var(--color-border-strong, #d5cfc6)" className="hero-visual__opportunity-line" />
+            <rect x="612" y="200" width="40" height="6" rx="3" fill="var(--color-border, #e8e2d8)" className="hero-visual__opportunity-line" />
+            <rect x="612" y="215" width="48" height="6" rx="3" fill="var(--color-border-strong, #d5cfc6)" className="hero-visual__opportunity-line" />
+            <circle cx="658" cy="235" r="12" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1.5" className="hero-visual__opportunity-check" />
+            <path d="M654 235 L657 238 L662 232" stroke="var(--color-success, #059669)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" className="hero-visual__opportunity-check" />
+          </g>
+          <circle cx="640" cy="200" r="72" fill="none" stroke="var(--color-success, #059669)" strokeWidth="1" strokeDasharray="8 4" className="hero-visual__opportunity-ring" />
           <text x="640" y="250" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Opportunity</text>
         </g>
 
@@ -271,39 +289,166 @@ export const HeroVisual = () => {
           100% { opacity: 0; transform: translate(50px, -40px); }
         }
 
-        .hero-visual__lottie-wrap {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        /* Profile animations */
+        .hero-visual__profile-bg {
+          opacity: 0;
+          transform: scale(0.8);
+          transition: opacity 0.8s ease 0.15s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
         }
 
-        .hero-lottie {
-          width: 100%;
-          height: 100%;
+        .hero-visual--animated .hero-visual__profile-bg {
+          opacity: 1;
+          transform: scale(1);
         }
 
-        .hero-lottie__dot {
-          animation: lottie-dot 2.4s ease-in-out infinite;
-          transform-origin: center;
+        .hero-visual__profile-avatar {
+          opacity: 0;
+          transform: scale(0.5);
+          transition: opacity 0.6s ease 0.3s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
         }
 
-        .hero-lottie--profile .hero-lottie__dot {
-          animation-delay: 0s;
+        .hero-visual--animated .hero-visual__profile-avatar {
+          opacity: 1;
+          transform: scale(1);
         }
 
-        .hero-lottie--skills .hero-lottie__dot {
-          animation-delay: 0.8s;
+        .hero-visual__profile-core {
+          opacity: 0;
+          transform: scale(0);
+          transition: opacity 0.4s ease 0.45s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s;
         }
 
-        .hero-lottie--opportunity .hero-lottie__dot {
-          animation-delay: 1.6s;
+        .hero-visual--animated .hero-visual__profile-core {
+          opacity: 1;
+          transform: scale(1);
         }
 
-        @keyframes lottie-dot {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.35); opacity: 0.7; }
+        .hero-visual__profile-orbit {
+          opacity: 0;
+          transform: rotate(0deg);
+          transition: opacity 0.6s ease 0.5s;
+        }
+
+        .hero-visual--animated .hero-visual__profile-orbit {
+          opacity: 1;
+          animation: profile-orbit 8s linear infinite;
+          transform-origin: 160px 200px;
+        }
+
+        .hero-visual__profile-ring {
+          opacity: 0;
+          stroke-dasharray: 8 4;
+          stroke-dashoffset: 100;
+          transition: opacity 0.6s ease 0.2s, stroke-dashoffset 1.5s ease 0.2s;
+        }
+
+        .hero-visual--animated .hero-visual__profile-ring {
+          opacity: 0.6;
+          stroke-dashoffset: 0;
+        }
+
+        @keyframes profile-orbit {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        /* Skills animations */
+        .hero-visual__skills-bg {
+          opacity: 0;
+          transform: scale(0.8);
+          transition: opacity 0.8s ease 0.2s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+        }
+
+        .hero-visual--animated .hero-visual__skills-bg {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        .hero-visual__skills-center {
+          opacity: 0;
+          transform: scale(0);
+          transition: opacity 0.4s ease 0.4s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+        }
+
+        .hero-visual--animated .hero-visual__skills-center {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        .hero-visual__skills-orbit {
+          opacity: 0;
+          transform: rotate(0deg);
+          transition: opacity 0.6s ease 0.5s;
+        }
+
+        .hero-visual--animated .hero-visual__skills-orbit {
+          opacity: 1;
+          animation: skills-orbit 6s linear infinite;
+          transform-origin: 400px 120px;
+        }
+
+        .hero-visual__skills-ring {
+          opacity: 0;
+          stroke-dasharray: 12 8;
+          stroke-dashoffset: 50;
+          transition: opacity 0.6s ease 0.3s, stroke-dashoffset 2s ease 0.3s;
+        }
+
+        .hero-visual--animated .hero-visual__skills-ring {
+          opacity: 0.5;
+          stroke-dashoffset: 0;
+        }
+
+        @keyframes skills-orbit {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+
+        /* Opportunity animations */
+        .hero-visual__opportunity-bg {
+          opacity: 0;
+          transform: scale(0.8);
+          transition: opacity 0.8s ease 0.3s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+        }
+
+        .hero-visual--animated .hero-visual__opportunity-bg {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        .hero-visual__opportunity-line {
+          opacity: 0;
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .hero-visual--animated .hero-visual__opportunity-line:nth-child(1) { opacity: 1; transform: scaleX(1); transition-delay: 0.5s; }
+        .hero-visual--animated .hero-visual__opportunity-line:nth-child(2) { opacity: 0.7; transform: scaleX(1); transition-delay: 0.65s; }
+        .hero-visual--animated .hero-visual__opportunity-line:nth-child(3) { opacity: 0.5; transform: scaleX(1); transition-delay: 0.8s; }
+
+        .hero-visual__opportunity-check {
+          opacity: 0;
+          transform: scale(0) rotate(-90deg);
+          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hero-visual--animated .hero-visual__opportunity-check {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          transition-delay: 1s;
+        }
+
+        .hero-visual__opportunity-ring {
+          opacity: 0;
+          stroke-dasharray: 16 8;
+          stroke-dashoffset: 80;
+          transition: opacity 0.6s ease 0.4s, stroke-dashoffset 2.5s ease 0.4s;
+        }
+
+        .hero-visual--animated .hero-visual__opportunity-ring {
+          opacity: 0.5;
+          stroke-dashoffset: 0;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -325,8 +470,17 @@ export const HeroVisual = () => {
             animation: none;
             opacity: 0;
           }
-          .hero-lottie__dot {
+          .hero-visual__profile-orbit,
+          .hero-visual__skills-orbit {
             animation: none;
+          }
+          .hero-visual__profile-avatar,
+          .hero-visual__profile-core,
+          .hero-visual__skills-center,
+          .hero-visual__opportunity-line,
+          .hero-visual__opportunity-check {
+            opacity: 1 !important;
+            transform: none !important;
           }
         }
       `}</style>
