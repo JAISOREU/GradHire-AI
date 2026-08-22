@@ -1,7 +1,7 @@
 # Document 03 — Database Design
 
 ## Overview
-The relational database will store core domain entities for users, jobs, applications, resumes, and AI-generated insights.
+The relational database will store core domain entities for users, jobs, applications, resumes, and generated insights.
 
 ## Core Entities
 - users
@@ -30,7 +30,7 @@ Jobs must specify a `JobType` enum:
 ## Resume Auto-Fill
 Resume uploads power automatic profile population:
 - Parse PDF/DOCX resumes into structured fields (name, contact, education, skills, experience, focus areas)
-- Populate the student profile automatically and trigger AI job matching from the extracted content
+- Populate the student profile automatically and trigger job matching from the extracted content
 - Store the original file reference and the parsed representation for auditability
 
 ## Notification Delivery

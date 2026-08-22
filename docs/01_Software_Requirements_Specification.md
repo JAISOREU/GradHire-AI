@@ -1,10 +1,10 @@
 # Document 01 — Software Requirements Specification
 
 ## 1. Introduction
-The Gradture AI platform provides a digital experience for students and employers to discover opportunities, manage profiles, and receive AI-assisted job recommendations.
+The Gradture platform provides a digital experience for students and employers to discover opportunities, manage profiles, and receive intelligent job recommendations.
 
 ## 2. Overall Description
-The system will consist of a web application with a backend service, AI matching service, and supporting infrastructure. It will be implemented using a modular architecture that can evolve over time.
+The system will consist of a web application with a backend service, recommendation service, and supporting infrastructure. It will be implemented using a modular architecture that can evolve over time.
 
 ## 3. User Classes
 - Students / Fresh Grads: sign up, sign in, create or auto-fill profiles via resume upload, browse all job posts, apply to jobs, receive recommendations
@@ -19,7 +19,7 @@ The system will consist of a web application with a backend service, AI matching
 - Employers can create and manage job postings with a specified JobType (HIRING or INTERNSHIP)
 - Employers can view candidate matches and manage applications
 - Employers receive direct notifications (in-app + email) for every new application
-- The platform can generate AI-based job recommendations from student focus areas or resume content
+- The platform can generate job recommendations from student focus areas or resume content
 - The system can authenticate users securely via JWT with role-based access
 
 ## 5. Non-Functional Requirements
@@ -32,7 +32,7 @@ The system will consist of a web application with a backend service, AI matching
 ## 6. Constraints
 - Must support a phased delivery plan
 - Initial release should be deployable to cloud infrastructure
-- AI service must remain modular to support model upgrades
+- recommendation service must remain modular to support model upgrades
 
 ## 7. Business Rules
 - Only authenticated users may submit applications
@@ -43,7 +43,7 @@ The system will consist of a web application with a backend service, AI matching
 ## 8. Assumptions
 - A relational database will be used for transactional data
 - A caching layer will be used for read-heavy operations
-- AI inference can be served independently from the core application
+- Inference can be served independently from the core application
 
 ## 9. User Stories
 - As a student, I want relevant jobs so that I can apply faster.
@@ -56,7 +56,7 @@ The system will consist of a web application with a backend service, AI matching
 ## 10. Acceptance Criteria
 - New users can register and sign in successfully
 - Job posting and browsing workflows work end to end
-- AI recommendations appear for students with complete profiles
+- recommendations appear for students with complete profiles
 - Employers can post both HIRING and INTERNSHIP job types
 - Students can upload a resume that auto-fills their profile and drives job recommendations
 - Employers receive an in-app message and email notification for every new application

@@ -74,8 +74,8 @@ export class ApplicationsService {
         const emailResult = await this.email.send({
           to: employer.email,
           subject: `New application: ${job.title} at ${job.company}`,
-          text: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
-          html: `<p>A candidate applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via Gradture AI.</p>`,
+          text: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture.`,
+          html: `<p>A candidate applied to <strong>${job.title}</strong> at ${job.company}.</p><p>Application submitted via Gradture.</p>`,
         });
 
         await this.prisma.emailEvent.create({
@@ -84,7 +84,7 @@ export class ApplicationsService {
             recipientId: job.employerId,
             recipientEmail: employer.email,
             subject: `New application: ${job.title} at ${job.company}`,
-            body: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture AI.`,
+            body: `A candidate applied to "${job.title}" at ${job.company}.\n\nApplication submitted via Gradture.`,
             status: emailResult.status,
             sentAt: emailResult.status === 'SENT' ? new Date() : null,
           },

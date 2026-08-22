@@ -2,7 +2,7 @@ export type Category = { tag: string; icon: string };
 
 const CATEGORY_META: Array<{ keywords: string[]; tag: string; icon: string }> = [
   { keywords: ['data', 'analytics'], tag: 'Data', icon: '📊' },
-  { keywords: ['ai', 'machine learning'], tag: 'AI', icon: '🤖' },
+  { keywords: ['ai', 'machine learning'], tag: 'Recommended', icon: '🤖' },
   { keywords: ['design', 'product'], tag: 'Product & Design', icon: '🎨' },
   { keywords: ['full-stack', 'full stack', 'development', 'software', 'engineer'], tag: 'Engineering', icon: '💻' },
   { keywords: ['marketing', 'sales'], tag: 'Marketing & Sales', icon: '📣' },

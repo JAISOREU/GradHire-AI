@@ -1,4 +1,4 @@
-# GradHire AI — Production Deployment Guide
+# GradTure — Production Deployment Guide
 ## Railway (Backend) + Vercel (Frontend)
 
 ---
@@ -121,8 +121,8 @@ In Railway backend service → **"Variables"** tab, add:
 | `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai` | Your Vercel domains |
 | `FRONTEND_URL` | `https://gradture.ai` | Primary frontend URL |
 | `RESEND_API_KEY` | (your new Resend key) | From Step 1 |
-| `SMTP_FROM` | `GradHire AI <noreply@gradture.ai>` | Sender email |
-| `AI_SERVICE_URL` | `http://ai-service:8000` | Or external AI service URL |
+| `SMTP_FROM` | `GradTure <noreply@gradture.ai>` | Sender email |
+| `SERVICE_URL` | `http://ai-service:8000` | Or external recommendation service URL |
 | `REDIS_URL` | (optional) | Redis connection string if using Railway Redis |
 | `SENTRY_DSN` | (optional) | Your Sentry DSN |
 | `SENTRY_ENVIRONMENT` | `production` | |
@@ -364,7 +364,7 @@ Visit `https://gradture.ai` and test:
 - [ ] **Job detail** — view job at `/jobs/:id`
 - [ ] **Apply** — submit application
 - [ ] **Saved jobs** — save a job
-- [ ] **AI recommendations** — view recommended jobs
+- [ ] **recommendations** — view recommended jobs
 - [ ] **Applications** — view application status
 - [ ] **Messages** — send/receive messages (if another user exists)
 - [ ] **Notifications** — view notifications

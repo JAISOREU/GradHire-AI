@@ -2,11 +2,11 @@
 set -euo pipefail
 
 echo "========================================"
-echo "GradHire AI — Oracle Cloud Deployment"
+echo "GradTure — Oracle Cloud Deployment"
 echo "========================================"
 
 # Configuration
-APP_DIR="${APP_DIR:-$HOME/gradhire-ai}"
+APP_DIR="${APP_DIR:-$HOME/gradture}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 DOMAIN="${DOMAIN:-gradture.ai}"
 
@@ -48,7 +48,7 @@ sudo ufw status
 echo ""
 echo "[5/8] Cloning repository..."
 if [ ! -d "$APP_DIR" ]; then
-    git clone https://github.com/your-username/gradhire-ai.git "$APP_DIR"
+    git clone https://github.com/your-username/gradture.git "$APP_DIR"
 else
     echo "Repository already exists. Pulling latest..."
     cd "$APP_DIR"
@@ -89,7 +89,7 @@ echo "Services:"
 echo "  Frontend:  https://$DOMAIN"
 echo "  API:       https://api.$DOMAIN"
 echo "  Admin:     https://admin.$DOMAIN"
-echo "  AI:        http://<vm-ip>:8000"
+echo "  Service:    http://<vm-ip>:8000"
 echo ""
 echo "Next steps:"
 echo "  1. Point your domain A records to this VM's IP"

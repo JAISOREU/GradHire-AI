@@ -79,7 +79,7 @@ function AiReadiness({ readiness, onSectionClick }: { readiness: AiReadiness | n
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-secondary">AI Matching Readiness</span>
+        <span className="text-sm font-medium text-secondary">Smart Matching Readiness</span>
         <Badge kind={readiness.ready ? 'open' : 'hiring'}>{readiness.ready ? 'Ready' : 'Incomplete'}</Badge>
       </div>
       <div className="space-y-2">

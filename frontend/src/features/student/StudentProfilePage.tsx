@@ -45,13 +45,13 @@ export const StudentProfilePage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title={`${getRoleLabel('STUDENT')} profile`} subtitle="Keep your details up to date for better AI matches." />
+      <PageHeader title={`${getRoleLabel('STUDENT')} profile`} subtitle="Keep your details up to date for better matches." />
 
       <div className="form-container">
         <Card title="Profile details">
           <form onSubmit={handleSubmit} className="stack">
             <FormInput label="Name" id="talent-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-            <FormTextarea label="Focus area" id="talent-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="e.g. Full-stack development and AI products" />
+            <FormTextarea label="Focus area" id="talent-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="e.g. Full-stack development and smart products" />
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save changes'}</Button>
             </div>

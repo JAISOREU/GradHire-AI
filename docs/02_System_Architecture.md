@@ -6,14 +6,14 @@ The initial system will follow a modular monolith approach with clear boundaries
 ## High-Level Architecture
 - Frontend: React 19 + TypeScript + Vite
 - Backend: NestJS with modular domain structure
-- AI Service: FastAPI for resume parsing and matching
+- Recommendation Service: FastAPI for resume parsing and matching
 - Data Layer: PostgreSQL + Redis
 - Infrastructure: Docker, GitHub Actions, cloud deployment
 
 ## Component Overview
 - Client application for students and employers
 - API gateway and backend services
-- AI inference pipeline for parsing and recommendation
+- inference pipeline for parsing and recommendation
 - Resume ingestion pipeline for upload, parsing, and profile auto-fill
 - Notification service for in-app messages and email delivery to employers
 - Database and cache for persistence and session handling

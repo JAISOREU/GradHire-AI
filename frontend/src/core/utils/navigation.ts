@@ -86,7 +86,7 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
     items: [
       { to: '/admin/reports', label: 'Reports', icon: 'dashboard' },
       { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' },
-      { to: '/admin/ai-monitoring', label: 'AI Monitoring', icon: 'dashboard' },
+      { to: '/admin/ai-monitoring', label: 'Monitoring', icon: 'dashboard' },
       { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'security' },
     ],
   },

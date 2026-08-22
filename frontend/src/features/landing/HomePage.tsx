@@ -9,7 +9,7 @@ import { SiteFooter } from '../../layouts/SiteFooter';
 import { LandingPresentation, PresentationSlide } from './LandingPresentation';
 
 const HERO_INDICATORS = [
-  'AI-powered matching',
+  'Smart matching',
   'Real opportunities',
   'Profile-based recommendations',
 ];
@@ -62,13 +62,9 @@ export const HomePage = () => {
               <div className="hero-visual-wrap hero-anim hero-anim--visual">
                 <HeroVisual />
               </div>
-            </div>
-            <div className="scroll-cue" aria-hidden="true">
-              <span className="scroll-cue__label">Scroll, swipe, or use arrow keys</span>
-              <span className="scroll-cue__line" />
-            </div>
-          </>
-        ),
+            </>
+          ),
+        },
       },
       ...featureSlides,
       {

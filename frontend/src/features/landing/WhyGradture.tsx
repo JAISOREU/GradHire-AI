@@ -21,8 +21,8 @@ export const FEATURES: Feature[] = [
   {
     id: 'ai-matching',
     number: '01',
-    label: 'AI Matching',
-    title: 'AI-guided matches',
+    label: 'Smart Matching',
+    title: 'Smart matches',
     text: 'Find opportunities matched to your skills, interests, and goals — not just keywords.',
     details: 'Gradture AI compares the information you provide in your profile with available opportunities. Skills, experience, education, interests, and career preferences work together to make recommendations more relevant than title or keyword matching alone.',
     supporting: ['Skills', 'Experience', 'Education', 'Preferences'],

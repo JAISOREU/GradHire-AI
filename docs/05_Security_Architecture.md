@@ -1,7 +1,7 @@
 # Document 05 — Security Architecture
 
 ## Security Objectives
-Protect user data, enforce role-based access, and reduce attack surface across frontend, backend, and AI services.
+Protect user data, enforce role-based access, and reduce attack surface across frontend, backend, and recommendation services.
 
 ## Security Controls
 - Authentication using JWT with refresh token rotation

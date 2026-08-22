@@ -6,14 +6,14 @@
 - Define API contracts and security baseline
 
 ## Phase 1 — MVP Foundation
-- Set up frontend, backend, and AI service scaffolding
+- Set up frontend, backend, and recommendation service scaffolding
 - Implement authentication and user profiles
 - Create job posting and browsing workflows
 - Support job types: full-time HIRING and INTERNSHIP postings
 - Implement resume upload and parsing with automatic profile auto-fill
 - Enable application submission and employer notification (in-app + email)
 
-## Phase 2 — AI and Matching
+## Phase 2 — Matching
 - Integrate resume parsing and embedding pipelines
 - Implement recommendation engine and evaluation metrics
 - Add observability and performance tuning

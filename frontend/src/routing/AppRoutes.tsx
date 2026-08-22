@@ -19,7 +19,7 @@ const AdminApplicationsPage = lazy(() => import('../features/admin/AdminApplicat
 const AdminCompaniesPage = lazy(() => import('../features/admin/AdminCompaniesPage').then((m) => ({ default: m.AdminCompaniesPage })));
 const AdminReportsPage = lazy(() => import('../features/admin/AdminReportsPage').then((m) => ({ default: m.AdminReportsPage })));
 const AdminAnalyticsPage = lazy(() => import('../features/admin/AdminAnalyticsPage').then((m) => ({ default: m.AdminAnalyticsPage })));
-const AdminAiMonitoringPage = lazy(() => import('../features/admin/AdminAiMonitoringPage').then((m) => ({ default: m.AdminAiMonitoringPage })));
+const AdminMonitoringPage = lazy(() => import('../features/admin/AdminMonitoringPage').then((m) => ({ default: m.AdminMonitoringPage })));
 const AdminNotificationsPage = lazy(() => import('../features/admin/AdminNotificationsPage').then((m) => ({ default: m.AdminNotificationsPage })));
 const AdminAuditLogsPage = lazy(() => import('../features/admin/AdminAuditLogsPage').then((m) => ({ default: m.AdminAuditLogsPage })));
 const AdminSettingsPage = lazy(() => import('../features/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })));
@@ -46,7 +46,7 @@ const StudentDashboardPage = lazy(() => import('../features/student/StudentDashb
 const StudentResumePage = lazy(() => import('../features/student/StudentResumePage').then((m) => ({ default: m.StudentResumePage })));
 const StudentApplicationsPage = lazy(() => import('../features/student/StudentApplicationsPage').then((m) => ({ default: m.StudentApplicationsPage })));
 const StudentSavedJobsPage = lazy(() => import('../features/student/StudentSavedJobsPage').then((m) => ({ default: m.StudentSavedJobsPage })));
-const StudentAiResumeBuilderPage = lazy(() => import('../features/student/StudentAiResumeBuilderPage').then((m) => ({ default: m.StudentAiResumeBuilderPage })));
+const StudentResumeBuilderPage = lazy(() => import('../features/student/StudentResumeBuilderPage').then((m) => ({ default: m.StudentResumeBuilderPage })));
 const StudentRecommendedJobsPage = lazy(() => import('../features/student/StudentRecommendedJobsPage').then((m) => ({ default: m.StudentRecommendedJobsPage })));
 const StudentNotificationsPage = lazy(() => import('../features/student/StudentNotificationsPage').then((m) => ({ default: m.StudentNotificationsPage })));
 const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
@@ -97,7 +97,7 @@ export const AppRoutes = () => (
         <Route path="/student/resume" element={<LazyPage><Page><StudentResumePage /></Page></LazyPage>} />
         <Route path="/student/applications" element={<LazyPage><Page><StudentApplicationsPage /></Page></LazyPage>} />
         <Route path="/student/saved" element={<LazyPage><Page><StudentSavedJobsPage /></Page></LazyPage>} />
-        <Route path="/student/ai-resume-builder" element={<LazyPage><Page><StudentAiResumeBuilderPage /></Page></LazyPage>} />
+        <Route path="/student/resume-builder" element={<LazyPage><Page><StudentResumeBuilderPage /></Page></LazyPage>} />
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
         <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
         <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
@@ -135,7 +135,7 @@ export const AppRoutes = () => (
         <Route path="/admin/companies" element={<LazyPage><Page><AdminCompaniesPage /></Page></LazyPage>} />
         <Route path="/admin/reports" element={<LazyPage><Page><AdminReportsPage /></Page></LazyPage>} />
         <Route path="/admin/analytics" element={<LazyPage><Page><AdminAnalyticsPage /></Page></LazyPage>} />
-        <Route path="/admin/ai-monitoring" element={<LazyPage><Page><AdminAiMonitoringPage /></Page></LazyPage>} />
+        <Route path="/admin/monitoring" element={<LazyPage><Page><AdminMonitoringPage /></Page></LazyPage>} />
         <Route path="/admin/notifications" element={<LazyPage><Page><AdminNotificationsPage /></Page></LazyPage>} />
         <Route path="/admin/audit-logs" element={<LazyPage><Page><AdminAuditLogsPage /></Page></LazyPage>} />
         <Route path="/admin/settings" element={<LazyPage><Page><AdminSettingsPage /></Page></LazyPage>} />

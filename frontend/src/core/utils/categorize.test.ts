@@ -13,9 +13,9 @@ describe('categorize', () => {
     expect(result.tag).toBe('Engineering');
   });
 
-  it('returns AI tag for machine learning roles', () => {
+  it('returns Recommended tag for machine learning roles', () => {
     const result = categorize('Machine Learning Engineer');
-    expect(result.tag).toBe('AI');
+    expect(result.tag).toBe('Recommended');
     expect(result.icon).toBe('🤖');
   });
 

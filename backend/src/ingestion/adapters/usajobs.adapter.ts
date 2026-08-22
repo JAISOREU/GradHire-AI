@@ -17,7 +17,7 @@ export class UsaJobsAdapter implements SourceAdapter {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'Gradture AI (contact@gradture.ai)',
+      'User-Agent': 'Gradture (contact@gradture.ai)',
     };
     if (apiKey) {
       headers['Authorization-Key'] = apiKey;

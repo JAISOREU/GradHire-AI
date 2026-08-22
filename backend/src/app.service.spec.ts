@@ -141,14 +141,14 @@ describe('AppService', () => {
     );
   });
 
-  it('getJobs prioritizes AI-related roles for an AI focus', async () => {
+  it('getJobs prioritizes recommendation-related roles for a smart focus', async () => {
     await service.saveStudentProfile('student-001', { name: 'Test', focus: 'AI and machine learning' });
 
     const jobs = await service.getJobs({}) as PaginatedResponse<{ id: string; title: string; type: string }>;
     assert.ok(jobs.items.length > 0);
     assert.ok(
       jobs.items.some((job) => /ai|engineer/i.test(job.title)),
-      'Expected at least one AI/engineer role for an AI focus',
+      'Expected at least one engineer role for a smart focus',
     );
   });
 

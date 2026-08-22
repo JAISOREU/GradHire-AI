@@ -1,6 +1,6 @@
 import { useInView } from '../../../core/hooks/useInView';
 
-export const AIMatchingVisual = () => {
+export const SmartMatchingVisual = () => {
   const { ref, inView } = useInView();
 
   return (

@@ -45,7 +45,7 @@ export const RegisterPage = () => {
           <div className="role-picker">
             <button type="button" className={`role-option ${selectedRole === 'STUDENT' ? 'is-selected' : ''}`} onClick={() => { setSelectedRole('STUDENT'); handleChange('role', 'STUDENT'); }}>
               <strong>{getRoleLabel('STUDENT')}</strong>
-              <span>Browse jobs, apply, get AI recommendations</span>
+              <span>Browse jobs, apply, get recommendations</span>
             </button>
             <button type="button" className={`role-option ${selectedRole === 'EMPLOYER' ? 'is-selected' : ''}`} onClick={() => { setSelectedRole('EMPLOYER'); handleChange('role', 'EMPLOYER'); }}>
               <strong>{getRoleLabel('EMPLOYER')}</strong>

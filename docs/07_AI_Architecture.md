@@ -1,6 +1,6 @@
-# Document 07 — AI Architecture
+# Document 07 — Architecture
 
-## AI Capabilities
+## Capabilities
 The platform will support:
 - Resume parsing and extraction
 - Profile auto-fill from uploaded resumes

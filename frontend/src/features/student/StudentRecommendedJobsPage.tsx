@@ -56,7 +56,7 @@ export const StudentRecommendedJobsPage = () => {
           fallback
             ? 'Showing best-match roles based on your profile.'
             : ready
-              ? 'AI-matched roles based on your profile.'
+              ? 'matched roles based on your profile.'
               : 'Complete your profile to unlock personalized recommendations.'
         }
         action={
@@ -76,7 +76,7 @@ export const StudentRecommendedJobsPage = () => {
 
       {fallback && ready && (
         <div className="alert alert--info" style={{ marginBottom: '1rem' }}>
-          Recommendations are based on profile matching. AI enrichment will be applied when available.
+          Recommendations are based on profile matching. enrichment will be applied when available.
         </div>
       )}
 

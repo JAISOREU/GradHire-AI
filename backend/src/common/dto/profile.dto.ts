@@ -7,7 +7,7 @@ export class UpdateProfileDto {
   @IsString()
   name?: string;
 
-  @ApiProperty({ required: false, example: 'Full-stack development and AI products' })
+  @ApiProperty({ required: false, example: 'Full-stack development and smart products' })
   @IsOptional()
   @IsString()
   focus?: string;
