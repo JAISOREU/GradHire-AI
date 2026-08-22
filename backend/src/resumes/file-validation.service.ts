@@ -68,7 +68,7 @@ export class FileValidationService {
     }
 
     const textSample = file.buffer.toString('utf-8', 0, Math.min(file.size, 8192));
-    if (/\0/.test(textSample) && !FileValidationService.TEXT_EXTENSIONS.has(ext)) {
+    if (FileValidationService.TEXT_EXTENSIONS.has(ext) && /\0/.test(textSample)) {
       errors.push('File content contains null bytes. The file may be corrupted.');
     }
 
