@@ -6,9 +6,10 @@ import { Button } from '../../components/Button';
 import { FormInput, FormSelect } from '../../components/FormField';
 import { Card } from '../../components/Card';
 import { useState, useEffect } from 'react';
+import type { Message, PaginatedResponse } from '../../core/types';
 
 export const EmployerMessagesPage = () => {
-  const { data: messages, loading, reload } = useRealtimeQuery(() => messagesApi.listMine(), [], { eventName: 'message' });
+  const { data: messages, loading, reload } = useRealtimeQuery(() => messagesApi.listMine(), [] as PaginatedResponse<Message>[], { eventName: 'message' });
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ to: '', body: '' });
   const [candidates, setCandidates] = useState<{ id: string; name: string }[]>([]);
@@ -83,8 +84,8 @@ export const EmployerMessagesPage = () => {
       <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading messages…" />
-        ) : messages && (messages as any).items?.length > 0 ? (
-          (messages as any).items.map((m: any) => (
+        ) : messages && messages.items.length > 0 ? (
+          messages.items.map((m: Message) => (
             <article key={m.id} className="list-item">
               <div className="flex justify-between items-center">
                 <div>

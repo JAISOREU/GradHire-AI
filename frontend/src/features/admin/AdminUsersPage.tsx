@@ -11,6 +11,7 @@ export const AdminUsersPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('STUDENT');
   const [message, setMessage] = useState('');
 
@@ -74,9 +75,12 @@ export const AdminUsersPage = () => {
               <label className="form-label" htmlFor="user-email">Email</label>
               <input id="user-email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" required />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ position: 'relative' }}>
               <label className="form-label" htmlFor="user-password">Password</label>
-              <input id="user-password" className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              <input id="user-password" className="input" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
             </div>
             <div className="form-group">
               <label className="form-label" htmlFor="user-role">Role</label>

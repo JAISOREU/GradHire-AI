@@ -22,8 +22,8 @@ export const DirectMessagingVisual = () => {
           <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="56" width="320" height="14" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
           <text x="210" y="58" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Hiring Team</text>
-          <circle cx="300" cy="50" r="5" fill="var(--color-success, #059669)" />
-          <text x="308" y="54" textAnchor="start" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Online</text>
+          <circle cx="300" cy="50" r="5" fill="var(--color-text)" />
+          <text x="308" y="54" textAnchor="start" fill="var(--color-text)" fontSize="9" fontWeight="700">Online</text>
         </g>
 
         <g className="msg-candidate">
@@ -32,19 +32,19 @@ export const DirectMessagingVisual = () => {
         </g>
 
         <g className="msg-typing">
-          <circle cx="310" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
-          <circle cx="320" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
-          <circle cx="330" cy="144" r="3" fill="var(--color-text-muted, #8c8680)" opacity="0.6" className="typing-dot" />
+          <circle cx="310" cy="144" r="3" fill="var(--color-text)" opacity="0.6" className="typing-dot" />
+          <circle cx="320" cy="144" r="3" fill="var(--color-text)" opacity="0.6" className="typing-dot" />
+          <circle cx="330" cy="144" r="3" fill="var(--color-text)" opacity="0.6" className="typing-dot" />
         </g>
 
         <g className="msg-employer">
           <rect x="60" y="170" width="190" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="80" y="194" textAnchor="start" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
+          <text x="80" y="194" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
         </g>
 
         <g className="msg-status">
           <rect x="70" y="222" width="140" height="12" rx="6" fill="var(--color-success-soft, #ecfdf5)" />
-          <text x="140" y="232" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="9" fontWeight="700">Conversation continued</text>
+          <text x="140" y="232" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="700">Conversation continued</text>
         </g>
       </svg>
 

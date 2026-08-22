@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo' | 'resume' | 'reports' | 'ai' | 'database' | 'api' | 'email' | 'cms' | 'feature' | 'backup' | 'security';
+type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'arrow-up' | 'arrow-down' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo' | 'resume' | 'reports' | 'ai' | 'database' | 'api' | 'email' | 'cms' | 'feature' | 'backup' | 'security';
 
 type IconProps = {
   name: IconName;
@@ -72,6 +72,12 @@ const PATH: Record<IconName, ReactNode> = {
   ),
   'arrow-left': (
     <path d="M19 12H5M12 19l-7-7 7-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  'arrow-up': (
+    <path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
+  'arrow-down': (
+    <path d="M12 5v14M5 12l7 7 7-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   ),
   'chevron-right': (
     <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

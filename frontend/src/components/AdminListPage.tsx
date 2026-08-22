@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Skeleton } from './Skeleton';
 import { EmptyState } from './EmptyState';
 
@@ -47,7 +48,9 @@ export const AdminListPage = <T,>({
         </div>
       )}
       <div className="list">
-        {items.map((item, index) => renderItem(item, index))}
+        {items.map((item, index) => (
+          <Fragment key={index}>{renderItem(item, index)}</Fragment>
+        ))}
       </div>
     </div>
   );

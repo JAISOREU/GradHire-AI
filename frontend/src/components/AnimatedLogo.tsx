@@ -47,7 +47,7 @@ export const AnimatedLogo = ({ size = 32, showText = true, className = '' }: Ani
     <span className="animated-logo__mark">{LOGO_SVG}</span>
     {showText && (
       <span className="animated-logo__text">
-        <span className="animated-logo__name">Gradture <span className="animated-logo__ai">AI</span></span>
+        <span className="animated-logo__name">Gradture</span>
       </span>
     )}
   </span>

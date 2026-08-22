@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
+import { ThemeBackground } from '../../components/ThemeBackground';
 import { roleHomePath } from '../../core/utils/navigation';
 import { useFormValidation } from '../../core/hooks/useFormValidation';
 import { z } from 'zod';
@@ -29,6 +30,7 @@ export const LoginPage = () => {
 
   return (
     <div className="auth-page fade-in">
+      <ThemeBackground />
       <div className="auth-card">
         <div className="auth-card__header">
           <h2>Welcome back</h2>
@@ -38,7 +40,7 @@ export const LoginPage = () => {
           <FormInput label="Email" id="login-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
           <div style={{ position: 'relative' }}>
             <FormInput label="Password" id="login-password" type={showPassword ? 'text' : 'password'} required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Your password" error={touched.password ? errors.password : undefined} />
-            <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '1.75rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+            <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>

@@ -15,7 +15,7 @@ import { Badge } from '../../components/Badge';
 import { Icon } from '../../components/Icon';
 import { Avatar } from '../../components/Avatar';
 import { EmptyState } from '../../components/EmptyState';
-import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume } from '../../core/types';
+import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume, Certification } from '../../core/types';
 
 const VISIBILITY_OPTIONS = [
   { value: 'PUBLIC', label: 'Public', description: 'Your profile is visible to everyone.' },
@@ -106,7 +106,7 @@ function AiReadiness({ readiness, onSectionClick }: { readiness: AiReadiness | n
   );
 }
 
-function SectionHeader({ title, subtitle, onEdit, editing, onSave, onCancel, saving }: any) {
+function SectionHeader({ title, subtitle, onEdit, editing, onSave, onCancel, saving }: { title: string; subtitle?: string; onEdit?: () => void; editing: boolean; onSave?: () => void; onCancel?: () => void; saving?: boolean }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex-1">
@@ -557,7 +557,7 @@ function SkillsSection({ userId: _userId, onSectionClick }: { userId: string; on
 }
 
 function CertificationsSection(_props: { onSectionClick?: (section: string) => void }) {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<Certification[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', issuer: '', issuedAt: '', expiresAt: '', credentialId: '', url: '' });
   const [saving, setSaving] = useState(false);
@@ -567,7 +567,7 @@ function CertificationsSection(_props: { onSectionClick?: (section: string) => v
     setLoading(true);
     try {
       const data = await studentsApi.getCertifications();
-      setItems(data as any);
+      setItems(data as Certification[]);
     } catch {
       setItems([]);
     }
@@ -576,7 +576,7 @@ function CertificationsSection(_props: { onSectionClick?: (section: string) => v
 
   useEffect(() => { reload(); }, [reload]);
 
-  const startEdit = (item?: any) => {
+  const startEdit = (item?: Certification) => {
     if (item) {
       setForm({ name: item.name, issuer: item.issuer || '', issuedAt: item.issuedAt?.slice(0, 10) || '', expiresAt: item.expiresAt?.slice(0, 10) || '', credentialId: item.credentialId || '', url: item.url || '' });
       setEditing(item.id);
@@ -610,7 +610,7 @@ function CertificationsSection(_props: { onSectionClick?: (section: string) => v
     <Card title="Certifications" subtitle="Add professional certifications and licenses." className="section--mt" id="section-certifications">
       {loading ? <Skeleton variant="table" lines={3} /> : (
         <div className="space-y-3">
-          {items.map((item: any) => (
+          {items.map((item: Certification) => (
             <div key={item.id} className="flex items-start justify-between p-3 rounded-lg border">
               <div>
                 <div className="font-medium text-sm">{item.name}</div>

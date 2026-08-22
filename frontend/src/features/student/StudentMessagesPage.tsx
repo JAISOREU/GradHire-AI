@@ -7,9 +7,10 @@ import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
 import { Card } from '../../components/Card';
 import { useState } from 'react';
+import type { Message, PaginatedResponse } from '../../core/types';
 
 export const StudentMessagesPage = () => {
-  const { data: messages, loading, error, reload } = useRealtimeQuery(() => messagesApi.listMine(), [], { eventName: 'message' });
+  const { data: messages, loading, error, reload } = useRealtimeQuery(() => messagesApi.listMine(), [] as PaginatedResponse<Message>[], { eventName: 'message' });
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ to: '', body: '' });
   const [sendError, setSendError] = useState('');
@@ -56,14 +57,14 @@ export const StudentMessagesPage = () => {
         <h2 className="section-title">Inbox</h2>
         {error && (
           <div className="message message--error" role="alert">
-            {(error as any)?.message ?? 'Failed to load messages.'} <button onClick={reload} className="link">Retry</button>
+            {error ?? 'Failed to load messages.'} <button onClick={reload} className="link">Retry</button>
           </div>
         )}
         <div className="list-container">
           {loading ? (
             <LoadingState label="Loading messages…" />
-          ) : messages && (messages as any).items?.length > 0 ? (
-            (messages as any).items.map((m: any) => (
+          ) : messages && messages.items.length > 0 ? (
+            messages.items.map((m: Message) => (
               <article key={m.id} className="list-item">
                 <div className="list-item__head">
                   <div>

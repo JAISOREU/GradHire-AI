@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { api, getStoredToken, setStoredToken, clearStoredToken, ApiError } from './client';
 
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+const FULL_TEST_URL = API_BASE ? `${API_BASE}/test` : '/test';
+
 function mockResponse(overrides: Partial<Response> = {}): Response {
   return {
     ok: true,
@@ -30,7 +33,7 @@ describe('api client', () => {
 
     const result = await api<{ id: string; title: string }>('/test');
     expect(result).toEqual(mockData);
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ 
+    expect(fetch).toHaveBeenCalledWith(FULL_TEST_URL, expect.objectContaining({
       method: 'GET',
       credentials: 'include',
     }));
@@ -46,7 +49,7 @@ describe('api client', () => {
     );
 
     await api('/test', { json: { name: 'Test' } });
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({ 
+    expect(fetch).toHaveBeenCalledWith(FULL_TEST_URL, expect.objectContaining({
       method: 'POST',
       credentials: 'include',
     }));
@@ -62,7 +65,7 @@ describe('api client', () => {
     );
 
     await api('/test', { method: 'POST', json: {} });
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
+    expect(fetch).toHaveBeenCalledWith(FULL_TEST_URL, expect.objectContaining({
       headers: expect.objectContaining({ 'X-XSRF-TOKEN': 'test-csrf-token' }),
     }));
   });
@@ -77,7 +80,7 @@ describe('api client', () => {
     );
 
     await api('/test');
-    expect(fetch).toHaveBeenCalledWith('/test', expect.objectContaining({
+    expect(fetch).toHaveBeenCalledWith(FULL_TEST_URL, expect.objectContaining({
       headers: expect.not.objectContaining({ Authorization: expect.anything() }),
     }));
   });

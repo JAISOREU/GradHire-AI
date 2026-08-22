@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect } from 'react';
 import { CreateAccountVisual } from './visuals/CreateAccountVisual';
 import { BuildProfileVisual } from './visuals/BuildProfileVisual';
 import { DiscoverOpportunitiesVisual } from './visuals/DiscoverOpportunitiesVisual';
@@ -10,6 +10,8 @@ const STEPS = [
     label: 'Getting started',
     title: 'Create your account',
     text: 'Create your account and get started in minutes.',
+    details: 'Start with the basic information needed to establish your account. Once registered, you can continue building your profile and access the parts of the platform available to your role.',
+    supporting: ['Email', 'Password', 'Name', 'Account created', 'Profile initialized'],
     visual: CreateAccountVisual,
   },
   {
@@ -17,6 +19,8 @@ const STEPS = [
     label: 'Your profile',
     title: 'Build your profile',
     text: 'Add your skills, experience, resume, and career preferences.',
+    details: 'A more complete profile gives the platform better information to work with. Add your education, skills, experience, resume, projects, certifications, and preferences so opportunities and recommendations are evaluated against information you actually provide.',
+    supporting: ['Skills', 'Education', 'Experience', 'Resume', 'Projects', 'Preferences'],
     visual: BuildProfileVisual,
   },
   {
@@ -24,6 +28,8 @@ const STEPS = [
     label: 'Discovery',
     title: 'Discover opportunities',
     text: 'Discover opportunities that align with your skills and goals.',
+    details: 'Browse available jobs and internships through the discovery experience. Search and filter opportunities using the criteria that matter to you, then open complete job details before deciding whether to apply.',
+    supporting: ['Search opportunities', 'Remote', 'Full-time', 'Internship'],
     visual: DiscoverOpportunitiesVisual,
   },
   {
@@ -31,82 +37,43 @@ const STEPS = [
     label: 'Next steps',
     title: 'Move forward',
     text: 'Apply, communicate, track progress, and take your next step.',
+    details: 'Once you find an opportunity, continue through the employment process from the same platform. Submit applications, communicate when available, monitor progress, and stay aware of important updates as your application moves forward.',
+    supporting: ['Applied', 'Reviewed', 'Interview', 'Next step'],
     visual: MoveForwardVisual,
   },
 ];
 
 export const HowItWorks = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const visualRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  const updateProgress = useCallback(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const windowHeight = window.innerHeight;
-
-    stepRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const center = rect.top + rect.height / 2;
-      const start = windowHeight;
-      const end = windowHeight * 0.15;
-      const raw = (start - center) / (start - end);
-      const p = Math.min(Math.max(raw, 0), 1);
-      const visualEl = visualRefs.current[i];
-      if (visualEl) {
-        visualEl.style.setProperty('--visual-progress', String(p));
-      }
-    });
-  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     const stepEls = section.querySelectorAll('.journey-step');
-    const rafId = { current: 0 };
-
-    stepEls.forEach((el, i) => {
-      stepRefs.current[i] = el as HTMLDivElement;
-    });
-
-    const handleScroll = () => {
-      cancelAnimationFrame(rafId.current);
-      rafId.current = requestAnimationFrame(updateProgress);
-    };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const index = Array.from(stepEls).indexOf(entry.target);
-          if (index === -1) return;
           if (entry.isIntersecting) {
             entry.target.classList.add('journey-step--inview');
           } else {
             entry.target.classList.remove('journey-step--inview');
           }
         });
-        handleScroll();
       },
       { threshold: 0.1 }
     );
 
     stepEls.forEach((el) => observer.observe(el));
-    updateProgress();
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(rafId.current);
-      observer.disconnect();
-    };
-  }, [updateProgress]);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="how-section" ref={sectionRef} aria-labelledby="how-it-works-title">
       <div className="how-header">
-        <h2 id="how-it-works-title" className="section-title gradient-text gradient-text--subtle">How it works</h2>
+        <h2 id="how-it-works-title" className="section-title gradient-text gradient-text--subtle how-header__title">How it works</h2>
         <p className="section-subtitle">From creating your profile to discovering the right opportunity, Gradture AI keeps the journey simple.</p>
       </div>
 
@@ -119,11 +86,9 @@ export const HowItWorks = () => {
             return (
               <div
                 key={step.number}
-                ref={(el) => { stepRefs.current[index] = el; }}
                 className={`journey-step ${isEven ? 'journey-step--text-left' : 'journey-step--text-right'}`}
-                style={{ '--step-index': index } as React.CSSProperties}
               >
-                <div className="journey-step__visual" ref={(el) => { visualRefs.current[index] = el; }}>
+                <div className="journey-step__visual">
                   <StepVisual />
                 </div>
                 <div className="journey-step__content">
@@ -131,6 +96,10 @@ export const HowItWorks = () => {
                   <span className="journey-step__number">{step.number}</span>
                   <h3 className="journey-step__title">{step.title}</h3>
                   <p className="journey-step__text">{step.text}</p>
+                  <p className="journey-step__details">{step.details}</p>
+                  <ul className="journey-step__supporting" aria-label={`${step.title} details`}>
+                    {step.supporting.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
                 </div>
               </div>
             );

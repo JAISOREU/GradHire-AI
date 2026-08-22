@@ -1,4 +1,3 @@
-import { useEffect, useRef, useCallback } from 'react';
 import { AIMatchingVisual } from './visuals/AIMatchingVisual';
 import { ResumeParsingVisual } from './visuals/ResumeParsingVisual';
 import { JobHubVisual } from './visuals/JobHubVisual';
@@ -8,203 +7,131 @@ import { ApplicationTrackingVisual } from './visuals/ApplicationTrackingVisual';
 import { SkillMatchingVisual } from './visuals/SkillMatchingVisual';
 import { PrivacyFirstVisual } from './visuals/PrivacyVisual';
 
-const FEATURES = [
+export interface Feature {
+  id: string;
+  number: string;
+  label: string;
+  title: string;
+  text: string;
+  details: string;
+  supporting: string[];
+}
+
+export const FEATURES: Feature[] = [
   {
-    id: 'ai-matches',
+    id: 'ai-matching',
     number: '01',
     label: 'AI Matching',
     title: 'AI-guided matches',
     text: 'Find opportunities matched to your skills, interests, and goals — not just keywords.',
+    details: 'Gradture AI compares the information you provide in your profile with available opportunities. Skills, experience, education, interests, and career preferences work together to make recommendations more relevant than title or keyword matching alone.',
+    supporting: ['Skills', 'Experience', 'Education', 'Preferences'],
   },
   {
-    id: 'resume-parsing',
+    id: 'resume-intelligence',
     number: '02',
     label: 'Resume Intelligence',
     title: 'Resume parsing',
-    text: 'Upload your resume and Gradture AI understands it, extracting skills, experience, and education.',
+    text: 'Upload your resume and turn its content into structured profile data.',
+    details: 'Gradture AI identifies relevant skills, education, experience, projects, and other career information from your document, preparing profile fields so you do not have to enter every detail from scratch.',
+    supporting: ['Skills extracted', 'Experience identified', 'Education recognized', 'Profile fields prepared'],
   },
   {
     id: 'job-hub',
     number: '03',
-    label: 'Discovery',
+    label: 'Job & Internship Hub',
     title: 'Job & internship hub',
-    text: 'Browse hiring roles and internships from top companies, curated around your profile.',
+    text: 'Browse jobs and internships from different sources in one place.',
+    details: 'Search, filter, compare, and open job details without relying on multiple disconnected websites. Focus the discovery experience around the location, role type, and opportunity criteria that matter to you.',
+    supporting: ['Search', 'Location', 'Job type', 'Remote', 'Internship', 'Experience level'],
   },
   {
     id: 'notifications',
     number: '04',
     label: 'Real-time Updates',
     title: 'Real-time notifications',
-    text: 'Never miss an application update, interview invite, or message from an employer.',
+    text: 'Stay informed when something important happens to an application or opportunity.',
+    details: 'Notifications surface application updates, interview invitations, messages, and newly matched opportunities, so you do not have to repeatedly check every part of the platform for changes.',
+    supporting: ['Application updates', 'Messages', 'Interview invitations', 'New opportunities'],
   },
   {
     id: 'messaging',
     number: '05',
     label: 'Communication',
     title: 'Direct messaging',
-    text: 'Chat with employers and get answers faster — all inside the platform.',
+    text: 'Communicate with employers directly inside the platform.',
+    details: 'Keep relevant conversations connected to the employment journey instead of moving between separate communication channels. Follow up, ask questions, and continue discussions with hiring teams in the context of each opportunity.',
+    supporting: ['Employer conversations', 'Message history', 'Online status', 'Conversation context'],
   },
   {
-    id: 'tracking',
+    id: 'applications',
     number: '06',
-    label: 'Visibility',
+    label: 'Application Tracking',
     title: 'Application tracking',
-    text: 'See every application status in one clean timeline, from applied to hired.',
+    text: 'Keep every application organized in one clear timeline.',
+    details: 'See where an application currently stands, whether it has been viewed or reviewed, and what the next stage may be. The progress view makes it easier to understand your status without losing track of applications.',
+    supporting: ['Applied', 'Viewed', 'Review', 'Interview', 'Decision'],
   },
   {
-    id: 'skill-match',
+    id: 'skills',
     number: '07',
-    label: 'Skill Graph',
+    label: 'Skill Matching',
     title: 'Skill matching',
-    text: 'We match you to roles based on real skills, giving you a clear recommendation signal.',
+    text: 'Compare the skills in your profile with the requirements of an opportunity.',
+    details: 'This gives you a clearer view of where you already match a role and where additional skills or experience may be useful. The comparison is based on information you provide, not skills the platform assumes you have.',
+    supporting: ['Your skills', 'Role requirements', 'Matched skills', 'Missing requirements', 'Profile match'],
   },
   {
-    id: 'privacy',
+    id: 'security',
     number: '08',
-    label: 'Security',
+    label: 'Privacy & Security',
     title: 'Privacy first',
-    text: 'Your data stays secure with encrypted storage, access controls, and minimal exposure.',
+    text: 'Keep sensitive career information protected throughout your employment journey.',
+    details: 'Profiles can include resumes, education, experience, applications, and conversations. Gradture AI minimizes unnecessary exposure and uses appropriate access controls so information is available to the people and systems that need it while remaining protected from unauthorized access.',
+    supporting: ['Profile', 'Resume', 'Applications', 'Messages', 'Protected'],
   },
 ];
 
-const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-
-export const WhyGradture = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const visualRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const progressValues = useRef(new Array(FEATURES.length).fill(0));
-  const inViewFlags = useRef(new Array(FEATURES.length).fill(false));
-
-  const updateProgress = useCallback(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const windowHeight = window.innerHeight;
-
-    featureRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const center = rect.top + rect.height / 2;
-      const start = windowHeight;
-      const end = windowHeight * 0.15;
-      const raw = (start - center) / (start - end);
-      const p = clamp(raw, 0, 1);
-      progressValues.current[i] = p;
-
-      const visualEl = visualRefs.current[i];
-      if (visualEl) {
-        const eased = easeOut(clamp((p - 0.2) / 0.6, 0, 1));
-        visualEl.style.setProperty('--visual-progress', String(eased));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const featureEls = section.querySelectorAll('.feature-story');
-    const rafId = { current: 0 };
-
-    featureEls.forEach((el, i) => {
-      featureRefs.current[i] = el as HTMLDivElement;
-    });
-
-    const handleScroll = () => {
-      cancelAnimationFrame(rafId.current);
-      rafId.current = requestAnimationFrame(updateProgress);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = Array.from(featureEls).indexOf(entry.target);
-          if (index === -1) return;
-          if (entry.isIntersecting) {
-            inViewFlags.current[index] = true;
-            entry.target.classList.add('feature-story--inview');
-          } else {
-            inViewFlags.current[index] = false;
-            entry.target.classList.remove('feature-story--inview');
-          }
-        });
-        handleScroll();
-      },
-      { threshold: 0.1 }
-    );
-
-    featureEls.forEach((el) => observer.observe(el));
-    updateProgress();
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(rafId.current);
-      observer.disconnect();
-    };
-  }, [updateProgress]);
+export const FeatureSlide = ({ feature, index }: { feature: Feature; index: number }) => {
+  const isEven = index % 2 === 0;
 
   return (
-    <section className="why-section" ref={sectionRef} aria-labelledby="why-gradture-title">
-      <div className="why-header">
-        <div className="why-header__text">
-          <span className="why-header__eyebrow">Platform capabilities</span>
-          <h2 id="why-gradture-title" className="why-header__title">
-            Why Gradture?
-          </h2>
-          <p className="why-header__subtitle">
-            Everything you need to discover opportunities, showcase your potential, and move your career forward.
-          </p>
+    <div className={`feature-story feature-story--${feature.id} ${isEven ? 'feature-story--text-left' : 'feature-story--text-right'}`}>
+      <div className="feature-story__glow" aria-hidden="true" />
+      <div className="feature-story__content">
+        <div className="feature-story__header">
+          <span className="feature-story__number">{feature.number}</span>
+          <span className="feature-story__label">{feature.label}</span>
         </div>
+        <h3 className="feature-story__title">
+          {feature.title.split(' ').map((word, i, arr) => {
+            const isLast = i === arr.length - 1;
+            if (isLast && arr.length > 1) {
+              return (
+                <span key={i} className="gradient-text">
+                  {word}{' '}
+                </span>
+              );
+            }
+            return <span key={i}>{word} </span>;
+          })}
+        </h3>
+        <p className="feature-story__text">{feature.text}</p>
+        <p className="feature-story__details">{feature.details}</p>
+        <ul className="feature-story__supporting" aria-label={`${feature.title} capabilities`}>
+          {feature.supporting.map((item) => <li key={item}>{item}</li>)}
+        </ul>
       </div>
-
-      <div className="why-features">
-        {FEATURES.map((feature, index) => {
-          const isEven = index % 2 === 0;
-
-          return (
-            <div
-              key={feature.id}
-              ref={(el) => { featureRefs.current[index] = el; }}
-              className={`feature-story ${isEven ? 'feature-story--text-left' : 'feature-story--text-right'}`}
-              style={{ '--feature-index': index } as React.CSSProperties}
-            >
-              <div className="feature-story__glow" aria-hidden="true" />
-              <div className="feature-story__content">
-                <div className="feature-story__header">
-                  <span className="feature-story__number">{feature.number}</span>
-                  <span className="feature-story__label">{feature.label}</span>
-                </div>
-                <h3 className="feature-story__title">
-                  {feature.title.split(' ').map((word, i, arr) => {
-                    const isLast = i === arr.length - 1;
-                    if (isLast && arr.length > 1) {
-                      return (
-                        <span key={i} className="gradient-text">
-                          {word}{' '}
-                        </span>
-                      );
-                    }
-                    return <span key={i}>{word} </span>;
-                  })}
-                </h3>
-                <p className="feature-story__text">{feature.text}</p>
-              </div>
-              <div className="feature-story__visual" ref={(el) => { visualRefs.current[index] = el; }}>
-                {index === 0 && <AIMatchingVisual />}
-                {index === 1 && <ResumeParsingVisual />}
-                {index === 2 && <JobHubVisual />}
-                 {index === 3 && <RealTimeNotificationsVisual />}
-                 {index === 4 && <DirectMessagingVisual />}
-                {index === 5 && <ApplicationTrackingVisual />}
-                {index === 6 && <SkillMatchingVisual />}
-                 {index === 7 && <PrivacyFirstVisual />}
-              </div>
-            </div>
-          );
-        })}
+      <div className="feature-story__visual">
+        {index === 0 && <AIMatchingVisual />}
+        {index === 1 && <ResumeParsingVisual />}
+        {index === 2 && <JobHubVisual />}
+        {index === 3 && <RealTimeNotificationsVisual />}
+        {index === 4 && <DirectMessagingVisual />}
+        {index === 5 && <ApplicationTrackingVisual />}
+        {index === 6 && <SkillMatchingVisual />}
+        {index === 7 && <PrivacyFirstVisual />}
       </div>
-    </section>
+    </div>
   );
 };

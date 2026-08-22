@@ -8,8 +8,8 @@ export const JobHubVisual = () => {
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="job-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-text)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--color-text)" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="job-search" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="var(--color-surface-muted)" />
@@ -21,45 +21,45 @@ export const JobHubVisual = () => {
 
         <g className="job-search">
           <rect x="50" y="30" width="320" height="32" rx="8" fill="url(#job-search)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="70" cy="46" r="5" stroke="var(--color-text-muted)" strokeWidth="1.5" fill="none" />
-          <line x1="74" y1="50" x2="80" y2="56" stroke="var(--color-text-muted)" strokeWidth="1.5" strokeLinecap="round" />
-          <text x="92" y="50" fill="var(--color-text-muted)" fontSize="10">Search opportunities...</text>
-          <rect x="310" y="36" width="36" height="20" rx="4" fill="var(--color-primary)" />
+          <circle cx="70" cy="46" r="5" stroke="var(--color-text)" strokeWidth="1.5" fill="none" />
+          <line x1="74" y1="50" x2="80" y2="56" stroke="var(--color-text)" strokeWidth="1.5" strokeLinecap="round" />
+          <text x="92" y="50" fill="var(--color-text)" fontSize="10">Search opportunities...</text>
+          <rect x="310" y="36" width="36" height="20" rx="4" fill="var(--color-text)" />
           <text x="328" y="50" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Go</text>
         </g>
 
         <g className="job-filter">
-          <rect x="50" y="74" width="56" height="24" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="78" y="90" textAnchor="middle" fill="var(--color-primary)" fontSize="9" fontWeight="700">Remote</text>
+          <rect x="50" y="74" width="56" height="24" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
+          <text x="78" y="90" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="700">Remote</text>
           <rect x="112" y="74" width="56" height="24" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border)" strokeWidth="1" />
-          <text x="140" y="90" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Full-time</text>
+          <text x="140" y="90" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Full-time</text>
           <rect x="174" y="74" width="56" height="24" rx="6" fill="var(--color-surface-muted)" stroke="var(--color-border)" strokeWidth="1" />
-          <text x="202" y="90" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="9" fontWeight="600">Internship</text>
+          <text x="202" y="90" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Internship</text>
         </g>
 
         <g className="job-card-1">
           <rect x="50" y="114" width="320" height="40" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="74" cy="134" r="8" fill="var(--color-border)" />
-          <text x="94" y="130" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Software Engineer</text>
-          <text x="94" y="144" fill="var(--color-text-muted)" fontSize="8">Acme Corp · Remote</text>
-          <rect x="310" y="126" width="36" height="16" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="328" y="138" textAnchor="middle" fill="var(--color-primary)" fontSize="8" fontWeight="700">95%</text>
+          <text x="94" y="130" fill="var(--color-text)" fontSize="10" fontWeight="600">Software Engineer</text>
+          <text x="94" y="144" fill="var(--color-text)" fontSize="8">Acme Corp · Remote</text>
+          <rect x="310" y="126" width="36" height="16" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
+          <text x="328" y="138" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700">95%</text>
         </g>
 
         <g className="job-card-2">
-          <rect x="50" y="164" width="320" height="40" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="74" cy="184" r="8" fill="var(--color-primary)" />
-          <text x="94" y="180" fill="var(--color-primary)" fontSize="10" fontWeight="700">Data Analyst</text>
-          <text x="94" y="194" fill="var(--color-text-muted)" fontSize="8">Globex · Hybrid</text>
-          <rect x="310" y="176" width="36" height="16" rx="4" fill="var(--color-primary)" />
+          <rect x="50" y="164" width="320" height="40" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1.5" />
+          <circle cx="74" cy="184" r="8" fill="var(--color-text)" />
+          <text x="94" y="180" fill="var(--color-text)" fontSize="10" fontWeight="700">Data Analyst</text>
+          <text x="94" y="194" fill="var(--color-text)" fontSize="8">Globex · Hybrid</text>
+          <rect x="310" y="176" width="36" height="16" rx="4" fill="var(--color-text)" />
           <text x="328" y="188" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
         </g>
 
         <g className="job-card-3">
           <rect x="50" y="214" width="320" height="36" rx="8" fill="var(--color-surface-muted)" stroke="var(--color-border)" strokeWidth="1" />
           <circle cx="74" cy="232" r="7" fill="var(--color-border)" />
-          <text x="94" y="228" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Product Designer</text>
-          <text x="94" y="240" fill="var(--color-text-muted)" fontSize="8">Initech · On-site</text>
+          <text x="94" y="228" fill="var(--color-text)" fontSize="10" fontWeight="600">Product Designer</text>
+          <text x="94" y="240" fill="var(--color-text)" fontSize="8">Initech · On-site</text>
         </g>
       </svg>
 

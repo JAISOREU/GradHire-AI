@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
+import { ThemeBackground } from '../../components/ThemeBackground';
 import { useFormValidation } from '../../core/hooks/useFormValidation';
 import { z } from 'zod';
 import { authApi } from '../../core/api/endpoints/auth';
@@ -34,6 +35,8 @@ export const ResetPasswordPage = () => {
       timeoutRef.current = setTimeout(() => navigate('/login', { replace: true }), 2000);
     },
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -57,6 +60,7 @@ export const ResetPasswordPage = () => {
 
   return (
     <div className="auth-page fade-in">
+      <ThemeBackground />
       <div className="auth-card">
         <div className="auth-card__header">
           <h2>Set a new password</h2>
@@ -66,8 +70,18 @@ export const ResetPasswordPage = () => {
           <p className="message message--success">Password reset successfully. Redirecting to sign in…</p>
         ) : (
           <form onSubmit={handleSubmit} className="stack mt-4">
-            <FormInput label="New password" id="reset-password" type="password" required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Min. 8 characters" error={touched.password ? errors.password : undefined} />
-            <FormInput label="Confirm password" id="reset-confirm" type="password" required value={values.confirmPassword} onChange={(e) => handleChange('confirmPassword', e.target.value)} onBlur={() => handleBlur('confirmPassword')} placeholder="Repeat your password" error={touched.confirmPassword ? errors.confirmPassword : undefined} />
+            <div style={{ position: 'relative' }}>
+              <FormInput label="New password" id="reset-password" type={showPassword ? 'text' : 'password'} required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Min. 8 characters" error={touched.password ? errors.password : undefined} />
+              <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <FormInput label="Confirm password" id="reset-confirm" type={showConfirm ? 'text' : 'password'} required value={values.confirmPassword} onChange={(e) => handleChange('confirmPassword', e.target.value)} onBlur={() => handleBlur('confirmPassword')} placeholder="Repeat your password" error={touched.confirmPassword ? errors.confirmPassword : undefined} />
+              <button type="button" onClick={() => setShowConfirm((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                {showConfirm ? 'Hide' : 'Show'}
+              </button>
+            </div>
             {formError && <div className="message message--error" role="alert">{formError}</div>}
             <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Resetting…' : 'Reset password'}</Button>
           </form>

@@ -1,21 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-
-const useInView = (options?: IntersectionObserverInit) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      setInView(entry.isIntersecting);
-    }, { threshold: 0.2, ...options });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [options]);
-
-  return { ref, inView };
-};
+import { useEffect, useState } from 'react';
+import { useInView } from '../../../core/hooks/useInView';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export const HeroVisual = () => {
   const { ref, inView } = useInView();
@@ -37,8 +22,6 @@ export const HeroVisual = () => {
   }, [ref]);
 
   const visualStyle = {
-    '--mouse-x': `${mousePos.x * 10}px`,
-    '--mouse-y': `${mousePos.y * 10}px`,
     transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)`,
     transition: 'transform 0.2s ease-out',
   } as React.CSSProperties;
@@ -79,46 +62,58 @@ export const HeroVisual = () => {
         {/* Profile node */}
         <g className="hero-visual__node hero-visual__node--profile">
           <circle cx="160" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <circle cx="160" cy="160" r="20" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <path d="M132 180 Q160 196 188 180" stroke="var(--color-text-secondary, #5c5852)" strokeWidth="2" strokeLinecap="round" fill="none" />
-          <rect x="126" y="204" width="68" height="9" rx="4.5" fill="var(--color-border, #e8e2d8)" />
-          <rect x="136" y="218" width="48" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
-          <text x="160" y="248" textAnchor="middle" fill="var(--color-text-tertiary, #8c8680)" fontSize="12" fontWeight="600">Profile</text>
+          <foreignObject x="100" y="140" width="120" height="120">
+            <DotLottieReact
+              src="/profile.lottie"
+              loop
+              autoplay
+              style={{ width: '120px', height: '120px' }}
+            />
+          </foreignObject>
+          <text x="160" y="264" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Profile</text>
         </g>
 
         {/* Skills node */}
         <g className="hero-visual__node hero-visual__node--skills">
           <circle cx="400" cy="120" r="64" fill="var(--color-surface, #ffffff)" stroke="var(--color-info, #2563eb)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <rect x="362" y="100" width="76" height="9" rx="4.5" fill="var(--color-primary, #4f46e5)" />
-          <rect x="370" y="116" width="60" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" />
-          <rect x="370" y="128" width="50" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
-          <rect x="376" y="140" width="38" height="7" rx="3.5" fill="var(--color-info, #2563eb)" opacity="0.8" />
-          <text x="400" y="168" textAnchor="middle" fill="var(--color-text-tertiary, #8c8680)" fontSize="12" fontWeight="600">Skills</text>
+          <foreignObject x="360" y="65" width="90" height="90">
+            <DotLottieReact
+              src="/skills.lottie"
+              loop
+              autoplay
+              style={{ width: '90px', height: '90px' }}
+            />
+          </foreignObject>
+          <text x="400" y="168" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Skills</text>
         </g>
 
         {/* Job node */}
         <g className="hero-visual__node hero-visual__node--job">
           <circle cx="640" cy="200" r="72" fill="var(--color-surface, #ffffff)" stroke="var(--color-success, #059669)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-          <rect x="606" y="176" width="68" height="9" rx="4.5" fill="var(--color-success, #059669)" />
-          <rect x="612" y="192" width="56" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" />
-          <rect x="612" y="204" width="44" height="7" rx="3.5" fill="var(--color-border, #e8e2d8)" opacity="0.6" />
-          <circle cx="618" cy="222" r="4" fill="var(--color-success, #059669)" opacity="0.8" />
-          <text x="640" y="292" textAnchor="middle" fill="var(--color-text-tertiary, #8c8680)" fontSize="12" fontWeight="600">Opportunity</text>
+          <foreignObject x="562" y="115" width="150" height="150">
+            <DotLottieReact
+              src="/process.lottie"
+              loop
+              autoplay
+              style={{ width: '150px', height: '150px' }}
+            />
+          </foreignObject>
+          <text x="640" y="250" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Opportunity</text>
         </g>
 
         {/* Match node */}
         <g className="hero-visual__node hero-visual__node--match">
           <circle cx="400" cy="420" r="84" fill="url(#hero-card)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" filter="url(#hero-shadow)" />
           <circle cx="400" cy="420" r="64" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.2" strokeWidth="1" strokeDasharray="4 3" />
-          <text x="400" y="412" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="26" fontWeight="700">96%</text>
-          <text x="400" y="436" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="12" fontWeight="600">Match</text>
+          <text x="405" y="412" textAnchor="middle" fill="var(--color-text)" fontSize="36" fontWeight="700">96%</text>
+          <text x="400" y="432" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="12" fontWeight="600">Match</text>
           <circle cx="400" cy="420" r="84" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.3" className="hero-visual__pulse" />
         </g>
 
         {/* Apply button */}
         <g className="hero-visual__node hero-visual__node--apply">
-          <rect x="340" y="340" width="120" height="36" rx="18" fill="url(#hero-btn)" filter="url(#hero-shadow)" />
-          <text x="400" y="363" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="12" fontWeight="700">Apply Now</text>
+          <rect x="340" y="440" width="120" height="36" rx="18" fill="url(#hero-btn)" filter="url(#hero-shadow)" />
+          <text x="400" y="463" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="12" fontWeight="700">Apply Now</text>
         </g>
 
         {/* Scanning line */}
@@ -132,7 +127,6 @@ export const HeroVisual = () => {
           <path d="M460 156 Q520 140 568 172" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
           <path d="M228 228 Q300 280 340 360" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
           <path d="M572 228 Q500 280 460 360" stroke="url(#hero-conn)" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.7" />
-          <path d="M460 460 Q480 480 500 460" stroke="url(#hero-conn)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" opacity="0.5" />
         </g>
 
         {/* Traveling light particles */}
@@ -146,10 +140,10 @@ export const HeroVisual = () => {
 
         {/* Floating accent elements */}
         <circle cx="280" cy="360" r="4" fill="var(--color-primary, #4f46e5)" opacity="0.4" className="hero-visual__float" />
-        <circle cx="520" cy="340" r="3.5" fill="var(--color-info, #2563eb)" opacity="0.4" className="hero-visual__float" />
+        <circle cx="520" cy="370" r="3.5" fill="var(--color-info, #2563eb)" opacity="0.4" className="hero-visual__float" />
         <circle cx="260" cy="500" r="3" fill="var(--color-success, #059669)" opacity="0.3" className="hero-visual__float" />
         <circle cx="540" cy="500" r="3.5" fill="var(--color-primary, #4f46e5)" opacity="0.3" className="hero-visual__float" />
-        <circle cx="400" cy="160" r="2.5" fill="var(--color-info, #2563eb)" opacity="0.3" className="hero-visual__float" />
+        <circle cx="400" cy="260" r="2.5" fill="var(--color-info, #2563eb)" opacity="0.3" className="hero-visual__float" />
       </svg>
 
       <style>{`

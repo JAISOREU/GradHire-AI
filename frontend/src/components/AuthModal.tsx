@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
 import { FormInput, FormSelect } from './FormField';
+import { ThemeBackground } from './ThemeBackground';
 import { api, ApiError } from '../core/api/client';
 import { getRoleLabel } from '../core/utils/roleLabels';
 
@@ -19,6 +20,7 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
   const [role, setRole] = useState<'STUDENT' | 'EMPLOYER'>('STUDENT');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -99,6 +101,7 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
   return (
     <div className="auth-overlay" role="dialog" aria-modal="true" aria-label={mode === 'signin' ? 'Sign in' : 'Create account'} onClick={onClose}>
       <div className="auth-modal fade-in" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+        <ThemeBackground />
         <div className="auth-modal__head">
           <h2>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</h2>
           <button className="auth-modal__close" onClick={onClose} aria-label="Close" type="button">
@@ -134,7 +137,12 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
 
           <FormInput label="Email" id="auth-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" ref={mode === 'signin' ? firstInputRef : undefined} />
 
-          <FormInput label="Password" id="auth-password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+          <div style={{ position: 'relative' }}>
+            <FormInput label="Password" id="auth-password" type={showPassword ? 'text' : 'password'} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+            <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
 
           {mode === 'register' && (
             <FormSelect label="I am a…" id="auth-role" value={role} onChange={(e) => setRole(e.target.value as 'STUDENT' | 'EMPLOYER')} options={[

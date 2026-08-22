@@ -485,6 +485,8 @@ export type Message = {
   id: string;
   from: string;
   to: string;
+  fromName?: string;
+  toName?: string;
   body: string;
   createdAt: string;
   read: boolean;

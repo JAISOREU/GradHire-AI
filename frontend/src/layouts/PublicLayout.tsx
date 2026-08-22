@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../core/auth/AuthContext';
 import { Button } from '../components/Button';
 import { SkipLink } from '../components/SkipLink';
@@ -7,6 +7,7 @@ import { Icon } from '../components/Icon';
 import { useState, useRef, useEffect } from 'react';
 import { roleHomePath } from '../core/utils/navigation';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
+import { SiteFooter } from './SiteFooter';
 
 export const PublicLayout = () => {
   const { user, isAuthenticated } = useAuth();
@@ -16,6 +17,7 @@ export const PublicLayout = () => {
   const mobileNavToggleRef = useRef<HTMLButtonElement>(null);
   const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user?.role);
+  const isHome = useLocation().pathname === '/';
 
   useEffect(() => {
     const header = headerRef.current;
@@ -143,7 +145,7 @@ export const PublicLayout = () => {
   return (
     <div className="public-layout">
       <SkipLink />
-      <header ref={headerRef} className={headerClassName} style={headerStyle}>
+      {!isHome && <header ref={headerRef} className={headerClassName} style={headerStyle}>
         <div className="app-header__inner" style={innerStyle}>
           <Link to={homeRoute} className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', ...brandStyle }}>
             <span className="header-logo__mark" aria-hidden="true">
@@ -159,7 +161,7 @@ export const PublicLayout = () => {
               </svg>
             </span>
             <span className="header-logo__text" style={titleStyle}>
-              <span className="header-logo__inner">Gradture <span className="header-logo__ai">AI</span></span>
+              <span className="header-logo__inner">Gradture</span>
             </span>
           </Link>
           <button
@@ -205,15 +207,13 @@ export const PublicLayout = () => {
             )}
           </div>
         </div>
-      </header>
+      </header>}
 
       <main id="main-content" className="public-main">
         <Outlet />
       </main>
 
-      <footer className="app-footer">
-        Gradture AI — connecting talent with opportunities.
-      </footer>
+      {!isHome && <SiteFooter />}
     </div>
   );
 };

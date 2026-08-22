@@ -7,74 +7,71 @@ export const MoveForwardVisual = () => {
     <div ref={ref} className={`step-visual step-visual--forward ${inView ? 'is-animated' : ''}`} aria-hidden="true">
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="forward-line" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary)" />
+          <linearGradient id="fwd-line" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-text)" />
             <stop offset="100%" stopColor="var(--color-info)" />
           </linearGradient>
-          <linearGradient id="forward-connector" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-primary)" />
+          <linearGradient id="fwd-connector" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-text)" />
             <stop offset="100%" stopColor="var(--color-info)" />
           </linearGradient>
-          <radialGradient id="forward-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0" />
-          </radialGradient>
+          <linearGradient id="fwd-card" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--color-primary-soft, #eef2ff)" />
+            <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
+          </linearGradient>
         </defs>
 
-        <circle cx="210" cy="140" r="140" fill="url(#forward-glow)" opacity="0.5" className="fwd-glow" />
-
         <g className="fwd-step fwd-step--1">
-          <rect x="40" y="50" width="100" height="56" rx="12" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="90" cy="78" r="12" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <text x="90" y="102" textAnchor="middle" fill="var(--color-primary)" fontSize="10" fontWeight="700">Applied</text>
-          <text x="90" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Today</text>
+          <rect x="36" y="48" width="92" height="52" rx="10" fill="var(--color-surface)" stroke="var(--color-text)" strokeWidth="1.5" />
+          <circle cx="82" cy="74" r="11" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1.5" />
+          <text x="82" y="96" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Applied</text>
+          <text x="82" y="110" textAnchor="middle" fill="var(--color-text)" fontSize="8">Today</text>
         </g>
 
         <g className="fwd-line fwd-line--1">
-          <line x1="140" y1="78" x2="180" y2="78" stroke="url(#forward-line)" strokeWidth="2" strokeDasharray="5 3" opacity="0.7" />
-          <path d="M 180 78 L 174 73 M 180 78 L 174 83" stroke="url(#forward-line)" strokeWidth="2" strokeLinecap="round" />
+          <line x1="128" y1="74" x2="164" y2="74" stroke="url(#fwd-line)" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7" />
+          <path d="M 164 74 L 158 69 M 164 74 L 158 79" stroke="url(#fwd-line)" strokeWidth="1.5" strokeLinecap="round" />
         </g>
 
         <g className="fwd-step fwd-step--2">
-          <rect x="180" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <circle cx="230" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="230" y="102" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Reviewed</text>
-          <text x="230" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Yesterday</text>
+          <rect x="164" y="48" width="92" height="52" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="210" cy="74" r="11" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <text x="210" y="96" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Reviewed</text>
+          <text x="210" y="110" textAnchor="middle" fill="var(--color-text)" fontSize="8">Yesterday</text>
         </g>
 
         <g className="fwd-line fwd-line--2">
-          <line x1="280" y1="78" x2="320" y2="78" stroke="url(#forward-line)" strokeWidth="2" strokeDasharray="5 3" opacity="0.7" />
-          <path d="M 320 78 L 314 73 M 320 78 L 314 83" stroke="url(#forward-line)" strokeWidth="2" strokeLinecap="round" />
+          <line x1="256" y1="74" x2="290" y2="74" stroke="url(#fwd-line)" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7" />
+          <path d="M 290 74 L 284 69 M 290 74 L 284 79" stroke="url(#fwd-line)" strokeWidth="1.5" strokeLinecap="round" />
         </g>
 
         <g className="fwd-step fwd-step--3">
-          <rect x="320" y="50" width="100" height="56" rx="12" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <circle cx="370" cy="78" r="12" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="370" y="102" textAnchor="middle" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Interview</text>
-          <text x="370" y="116" textAnchor="middle" fill="var(--color-text-muted)" fontSize="8">Upcoming</text>
+          <rect x="280" y="48" width="84" height="52" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <circle cx="322" cy="74" r="11" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
+          <text x="322" y="96" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Interview</text>
+          <text x="322" y="110" textAnchor="middle" fill="var(--color-text)" fontSize="8">Upcoming</text>
         </g>
 
         <g className="fwd-line fwd-line--3">
-          <line x1="370" y1="106" x2="370" y2="140" stroke="url(#forward-connector)" strokeWidth="2" strokeDasharray="5 3" opacity="0.7" />
+          <line x1="322" y1="100" x2="322" y2="136" stroke="url(#fwd-connector)" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7" />
         </g>
 
         <g className="fwd-next">
-          <rect x="290" y="140" width="160" height="40" rx="12" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="320" cy="160" r="8" fill="var(--color-success)" />
-          <text x="370" y="164" textAnchor="middle" fill="var(--color-primary)" fontSize="11" fontWeight="700">Next step</text>
+          <rect x="256" y="136" width="130" height="36" rx="10" fill="url(#fwd-card)" stroke="var(--color-text)" strokeWidth="1.5" />
+          <circle cx="284" cy="154" r="7" fill="var(--color-success)" />
+          <text x="328" y="158" textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="700">Next step</text>
         </g>
 
         <g className="fwd-status">
-          <rect x="90" y="200" width="240" height="32" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="118" cy="216" r="4" fill="var(--color-success)" />
-          <text x="130" y="220" fill="var(--color-text-secondary)" fontSize="10" fontWeight="600">Application in progress</text>
-          <rect x="270" y="208" width="48" height="16" rx="4" fill="var(--color-primary)" />
-          <text x="294" y="220" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Active</text>
+          <rect x="82" y="200" width="256" height="28" rx="8" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="108" cy="214" r="3.5" fill="var(--color-success)" />
+          <text x="118" y="218" fill="var(--color-text)" fontSize="10" fontWeight="600">Application in progress</text>
+          <rect x="278" y="206" width="44" height="16" rx="4" fill="var(--color-text)" />
+          <text x="300" y="218" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Active</text>
         </g>
       </svg>
 
       <style>{`
-        .step-visual--forward .fwd-glow,
         .step-visual--forward .fwd-step,
         .step-visual--forward .fwd-line,
         .step-visual--forward .fwd-next,
@@ -83,7 +80,6 @@ export const MoveForwardVisual = () => {
           transform: scale(0.94);
           transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .step-visual--forward.is-animated .fwd-glow { opacity: 1; transform: scale(1); transition-delay: 0.05s; }
         .step-visual--forward.is-animated .fwd-step--1 { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
         .step-visual--forward.is-animated .fwd-line--1 { opacity: 1; transform: scale(1); transition-delay: 0.3s; }
         .step-visual--forward.is-animated .fwd-step--2 { opacity: 1; transform: scale(1); transition-delay: 0.45s; }
@@ -103,4 +99,3 @@ export const MoveForwardVisual = () => {
     </div>
   );
 };
-

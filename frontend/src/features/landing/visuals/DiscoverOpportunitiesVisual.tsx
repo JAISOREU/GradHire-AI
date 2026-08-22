@@ -7,66 +7,63 @@ export const DiscoverOpportunitiesVisual = () => {
     <div ref={ref} className={`step-visual step-visual--discover ${inView ? 'is-animated' : ''}`} aria-hidden="true">
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="discover-panel" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id="disc-panel" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="var(--color-surface-muted, #fefcf8)" />
             <stop offset="100%" stopColor="var(--color-surface, #ffffff)" />
           </linearGradient>
-          <radialGradient id="discover-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.1" />
-            <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
-          </radialGradient>
+          <linearGradient id="disc-card" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-primary-soft, #eef2ff)" />
+            <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
+          </linearGradient>
         </defs>
 
-        <circle cx="210" cy="150" r="140" fill="url(#discover-glow)" opacity="0.5" className="disc-glow" />
-
         <g className="disc-panel">
-          <rect x="50" y="30" width="320" height="240" rx="14" fill="url(#discover-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="40" y="22" width="340" height="246" rx="14" fill="url(#disc-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
         </g>
 
         <g className="disc-search">
-          <rect x="70" y="50" width="280" height="32" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <circle cx="88" cy="66" r="5" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" fill="none" />
-          <line x1="91" y1="69" x2="96" y2="74" stroke="var(--color-text-muted, #8c8680)" strokeWidth="1.5" strokeLinecap="round" />
-          <text x="110" y="70" fill="var(--color-text-muted, #8c8680)" fontSize="10">Search opportunities...</text>
+          <rect x="58" y="40" width="304" height="30" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <circle cx="76" cy="55" r="5" stroke="var(--color-text)" strokeWidth="1.5" fill="none" />
+          <line x1="79" y1="58" x2="84" y2="63" stroke="var(--color-text)" strokeWidth="1.5" strokeLinecap="round" />
+          <text x="96" y="59" fill="var(--color-text)" fontSize="10">Search opportunities...</text>
         </g>
 
         <g className="disc-filter">
-          <rect x="70" y="92" width="60" height="24" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="100" y="108" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="700">Remote</text>
-          <rect x="136" y="92" width="60" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <text x="166" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Full-time</text>
-          <rect x="202" y="92" width="60" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <text x="232" y="108" textAnchor="middle" fill="var(--color-text-secondary, #5c5852)" fontSize="9" fontWeight="600">Internship</text>
+          <rect x="58" y="82" width="58" height="22" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
+          <text x="87" y="97" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="700">Remote</text>
+          <rect x="122" y="82" width="58" height="22" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <text x="151" y="97" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Full-time</text>
+          <rect x="186" y="82" width="58" height="22" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <text x="215" y="97" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Internship</text>
         </g>
 
         <g className="disc-card disc-card--1">
-          <rect x="70" y="128" width="280" height="42" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="94" cy="149" r="8" fill="var(--color-border, #e8e2d8)" />
-          <text x="114" y="145" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Program Manager</text>
-          <text x="114" y="159" fill="var(--color-text-muted, #8c8680)" fontSize="9">Remote Â· Full-time</text>
-          <rect x="306" y="141" width="24" height="14" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-          <text x="318" y="151" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="8" fontWeight="700">95%</text>
+          <rect x="58" y="116" width="304" height="38" rx="9" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="80" cy="135" r="7" fill="var(--color-border, #e8e2d8)" />
+          <text x="98" y="131" fill="var(--color-text)" fontSize="10" fontWeight="600">Technology Company</text>
+          <text x="98" y="144" fill="var(--color-text)" fontSize="9">Remote · Full-time</text>
+          <rect x="326" y="128" width="22" height="13" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
+          <text x="337" y="138" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700">95%</text>
         </g>
 
         <g className="disc-card disc-card--2">
-          <rect x="70" y="180" width="280" height="42" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
-          <circle cx="94" cy="201" r="8" fill="var(--color-primary, #4f46e5)" />
-          <text x="114" y="197" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">Marketing Specialist</text>
-          <text x="114" y="211" fill="var(--color-text-muted, #8c8680)" fontSize="9">Hybrid Â· Full-time</text>
-          <rect x="306" y="193" width="24" height="14" rx="4" fill="var(--color-primary, #4f46e5)" />
-          <text x="318" y="203" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
+          <rect x="58" y="160" width="304" height="38" rx="9" fill="url(#disc-card)" stroke="var(--color-text)" strokeWidth="1.5" />
+          <circle cx="80" cy="179" r="7" fill="var(--color-text)" />
+          <text x="98" y="175" fill="var(--color-text)" fontSize="10" fontWeight="700">Financial Services</text>
+          <text x="98" y="188" fill="var(--color-text)" fontSize="9">Hybrid · Full-time</text>
+          <rect x="326" y="172" width="22" height="13" rx="4" fill="var(--color-text)" />
+          <text x="337" y="182" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
         </g>
 
         <g className="disc-card disc-card--3">
-          <rect x="70" y="232" width="280" height="42" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
-          <circle cx="94" cy="253" r="8" fill="var(--color-border, #e8e2d8)" />
-          <text x="114" y="249" fill="var(--color-text-secondary, #5c5852)" fontSize="10" fontWeight="600">Operations Coordinator</text>
-          <text x="240" y="249" fill="var(--color-text-muted, #8c8680)" fontSize="9">On-site Â· Contract</text>
+          <rect x="58" y="204" width="304" height="38" rx="9" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
+          <circle cx="80" cy="223" r="7" fill="var(--color-border, #e8e2d8)" />
+          <text x="98" y="219" fill="var(--color-text)" fontSize="10" fontWeight="600">Design Studio</text>
+          <text x="230" y="219" fill="var(--color-text)" fontSize="9">On-site · Contract</text>
         </g>
       </svg>
 
       <style>{`
-        .step-visual--discover .disc-glow,
         .step-visual--discover .disc-panel,
         .step-visual--discover .disc-search,
         .step-visual--discover .disc-filter,
@@ -75,7 +72,6 @@ export const DiscoverOpportunitiesVisual = () => {
           transform: translateY(10px);
           transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .step-visual--discover.is-animated .disc-glow { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
         .step-visual--discover.is-animated .disc-panel { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
         .step-visual--discover.is-animated .disc-search { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
         .step-visual--discover.is-animated .disc-filter { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }

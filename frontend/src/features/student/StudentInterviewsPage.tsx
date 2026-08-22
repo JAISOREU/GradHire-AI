@@ -4,9 +4,10 @@ import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
+import type { Interview, PaginatedResponse } from '../../core/types';
 
 export const StudentInterviewsPage = () => {
-  const { data: interviews, loading, error, reload } = useAsync(() => interviewsApi.getMyInterviews(), []);
+  const { data: interviews, loading, error, reload } = useAsync(() => interviewsApi.getMyInterviews(), [] as PaginatedResponse<Interview>[]);
 
   return (
     <div className="page fade-in">
@@ -14,15 +15,15 @@ export const StudentInterviewsPage = () => {
 
       {error && (
         <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load interviews.'} <button onClick={reload} className="link">Retry</button>
+          {error ?? 'Failed to load interviews.'} <button onClick={reload} className="link">Retry</button>
         </div>
       )}
 
       <div className="list-container">
         {loading ? (
           <LoadingState label="Loading interviews…" />
-        ) : interviews && (interviews as any).items?.length > 0 ? (
-          (interviews as any).items.map((inv: any) => (
+        ) : interviews && interviews.items.length > 0 ? (
+          interviews.items.map((inv: Interview) => (
             <article key={inv.id} className="list-item">
               <div className="list-item__head">
                 <div>
