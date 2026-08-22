@@ -40,8 +40,9 @@ export class ResumesService {
     try {
       fileUrl = await this.storage.upload(file, storageKey);
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       this.logger.error('Storage upload failed', err);
-      throw new BadRequestException('Failed to upload resume. Please try again.');
+      throw new BadRequestException(`Failed to upload resume: ${message}`);
     }
 
     try {
@@ -149,8 +150,9 @@ export class ResumesService {
     try {
       fileUrl = await this.storage.upload(file, storageKey);
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       this.logger.error('Storage upload failed', err);
-      throw new BadRequestException('Failed to upload resume. Please try again.');
+      throw new BadRequestException(`Failed to upload resume: ${message}`);
     }
 
     try {
