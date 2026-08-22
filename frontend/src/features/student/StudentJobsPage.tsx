@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
+import { savedJobsApi } from '../../core/api/endpoints/employers';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { Button } from '../../components/Button';
@@ -116,15 +117,15 @@ export const StudentJobsPage = () => {
     [search, type, experienceLevel, workplaceType, city, sortBy, page],
   );
 
-  const { data: savedData } = useAsync(() => jobsApi.listPaginated({ limit: 100 }), []);
+  const { data: savedData } = useAsync(() => savedJobsApi.listMine<Job>(100), []);
 
   useEffect(() => {
     setPage(1);
   }, [search, type, experienceLevel, workplaceType, city, sortBy]);
 
   useEffect(() => {
-    if (savedData?.items) {
-      setSaved(new Set(savedData.items.map((s) => s.id)));
+    if (savedData) {
+      setSaved(new Set(savedData.map((s) => s.id)));
     }
   }, [savedData]);
 
