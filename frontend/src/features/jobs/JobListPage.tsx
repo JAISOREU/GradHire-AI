@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { MorphingText } from '../../components/MorphingText';
@@ -64,6 +66,7 @@ const formatSalary = (job: { salaryMin?: number | null; salaryMax?: number | nul
 };
 
 export const JobListPage = () => {
+  const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState('');
   const [type, setType] = useState<JobType | ''>('');
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel | ''>('');
@@ -71,6 +74,9 @@ export const JobListPage = () => {
   const [city, setCity] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [page, setPage] = useState(1);
+
+  const preview = !isAuthenticated;
+  const limit = preview ? 3 : 20;
 
   const { data, loading, reload } = useAsync(
     () =>
@@ -82,9 +88,9 @@ export const JobListPage = () => {
         city: city || undefined,
         sort: sortBy,
         page,
-        limit: 20,
+        limit,
       }),
-    [search, type, experienceLevel, workplaceType, city, sortBy, page]
+    [search, type, experienceLevel, workplaceType, city, sortBy, page, limit],
   );
 
   useEffect(() => {
@@ -93,7 +99,9 @@ export const JobListPage = () => {
 
   const jobs = data?.items ?? [];
   const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / 20));
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const firstIndex = total === 0 ? 0 : (page - 1) * limit + 1;
+  const lastIndex = Math.min(page * limit, total);
 
   return (
     <div className="public-page">
@@ -101,77 +109,124 @@ export const JobListPage = () => {
         <div className="section-inner">
           <PageHeader
             title={<MorphingText text="Find the career you always wanted" as="span" />}
+            action={
+              preview ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                    Showing a preview
+                  </span>
+                  <Link to="/register">
+                    <Button size="sm">Sign up to see all</Button>
+                  </Link>
+                </div>
+              ) : undefined
+            }
           />
         </div>
       </section>
+
+      {preview && (
+        <section className="section-full">
+          <div className="section-inner">
+            <div className="card" style={{ padding: 'var(--space-4)', background: 'var(--color-primary-soft, #eef2ff)', border: '1px solid var(--color-primary, #4f46e5)' }}>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <p style={{ margin: 0, fontWeight: 600, color: 'var(--color-primary, #4f46e5)' }}>
+                    Unlock full access
+                  </p>
+                  <p className="text-sm" style={{ margin: 'var(--space-1) 0 0', color: 'var(--color-text-secondary)' }}>
+                    Sign up to browse all opportunities, save jobs, and track your applications.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Link to="/login"><Button size="sm" variant="secondary">Log in</Button></Link>
+                  <Link to="/register"><Button size="sm">Create account</Button></Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section-full">
         <div className="section-inner">
           <div className="card section--mt" style={{ padding: 'var(--space-5)' }}>
             <div className="filter-bar" style={{ flexWrap: 'wrap' }}>
-              <input
-                className="input"
-                type="search"
-                placeholder="Search jobs, companies..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{ flex: '1 1 240px' }}
-              />
-              <input
-                className="input"
-                type="text"
-                placeholder="Location"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                style={{ flex: '1 1 160px' }}
-              />
-              <select
-                className="select select--auto"
-                value={type}
-                onChange={(e) => setType(e.target.value as JobType | '')}
-              >
-                {JOB_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={experienceLevel}
-                onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
-              >
-                {EXPERIENCE_LEVELS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={workplaceType}
-                onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
-              >
-                {WORKPLACE_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+              {!preview && (
+                <>
+                  <input
+                    className="input"
+                    type="search"
+                    placeholder="Search jobs, companies..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={{ flex: '1 1 240px' }}
+                  />
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Location"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    style={{ flex: '1 1 160px' }}
+                  />
+                </>
+              )}
+              {!preview && (
+                <>
+                  <select
+                    className="select select--auto"
+                    value={type}
+                    onChange={(e) => setType(e.target.value as JobType | '')}
+                  >
+                    {JOB_TYPES.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="select select--auto"
+                    value={experienceLevel}
+                    onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
+                  >
+                    {EXPERIENCE_LEVELS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="select select--auto"
+                    value={workplaceType}
+                    onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
+                  >
+                    {WORKPLACE_TYPES.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="select select--auto"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </>
+              )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
               <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-                Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} results
+                {preview
+                  ? `Previewing ${jobs.length} of ${total} opportunities`
+                  : `Showing ${firstIndex}–${lastIndex} of ${total} results`}
               </span>
-              <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>
-                  Refresh
-                </button>
-              </div>
+              {!preview && (
+                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                  <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>
+                    Refresh
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

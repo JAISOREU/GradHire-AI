@@ -63,6 +63,12 @@ export const jobsApi = {
 
   archive: (id: string) =>
     api<EmployerJob>(`/api/v1/employer/jobs/${id}`, { method: 'DELETE' }),
+
+  save: (jobId: string) =>
+    api<{ id: string }>('/api/v1/saved-jobs', { method: 'POST', json: { jobId } }),
+
+  unsave: (jobId: string) =>
+    api<void>(`/api/v1/saved-jobs/${jobId}`, { method: 'DELETE' }),
 };
 
 export const recommendationsApi = {

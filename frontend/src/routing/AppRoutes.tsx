@@ -36,6 +36,9 @@ const AdminJobSourceRunsPage = lazy(() => import('../features/admin/AdminJobSour
 const AdminLayout = lazy(() => import('../layouts/AdminLayout').then((m) => ({ default: m.AdminLayout })));
 const AccountPage = lazy(() => import('../features/account/AccountPage').then((m) => ({ default: m.AccountPage })));
 const JobListPage = lazy(() => import('../features/jobs/JobListPage').then((m) => ({ default: m.JobListPage })));
+const StudentJobsPage = lazy(() => import('../features/student/StudentJobsPage').then((m) => ({ default: m.StudentJobsPage })));
+const StudentCompaniesPage = lazy(() => import('../features/student/StudentCompaniesPage').then((m) => ({ default: m.StudentCompaniesPage })));
+const EmployerCompaniesPage = lazy(() => import('../features/employer/EmployerCompaniesPage').then((m) => ({ default: m.EmployerCompaniesPage })));
 const JobDetailPage = lazy(() => import('../features/jobs/JobDetailPage').then((m) => ({ default: m.JobDetailPage })));
 const LoginPage = lazy(() => import('../features/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import('../features/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })));
@@ -94,6 +97,8 @@ export const AppRoutes = () => (
       <Route element={<StudentLayout />}>
         <Route path="/student/dashboard" element={<LazyPage><Page><StudentDashboardPage /></Page></LazyPage>} />
         <Route path="/student/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
+        <Route path="/student/jobs" element={<LazyPage><Page><StudentJobsPage /></Page></LazyPage>} />
+        <Route path="/student/companies" element={<LazyPage><Page><StudentCompaniesPage /></Page></LazyPage>} />
         <Route path="/student/resume" element={<LazyPage><Page><StudentResumePage /></Page></LazyPage>} />
         <Route path="/student/applications" element={<LazyPage><Page><StudentApplicationsPage /></Page></LazyPage>} />
         <Route path="/student/saved" element={<LazyPage><Page><StudentSavedJobsPage /></Page></LazyPage>} />
@@ -115,6 +120,7 @@ export const AppRoutes = () => (
         <Route path="/employer/edit-job/:id" element={<LazyPage><Page><EmployerEditJobPage /></Page></LazyPage>} />
         <Route path="/employer/company-profile" element={<LazyPage><Page><EmployerCompanyProfilePage /></Page></LazyPage>} />
         <Route path="/employer/jobs" element={<LazyPage><Page><EmployerManageJobsPage /></Page></LazyPage>} />
+        <Route path="/employer/companies" element={<LazyPage><Page><EmployerCompaniesPage /></Page></LazyPage>} />
         <Route path="/employer/applicants" element={<LazyPage><Page><EmployerApplicantsPage /></Page></LazyPage>} />
         <Route path="/employer/interviews" element={<LazyPage><Page><EmployerInterviewsPage /></Page></LazyPage>} />
         <Route path="/employer/messages" element={<LazyPage><Page><EmployerMessagesPage /></Page></LazyPage>} />
