@@ -227,7 +227,8 @@ export async function extractTextFromFile(file: UploadedFile): Promise<string> {
     if (mime === 'application/pdf' || name.endsWith('.pdf')) {
       const pdfParse = require('pdf-parse');
       const result = await pdfParse(file.buffer);
-      return String(result?.text ?? '');
+      const raw = String(result?.text ?? '');
+      return cleanExtractedText(raw);
     }
 
     if (
@@ -245,4 +246,23 @@ export async function extractTextFromFile(file: UploadedFile): Promise<string> {
   } catch {
     return file.buffer.toString('utf-8');
   }
+}
+
+function cleanExtractedText(raw: string): string {
+  const lines = raw.split(/\r?\n/);
+  const cleaned: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.length < 2) continue;
+    if (/\/Title\s+\(/.test(trimmed)) continue;
+    if (/\/Subtype\s+\//.test(trimmed)) continue;
+    if (/\/ColorSpace\s*\[/.test(trimmed)) continue;
+    if (/^\d+\s+\d+\s+obj\b/.test(trimmed)) continue;
+    if (/^(endobj|stream|endstream|xref|trailer|startxref)\b/.test(trimmed)) continue;
+    const printableRatio = (trimmed.match(/[\x20-\x7E]/g) || []).length / trimmed.length;
+    if (printableRatio < 0.6) continue;
+    cleaned.push(trimmed);
+  }
+  return cleaned.join('\n').trim();
 }
