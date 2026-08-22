@@ -2,7 +2,7 @@ import { Controller, Get, Delete, Post, Req, UseGuards, UploadedFile, BadRequest
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import multer from 'multer';
+import * as multer from 'multer';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthUser } from '../auth/auth.service';
 import { UsersService } from './users.service';
