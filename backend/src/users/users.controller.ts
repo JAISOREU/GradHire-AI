@@ -2,6 +2,7 @@ import { Controller, Get, Delete, Post, Req, UseGuards, UploadedFile, BadRequest
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import multer from 'multer';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthUser } from '../auth/auth.service';
 import { UsersService } from './users.service';
@@ -18,7 +19,7 @@ export class UsersController {
 
   @Post('me/avatar')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
+  @UseInterceptors(FileInterceptor('file', { storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }))
   async uploadAvatar(@Req() req: Request & { user: AuthUser }, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No file uploaded');

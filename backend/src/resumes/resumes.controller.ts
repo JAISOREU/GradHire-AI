@@ -1,20 +1,7 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Req,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-  Res,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, Res, BadRequestException, } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
+import multer from 'multer';
 import { Request } from 'express';
 import { AuthUser } from '../auth/auth.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -32,6 +19,7 @@ export class ResumesController {
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   @UseInterceptors(
     FileInterceptor('file', {
+      storage: multer.memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
@@ -49,6 +37,7 @@ export class ResumesController {
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   @UseInterceptors(
     FileInterceptor('file', {
+      storage: multer.memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
