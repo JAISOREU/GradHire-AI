@@ -496,15 +496,14 @@ export const StudentJobsPage = () => {
                             </Button>
                           </Tooltip>
                           <Tooltip content={isExternal && job.applicationUrl ? 'Apply on the company website' : 'View job details and apply'}>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              icon={<Icon name="arrow-right" size={14} />}
-                              iconRight
-                              onClick={() => handleApply(job)}
-                            >
-                              Apply
-                            </Button>
+                             <Button
+                               size="sm"
+                               variant="secondary"
+                               icon={<Icon name="arrow-right" size={14} />}
+                               onClick={() => handleApply(job)}
+                             >
+                               Apply
+                             </Button>
                           </Tooltip>
                         </div>
                       </div>

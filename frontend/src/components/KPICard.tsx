@@ -18,7 +18,7 @@ const TREND_COLOR: Record<TrendDirection, string> = {
 export const TrendIndicator = ({ direction, value, label }: TrendIndicatorProps) => (
   <div className="trend-indicator" style={{ color: TREND_COLOR[direction] }}>
     <span className="trend-indicator__icon" aria-hidden="true">
-      <Icon name={direction === 'up' ? 'arrow-right' : direction === 'down' ? 'arrow-left' : 'arrow-right'} size={14} />
+      <Icon name={direction === 'up' ? 'arrow-up' : direction === 'down' ? 'arrow-down' : 'arrow-right'} size={14} />
     </span>
     <span className="trend-indicator__value">{value}</span>
     {label && <span className="trend-indicator__label">{label}</span>}

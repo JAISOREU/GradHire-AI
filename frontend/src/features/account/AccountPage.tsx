@@ -1418,7 +1418,7 @@ export const AccountPage = () => {
                 { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
                 { to: '/admin/applications', label: 'Applications', icon: 'applications' },
                 { to: '/admin/companies', label: 'Companies', icon: 'company' },
-                { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' },
+                { to: '/admin/audit-logs', label: 'Audit logs', icon: 'security' },
                 { to: '/admin/settings', label: 'Settings', icon: 'settings' },
               ].map((item) => (
                 <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3" style={{ textDecoration: 'none', color: 'inherit' }}>

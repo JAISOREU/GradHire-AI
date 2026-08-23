@@ -26,8 +26,8 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
     label: 'Career',
     items: [
       { to: '/student/resume', label: 'Resume', icon: 'resume' },
-      { to: '/student/resume-builder', label: 'Resume Builder', icon: 'feature' },
-      { to: '/student/recommended', label: 'Recommended', icon: 'star' },
+      { to: '/student/resume-builder', label: 'Resume Builder', icon: 'resume' },
+      { to: '/student/recommended', label: 'Recommended', icon: 'ai' },
     ],
   },
   {
@@ -85,8 +85,8 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Management',
     items: [
-      { to: '/admin/job-sources', label: 'Sources', icon: 'jobs' },
-      { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'jobs' },
+      { to: '/admin/job-sources', label: 'Sources', icon: 'database' },
+      { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'database' },
       { to: '/admin/applications', label: 'Applications', icon: 'applications' },
       { to: '/admin/companies', label: 'Companies', icon: 'company' },
     ],
@@ -94,9 +94,9 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Monitoring',
     items: [
-      { to: '/admin/reports', label: 'Reports', icon: 'dashboard' },
-      { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' },
-      { to: '/admin/ai-monitoring', label: 'Monitoring', icon: 'dashboard' },
+      { to: '/admin/reports', label: 'Reports', icon: 'reports' },
+      { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
+      { to: '/admin/monitoring', label: 'Monitoring', icon: 'dashboard' },
       { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'security' },
     ],
   },
