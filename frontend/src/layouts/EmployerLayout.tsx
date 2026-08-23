@@ -49,7 +49,7 @@ export const EmployerLayout = () => {
       <div className="auth-main">
         <AuthHeader
           title={getRoleLabel('EMPLOYER')}
-          user={{ email: user.email, name: user.name, role: 'EMPLOYER', avatarUrl: user.avatarUrl }}
+          user={{ id: user.id, email: user.email, name: user.name, role: 'EMPLOYER', avatarUrl: user.avatarUrl }}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onLogout={async () => {
             await logout();

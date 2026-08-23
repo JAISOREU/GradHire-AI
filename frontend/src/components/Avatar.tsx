@@ -6,6 +6,7 @@ type AvatarProps = {
   name?: string;
   initials?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  userId?: string;
   className?: string;
 };
 
@@ -26,10 +27,18 @@ function getInitials(name?: string, fallback?: string): string {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-export const Avatar = ({ src, alt = '', name, initials, size = 'md', className = '' }: AvatarProps) => {
+function resolveAvatarSrc(src?: string, userId?: string): string | undefined {
+  if (!src) return undefined;
+  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) return src;
+  if (userId) return `/users/avatar/${encodeURIComponent(userId)}`;
+  return src;
+}
+
+export const Avatar = ({ src, alt = '', name, initials, size = 'md', userId, className = '' }: AvatarProps) => {
   const computedInitials = useMemo(() => getInitials(name, initials), [name, initials]);
   const [failed, setFailed] = useState(false);
-  const showFallback = !src || failed;
+  const resolvedSrc = resolveAvatarSrc(src, userId);
+  const showFallback = !resolvedSrc || failed;
 
   const fallbackStyle = useMemo(() => {
     if (showFallback && computedInitials) {
@@ -44,7 +53,7 @@ export const Avatar = ({ src, alt = '', name, initials, size = 'md', className =
       style={fallbackStyle}
       aria-label={alt || computedInitials}
     >
-      {!showFallback && <img src={src} alt={alt} onError={() => setFailed(true)} />}
+      {!showFallback && <img src={resolvedSrc} alt={alt} onError={() => setFailed(true)} />}
       {showFallback && <span>{computedInitials}</span>}
     </div>
   );

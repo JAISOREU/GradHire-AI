@@ -132,7 +132,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
 
         {user ? (
           <div className="header-user" style={userGroupStyle}>
-            <Avatar src={user.avatarUrl} name={displayName} size="sm" />
+            <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
             <div className="header-user__meta" style={{ opacity: morph.metaOpacity, transition: 'opacity 0.35s ease' }}>
               <span className="header-user__name">{displayName}</span>
               <span className="header-user__role">{user.role}</span>

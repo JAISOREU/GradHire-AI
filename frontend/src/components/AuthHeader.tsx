@@ -10,7 +10,7 @@ import type { UserRole } from '../core/types';
 
 type AuthHeaderProps = {
   title: string;
-  user: { email: string; name?: string; role: string; avatarUrl?: string };
+  user: { id: string; email: string; name?: string; role: string; avatarUrl?: string };
   onToggleSidebar: () => void;
   onLogout: () => void;
   sidebarOpen?: boolean;
@@ -244,7 +244,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
               onClick={() => setDropdownOpen((prev) => !prev)}
               aria-label={displayName}
             >
-              <Avatar src={user.avatarUrl} name={displayName} size="sm" />
+              <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
             </button>
             <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="menu">
               <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>

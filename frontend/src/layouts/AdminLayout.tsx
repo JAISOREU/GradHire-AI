@@ -49,7 +49,7 @@ export const AdminLayout = () => {
       <div className="auth-main">
         <AuthHeader
           title={getRoleLabel('ADMIN')}
-          user={{ email: user.email, name: user.name, role: 'ADMIN', avatarUrl: user.avatarUrl }}
+          user={{ id: user.id, email: user.email, name: user.name, role: 'ADMIN', avatarUrl: user.avatarUrl }}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onLogout={async () => {
             await logout();

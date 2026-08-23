@@ -49,7 +49,7 @@ export const StudentLayout = () => {
       <div className="auth-main">
         <AuthHeader
           title="Talent"
-          user={{ email: user.email, name: user.name, role: 'STUDENT', avatarUrl: user.avatarUrl }}
+          user={{ id: user.id, email: user.email, name: user.name, role: 'STUDENT', avatarUrl: user.avatarUrl }}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onLogout={async () => {
             await logout();

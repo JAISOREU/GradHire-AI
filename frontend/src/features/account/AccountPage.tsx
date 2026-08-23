@@ -1197,7 +1197,7 @@ export const AccountPage = () => {
       {/* Identity Header */}
       <Card className="section--mt">
         <div className="flex items-start gap-4">
-          <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" />
+          <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" userId={user?.id} />
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold">{profile.name as string || user?.name || 'User'}</h2>
             <p className="text-secondary text-sm mt-1">{user?.email}</p>
@@ -1217,53 +1217,54 @@ export const AccountPage = () => {
       </Card>
 
       {/* Avatar */}
-      <Card title="Profile photo" subtitle="Upload a profile picture or use your initials." className="section--mt">
-        <div className="flex items-center gap-4">
-          <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="lg" />
-          <div className="flex-1">
-            <div className="flex gap-2">
-              <label className="btn btn--secondary btn--sm">
-                {user?.avatarUrl ? 'Change photo' : 'Add profile photo'}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  hidden
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const maxSize = 5 * 1024 * 1024;
-                      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                      if (!allowedTypes.includes(file.type)) {
-                        setAvatarError('Invalid file type. Please upload JPEG, PNG, or WebP.');
-                        return;
-                      }
-                      if (file.size > maxSize) {
-                        setAvatarError('File size must be under 5 MB.');
-                        return;
-                      }
-                      setAvatarError('');
-                      usersApi.uploadAvatar(file).then(() => {
-                        reloadProfile();
-                        refreshUser();
-                      }).catch(() => setAvatarError('Failed to upload avatar. Please try again.'));
-                    }
-                  }}
-                />
-              </label>
-              {user?.avatarUrl && (
-                <Button variant="ghost" size="sm" className="text-danger" onClick={() => usersApi.deleteAvatar().then(() => {
-                  reloadProfile();
-                  refreshUser();
-                })}>
-                  Remove
-                </Button>
-              )}
-            </div>
-          <p className="text-xs text-tertiary mt-2">JPEG, PNG or WebP. Max 5 MB.</p>
+      <Card title="Profile photo" subtitle="Click your avatar to upload a new photo." className="section--mt">
+        <div className="flex flex-col items-center gap-4">
+          <label className="avatar-upload">
+            <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" userId={user?.id} />
+            <span className="avatar-upload__overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const maxSize = 5 * 1024 * 1024;
+                  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                  if (!allowedTypes.includes(file.type)) {
+                    setAvatarError('Invalid file type. Please upload JPEG, PNG, or WebP.');
+                    return;
+                  }
+                  if (file.size > maxSize) {
+                    setAvatarError('File size must be under 5 MB.');
+                    return;
+                  }
+                  setAvatarError('');
+                  usersApi.uploadAvatar(file).then(() => {
+                    reloadProfile();
+                    refreshUser();
+                  }).catch(() => setAvatarError('Failed to upload avatar. Please try again.'));
+                }
+              }}
+            />
+          </label>
+          {user?.avatarUrl && (
+            <Button variant="ghost" size="sm" className="text-danger" onClick={() => usersApi.deleteAvatar().then(() => {
+              reloadProfile();
+              refreshUser();
+            })}>
+              Remove
+            </Button>
+          )}
+          <p className="text-xs text-tertiary">JPEG, PNG or WebP. Max 5 MB.</p>
           {avatarError && <div className="message message--error section--mt" role="alert">{avatarError}</div>}
         </div>
-      </div>
-    </Card>
+      </Card>
 
       {/* Role-specific sections */}
       {role === 'STUDENT' && user?.id && (
