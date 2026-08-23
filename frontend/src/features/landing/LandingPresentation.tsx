@@ -18,6 +18,7 @@ const WHEEL_THRESHOLD = 24;
 const EVENTS_PER_SLIDE = 2;
 const SWIPE_THRESHOLD = 50;
 const RAIL_ANIMATION_MS = 620;
+const SLIDE_PROGRESS_MS = 6000;
 
 const NEXT_KEYS = ['ArrowDown', 'ArrowRight', 'PageDown', ' ', 'Spacebar'];
 const PREV_KEYS = ['ArrowUp', 'ArrowLeft', 'PageUp'];
@@ -47,6 +48,9 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   const railAnimationTimeout = useRef<number | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [reduced, setReduced] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef(0);
+  const startTimeRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -88,6 +92,35 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       el.scrollTop = 0;
     }
   }, [active]);
+
+  useEffect(() => {
+    if (reduced) {
+      setProgress(0);
+      progressRef.current = 0;
+      return;
+    }
+
+    setProgress(0);
+    progressRef.current = 0;
+    startTimeRef.current = performance.now();
+    let rafId = 0;
+
+    const tick = () => {
+      const elapsed = performance.now() - startTimeRef.current;
+      const pct = Math.min(100, (elapsed / SLIDE_PROGRESS_MS) * 100);
+      progressRef.current = pct;
+      setProgress(pct);
+
+      if (pct < 100) {
+        rafId = requestAnimationFrame(tick);
+      } else if (activeRef.current < lastIndex) {
+        goTo(activeRef.current + 1);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [active, reduced, goTo, lastIndex]);
 
   // Wheel: every EVENTS_PER_SLIDE valid events advances exactly one slide.
   useEffect(() => {
@@ -299,6 +332,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
 
       <aside className="presentation-rail" aria-live="polite" aria-atomic="true" aria-label={`Slide ${active + 1}: ${slides[active].label}`}>
         <span className="presentation-rail__line" aria-hidden="true" />
+        <span className="presentation-rail__progress" aria-hidden="true" style={{ height: `${progress}%` }} />
         {railLeaving && (
           <span className={`presentation-rail__label presentation-rail__label--leaving presentation-rail__label--${railLeaving.direction}`} aria-hidden="true">
             <span>{String(railLeaving.index + 1).padStart(2, '0')}</span>
