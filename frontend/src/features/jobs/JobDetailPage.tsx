@@ -3,11 +3,13 @@ import { jobsApi } from '../../core/api/endpoints/jobs';
 import { applicationsApi } from '../../core/api/endpoints/applications';
 import { useAsync } from '../../core/hooks/useAsync';
 import { useAuth } from '../../core/auth/AuthContext';
+import { useToast } from '../../core/toast/ToastContext';
 import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
+import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
 import type { Job } from '../../core/types';
 import { cleanText } from '../../core/utils/text';
@@ -29,6 +31,7 @@ export const JobDetailPage = () => {
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
   const [error, setError] = useState('');
+  const { addToast } = useToast();
 
   const handleApply = async () => {
     if (!user || !id) return;
@@ -37,9 +40,11 @@ export const JobDetailPage = () => {
     try {
       await applicationsApi.submit({ jobId: id });
       setApplied(true);
+      addToast('success', 'Application submitted successfully');
       reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit application. Please try again.');
+      addToast('error', err instanceof Error ? err.message : 'Failed to submit application.');
     } finally {
       setApplying(false);
     }
@@ -116,18 +121,26 @@ export const JobDetailPage = () => {
 
         <div className="section--mt" style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
           {isExternal && job.applicationUrl ? (
-            <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
-              <Button iconRight={<Icon name="external" size={16} />}>Apply on Company Site</Button>
-            </a>
+            <Tooltip content="Apply directly on the company website">
+              <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
+                <Button iconRight={<Icon name="external" size={16} />}>Apply on Company Site</Button>
+              </a>
+            </Tooltip>
           ) : isAuthenticated && user && user.role === 'STUDENT' ? (
             applied ? (
-              <Button disabled>Applied</Button>
+              <Tooltip content="You have already applied to this job">
+                <Button disabled>Applied</Button>
+              </Tooltip>
             ) : job.status === 'PUBLISHED' ? (
-              <Button onClick={handleApply} disabled={applying}>
-                {applying ? 'Applying…' : 'Apply now'}
-              </Button>
+              <Tooltip content="Submit your application for this role">
+                <Button onClick={handleApply} disabled={applying}>
+                  {applying ? 'Applying…' : 'Apply now'}
+                </Button>
+              </Tooltip>
             ) : (
-              <Button disabled>Not accepting applications</Button>
+              <Tooltip content="This job is not currently accepting applications">
+                <Button disabled>Not accepting applications</Button>
+              </Tooltip>
             )
           ) : (
             <Link to="/login"><Button>Sign in to apply</Button></Link>

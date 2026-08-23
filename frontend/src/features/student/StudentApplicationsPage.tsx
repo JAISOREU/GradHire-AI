@@ -1,16 +1,19 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi } from '../../core/api/endpoints/students';
+import { useToast } from '../../core/toast/ToastContext';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 import { Button } from '../../components/Button';
+import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
 
 export const StudentApplicationsPage = () => {
   const { data: applications, loading, error, reload } = useAsync(() => studentsApi.listApplications(), []);
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const [withdrawError, setWithdrawError] = useState('');
+  const { addToast } = useToast();
 
   const handleWithdraw = async (applicationId: string) => {
     if (!window.confirm('Are you sure you want to withdraw this application?')) {
@@ -18,11 +21,14 @@ export const StudentApplicationsPage = () => {
     }
     setWithdrawingId(applicationId);
     setWithdrawError('');
+
     try {
       await studentsApi.withdraw(applicationId);
+      addToast('success', 'Application withdrawn');
       reload();
     } catch (err) {
-      setWithdrawError((err as any)?.message ?? 'Failed to withdraw application. Please try again.');
+      setWithdrawError(err instanceof Error ? err.message : 'Failed to withdraw application. Please try again.');
+      addToast('error', err instanceof Error ? err.message : 'Failed to withdraw application.');
     } finally {
       setWithdrawingId(null);
     }
@@ -57,9 +63,11 @@ export const StudentApplicationsPage = () => {
                     </div>
                   </div>
                   {app.status !== 'WITHDRAWN' && app.status !== 'REJECTED' && app.status !== 'HIRED' && (
-                    <Button variant="ghost" size="sm" onClick={() => handleWithdraw(app.id)} disabled={withdrawingId === app.id}>
-                      {withdrawingId === app.id ? 'Withdrawing…' : 'Withdraw'}
-                    </Button>
+                    <Tooltip content="Withdraw your application for this role">
+                      <Button variant="ghost" size="sm" onClick={() => handleWithdraw(app.id)} disabled={withdrawingId === app.id}>
+                        {withdrawingId === app.id ? 'Withdrawing…' : 'Withdraw'}
+                      </Button>
+                    </Tooltip>
                   )}
                 </div>
                 {(app as any).lastEvent && (

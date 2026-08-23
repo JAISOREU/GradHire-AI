@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { MorphingText } from '../../components/MorphingText';
 import { PageHeader } from '../../components/PageHeader';
+import { Tooltip } from '../../components/Tooltip';
 import type { JobType, ExperienceLevel, WorkplaceType } from '../../core/types';
 
 const JOB_TYPES: { value: JobType | ''; label: string }[] = [
@@ -154,22 +155,26 @@ export const JobListPage = () => {
             <div className="filter-bar" style={{ flexWrap: 'wrap' }}>
               {!preview && (
                 <>
-                  <input
-                    className="input"
-                    type="search"
-                    placeholder="Search jobs, companies..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    style={{ flex: '1 1 240px' }}
-                  />
-                  <input
-                    className="input"
-                    type="text"
-                    placeholder="Location"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    style={{ flex: '1 1 160px' }}
-                  />
+                  <Tooltip content="Search by job title, company, or skills">
+                    <input
+                      className="input"
+                      type="search"
+                      placeholder="Search jobs, companies..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      style={{ flex: '1 1 240px' }}
+                    />
+                  </Tooltip>
+                  <Tooltip content="Filter by location">
+                    <input
+                      className="input"
+                      type="text"
+                      placeholder="Location"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      style={{ flex: '1 1 160px' }}
+                    />
+                  </Tooltip>
                 </>
               )}
               {!preview && (
@@ -222,9 +227,11 @@ export const JobListPage = () => {
               </span>
               {!preview && (
                 <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                  <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>
-                    Refresh
-                  </button>
+                  <Tooltip content="Refresh job listings">
+                    <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>
+                      Refresh
+                    </button>
+                  </Tooltip>
                 </div>
               )}
             </div>

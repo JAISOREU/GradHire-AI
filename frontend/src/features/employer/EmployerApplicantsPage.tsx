@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useAsync } from '../../core/hooks/useAsync';
 import { employersApi } from '../../core/api/endpoints/employers';
 import { applicationsApi } from '../../core/api/endpoints/applications';
+import { useToast } from '../../core/toast/ToastContext';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { Avatar } from '../../components/Avatar';
+import { Tooltip } from '../../components/Tooltip';
 import type { ApplicationStatus } from '../../core/types';
 
 type Applicant = {
@@ -39,6 +41,7 @@ export const EmployerApplicantsPage = () => {
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'ALL'>('ALL');
   const [search, setSearch] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   const items = (applicants as Applicant[] | undefined) ?? [];
 
@@ -55,9 +58,10 @@ export const EmployerApplicantsPage = () => {
     setUpdatingId(id);
     try {
       await applicationsApi.updateStatus(id, status);
+      addToast('success', `Application moved to ${status.replace(/_/g, ' ').toLowerCase()}`);
       reload();
-    } catch {
-      // error handled by API client
+    } catch (err) {
+      addToast('error', err instanceof Error ? err.message : 'Failed to update status');
     } finally {
       setUpdatingId(null);
     }
@@ -68,32 +72,38 @@ export const EmployerApplicantsPage = () => {
       <PageHeader title="Applicants" subtitle="Review and manage candidates across your jobs." />
 
       <div className="flex flex-wrap items-center gap-3 section--mt">
-        <div className="flex-1 min-w-0">
-        <input
-          type="search"
-          className="input"
-          placeholder="Search candidates or jobs…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        </div>
-        <input
-          type="text"
-          className="input"
-          placeholder="Filter by job ID (optional)"
-          value={jobId}
-          onChange={(e) => setJobId(e.target.value)}
-          style={{ width: '220px' }}
-        />
-        <select
-          className="select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'ALL')}
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+        <Tooltip content="Search candidates by name or job title">
+          <div className="flex-1 min-w-0">
+            <input
+              type="search"
+              className="input"
+              placeholder="Search candidates or jobs…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </Tooltip>
+        <Tooltip content="Filter applicants by job ID">
+          <input
+            type="text"
+            className="input"
+            placeholder="Filter by job ID (optional)"
+            value={jobId}
+            onChange={(e) => setJobId(e.target.value)}
+            style={{ width: '220px' }}
+          />
+        </Tooltip>
+        <Tooltip content="Filter by application stage">
+          <select
+            className="select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'ALL')}
+          >
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </Tooltip>
       </div>
 
       <div className="section--mt">
@@ -142,23 +152,25 @@ export const EmployerApplicantsPage = () => {
                     </td>
                     <td>
                       <div className="flex gap-1">
-                        <select
-                          className="select"
-                          value=""
-                          onChange={(e) => {
-                            if (e.target.value) handleStatusChange(app.id, e.target.value as ApplicationStatus);
-                          }}
-                          disabled={updatingId === app.id}
-                        >
-                          <option value="">Move stage</option>
-                          <option value="UNDER_REVIEW">Review</option>
-                          <option value="ASSESSMENT">Assessment</option>
-                          <option value="SHORTLISTED">Shortlist</option>
-                          <option value="INTERVIEW">Interview</option>
-                          <option value="OFFER">Offer</option>
-                          <option value="HIRED">Hire</option>
-                          <option value="REJECTED">Reject</option>
-                        </select>
+                        <Tooltip content="Move this applicant to a different stage">
+                          <select
+                            className="select"
+                            value=""
+                            onChange={(e) => {
+                              if (e.target.value) handleStatusChange(app.id, e.target.value as ApplicationStatus);
+                            }}
+                            disabled={updatingId === app.id}
+                          >
+                            <option value="">Move stage</option>
+                            <option value="UNDER_REVIEW">Review</option>
+                            <option value="ASSESSMENT">Assessment</option>
+                            <option value="SHORTLISTED">Shortlist</option>
+                            <option value="INTERVIEW">Interview</option>
+                            <option value="OFFER">Offer</option>
+                            <option value="HIRED">Hire</option>
+                            <option value="REJECTED">Reject</option>
+                          </select>
+                        </Tooltip>
                       </div>
                     </td>
                   </tr>

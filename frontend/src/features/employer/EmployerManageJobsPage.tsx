@@ -1,24 +1,37 @@
 import { Link } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobsApi } from '../../core/api/endpoints/jobs';
+import { useToast } from '../../core/toast/ToastContext';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
+import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
 
 export const EmployerManageJobsPage = () => {
   const { data: jobs, loading, reload } = useAsync(() => jobsApi.listForEmployer(), []);
   const [archiveError, setArchiveError] = useState('');
+  const [archivingIds, setArchivingIds] = useState<Set<string>>(new Set());
+  const { addToast } = useToast();
 
   const handleArchive = async (id: string) => {
     setArchiveError('');
+    setArchivingIds((prev) => new Set(prev).add(id));
+
     try {
       await jobsApi.archive(id);
+      addToast('success', 'Job archived');
       reload();
     } catch (err) {
       setArchiveError(err instanceof Error ? err.message : 'Failed to archive job');
+      addToast('error', err instanceof Error ? err.message : 'Failed to archive job');
+      setArchivingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   };
 
@@ -62,11 +75,21 @@ export const EmployerManageJobsPage = () => {
                     <td className="text-secondary text-sm">{job.publishedAt ? new Date(job.publishedAt).toLocaleDateString() : new Date(job.createdAt).toLocaleDateString()}</td>
                     <td>
                       <div className="flex gap-1">
-                        <Link to={`/jobs/${job.id}`}><Button variant="ghost" size="sm">View</Button></Link>
-                        <Link to={`/employer/edit-job/${job.id}`}><Button variant="ghost" size="sm">Edit</Button></Link>
-                        <Link to={`/employer/applicants?jobId=${job.id}`}><Button variant="ghost" size="sm">Applicants</Button></Link>
+                        <Tooltip content="View job details">
+                          <Link to={`/jobs/${job.id}`}><Button variant="ghost" size="sm">View</Button></Link>
+                        </Tooltip>
+                        <Tooltip content="Edit this job">
+                          <Link to={`/employer/edit-job/${job.id}`}><Button variant="ghost" size="sm">Edit</Button></Link>
+                        </Tooltip>
+                        <Tooltip content="View applicants for this job">
+                          <Link to={`/employer/applicants?jobId=${job.id}`}><Button variant="ghost" size="sm">Applicants</Button></Link>
+                        </Tooltip>
                         {job.status !== 'ARCHIVED' && (
-                          <Button variant="danger" size="sm" onClick={() => void handleArchive(job.id)}>Archive</Button>
+                          <Tooltip content="Archive this job listing">
+                            <Button variant="danger" size="sm" onClick={() => void handleArchive(job.id)} disabled={archivingIds.has(job.id)}>
+                              {archivingIds.has(job.id) ? 'Archiving…' : 'Archive'}
+                            </Button>
+                          </Tooltip>
                         )}
                       </div>
                     </td>

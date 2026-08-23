@@ -1,11 +1,13 @@
 import { useAsync } from '../../core/hooks/useAsync';
 import { interviewsApi } from '../../core/api/endpoints/interviews';
 import { employersApi } from '../../core/api/endpoints/employers';
+import { useToast } from '../../core/toast/ToastContext';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { FormInput, FormSelect } from '../../components/FormField';
+import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
 import type { Interview } from '../../core/types';
 
@@ -18,6 +20,7 @@ export const EmployerInterviewsPage = () => {
   const [applicants, setApplicants] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ type: 'VIDEO' as any, scheduledAt: '', durationMinutes: 60, timezone: '', location: '', meetingLink: '', interviewers: '', notes: '' });
+  const { addToast } = useToast();
 
   const loadJobs = async () => {
     const data = await employersApi.listJobs(1, 50);
@@ -47,9 +50,10 @@ export const EmployerInterviewsPage = () => {
       });
       setShowSchedule(false);
       setForm({ type: 'VIDEO', scheduledAt: '', durationMinutes: 60, timezone: '', location: '', meetingLink: '', interviewers: '', notes: '' });
+      addToast('success', 'Interview scheduled');
       reload();
-    } catch {
-      // ignore
+    } catch (err) {
+      addToast('error', err instanceof Error ? err.message : 'Failed to schedule interview');
     } finally {
       setSubmitting(false);
     }
@@ -58,9 +62,10 @@ export const EmployerInterviewsPage = () => {
   const handleUpdateStatus = async (interviewId: string, status: string) => {
     try {
       await interviewsApi.updateStatus(interviewId, status as any);
+      addToast('success', `Interview marked as ${status.toLowerCase()}`);
       reload();
     } catch {
-      // ignore
+      addToast('error', 'Failed to update interview status');
     }
   };
 
@@ -68,9 +73,10 @@ export const EmployerInterviewsPage = () => {
     if (!window.confirm('Cancel this interview?')) return;
     try {
       await interviewsApi.cancel(interviewId);
+      addToast('success', 'Interview cancelled');
       reload();
     } catch {
-      // ignore
+      addToast('error', 'Failed to cancel interview');
     }
   };
 
@@ -81,7 +87,9 @@ export const EmployerInterviewsPage = () => {
           <h1 className="page-title">Interview scheduling</h1>
           <p className="card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
         </div>
-        <Button onClick={() => { loadJobs(); setShowSchedule(!showSchedule); }}>{showSchedule ? 'Close' : 'Schedule interview'}</Button>
+        <Tooltip content={showSchedule ? 'Close scheduling form' : 'Schedule a new interview'}>
+          <Button onClick={() => { loadJobs(); setShowSchedule(!showSchedule); }}>{showSchedule ? 'Close' : 'Schedule interview'}</Button>
+        </Tooltip>
       </div>
 
       {showSchedule && (
@@ -139,21 +147,27 @@ export const EmployerInterviewsPage = () => {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value)}>
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="CANCELLED">Cancelled</option>
-                    <option value="NO_SHOW">No show</option>
-                  </select>
+                  <Tooltip content="Update interview status">
+                    <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value)}>
+                      <option value="SCHEDULED">Scheduled</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="CANCELLED">Cancelled</option>
+                      <option value="NO_SHOW">No show</option>
+                    </select>
+                  </Tooltip>
                   {inv.status !== 'CANCELLED' && (
-                    <Button variant="danger" size="sm" onClick={() => handleCancel(inv.id)}>Cancel</Button>
+                    <Tooltip content="Cancel this interview">
+                      <Button variant="danger" size="sm" onClick={() => handleCancel(inv.id)}>Cancel</Button>
+                    </Tooltip>
                   )}
                 </div>
               </div>
               {inv.meetingLink && (
-                <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt" style={{ textDecoration: 'none', display: 'inline-block' }}>
-                  Join meeting
-                </a>
+                <Tooltip content="Join the interview meeting">
+                  <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                    Join meeting
+                  </a>
+                </Tooltip>
               )}
               {inv.notes && <p className="text-sm text-secondary section--mt">Notes: {inv.notes}</p>}
               {inv.feedback && <p className="text-sm text-secondary section--mt">Feedback: {inv.feedback}</p>}

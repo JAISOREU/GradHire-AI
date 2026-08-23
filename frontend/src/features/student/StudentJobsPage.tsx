@@ -4,12 +4,14 @@ import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { savedJobsApi } from '../../core/api/endpoints/employers';
 import { useAsync } from '../../core/hooks/useAsync';
+import { useToast } from '../../core/toast/ToastContext';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Icon } from '../../components/Icon';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
+import { Tooltip } from '../../components/Tooltip';
 import type { ExperienceLevel, Job, JobType, PaginatedResponse, WorkplaceType } from '../../core/types';
 
 const JOB_TYPES: { value: JobType | ''; label: string }[] = [
@@ -129,29 +131,34 @@ export const StudentJobsPage = () => {
     }
   }, [savedData]);
 
-  const jobs = data?.items ?? [];
-  const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const savedCount = saved.size;
+  const { addToast } = useToast();
 
   const handleSave = async (jobId: string) => {
     if (saving.has(jobId)) return;
     const isSaved = saved.has(jobId);
     setSaving((s) => new Set(s).add(jobId));
+    const previousSaved = new Set(saved);
+    const previousSaving = new Set(saving);
+
     try {
       if (isSaved) {
-        await jobsApi.unsave(jobId);
         setSaved((s) => {
           const next = new Set(s);
           next.delete(jobId);
           return next;
         });
+        await jobsApi.unsave(jobId);
+        addToast('success', 'Job removed from saved');
       } else {
-        await jobsApi.save(jobId);
         setSaved((s) => new Set(s).add(jobId));
+        await jobsApi.save(jobId);
+        addToast('success', 'Job saved');
       }
-    } catch {
-      /* optimistic update stays until refresh */
+    } catch (err) {
+      setSaved(previousSaved);
+      setSaving(previousSaving);
+      addToast('error', err instanceof Error ? err.message : 'Failed to update saved jobs. Please try again.');
+      return;
     } finally {
       setSaving((s) => {
         const next = new Set(s);
@@ -177,6 +184,11 @@ export const StudentJobsPage = () => {
     setCity('');
     setSortBy('createdAt');
   };
+
+  const jobs = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const savedCount = saved.size;
 
   const firstIndex = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const lastIndex = Math.min(page * PAGE_SIZE, total);
@@ -220,85 +232,99 @@ export const StudentJobsPage = () => {
             }}
           >
             <div className="filter-bar" style={{ flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)' }}>
-              <div className="flex items-center gap-2" style={{ flex: '1 1 240px' }}>
-                <Icon name="search" size={18} />
-                <input
-                  className="input"
-                  type="search"
-                  placeholder="Job title, company, skills…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  aria-label="Keyword search"
-                />
-              </div>
-              <div className="flex items-center gap-2" style={{ flex: '1 1 160px' }}>
-                <Icon name="search" size={18} />
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="City or region"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  aria-label="Location"
-                />
-              </div>
-              <select
-                className="select select--auto"
-                value={type}
-                onChange={(e) => setType(e.target.value as JobType | '')}
-                aria-label="Job type"
-              >
-                {JOB_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={experienceLevel}
-                onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
-                aria-label="Experience level"
-              >
-                {EXPERIENCE_LEVELS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={workplaceType}
-                onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
-                aria-label="Workplace type"
-              >
-                {WORKPLACE_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="select select--auto"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                aria-label="Sort by"
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              {activeFilterCount > 0 && (
-                <button
-                  type="button"
-                  className="btn btn--sm btn--secondary"
-                  onClick={clearFilters}
-                  style={{ whiteSpace: 'nowrap' }}
+              <Tooltip content="Search by job title, company, or skills">
+                <div className="flex items-center gap-2" style={{ flex: '1 1 240px' }}>
+                  <Icon name="search" size={18} />
+                  <input
+                    className="input"
+                    type="search"
+                    placeholder="Job title, company, skills…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    aria-label="Keyword search"
+                  />
+                </div>
+              </Tooltip>
+              <Tooltip content="Filter by city or region">
+                <div className="flex items-center gap-2" style={{ flex: '1 1 160px' }}>
+                  <Icon name="search" size={18} />
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="City or region"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    aria-label="Location"
+                  />
+                </div>
+              </Tooltip>
+              <Tooltip content="Filter by employment type">
+                <select
+                  className="select select--auto"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as JobType | '')}
+                  aria-label="Job type"
                 >
-                  Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
-                </button>
+                  {JOB_TYPES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </Tooltip>
+              <Tooltip content="Filter by required experience level">
+                <select
+                  className="select select--auto"
+                  value={experienceLevel}
+                  onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel | '')}
+                  aria-label="Experience level"
+                >
+                  {EXPERIENCE_LEVELS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </Tooltip>
+              <Tooltip content="Filter by work arrangement">
+                <select
+                  className="select select--auto"
+                  value={workplaceType}
+                  onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType | '')}
+                  aria-label="Workplace type"
+                >
+                  {WORKPLACE_TYPES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </Tooltip>
+              <Tooltip content="Sort results by relevance or date">
+                <select
+                  className="select select--auto"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  aria-label="Sort by"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </Tooltip>
+              {activeFilterCount > 0 && (
+                <Tooltip content="Remove all active filters">
+                  <button
+                    type="button"
+                    className="btn btn--sm btn--secondary"
+                    onClick={clearFilters}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
+                  </button>
+                </Tooltip>
               )}
             </div>
 
@@ -319,9 +345,11 @@ export const StudentJobsPage = () => {
                     ? `Showing ${firstIndex}–${lastIndex} of ${total} results`
                     : 'No matching opportunities right now'}
               </span>
-              <button type="button" className="btn btn--sm" onClick={() => reload()} disabled={loading}>
-                Refresh
-              </button>
+              <Tooltip content="Refresh job listings">
+                <button type="button" className="btn btn--sm" onClick={() => reload()} disabled={loading}>
+                  Refresh
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -456,24 +484,28 @@ export const StudentJobsPage = () => {
                           }}
                           aria-label={`Actions for ${job.title}`}
                         >
-                          <Button
-                            size="sm"
-                            variant={isSaved ? 'primary' : 'ghost'}
-                            loading={isSaving}
-                            onClick={() => handleSave(job.id)}
-                            aria-pressed={isSaved}
-                          >
-                            {isSaved ? 'Saved' : 'Save'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            icon={<Icon name="arrow-right" size={14} />}
-                            iconRight
-                            onClick={() => handleApply(job)}
-                          >
-                            Apply
-                          </Button>
+                          <Tooltip content={isSaved ? 'Remove from saved jobs' : 'Save this job'}>
+                            <Button
+                              size="sm"
+                              variant={isSaved ? 'primary' : 'ghost'}
+                              loading={isSaving}
+                              onClick={() => handleSave(job.id)}
+                              aria-pressed={isSaved}
+                            >
+                              {isSaved ? 'Saved' : 'Save'}
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content={isExternal && job.applicationUrl ? 'Apply on the company website' : 'View job details and apply'}>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              icon={<Icon name="arrow-right" size={14} />}
+                              iconRight
+                              onClick={() => handleApply(job)}
+                            >
+                              Apply
+                            </Button>
+                          </Tooltip>
                         </div>
                       </div>
                     </article>
