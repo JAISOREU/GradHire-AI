@@ -165,7 +165,7 @@ export const EmployerCompaniesPage = () => {
                 <Button type="submit" disabled={submitting}>
                   {submitting ? 'Saving…' : 'Save changes'}
                 </Button>
-                <Button variant="ghost" type="button" onClick={handleCancel}>
+                <Button variant="secondary" type="button" onClick={handleCancel}>
                   Cancel
                 </Button>
               </div>

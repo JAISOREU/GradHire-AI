@@ -64,7 +64,7 @@ export const AdminUsersPage = () => {
           <option value="EMPLOYER">Employer</option>
           <option value="ADMIN">Admin</option>
         </select>
-        <Button variant="primary" onClick={() => setShowCreate(!showCreate)}>{showCreate ? 'Cancel' : 'Add user'}</Button>
+        <Button variant={showCreate ? 'secondary' : 'primary'} onClick={() => setShowCreate(!showCreate)}>{showCreate ? 'Cancel' : 'Add user'}</Button>
         {message && <span className="message message--info">{message}</span>}
       </div>
 

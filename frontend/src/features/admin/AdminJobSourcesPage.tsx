@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobSourcesApi } from '../../core/api/endpoints/jobSources';
 import { AdminListPage } from '../../components/AdminListPage';
+import { Button } from '../../components/Button';
 import type { JobSource, JobSourceType, JobSourceParserType, JobSourceHealthStatus, JobSourceAuthType } from '../../core/api/endpoints/jobSources';
 
 const sourceTypeLabels: Record<JobSourceType, string> = {
@@ -158,12 +159,12 @@ export const AdminJobSourcesPage = () => {
       <h1 className="page-title page-title--admin">Job Sources</h1>
 
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
-        <button className="btn btn--primary" onClick={() => { resetForm(); setShowForm(!showForm); }}>
+        <Button variant={showForm ? 'secondary' : 'primary'} onClick={() => { resetForm(); setShowForm(!showForm); }}>
           {showForm ? 'Cancel' : 'Add Job Source'}
-        </button>
-        <button className="btn btn--secondary" onClick={() => jobSourcesApi.syncAll()}>
+        </Button>
+        <Button variant="secondary" onClick={() => jobSourcesApi.syncAll()}>
           Sync All
-        </button>
+        </Button>
       </div>
 
       {showForm && (
@@ -232,9 +233,9 @@ export const AdminJobSourcesPage = () => {
                 <input className="input" type="number" value={form.rateLimit} onChange={(e) => setForm({ ...form, rateLimit: Number(e.target.value) })} />
               </div>
             </div>
-            <button className="btn btn--primary" onClick={handleSave} disabled={saving || !form.name || !form.company || !form.baseUrl || !form.feedUrl || !form.sourceType}>
+            <Button variant="primary" onClick={handleSave} disabled={saving || !form.name || !form.company || !form.baseUrl || !form.feedUrl || !form.sourceType}>
               {saving ? 'Saving...' : editingId ? 'Update' : 'Save'}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -263,12 +264,12 @@ export const AdminJobSourcesPage = () => {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button className="btn btn--sm btn--secondary" onClick={() => handleTest(s.id)} disabled={testing === s.id}>
+                  <Button variant="secondary" size="sm" onClick={() => handleTest(s.id)} disabled={testing === s.id}>
                     {testing === s.id ? 'Testing...' : 'Test'}
-                  </button>
-                  <button className="btn btn--sm btn--secondary" onClick={() => handleSync(s.id)}>Sync</button>
-                  <button className="btn btn--sm btn--secondary" onClick={() => handleEdit(s)}>Edit</button>
-                  <button className="btn btn--sm btn--danger" onClick={() => handleDelete(s.id)}>Delete</button>
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => handleSync(s.id)}>Sync</Button>
+                  <Button variant="secondary" size="sm" onClick={() => handleEdit(s)}>Edit</Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(s.id)}>Delete</Button>
                 </div>
               </div>
               <div className="text-secondary text-sm" style={{ marginTop: '0.5rem' }}>
@@ -289,9 +290,9 @@ export const AdminJobSourcesPage = () => {
                 </div>
               )}
               <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
-                <button className={`btn btn--sm ${s.enabled ? 'btn--warning' : 'btn--success'}`} onClick={() => handleToggle(s.id, s.enabled)}>
+                <Button variant="secondary" size="sm" onClick={() => handleToggle(s.id, s.enabled)}>
                   {s.enabled ? 'Disable' : 'Enable'}
-                </button>
+                </Button>
               </div>
             </div>
           );
