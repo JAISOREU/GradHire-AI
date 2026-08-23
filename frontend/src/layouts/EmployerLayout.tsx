@@ -13,14 +13,14 @@ export const EmployerLayout = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
-    const stored = localStorage.getItem('sidebar-collapsed');
+    const stored = localStorage.getItem('sidebar-collapsed-employer');
     return stored === 'true';
   });
 
   const toggleCollapsed = () => {
     const next = !collapsed;
     setCollapsed(next);
-    localStorage.setItem('sidebar-collapsed', String(next));
+    localStorage.setItem('sidebar-collapsed-employer', String(next));
   };
 
   if (!isAuthenticated || user?.role !== 'EMPLOYER') {
