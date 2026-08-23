@@ -60,7 +60,7 @@ function ProfileCompleteness({ completeness, onSectionClick }: { completeness: P
       </div>
       {completeness.missing.length > 0 && (
         <div className="mt-3">
-          <p className="text-xs text-tertiary mb-2">Complete these to improve your profile:</p>
+          <p className="text-xs text-tertiary mb-2">Almost there! Add these sections to strengthen your profile:</p>
           <div className="flex flex-wrap gap-2">
             {completeness.missing.map((item) => (
               <button key={item} onClick={() => onSectionClick?.(item)} className="text-xs px-2 py-1 rounded-full bg-muted text-secondary hover:bg-primary hover:text-white transition-colors capitalize">
@@ -92,7 +92,7 @@ function AiReadiness({ readiness, onSectionClick }: { readiness: AiReadiness | n
       </div>
       {!readiness.ready && (
         <div className="mt-3">
-          <p className="text-xs text-tertiary mb-2">Complete the required fields to unlock personalized job recommendations:</p>
+          <p className="text-xs text-tertiary mb-2">Tell us what you're looking for to unlock personalized recommendations:</p>
           <div className="flex flex-wrap gap-2">
             {readiness.missing.map((item) => (
               <button key={item} onClick={() => onSectionClick?.(item)} className="text-xs px-2 py-1 rounded-full bg-muted text-secondary hover:bg-primary hover:text-white transition-colors capitalize">
@@ -801,7 +801,7 @@ function CareerPreferencesSection({ onSectionClick }: { onSectionClick?: (sectio
   };
 
   return (
-    <Card title="Career Preferences" subtitle="Help us match you with the right opportunities." className="section--mt" id="section-preferences">
+    <Card title="Career Preferences" subtitle="Set your preferences and we'll surface personalized job recommendations that match your goals, location, and interests." className="section--mt" id="section-preferences">
       {editing ? (
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
@@ -1105,7 +1105,7 @@ function DangerZone() {
 }
 
 export const AccountPage = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const role = (user?.role as UserRole) || 'STUDENT';
 
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
@@ -1113,6 +1113,7 @@ export const AccountPage = () => {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [completeness, setCompleteness] = useState<ProfileCompleteness | null>(null);
   const [aiReadiness, setAiReadiness] = useState<AiReadiness | null>(null);
+  const [avatarError, setAvatarError] = useState('');
 
   const reloadProfile = async () => {
     setProfileLoading(true);
@@ -1196,17 +1197,52 @@ export const AccountPage = () => {
       {/* Identity Header */}
       <Card className="section--mt">
         <div className="flex items-start gap-4">
-          <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" userId={user?.id} />
+          <label className="avatar-upload">
+            <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" userId={user?.id} />
+            <span className="avatar-upload__overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const maxSize = 5 * 1024 * 1024;
+                  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                  if (!allowedTypes.includes(file.type)) {
+                    setAvatarError('Invalid file type. Please upload JPEG, PNG, or WebP.');
+                    return;
+                  }
+                  if (file.size > maxSize) {
+                    setAvatarError('File size must be under 5 MB.');
+                    return;
+                  }
+                  setAvatarError('');
+                  usersApi.uploadAvatar(file).then(() => {
+                    reloadProfile();
+                    refreshUser();
+                  }).catch(() => setAvatarError('Failed to upload avatar. Please try again.'));
+                }
+              }}
+            />
+          </label>
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold">{profile.name as string || user?.name || 'User'}</h2>
             <p className="text-secondary text-sm mt-1">{user?.email}</p>
+            <p className="text-xs text-tertiary mt-1">Click your avatar to upload a photo.</p>
+            {avatarError && <p className="text-xs text-danger mt-1" role="alert">{avatarError}</p>}
             <div className="flex flex-wrap gap-2 mt-3">
               <Badge kind="hiring">{getRoleLabel(role)}</Badge>
               {role === 'EMPLOYER' && Boolean((profile as Record<string, unknown>).verified) && (
                 <Badge kind="open">Verified</Badge>
               )}
               {role === 'STUDENT' && completeness && (
-                <span className="text-xs text-tertiary">{completeness.percentage}% complete</span>
+                <span className="text-xs text-tertiary">Your profile is {completeness.percentage}% complete</span>
               )}
             </div>
             {role === 'STUDENT' && <ProfileCompleteness completeness={completeness} onSectionClick={scrollToSection} />}

@@ -5295,6 +5295,35 @@ html {
   background: var(--color-text);
 }
 
+.avatar-upload {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.avatar-upload__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.avatar-upload:hover .avatar-upload__overlay {
+  opacity: 1;
+}
+
+.avatar-upload__overlay svg {
+  width: 32%;
+  height: 32%;
+  color: #fff;
+}
+
 /* ============================================================
    Missing Utility Classes (continued)
    ============================================================ */
