@@ -8,6 +8,52 @@ import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 import type { Resume, ResumeParseResult } from '../../core/types';
 
+const SUGGESTION_LINKS: Record<string, string> = {
+  phone: '/student/account#section-personal',
+  location: '/student/account#section-personal',
+  education: '/student/account#section-education',
+  experience: '/student/account#section-experience',
+  summary: '/student/account#section-about',
+  skills: '/student/account#section-skills',
+};
+
+const SUGGESTION_LABELS: Record<string, string> = {
+  phone: 'Phone number',
+  location: 'Location',
+  education: 'Education',
+  experience: 'Experience',
+  summary: 'Professional summary',
+  skills: 'Skills',
+};
+
+const isMissing = (value?: string | null) => !value || value.trim() === '';
+
+const buildSuggestions = (parseResult: ResumeParseResult) => {
+  const { profile, parsed } = parseResult;
+  const suggestions: Array<{ key: string; label: string; href: string }> = [];
+
+  if (parsed.phone && isMissing(profile.phone)) {
+    suggestions.push({ key: 'phone', label: SUGGESTION_LABELS.phone, href: SUGGESTION_LINKS.phone });
+  }
+  if (parsed.address && isMissing(profile.location)) {
+    suggestions.push({ key: 'location', label: SUGGESTION_LABELS.location, href: SUGGESTION_LINKS.location });
+  }
+  if (parsed.education && isMissing(profile.education)) {
+    suggestions.push({ key: 'education', label: SUGGESTION_LABELS.education, href: SUGGESTION_LINKS.education });
+  }
+  if (parsed.experience && isMissing(profile.experience)) {
+    suggestions.push({ key: 'experience', label: SUGGESTION_LABELS.experience, href: SUGGESTION_LINKS.experience });
+  }
+  if (parsed.summary && isMissing(profile.summary)) {
+    suggestions.push({ key: 'summary', label: SUGGESTION_LABELS.summary, href: SUGGESTION_LINKS.summary });
+  }
+  if (parsed.skills.length > 0 && (!profile.skills || profile.skills.length === 0)) {
+    suggestions.push({ key: 'skills', label: SUGGESTION_LABELS.skills, href: SUGGESTION_LINKS.skills });
+  }
+
+  return suggestions;
+};
+
 export const StudentResumePage = () => {
   const [message, setMessage] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -15,6 +61,8 @@ export const StudentResumePage = () => {
   const [lastParse, setLastParse] = useState<ResumeParseResult | null>(null);
   const { data: resumes, loading, reload } = useAsync(() => resumesApi.listMine(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const suggestions = lastParse ? buildSuggestions(lastParse) : [];
 
   const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -178,6 +226,30 @@ export const StudentResumePage = () => {
               <div className="text-muted">
                 <small>Profile auto-updated with extracted information.</small>
               </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <div className="section--mt">
+          <Card title="Suggested profile additions">
+            <div className="stack">
+              <p className="text-muted">Based on your resume, consider adding these details to strengthen your profile:</p>
+              <ul className="list">
+                {suggestions.map((suggestion) => (
+                  <li key={suggestion.key} className="list-item">
+                    <div className="list-item__head">
+                      <div>
+                        <h3 className="list-item__title">{suggestion.label}</h3>
+                      </div>
+                      <Button variant="ghost" size="sm" to={suggestion.href}>
+                        Add
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           </Card>
         </div>

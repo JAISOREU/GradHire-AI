@@ -386,7 +386,38 @@ export type Resume = {
 
 export type ResumeParseResult = {
   resume: Resume;
-  profile: StudentProfile;
+  profile: {
+    id: string;
+    name: string;
+    focus: string;
+    summary: string | null;
+    skills: string[];
+    phone?: string | null;
+    location?: string | null;
+    education?: string | null;
+    experience?: string | null;
+    website?: string | null;
+    linkedin?: string | null;
+    github?: string | null;
+    portfolio?: string | null;
+    expectedSalary?: string | null;
+    availability?: string | null;
+    graduationYear?: string | null;
+    degree?: string | null;
+    fieldOfStudy?: string | null;
+  };
+  parsed: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    skills: string[];
+    focus: string;
+    summary: string;
+    address: string | null;
+    education: string | null;
+    experience: string | null;
+    projects: string | null;
+  };
 };
 
 export type Interview = {

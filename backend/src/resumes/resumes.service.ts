@@ -21,7 +21,8 @@ export class ResumesService {
 
   async uploadAndParse(user: AuthUser, file: UploadedFile): Promise<{
     resume: { id: string; fileName: string; fileUrl: string; mimeType: string | null; fileSize: number | null };
-    profile: { id: string; name: string; focus: string; summary: string | null; skills: string[] };
+    profile: { id: string; name: string; focus: string; summary: string | null; skills: string[]; phone?: string | null; location?: string | null; education?: string | null; experience?: string | null; website?: string | null; linkedin?: string | null; github?: string | null; portfolio?: string | null; expectedSalary?: string | null; availability?: string | null; graduationYear?: string | null; degree?: string | null; fieldOfStudy?: string | null };
+    parsed: { name: string | null; email: string | null; phone: string | null; skills: string[]; focus: string; summary: string; address: string | null; education: string | null; experience: string | null; projects: string | null };
   }> {
     if (user.role !== 'STUDENT') {
       throw new BadRequestException('Only talent can upload resumes');
@@ -112,6 +113,31 @@ export class ResumesService {
           focus: profile.focus,
           summary: profile.summary,
           skills: profile.skills,
+          phone: profile.phone ?? null,
+          location: profile.location ?? null,
+          education: profile.education ?? null,
+          experience: profile.experience ?? null,
+          website: profile.website ?? null,
+          linkedin: profile.linkedin ?? null,
+          github: profile.github ?? null,
+          portfolio: profile.portfolio ?? null,
+          expectedSalary: profile.expectedSalary ?? null,
+          availability: profile.availability ?? null,
+          graduationYear: profile.graduationYear ?? null,
+          degree: profile.degree ?? null,
+          fieldOfStudy: profile.fieldOfStudy ?? null,
+        },
+        parsed: {
+          name: parsed.name,
+          email: parsed.email,
+          phone: parsed.phone,
+          skills: parsed.skills,
+          focus: parsed.focus,
+          summary: parsed.summary,
+          address: parsed.address,
+          education: parsed.education,
+          experience: parsed.experience,
+          projects: parsed.projects,
         },
       };
     } catch (err) {
@@ -130,7 +156,8 @@ export class ResumesService {
 
   async replaceResume(user: AuthUser, resumeId: string, file: UploadedFile): Promise<{
     resume: { id: string; fileName: string; fileUrl: string; mimeType: string | null; fileSize: number | null };
-    profile: { id: string; name: string; focus: string; summary: string | null; skills: string[] };
+    profile: { id: string; name: string; focus: string; summary: string | null; skills: string[]; phone?: string | null; location?: string | null; education?: string | null; experience?: string | null; website?: string | null; linkedin?: string | null; github?: string | null; portfolio?: string | null; expectedSalary?: string | null; availability?: string | null; graduationYear?: string | null; degree?: string | null; fieldOfStudy?: string | null };
+    parsed: { name: string | null; email: string | null; phone: string | null; skills: string[]; focus: string; summary: string; address: string | null; education: string | null; experience: string | null; projects: string | null };
   }> {
     const existing = await this.prisma.resume.findUnique({ where: { id: resumeId } });
     if (!existing || existing.userId !== user.id) {
@@ -222,6 +249,31 @@ export class ResumesService {
           focus: profile.focus,
           summary: profile.summary,
           skills: profile.skills,
+          phone: profile.phone ?? null,
+          location: profile.location ?? null,
+          education: profile.education ?? null,
+          experience: profile.experience ?? null,
+          website: profile.website ?? null,
+          linkedin: profile.linkedin ?? null,
+          github: profile.github ?? null,
+          portfolio: profile.portfolio ?? null,
+          expectedSalary: profile.expectedSalary ?? null,
+          availability: profile.availability ?? null,
+          graduationYear: profile.graduationYear ?? null,
+          degree: profile.degree ?? null,
+          fieldOfStudy: profile.fieldOfStudy ?? null,
+        },
+        parsed: {
+          name: parsed.name,
+          email: parsed.email,
+          phone: parsed.phone,
+          skills: parsed.skills,
+          focus: parsed.focus,
+          summary: parsed.summary,
+          address: parsed.address,
+          education: parsed.education,
+          experience: parsed.experience,
+          projects: parsed.projects,
         },
       };
     } catch (err) {
