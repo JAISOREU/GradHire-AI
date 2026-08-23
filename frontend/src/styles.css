@@ -201,7 +201,7 @@
 
 /* Landing visuals: invert text on light/white backgrounds in dark mode */
 [data-theme='dark'] .hero-visual__invert-text {
-  fill: #111113;
+  fill: var(--hero-visual-text-inverse, #111113);
 }
 
 /* ============================================================
