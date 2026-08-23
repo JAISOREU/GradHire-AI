@@ -199,9 +199,9 @@
   --hero-visual-text-inverse: #111113;
 }
 
-/* Landing visuals: theme-aware text color */
+/* Landing visuals: invert text on light/white backgrounds in dark mode */
 [data-theme='dark'] .hero-visual__invert-text {
-  fill: #ffffff;
+  fill: #111113;
 }
 
 /* ============================================================

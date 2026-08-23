@@ -15,7 +15,7 @@ export const ApplicationTrackingVisual = () => {
 
         <g className="track-header">
           <rect x="20" y="26" width="380" height="32" rx="8" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="42" y="46" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700" className="hero-visual__invert-text">Application Tracking</text>
+          <text x="42" y="46" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Application Tracking</text>
         </g>
 
         <g className="track-progress">

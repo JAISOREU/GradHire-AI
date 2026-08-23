@@ -37,7 +37,7 @@ export const CreateAccountVisual = () => {
 
         <g className="acc-field acc-field--2">
           <rect x="92" y="154" width="236" height="28" rx="7" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="108" y="172" fill="var(--color-text)" fontSize="10">********</text>
+          <text x="108" y="172" fill="var(--color-text)" fontSize="10">••••••••</text>
         </g>
 
         <g className="acc-field acc-field--3">

@@ -23,7 +23,7 @@ export const SkillMatchingVisual = () => {
 
         <g className="skill-group skill-group--candidate">
           <rect x="30" y="40" width="150" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="105" y="56" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">Your skills</text>
+          <text x="105" y="56" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Your skills</text>
 
           <rect x="40" y="76" width="110" height="26" rx="6" fill="url(#skill-chip-candidate)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <text x="95" y="93" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Leadership</text>
@@ -46,7 +46,7 @@ export const SkillMatchingVisual = () => {
 
         <g className="skill-group skill-group--job">
           <rect x="240" y="40" width="150" height="24" rx="6" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="315" y="56" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">Role requirements</text>
+          <text x="315" y="56" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Role requirements</text>
 
           <rect x="270" y="76" width="110" height="26" rx="6" fill="url(#skill-chip-job)" stroke="var(--color-primary)" strokeWidth="1" />
           <text x="320" y="93" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Leadership</text>
