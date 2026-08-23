@@ -32,9 +32,9 @@ export const StudentDashboardPage = () => {
   const recommendations = recommendationResult?.recommendations ?? [];
 
   const missingSectionLinks: Record<string, { to: string; label: string }> = {
-    education: { to: '/student/account', label: 'Add education' },
-    skills: { to: '/student/account', label: 'Add skills' },
-    experience: { to: '/student/account', label: 'Add experience' },
+    education: { to: '/student/account#section-education', label: 'Add education' },
+    skills: { to: '/student/account#section-skills', label: 'Add skills' },
+    experience: { to: '/student/account#section-experience', label: 'Add experience' },
     resume: { to: '/student/resume', label: 'Upload resume' },
     career_preferences: { to: '/student/settings', label: 'Set preferences' },
   };
