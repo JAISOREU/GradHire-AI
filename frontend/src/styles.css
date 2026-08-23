@@ -57,7 +57,6 @@
 
   /* Neutrals */
   --color-bg: #ffffff;
-  --color-surface: #ffffff;
   --color-surface-rgb: 255, 255, 255;
   --color-border: #e8e2d8;
   --color-border-strong: #d5cfc6;
@@ -180,7 +179,6 @@
   --color-info-soft: #172554;
 
   --color-bg: #000000;
-  --color-surface: #0f172a;
   --color-surface-rgb: 10, 15, 30;
   --color-border: #1e2a3a;
   --color-border-strong: #2d3a4d;
@@ -195,6 +193,13 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   --shadow-focus: 0 0 0 3px rgba(129, 140, 248, 0.3);
+
+  --hero-visual-text-inverse: #111113;
+}
+
+/* Landing visuals: invert text on light/white backgrounds in dark mode */
+[data-theme='dark'] .hero-visual__invert-text {
+  fill: #111113;
 }
 
 /* ============================================================

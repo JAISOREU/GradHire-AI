@@ -130,25 +130,25 @@ export const HeroVisual = () => {
               <g className="hero-visual__profile-orbit">
                 <g transform="translate(180, 250)">
                   <rect x="-18" y="-8" width="36" height="16" rx="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">React</text>
+                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">React</text>
                 </g>
                 <g transform="translate(220, 280)">
                   <rect x="-18" y="-8" width="36" height="16" rx="8" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
-                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Python</text>
+                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Python</text>
                 </g>
                 <g transform="translate(180, 310)">
                   <rect x="-18" y="-8" width="36" height="16" rx="8" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1" />
-                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">SQL</text>
+                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">SQL</text>
                 </g>
                 <g transform="translate(140, 280)">
                   <rect x="-18" y="-8" width="36" height="16" rx="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Design</text>
+                  <text x="0" y="3" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Design</text>
                 </g>
               </g>
             </g>
 
             <circle cx="180" cy="280" r="70" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__profile-ring" />
-            <text x="180" y="358" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Your Profile</text>
+            <text x="180" y="358" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600" className="hero-visual__invert-text">Your Profile</text>
           </g>
 
           {/* ===== CENTER: AI Engine ===== */}
@@ -180,8 +180,8 @@ export const HeroVisual = () => {
 
             <circle cx="400" cy="120" r="110" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.25" className="hero-visual__engine-pulse" />
 
-            <text x="400" y="75" textAnchor="middle" fill="var(--color-text)" fontSize="16" fontWeight="700">Gradture AI</text>
-            <text x="400" y="180" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="10" fontWeight="500">Matching Engine</text>
+            <text x="400" y="75" textAnchor="middle" fill="var(--color-text)" fontSize="16" fontWeight="700" className="hero-visual__invert-text">Gradture AI</text>
+            <text x="400" y="180" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="10" fontWeight="500" className="hero-visual__invert-text">Matching Engine</text>
           </g>
 
           {/* ===== RIGHT: Matched Jobs ===== */}
@@ -195,8 +195,8 @@ export const HeroVisual = () => {
               <rect x="580" y="275" width="80" height="22" rx="4" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
               <circle cx="588" cy="286" r="6" fill="var(--color-primary-soft, #eef2ff)" />
               <text x="588" y="289" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="7" fontWeight="700">A</text>
-              <text x="605" y="282" fill="var(--color-text)" fontSize="7" fontWeight="600">Frontend Dev</text>
-              <text x="605" y="292" fill="var(--color-text-secondary, var(--color-text))" fontSize="6">Acme Corp</text>
+               <text x="605" y="282" fill="var(--color-text)" fontSize="7" fontWeight="600" className="hero-visual__invert-text">Frontend Dev</text>
+               <text x="605" y="292" fill="var(--color-text-secondary, var(--color-text))" fontSize="6" className="hero-visual__invert-text">Acme Corp</text>
               <circle cx="648" cy="286" r="8" fill="var(--color-success-soft, #ecfdf5)" />
               <text x="648" y="289" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="7" fontWeight="700">94%</text>
 
@@ -204,22 +204,22 @@ export const HeroVisual = () => {
               <rect x="580" y="305" width="80" height="22" rx="4" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
               <circle cx="588" cy="316" r="6" fill="var(--color-info-soft, #eff6ff)" />
               <text x="588" y="319" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="7" fontWeight="700">G</text>
-              <text x="605" y="312" fill="var(--color-text)" fontSize="7" fontWeight="600">UI Designer</text>
-              <text x="605" y="322" fill="var(--color-text-secondary, var(--color-text))" fontSize="6">Globex</text>
+               <text x="605" y="312" fill="var(--color-text)" fontSize="7" fontWeight="600" className="hero-visual__invert-text">UI Designer</text>
+               <text x="605" y="322" fill="var(--color-text-secondary, var(--color-text))" fontSize="6" className="hero-visual__invert-text">Globex</text>
               <circle cx="648" cy="316" r="8" fill="var(--color-success-soft, #ecfdf5)" />
               <text x="648" y="319" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="7" fontWeight="700">87%</text>
             </g>
 
             <circle cx="620" cy="300" r="70" fill="none" stroke="var(--color-success, #059669)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__jobs-ring" />
-            <text x="620" y="378" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600">Top Matches</text>
+            <text x="620" y="378" textAnchor="middle" fill="var(--color-text)" fontSize="12" fontWeight="600" className="hero-visual__invert-text">Top Matches</text>
           </g>
 
           {/* ===== BOTTOM CENTER: Match Score ===== */}
           <g className="hero-visual__node hero-visual__node--match">
             <circle cx="400" cy="330" r="65" fill="url(#match-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" filter="url(#hero-shadow-strong)" />
             <circle cx="400" cy="330" r="52" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.18" strokeWidth="1" strokeDasharray="4 3" />
-            <text x="400" y="324" textAnchor="middle" fill="var(--color-text)" fontSize="40" fontWeight="700">96%</text>
-            <text x="400" y="342" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="10" fontWeight="600">AI-Powered Match</text>
+            <text x="400" y="324" textAnchor="middle" fill="var(--color-text)" fontSize="40" fontWeight="700" className="hero-visual__invert-text">96%</text>
+            <text x="400" y="342" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="10" fontWeight="600" className="hero-visual__invert-text">AI-Powered Match</text>
             <circle cx="400" cy="330" r="65" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" opacity="0.35" className="hero-visual__pulse" />
           </g>
 

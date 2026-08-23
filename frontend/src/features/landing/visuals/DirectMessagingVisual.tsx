@@ -21,9 +21,9 @@ export const DirectMessagingVisual = () => {
           <rect x="50" y="30" width="320" height="220" rx="14" fill="url(#chat-bg)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="30" width="320" height="40" rx="14" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="50" y="56" width="320" height="14" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
-          <text x="210" y="58" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700">Hiring Team</text>
+          <text x="210" y="58" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="12" fontWeight="700" className="hero-visual__invert-text">Hiring Team</text>
           <circle cx="300" cy="50" r="5" fill="var(--color-text)" />
-          <text x="308" y="54" textAnchor="start" fill="var(--color-text)" fontSize="9" fontWeight="700">Online</text>
+          <text x="308" y="54" textAnchor="start" fill="var(--color-text)" fontSize="9" fontWeight="700" className="hero-visual__invert-text">Online</text>
         </g>
 
         <g className="msg-candidate">
@@ -39,7 +39,7 @@ export const DirectMessagingVisual = () => {
 
         <g className="msg-employer">
           <rect x="60" y="170" width="190" height="40" rx="10" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="80" y="194" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="500">Thanks! We'd like to continue.</text>
+          <text x="80" y="194" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="500" className="hero-visual__invert-text">Thanks! We'd like to continue.</text>
         </g>
 
         <g className="msg-status">

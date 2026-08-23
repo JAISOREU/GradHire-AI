@@ -33,8 +33,8 @@ export const PrivacyFirstVisual = () => {
           <rect x="195" y="145" width="30" height="25" rx="4" fill="url(#lock-shine)" />
           <path d="M204 144 L204 125 Q210 105 216 125 L216 144" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
           <circle cx="210" cy="155" r="3" fill="var(--color-surface, #ffffff)" />
-          <text x="210" y="210" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700">Security</text>
-          <text x="210" y="220" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">08</text>
+          <text x="210" y="210" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="700" className="hero-visual__invert-text">Security</text>
+          <text x="210" y="220" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">08</text>
         </g>
 
         <g className="priv-ring priv-ring--1">
@@ -48,27 +48,27 @@ export const PrivacyFirstVisual = () => {
         <g className="priv-badge priv-badge--1">
           <rect x="45" y="38" width="90" height="28" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="62" cy="52" r="3.5" fill="var(--color-success, #059669)" />
-          <text x="80" y="56" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="700">Encrypted</text>
+          <text x="80" y="56" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Encrypted</text>
         </g>
 
         <g className="priv-badge priv-badge--2">
           <rect x="45" y="200" width="90" height="28" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="62" cy="214" r="3.5" fill="var(--color-success, #059669)" />
-          <text x="80" y="218" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="700">Private</text>
+          <text x="80" y="218" textAnchor="start" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Private</text>
         </g>
 
         <g className="priv-badge priv-badge--3">
           <rect x="295" y="38" width="90" height="40" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="312" cy="54" r="3.5" fill="var(--color-success, #059669)" />
-          <text x="340" y="52" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Access</text>
-          <text x="340" y="68" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Control</text>
+          <text x="340" y="52" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Access</text>
+          <text x="340" y="68" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Control</text>
         </g>
 
         <g className="priv-badge priv-badge--4">
           <rect x="295" y="200" width="90" height="40" rx="6" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="312" cy="216" r="3.5" fill="var(--color-success, #059669)" />
-          <text x="340" y="214" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Minimal</text>
-          <text x="340" y="230" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700">Exposure</text>
+          <text x="340" y="214" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Minimal</text>
+          <text x="340" y="230" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="700" className="hero-visual__invert-text">Exposure</text>
         </g>
 
         <g className="priv-conns">

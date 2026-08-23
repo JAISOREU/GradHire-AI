@@ -66,7 +66,7 @@ export const SmartMatchingVisual = () => {
           <circle cx="70" cy="185" r="22" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-primary)" strokeWidth="1.5" />
           <circle cx="70" cy="179" r="7" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1" />
           <path d="M58 188 Q70 196 82 188" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          <text x="70" y="202" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">You</text>
+          <text x="70" y="202" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">You</text>
         </g>
 
         <g className="ai-match-card">
@@ -77,19 +77,19 @@ export const SmartMatchingVisual = () => {
         <g className="ai-opp ai-opp--1">
           <circle cx="324" cy="225" r="17" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="309" y="219" width="28" height="4" rx="2" fill="var(--color-border, #e8e2d8)" />
-          <text x="324" y="243" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Teacher</text>
+          <text x="324" y="243" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Teacher</text>
         </g>
 
         <g className="ai-opp ai-opp--2">
           <circle cx="350" cy="163" r="17" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="336" y="157" width="28" height="4" rx="2" fill="var(--color-border, #e8e2d8)" />
-          <text x="350" y="181" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Developer</text>
+          <text x="350" y="181" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Developer</text>
         </g>
 
         <g className="ai-opp ai-opp--3">
           <circle cx="385" cy="202" r="17" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="371" y="196" width="28" height="4" rx="2" fill="var(--color-border, #e8e2d8)" />
-          <text x="385" y="219" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Nurse</text>
+          <text x="385" y="219" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Nurse</text>
         </g>
 
         <g className="ai-flow-conns">

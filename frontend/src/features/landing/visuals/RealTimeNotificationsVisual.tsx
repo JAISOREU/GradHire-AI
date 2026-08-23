@@ -21,7 +21,7 @@ export const RealTimeNotificationsVisual = () => {
           <rect x="40" y="25" width="340" height="230" rx="14" fill="url(#panel-grad)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="40" y="25" width="340" height="44" rx="14" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <rect x="40" y="53" width="340" height="16" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
-          <text x="65" y="55" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="13" fontWeight="700">Notifications</text>
+          <text x="65" y="55" textAnchor="start" fill="var(--color-text, #1a1814)" fontSize="13" fontWeight="700" className="hero-visual__invert-text">Notifications</text>
           <circle cx="320" cy="47" r="6" fill="var(--color-success, #059669)" />
           <circle cx="320" cy="47" r="10" fill="url(#live-glow)" opacity="0.6" />
           <text x="334" y="51" textAnchor="start" fill="var(--color-success, #059669)" fontSize="10" fontWeight="700">LIVE</text>
@@ -30,8 +30,8 @@ export const RealTimeNotificationsVisual = () => {
         <g className="notif-row notif-row--1">
           <rect x="58" y="84" width="304" height="44" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="84" cy="106" r="5" fill="var(--color-text)" />
-          <text x="100" y="103" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600">Application viewed</text>
-          <text x="100" y="117" textAnchor="start" fill="var(--color-text)" fontSize="10">Project Coordinator · 2m ago</text>
+          <text x="100" y="103" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Application viewed</text>
+          <text x="100" y="117" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Project Coordinator · 2m ago</text>
         </g>
 
         <g className="notif-row notif-row--2">
@@ -44,8 +44,8 @@ export const RealTimeNotificationsVisual = () => {
         <g className="notif-row notif-row--3">
           <rect x="58" y="192" width="304" height="44" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="84" cy="214" r="5" fill="var(--color-info, #2563eb)" />
-          <text x="100" y="211" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600">Interview invitation</text>
-          <text x="100" y="225" textAnchor="start" fill="var(--color-text)" fontSize="10">Tomorrow · 10:00 AM</text>
+          <text x="100" y="211" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Interview invitation</text>
+          <text x="100" y="225" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Tomorrow · 10:00 AM</text>
         </g>
       </svg>
 
