@@ -41,7 +41,7 @@ export const DiscoverOpportunitiesVisual = () => {
           <rect x="58" y="116" width="304" height="38" rx="9" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="80" cy="135" r="7" fill="var(--color-border, #e8e2d8)" />
           <text x="98" y="131" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">Technology Company</text>
-          <text x="98" y="144" fill="var(--color-text)" fontSize="9" className="hero-visual__invert-text">Remote · Full-time</text>
+          <text x="98" y="144" fill="var(--color-text)" fontSize="9" className="hero-visual__invert-text">Remote - Full-time</text>
           <rect x="326" y="128" width="22" height="13" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
           <text x="337" y="138" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700">95%</text>
         </g>
@@ -50,7 +50,7 @@ export const DiscoverOpportunitiesVisual = () => {
           <rect x="58" y="160" width="304" height="38" rx="9" fill="url(#disc-card)" stroke="var(--color-text)" strokeWidth="1.5" />
           <circle cx="80" cy="179" r="7" fill="var(--color-text)" />
           <text x="98" y="175" fill="var(--color-text)" fontSize="10" fontWeight="700">Financial Services</text>
-          <text x="98" y="188" fill="var(--color-text)" fontSize="9">Hybrid · Full-time</text>
+          <text x="98" y="188" fill="var(--color-text)" fontSize="9">Hybrid - Full-time</text>
           <rect x="326" y="172" width="22" height="13" rx="4" fill="var(--color-text)" />
           <text x="337" y="182" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
         </g>
@@ -59,7 +59,7 @@ export const DiscoverOpportunitiesVisual = () => {
           <rect x="58" y="204" width="304" height="38" rx="9" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="80" cy="223" r="7" fill="var(--color-border, #e8e2d8)" />
           <text x="98" y="219" fill="var(--color-text)" fontSize="10" fontWeight="600">Design Studio</text>
-          <text x="230" y="219" fill="var(--color-text)" fontSize="9">On-site · Contract</text>
+          <text x="230" y="219" fill="var(--color-text)" fontSize="9">On-site - Contract</text>
         </g>
       </svg>
 

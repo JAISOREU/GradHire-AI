@@ -31,21 +31,21 @@ export const RealTimeNotificationsVisual = () => {
           <rect x="58" y="84" width="304" height="44" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="84" cy="106" r="5" fill="var(--color-text)" />
           <text x="100" y="103" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Application viewed</text>
-          <text x="100" y="117" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Project Coordinator · 2m ago</text>
+          <text x="100" y="117" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Project Coordinator - 2m ago</text>
         </g>
 
         <g className="notif-row notif-row--2">
           <rect x="58" y="138" width="304" height="44" rx="8" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
           <circle cx="84" cy="160" r="5" fill="var(--color-text)" />
           <text x="100" y="157" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="700">New opportunity matched</text>
-          <text x="100" y="171" textAnchor="start" fill="var(--color-text)" fontSize="10">94% profile match · Now</text>
+          <text x="100" y="171" textAnchor="start" fill="var(--color-text)" fontSize="10">94% profile match - Now</text>
         </g>
 
         <g className="notif-row notif-row--3">
           <rect x="58" y="192" width="304" height="44" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="84" cy="214" r="5" fill="var(--color-info, #2563eb)" />
           <text x="100" y="211" textAnchor="start" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Interview invitation</text>
-          <text x="100" y="225" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Tomorrow · 10:00 AM</text>
+          <text x="100" y="225" textAnchor="start" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Tomorrow - 10:00 AM</text>
         </g>
       </svg>
 

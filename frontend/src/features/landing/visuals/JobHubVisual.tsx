@@ -41,7 +41,7 @@ export const JobHubVisual = () => {
           <rect x="50" y="114" width="320" height="40" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="74" cy="134" r="8" fill="var(--color-border)" />
           <text x="94" y="130" fill="var(--color-text)" fontSize="10" fontWeight="600">Software Engineer</text>
-          <text x="94" y="144" fill="var(--color-text)" fontSize="8">Acme Corp · Remote</text>
+          <text x="94" y="144" fill="var(--color-text)" fontSize="8">Acme Corp - Remote</text>
           <rect x="310" y="126" width="36" height="16" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
           <text x="328" y="138" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700">95%</text>
         </g>
@@ -50,7 +50,7 @@ export const JobHubVisual = () => {
           <rect x="50" y="164" width="320" height="40" rx="10" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1.5" />
           <circle cx="74" cy="184" r="8" fill="var(--color-text)" />
           <text x="94" y="180" fill="var(--color-text)" fontSize="10" fontWeight="700">Data Analyst</text>
-          <text x="94" y="194" fill="var(--color-text)" fontSize="8">Globex · Hybrid</text>
+          <text x="94" y="194" fill="var(--color-text)" fontSize="8">Globex - Hybrid</text>
           <rect x="310" y="176" width="36" height="16" rx="4" fill="var(--color-text)" />
           <text x="328" y="188" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700" className="hero-visual__invert-text">92%</text>
         </g>
@@ -59,7 +59,7 @@ export const JobHubVisual = () => {
           <rect x="50" y="214" width="320" height="36" rx="8" fill="var(--color-surface-muted)" stroke="var(--color-border)" strokeWidth="1" />
           <circle cx="74" cy="232" r="7" fill="var(--color-border)" />
           <text x="94" y="228" fill="var(--color-text)" fontSize="10" fontWeight="600">Product Designer</text>
-          <text x="94" y="240" fill="var(--color-text)" fontSize="8">Initech · On-site</text>
+          <text x="94" y="240" fill="var(--color-text)" fontSize="8">Initech - On-site</text>
         </g>
       </svg>
 

@@ -22,22 +22,22 @@ export const FloatingCards = () => {
 
   return (
     <div ref={ref} className={`floating-cards ${inView ? 'floating-cards--animated' : ''}`} aria-hidden="true">
-      <div className="floating-card floating-card--1">
-        <div className="floating-card__title">Software Engineer</div>
-        <div className="floating-card__meta">Remote · Full-time</div>
-      </div>
-      <div className="floating-card floating-card--2">
-        <div className="floating-card__title">Data Analyst</div>
-        <div className="floating-card__meta">Hybrid · Manila</div>
-      </div>
-      <div className="floating-card floating-card--3">
-        <div className="floating-card__title">Frontend Developer</div>
-        <div className="floating-card__meta">Remote · Philippines</div>
-      </div>
-      <div className="floating-card floating-card--4">
-        <div className="floating-card__title">Product Designer</div>
-        <div className="floating-card__meta">Hybrid · Singapore</div>
-      </div>
+        <div className="floating-card floating-card--1">
+          <div className="floating-card__title">Software Engineer</div>
+          <div className="floating-card__meta">Remote - Full-time</div>
+        </div>
+        <div className="floating-card floating-card--2">
+          <div className="floating-card__title">Data Analyst</div>
+          <div className="floating-card__meta">Hybrid - Manila</div>
+        </div>
+        <div className="floating-card floating-card--3">
+          <div className="floating-card__title">Frontend Developer</div>
+          <div className="floating-card__meta">Remote - Philippines</div>
+        </div>
+        <div className="floating-card floating-card--4">
+          <div className="floating-card__title">Product Designer</div>
+          <div className="floating-card__meta">Hybrid - Singapore</div>
+        </div>
 
       <style>{`
         .floating-cards {

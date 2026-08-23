@@ -48,8 +48,8 @@ export const MoveForwardVisual = () => {
         <g className="fwd-step fwd-step--3">
           <rect x="280" y="48" width="84" height="52" rx="10" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
           <circle cx="322" cy="74" r="11" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
-          <text x="322" y="96" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">Interview</text>
-          <text x="322" y="110" textAnchor="middle" fill="var(--color-text)" fontSize="8" className="hero-visual__invert-text">Upcoming</text>
+          <text x="322" y="96" textAnchor="middle" fill="var(--color-text)" fontSize="10" fontWeight="600">Interview</text>
+          <text x="322" y="110" textAnchor="middle" fill="var(--color-text)" fontSize="8">Upcoming</text>
         </g>
 
         <g className="fwd-line fwd-line--3">
