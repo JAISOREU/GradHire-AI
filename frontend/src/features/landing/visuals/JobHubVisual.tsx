@@ -25,7 +25,7 @@ export const JobHubVisual = () => {
           <line x1="74" y1="50" x2="80" y2="56" stroke="var(--color-text)" strokeWidth="1.5" strokeLinecap="round" />
           <text x="92" y="50" fill="var(--color-text)" fontSize="10">Search opportunities...</text>
           <rect x="310" y="36" width="36" height="20" rx="4" fill="var(--color-text)" />
-          <text x="328" y="50" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="9" fontWeight="700">Go</text>
+          <text x="328" y="50" textAnchor="middle" fill="var(--color-surface)" fontSize="9" fontWeight="700">Go</text>
         </g>
 
         <g className="job-filter">
@@ -52,7 +52,7 @@ export const JobHubVisual = () => {
           <text x="94" y="180" fill="var(--color-text)" fontSize="10" fontWeight="700">Data Analyst</text>
           <text x="94" y="194" fill="var(--color-text)" fontSize="8">Globex · Hybrid</text>
           <rect x="310" y="176" width="36" height="16" rx="4" fill="var(--color-text)" />
-          <text x="328" y="188" textAnchor="middle" fill="var(--color-primary-text, #ffffff)" fontSize="8" fontWeight="700">92%</text>
+          <text x="328" y="188" textAnchor="middle" fill="var(--color-surface)" fontSize="8" fontWeight="700">92%</text>
         </g>
 
         <g className="job-card-3">

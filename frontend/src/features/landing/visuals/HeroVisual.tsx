@@ -50,7 +50,7 @@ export const HeroVisual = () => {
         style={visualStyle}
         aria-hidden="true"
       >
-        <svg viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <svg viewBox="-60 -120 800 700" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
           <defs>
             {/* Glows */}
             <radialGradient id="hero-glow-ai" cx="50%" cy="50%" r="50%">
