@@ -225,7 +225,7 @@ export const HeroVisual = () => {
 
           {/* ===== DATA STREAMS ===== */}
           <g className="hero-visual__connections">
-            {/* Profile → AI Engine */}
+            {/* Profile to AI Engine */}
             <path d="M250 260 Q320 240 360 200" stroke="url(#stream-left)" strokeWidth="2.5" strokeDasharray="6 4" fill="none" opacity="0.8" className="hero-visual__stream" />
             <circle r="2.5" fill="var(--color-warning, #d97706)" opacity="0.85">
               <animateMotion dur="2.2s" repeatCount="indefinite" path="M250 260 Q320 240 360 200" />
@@ -241,7 +241,7 @@ export const HeroVisual = () => {
               <animateMotion dur="2.8s" repeatCount="indefinite" path="M250 300 Q320 270 360 220" />
             </circle>
 
-            {/* AI Engine → Jobs */}
+            {/* AI Engine to Jobs */}
             <path d="M440 80 Q500 140 560 270" stroke="url(#stream-right)" strokeWidth="2.5" strokeDasharray="6 4" fill="none" opacity="0.8" className="hero-visual__stream" />
             <circle r="2.5" fill="var(--color-success, #059669)" opacity="0.85">
               <animateMotion dur="2.2s" repeatCount="indefinite" path="M440 80 Q500 140 560 270" />
@@ -257,7 +257,7 @@ export const HeroVisual = () => {
               <animateMotion dur="2.8s" repeatCount="indefinite" path="M440 160 Q500 200 560 330" />
             </circle>
 
-            {/* AI Engine → Match */}
+            {/* AI Engine to Match */}
             <path d="M400 230 L400 265" stroke="url(#stream-center)" strokeWidth="3" fill="none" opacity="0.75" className="hero-visual__stream hero-visual__stream--center" />
             <circle r="2" fill="var(--color-primary, #4f46e5)" opacity="0.85">
               <animateMotion dur="1.5s" repeatCount="indefinite" path="M400 230 L400 265" />

@@ -201,7 +201,7 @@
 
 /* Landing visuals: theme-aware text color */
 [data-theme='dark'] .hero-visual__invert-text {
-  fill: var(--color-text);
+  fill: #ffffff;
 }
 
 /* ============================================================
