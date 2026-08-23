@@ -4956,16 +4956,6 @@ html {
   margin: 0;
 }
 
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-  margin: 0;
-}
-}
-
 @media (max-width: 640px) {
   .hero-subtitle {
     font-size: var(--text-xl);

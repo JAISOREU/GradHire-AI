@@ -203,11 +203,11 @@ export const HeroVisual = () => {
           </g>
 
           <g className="hero-visual__node hero-visual__node--match">
-            <circle cx="400" cy="340" r="56" fill="url(#match-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" filter="url(#hero-shadow-strong)" />
-            <circle cx="400" cy="340" r="45" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="4 3" />
-            <text x="400" y="335" textAnchor="middle" fill="var(--color-text)" fontSize="32" fontWeight="700" className="hero-visual__invert-text">96%</text>
-            <text x="400" y="352" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="8.5" fontWeight="600" className="hero-visual__invert-text">AI-Powered Match</text>
-            <circle cx="400" cy="340" r="56" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" opacity="0.25" className="hero-visual__pulse" />
+            <circle cx="400" cy="355" r="54" fill="url(#match-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" filter="url(#hero-shadow-strong)" />
+            <circle cx="400" cy="355" r="43" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="4 3" />
+            <text x="400" y="350" textAnchor="middle" fill="var(--color-text)" fontSize="32" fontWeight="700" className="hero-visual__invert-text">96%</text>
+            <text x="400" y="367" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="8.5" fontWeight="600" className="hero-visual__invert-text">AI-Powered Match</text>
+            <circle cx="400" cy="355" r="54" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" opacity="0.25" className="hero-visual__pulse" />
           </g>
 
           <g className="hero-visual__connections">
@@ -221,7 +221,7 @@ export const HeroVisual = () => {
               <animateMotion dur="2.2s" repeatCount="indefinite" path="M440 165 Q520 240 558 295" />
             </circle>
 
-            <path d="M400 180 L400 284" stroke="url(#stream-center)" strokeWidth="2.2" fill="none" opacity="0.65" className="hero-visual__stream hero-visual__stream--center" />
+            <path d="M400 180 L400 299" stroke="url(#stream-center)" strokeWidth="2.2" fill="none" opacity="0.65" className="hero-visual__stream hero-visual__stream--center" />
             <circle r="1.8" fill="var(--color-primary, #4f46e5)" opacity="0.85">
               <animateMotion dur="1.5s" repeatCount="indefinite" path="M400 180 L400 284" />
             </circle>
