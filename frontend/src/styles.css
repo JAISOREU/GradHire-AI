@@ -4093,21 +4093,21 @@ input[type='file']::file-selector-button:hover {
 
 /* Stagger animation for list items — removed conflicting override; use mask-reveal with ScrollReveal instead */
 
-/* Glow effect for primary actions */
-.btn--primary {
+/* Glow effect for primary actions — restricted to hero-level CTAs */
+.btn--primary--hero {
   box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
   animation: btn-glow 2s ease-in-out infinite;
+}
+
+.btn--primary--hero:hover {
+  animation: none;
+  box-shadow: 0 6px 24px rgba(79, 70, 229, 0.5);
+  transform: translateY(-2px) scale(1.02);
 }
 
 @keyframes btn-glow {
   0%, 100% { box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4); }
   50% { box-shadow: 0 4px 20px rgba(79, 70, 229, 0.6); }
-}
-
-.btn--primary:hover {
-  animation: none;
-  box-shadow: 0 6px 24px rgba(79, 70, 229, 0.5);
-  transform: translateY(-2px) scale(1.02);
 }
 
 /* Smooth scroll behavior for anchor links */
