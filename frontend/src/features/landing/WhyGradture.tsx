@@ -126,6 +126,9 @@ export const FeatureSlide = ({ feature, index }: { feature: Feature; index: numb
   return (
     <div className={`feature-story feature-story--${feature.id} ${isEven ? 'feature-story--text-left' : 'feature-story--text-right'}`}>
       <div className="feature-story__glow" aria-hidden="true" />
+      <div className="feature-story__watermark" aria-hidden="true">
+        {feature.number}
+      </div>
       <div className="feature-story__content">
         <ScrollReveal
           options={{

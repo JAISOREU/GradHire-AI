@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { ScrollReveal, StaggerContainer, StaggerChild } from '../../animations';
 import { MOTION } from '../../animations/motion-tokens';
 import { CreateAccountVisual } from './visuals/CreateAccountVisual';
@@ -47,7 +47,6 @@ const STEPS = [
 
 export const HowItWorks = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -60,10 +59,6 @@ export const HowItWorks = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('journey-step--inview');
-            const index = Number(entry.target.getAttribute('data-step-index'));
-            if (!Number.isNaN(index)) {
-              setActiveStep(index);
-            }
           } else {
             entry.target.classList.remove('journey-step--inview');
           }
@@ -93,22 +88,6 @@ export const HowItWorks = () => {
       </div>
 
       <div className="journey">
-        <div className="journey__progress" aria-hidden="true">
-          <div className="journey__progress-track">
-            <div
-              className="journey__progress-fill"
-              style={{ transform: `scaleX(${(activeStep + 1) / STEPS.length})` }}
-            />
-          </div>
-          {STEPS.map((step, index) => (
-            <div
-              key={step.number}
-              className={`journey__progress-dot ${index <= activeStep ? 'journey__progress-dot--active' : ''}`}
-              style={{ '--dot-index': index } as Record<string, number>}
-            />
-          ))}
-        </div>
-
         <div className="journey__steps">
           {STEPS.map((step, index) => {
             const StepVisual = step.visual;
@@ -120,6 +99,7 @@ export const HowItWorks = () => {
                 className={`journey-step ${isEven ? 'journey-step--text-left' : 'journey-step--text-right'}`}
                 data-step-index={index}
               >
+                <div className="journey-step__marker" aria-hidden="true" />
                 <div className="journey-step__visual">
                   <ScrollReveal
                     options={{
@@ -140,7 +120,7 @@ export const HowItWorks = () => {
                       <span className="journey-step__label">{step.label}</span>
                     </StaggerChild>
                     <StaggerChild>
-                      <span className="journey-step__number">{step.number}</span>
+                      <span className="journey-step__number" aria-hidden="true">{step.number}</span>
                     </StaggerChild>
                     <StaggerChild>
                       <h3 className="journey-step__title">{step.title}</h3>
@@ -193,74 +173,72 @@ export const HowItWorks = () => {
           padding: 0 var(--space-6, 1.5rem);
         }
 
-        .journey__progress {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--space-4, 1rem);
-          margin-bottom: var(--space-12, 3rem);
-          position: relative;
-        }
-
-        .journey__progress-track {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: calc(100% - 48px);
-          max-width: 600px;
-          height: 3px;
-          background: var(--color-border, #e8e2d8);
-          border-radius: var(--radius-full, 9999px);
-          overflow: hidden;
-        }
-
-        .journey__progress-fill {
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, var(--color-primary, #4f46e5), var(--color-info, #2563eb));
-          border-radius: var(--radius-full, 9999px);
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .journey__progress-dot {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: var(--color-surface, #ffffff);
-          border: 2px solid var(--color-border, #e8e2d8);
-          position: relative;
-          z-index: 1;
-          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .journey__progress-dot--active {
-          background: var(--color-primary, #4f46e5);
-          border-color: var(--color-primary, #4f46e5);
-          transform: scale(1.2);
-        }
-
         .journey__steps {
           display: flex;
           flex-direction: column;
           gap: var(--space-16, 4rem);
+          position: relative;
+        }
+
+        .journey__steps::before {
+          content: '';
+          position: absolute;
+          left: 24px;
+          top: 0;
+          bottom: 0;
+          width: 2px;
+          background: linear-gradient(to bottom, var(--color-border), var(--color-primary), var(--color-border));
+          opacity: 0.3;
+          z-index: 0;
+        }
+
+        @media (min-width: 768px) {
+          .journey__steps::before {
+            left: 50%;
+            transform: translateX(-50%);
+          }
         }
 
         .journey-step {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: var(--space-12, 3rem);
+          grid-template-columns: 1fr;
+          gap: var(--space-6, 1.5rem);
           align-items: center;
-          opacity: 0;
-          transform: translateY(24px);
-          transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+          position: relative;
         }
 
-        .journey-step--inview {
-          opacity: 1;
-          transform: translateY(0);
+        @media (min-width: 768px) {
+          .journey-step {
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12, 3rem);
+          }
+        }
+
+        .journey-step__marker {
+          display: none;
+          position: absolute;
+          left: 16px;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: var(--color-surface);
+          border: 3px solid var(--color-primary);
+          z-index: 2;
+          top: 40px;
+        }
+
+        .journey-step--inview .journey-step__marker {
+          background: var(--color-primary);
+          box-shadow: 0 0 0 6px var(--color-primary-soft);
+        }
+
+        @media (min-width: 768px) {
+          .journey-step__marker {
+            display: block;
+            left: 50%;
+            top: 50px;
+            transform: translateX(-50%);
+          }
         }
 
         .journey-step__visual {
@@ -284,7 +262,7 @@ export const HowItWorks = () => {
         }
 
         .journey-step__number {
-          font-size: var(--text-6xl, 3.75rem);
+          font-size: var(--text-5xl, 3.75rem);
           font-weight: 800;
           line-height: 1;
           color: var(--color-text);
@@ -309,8 +287,8 @@ export const HowItWorks = () => {
         }
 
         .journey-step__details {
-          font-size: var(--text-base, 1rem);
           color: var(--color-text-secondary);
+          font-size: var(--text-base, 1rem);
           opacity: 0.8;
           margin: 0;
         }

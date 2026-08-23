@@ -26,7 +26,7 @@ const HeroNode = () => {
           <div className="hero-anim hero-anim--logo">
             <AnimatedLogo size={96} showText={true} />
           </div>
-          <h1 className="hero-title gradient-text gradient-text--hero hero-anim hero-anim--title">
+          <h1 className="hero-title hero-anim hero-anim--title">
             Find the career you always wanted
           </h1>
           <p className="hero-subtitle hero-anim hero-anim--subtitle">
@@ -48,9 +48,6 @@ const HeroNode = () => {
               </span>
             ))}
           </div>
-          <p className="hero-context">
-            For talent looking for the right opportunity and employers looking for the right people.
-          </p>
         </div>
         <div className="hero-visual-wrap hero-anim hero-anim--visual">
           <HeroVisual />
@@ -70,7 +67,7 @@ const CtaNode = () => {
         <div className="section-inner">
           <section className="cta-section">
             <div className="cta-card">
-              <h2 className="cta-card__title gradient-text gradient-text--subtle">Ready to get started?</h2>
+              <h2 className="cta-card__title">Ready to get started?</h2>
               <p className="cta-card__subtitle">
                 Join talent and employers already using Gradture AI.
               </p>
