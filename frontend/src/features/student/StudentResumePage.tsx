@@ -22,6 +22,20 @@ export const StudentResumePage = () => {
       setMessage('Please choose a file.');
       return;
     }
+
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setMessage('Invalid file type. Please upload PDF, DOCX, or TXT.');
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setMessage('File is too large. Maximum size is 5 MB.');
+      return;
+    }
+
     setUploading(true);
     setMessage('Uploading and parsing your resume…');
     try {
@@ -44,6 +58,20 @@ export const StudentResumePage = () => {
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
+
+      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+      const maxSize = 5 * 1024 * 1024;
+
+      if (!allowedTypes.includes(file.type)) {
+        setMessage('Invalid file type. Please upload PDF, DOCX, or TXT.');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        setMessage('File is too large. Maximum size is 5 MB.');
+        return;
+      }
+
       setUploading(true);
       setMessage('Replacing resume…');
       try {

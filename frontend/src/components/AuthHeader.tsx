@@ -161,24 +161,15 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       case 'STUDENT':
         return [
           { to: '/student/account', label: 'Profile', icon: 'profile' as const },
-          { to: '/student/applications', label: 'Applications', icon: 'applications' as const },
-          { to: '/student/recommended', label: 'Recommended jobs', icon: 'star' as const },
-          { to: '/student/saved', label: 'Saved jobs', icon: 'saved' as const },
           { to: '/student/resume', label: 'Resume', icon: 'resume' as const },
-          { to: '/student/messages', label: 'Messages', icon: 'messages' as const },
-          { to: '/student/notifications', label: 'Notifications', icon: 'notifications' as const },
-          { to: '/student/settings', label: 'Settings', icon: 'settings' as const },
+          { to: '/student/resume-builder', label: 'Resume Builder', icon: 'feature' as const },
+          { to: '/student/recommended', label: 'Recommended jobs', icon: 'star' as const },
         ];
       case 'EMPLOYER':
         return [
           { to: '/employer/company-profile', label: 'Company profile', icon: 'company' as const },
           { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' as const },
-          { to: '/employer/jobs', label: 'Job posts', icon: 'jobs' as const },
-          { to: '/employer/applicants', label: 'Applicants', icon: 'users' as const },
-          { to: '/employer/interviews', label: 'Interviews', icon: 'interviews' as const },
-          { to: '/employer/messages', label: 'Messages', icon: 'messages' as const },
-          { to: '/employer/notifications', label: 'Notifications', icon: 'notifications' as const },
-          { to: '/employer/settings', label: 'Hiring settings', icon: 'settings' as const },
+          { to: '/employer/analytics', label: 'Analytics', icon: 'dashboard' as const },
         ];
       case 'ADMIN':
         return [
@@ -190,7 +181,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           { to: '/admin/companies', label: 'Companies', icon: 'company' as const },
           { to: '/admin/reports', label: 'Reports', icon: 'dashboard' as const },
           { to: '/admin/analytics', label: 'Analytics', icon: 'dashboard' as const },
-          { to: '/admin/ai-monitoring', label: 'Monitoring', icon: 'dashboard' as const },
+          { to: '/admin/monitoring', label: 'Monitoring', icon: 'dashboard' as const },
           { to: '/admin/audit-logs', label: 'Audit logs', icon: 'audit' as const },
           { to: '/admin/job-sources', label: 'Job Sources', icon: 'jobs' as const },
           { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'jobs' as const },

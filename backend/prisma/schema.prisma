@@ -265,6 +265,7 @@ model User {
   settings               Settings?
   jobViews               JobView[]
   recommendations        Recommendation[]
+  companyFollows         CompanyFollow[]
 
   @@index([role])
 }
@@ -448,6 +449,21 @@ model Company {
   updatedAt   DateTime @updatedAt
 
   jobs        Job[]
+  followers   CompanyFollow[]
+}
+
+model CompanyFollow {
+  id         String   @id @default(cuid())
+  userId     String
+  companyId  String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+  @@index([userId])
 }
 
 // ============================================================

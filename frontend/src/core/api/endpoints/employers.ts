@@ -35,12 +35,8 @@ export const analyticsApi = {
 
 export const messagesApi = {
   listMine: async <T>(page = 1, limit = 20): Promise<T[]> => {
-    try {
-      const data = await api<{ items: T[] }>(`/api/v1/messages/me?page=${page}&limit=${limit}`);
-      return data.items ?? [];
-    } catch {
-      return [];
-    }
+    const data = await api<{ items: T[] }>(`/api/v1/messages/me?page=${page}&limit=${limit}`);
+    return data.items ?? [];
   },
   send: (to: string, body: string) =>
     api<{ id: string }>('/api/v1/messages', { method: 'POST', json: { to, body } }),
@@ -50,12 +46,8 @@ export const messagesApi = {
 
 export const savedJobsApi = {
   listMine: async <T>(page = 1, limit = 20): Promise<T[]> => {
-    try {
-      const data = await api<{ items: T[] }>(`/api/v1/saved-jobs/me?page=${page}&limit=${limit}`);
-      return data.items ?? [];
-    } catch {
-      return [];
-    }
+    const data = await api<{ items: T[] }>(`/api/v1/saved-jobs/me?page=${page}&limit=${limit}`);
+    return data.items ?? [];
   },
   save: (jobId: string) => api<{ id: string }>('/api/v1/saved-jobs', { method: 'POST', json: { jobId } }),
   unsave: (jobId: string) => api<void>(`/api/v1/saved-jobs/${jobId}`, { method: 'DELETE' }),

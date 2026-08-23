@@ -63,12 +63,24 @@ export class MessagesService {
       throw new BadRequestException('You cannot send a message to yourself');
     }
 
-    const recipient = await this.prisma.user.findUnique({
+    let recipient = await this.prisma.user.findUnique({
       where: { id: recipientId },
       select: { id: true, role: true },
     });
+
+    if (!recipient) {
+      recipient = await this.prisma.user.findFirst({
+        where: { email: { contains: recipientId, mode: 'insensitive' } },
+        select: { id: true, role: true },
+      });
+    }
+
     if (!recipient) {
       throw new NotFoundException('Recipient not found');
+    }
+
+    if (recipient.role === 'ADMIN') {
+      throw new ForbiddenException('You cannot send messages to admins');
     }
 
     const recentCount = await this.prisma.message.count({
@@ -83,7 +95,7 @@ export class MessagesService {
     }
 
     const message = await this.prisma.message.create({
-      data: { senderId, recipientId, body, read: false },
+      data: { senderId, recipientId: recipient.id, body, read: false },
     });
 
     const payload = {
@@ -95,10 +107,10 @@ export class MessagesService {
       read: message.read,
     };
 
-    this.gateway.server.to(`user:${recipientId}`).emit('message', payload);
+    this.gateway.server.to(`user:${recipient.id}`).emit('message', payload);
     this.gateway.server.to(`user:${senderId}`).emit('message', payload);
 
-    await this.notifications.create(recipientId, `New message: ${body.slice(0, 100)}`, undefined, 'MESSAGE');
+    await this.notifications.create(recipient.id, `New message: ${body.slice(0, 100)}`, undefined, 'MESSAGE');
 
     return payload;
   }

@@ -23,6 +23,14 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
     ],
   },
   {
+    label: 'Career',
+    items: [
+      { to: '/student/resume', label: 'Resume', icon: 'resume' },
+      { to: '/student/resume-builder', label: 'Resume Builder', icon: 'feature' },
+      { to: '/student/recommended', label: 'Recommended', icon: 'star' },
+    ],
+  },
+  {
     label: 'Profile',
     items: [
       { to: '/student/account', label: 'Profile', icon: 'profile' },

@@ -9,6 +9,7 @@ export const usersApi = {
   },
   deleteAvatar: () => api<void>('/api/v1/users/me/avatar', { method: 'DELETE' }),
   getAvatar: () => api<{ avatarUrl: string }>('/api/v1/users/me/avatar'),
+  deleteAccount: (password?: string) => api<{ deleted: boolean }>('/api/v1/users/me', { method: 'DELETE', json: password ? { password } : {} }),
 };
 
 export const studentsApi = {

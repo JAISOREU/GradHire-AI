@@ -105,7 +105,7 @@ export const StudentSettingsPage = () => {
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save settings'}</Button>
             </div>
-            {message && <div className={`message ${message.includes('Failed') || message.includes('Failed') ? 'message--error' : 'message--info'}`} role="status">{message}</div>}
+            {message && <div className={`message ${message.includes('Failed') ? 'message--error' : 'message--info'}`} role="status">{message}</div>}
           </form>
         </Card>
       </div>

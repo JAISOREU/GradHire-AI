@@ -994,6 +994,7 @@ function TalentAccountSettings({ onUpdate }: { onUpdate: () => void }) {
   const { data: settings, loading } = useAsync(() => studentsApi.getSettings(), []);
   const [form, setForm] = useState<Record<string, boolean | string | null>>({});
   const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     if (settings) setForm({ ...settings });
@@ -1001,11 +1002,13 @@ function TalentAccountSettings({ onUpdate }: { onUpdate: () => void }) {
 
   const save = async () => {
     setSaving(true);
+    setMessage(null);
     try {
       await studentsApi.updateSettings(form as Record<string, unknown>);
       onUpdate();
-    } catch {
-      // handle error
+      setMessage({ type: 'success', text: 'Preferences saved.' });
+    } catch (err) {
+      setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to save preferences.' });
     } finally {
       setSaving(false);
     }
@@ -1039,6 +1042,11 @@ function TalentAccountSettings({ onUpdate }: { onUpdate: () => void }) {
             </div>
           </label>
         ))}
+        {message && (
+          <div className={`message ${message.type === 'success' ? 'message--success' : 'message--error'}`} role="alert">
+            {message.text}
+          </div>
+        )}
         <div className="flex justify-end">
           <Button onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save preferences'}</Button>
         </div>
@@ -1049,6 +1057,22 @@ function TalentAccountSettings({ onUpdate }: { onUpdate: () => void }) {
 
 function DangerZone() {
   const [confirm, setConfirm] = useState(false);
+  const [password, setPassword] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState('');
+  const { logout } = useAuth();
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError('');
+    try {
+      await usersApi.deleteAccount(password || undefined);
+      logout();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete account');
+      setDeleting(false);
+    }
+  };
 
   return (
     <Card title="Danger zone" className="section--mt">
@@ -1056,9 +1080,22 @@ function DangerZone() {
         Once you delete your account, there is no going back. Please be certain.
       </p>
       {confirm ? (
-        <div className="flex gap-2">
-          <Button variant="danger" size="sm">Yes, delete my account</Button>
-          <Button variant="secondary" size="sm" onClick={() => setConfirm(false)}>Cancel</Button>
+        <div className="stack">
+          <FormInput
+            label="Confirm password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            required
+          />
+          {error && <div className="message message--error" role="alert">{error}</div>}
+          <div className="flex gap-2">
+            <Button variant="danger" size="sm" onClick={handleDelete} disabled={deleting || !password}>
+              {deleting ? 'Deleting…' : 'Yes, delete my account'}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => { setConfirm(false); setPassword(''); setError(''); }}>Cancel</Button>
+          </div>
         </div>
       ) : (
         <Button variant="danger" size="sm" onClick={() => setConfirm(true)}>Delete account</Button>

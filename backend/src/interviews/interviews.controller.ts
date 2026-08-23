@@ -21,8 +21,9 @@ export class InterviewsController {
 
   @Get('me')
   @UseGuards(StudentGuard)
-  async myInterviews(@Req() req: Request & { user: AuthUser }) {
-    return this.interviews.getMyInterviews(req.user);
+  async myInterviews(@Req() req: Request & { user: AuthUser }, @Query() query?: Record<string, unknown>) {
+    const pagination = query ? normalizePagination(query) : undefined;
+    return this.interviews.getMyInterviews(req.user, pagination);
   }
 
   @Get('employer/all')

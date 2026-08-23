@@ -45,6 +45,10 @@ function createMockPrisma() {
     },
     user: {
       findUnique: async ({ where }: { where: { id: string } }) => users.find((u) => u.id === where.id) ?? null,
+      findFirst: async ({ where }: { where: { email: { contains: string; mode: string } } }) => {
+        const email = (where.email as { contains: string }).contains.toLowerCase();
+        return users.find((u) => (u.email as string).toLowerCase().includes(email)) ?? null;
+      },
     },
   };
 

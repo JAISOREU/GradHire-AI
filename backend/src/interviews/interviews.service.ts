@@ -86,20 +86,29 @@ export class InterviewsService {
     return interview;
   }
 
-  async getMyInterviews(user: AuthUser) {
-    return this.prisma.interview.findMany({
-      where: {
-        application: { studentId: user.id },
-      },
-      include: {
-        application: {
-          include: {
-            job: { select: { id: true, title: true, company: true, location: true } },
+  async getMyInterviews(user: AuthUser, pagination?: PaginationParams) {
+    const { page = 1, limit = 20 } = pagination ?? {};
+    const where = {
+      application: { studentId: user.id },
+    };
+    const [interviews, total] = await Promise.all([
+      this.prisma.interview.findMany({
+        where,
+        include: {
+          application: {
+            include: {
+              job: { select: { id: true, title: true, company: true, location: true } },
+            },
           },
         },
-      },
-      orderBy: { scheduledAt: 'asc' },
-    });
+        orderBy: { scheduledAt: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.interview.count({ where }),
+    ]);
+
+    return applyPagination(interviews, total, page, limit);
   }
 
   async getEmployerInterviews(user: AuthUser, pagination?: PaginationParams) {

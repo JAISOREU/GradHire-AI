@@ -1,4 +1,4 @@
-import { Controller, Get, Delete, Post, Req, UseGuards, UploadedFile, BadRequestException, UseInterceptors, Param, Res, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Delete, Post, Req, UseGuards, UploadedFile, BadRequestException, UseInterceptors, Param, Res, NotFoundException, Body } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,6 +31,13 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async deleteAvatar(@Req() req: Request & { user: AuthUser }) {
     return this.users.deleteAvatar(req.user.id);
+  }
+
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
+  @Delete('me')
+  @UseGuards(AuthGuard)
+  async deleteAccount(@Req() req: Request & { user: AuthUser }, @Body() payload: { password?: string }) {
+    return this.users.deleteAccount(req.user.id, payload.password);
   }
 
   @Throttle({ default: { ttl: 60000, limit: 10 } })

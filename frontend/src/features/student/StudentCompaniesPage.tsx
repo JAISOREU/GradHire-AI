@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { companiesApi } from '../../core/api/endpoints/companies';
 import { useAuth } from '../../core/auth/AuthContext';
+import { useToast } from '../../core/toast/ToastContext';
 import { EmptyState } from '../../components/EmptyState';
 import { Button } from '../../components/Button';
 import { PageHeader } from '../../components/PageHeader';
+import { Tooltip } from '../../components/Tooltip';
 
 const PAGE_SIZE = 12;
 
@@ -14,6 +16,7 @@ export const StudentCompaniesPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [followed, setFollowed] = useState<Set<string>>(new Set());
+  const { addToast } = useToast();
 
   const { data: companies, loading, error, reload } = useAsync(
     () => companiesApi.list(page, PAGE_SIZE),
@@ -28,16 +31,31 @@ export const StudentCompaniesPage = () => {
     return allCompanies.filter((c) => c.name.toLowerCase().includes(q) || (c.industry ?? '').toLowerCase().includes(q));
   }, [allCompanies, search]);
 
-  const handleFollow = (id: string) => {
+  const handleFollow = async (companyId: string) => {
+    const isFollowed = followed.has(companyId);
+    const previousFollowed = new Set(followed);
     setFollowed((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
+      if (next.has(companyId)) {
+        next.delete(companyId);
       } else {
-        next.add(id);
+        next.add(companyId);
       }
       return next;
     });
+
+    try {
+      if (isFollowed) {
+        await companiesApi.unfollow(companyId);
+        addToast('success', 'Unfollowed company');
+      } else {
+        await companiesApi.follow(companyId);
+        addToast('success', 'Now following company');
+      }
+    } catch (err) {
+      setFollowed(previousFollowed);
+      addToast('error', err instanceof Error ? err.message : 'Failed to update follow status');
+    }
   };
 
   const hasMore = !search.trim() && allCompanies.length >= PAGE_SIZE;
@@ -103,13 +121,15 @@ export const StudentCompaniesPage = () => {
                 <span className="text-xs text-faint">
                   {followed.has(company.id) ? 'Following' : 'Not following'}
                 </span>
-                <Button
-                  variant={followed.has(company.id) ? 'secondary' : 'primary'}
-                  size="sm"
-                  onClick={() => handleFollow(company.id)}
-                >
-                  {followed.has(company.id) ? 'Unfollow' : 'Follow'}
-                </Button>
+                <Tooltip content={followed.has(company.id) ? 'Unfollow this company' : 'Follow this company'}>
+                  <Button
+                    variant={followed.has(company.id) ? 'secondary' : 'primary'}
+                    size="sm"
+                    onClick={() => handleFollow(company.id)}
+                  >
+                    {followed.has(company.id) ? 'Unfollow' : 'Follow'}
+                  </Button>
+                </Tooltip>
               </div>
             </div>
           ))

@@ -30,7 +30,6 @@ export const StudentResumeBuilderPage = () => {
       const data = await api<{ recommendations?: string[] }>('/ai/recommendations', {
         method: 'POST',
         json: { focus: profile.focus },
-        requiresAuth: false,
       });
       const items = (data.recommendations ?? []).map((title: string) => categorize(title));
       setRecommendations(items);
@@ -47,7 +46,7 @@ export const StudentResumeBuilderPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Resume Builder" subtitle="Generate a tailored resume from your profile and focus area." />
+      <PageHeader title="Career Suggestions" subtitle="Get tailored career direction based on your profile focus." />
 
       <div className="form-container">
         <Card title="Build your resume">

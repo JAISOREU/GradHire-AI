@@ -5,6 +5,7 @@ import { STORAGE_SERVICE } from '../storage/storage.module';
 import { extname } from 'node:path';
 import { createReadStream, stat } from 'node:fs';
 import { Readable } from 'node:stream';
+import * as bcrypt from 'bcrypt';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -164,5 +165,30 @@ export class UsersService {
       default:
         return 'application/octet-stream';
     }
+  }
+
+  async deleteAccount(userId: string, password?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, passwordHash: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (password && user.passwordHash) {
+      const valid = await bcrypt.compare(password, user.passwordHash);
+      if (!valid) {
+        throw new BadRequestException('Invalid password');
+      }
+    }
+
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+
+    this.logger.log(`User account deleted: ${user.email}`);
+    return { deleted: true };
   }
 }
