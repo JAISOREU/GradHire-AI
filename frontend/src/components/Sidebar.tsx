@@ -23,7 +23,11 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
           className="sidebar__toggle"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        />
+        >
+          <span className="sidebar__toggle-icon" aria-hidden="true">
+            <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={20} />
+          </span>
+        </button>
       )}
     </div>
     <nav className="sidebar__nav" aria-label={`${title} navigation`}>
