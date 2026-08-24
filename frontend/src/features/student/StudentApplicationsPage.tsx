@@ -71,7 +71,7 @@ export const StudentApplicationsPage = () => {
                   )}
                 </div>
                 {(app as any).lastEvent && (
-                  <div className="text-sm text-secondary section--mt" style={{ paddingLeft: '1rem', borderLeft: '2px solid var(--color-border)' }}>
+                   <div className="text-sm text-secondary section--mt border-l-2 border-border pl-4">
                     <strong>{(app as any).lastEvent.newStatus}</strong> — {(app as any).lastEvent.message || 'Status updated'}
                     <div className="text-xs text-faint">{new Date((app as any).lastEvent.createdAt).toLocaleString()}</div>
                   </div>

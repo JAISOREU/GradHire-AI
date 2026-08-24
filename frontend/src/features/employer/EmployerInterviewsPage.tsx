@@ -82,7 +82,7 @@ export const EmployerInterviewsPage = () => {
 
   return (
     <div className="page fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <div>
           <h1 className="page-title">Interview scheduling</h1>
           <p className="card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
@@ -146,7 +146,7 @@ export const EmployerInterviewsPage = () => {
                     {inv.type && <span>{inv.type}</span>}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div className="flex gap-2 items-center">
                   <Tooltip content="Update interview status">
                     <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value)}>
                       <option value="SCHEDULED">Scheduled</option>
@@ -164,7 +164,7 @@ export const EmployerInterviewsPage = () => {
               </div>
               {inv.meetingLink && (
                 <Tooltip content="Join the interview meeting">
-                  <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                  <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt no-underline inline-block">
                     Join meeting
                   </a>
                 </Tooltip>

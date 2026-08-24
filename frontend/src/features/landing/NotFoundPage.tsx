@@ -11,7 +11,7 @@ export const NotFoundPage = () => {
   return (
     <div className="public-page">
       <section className="section-full">
-        <div className="section-inner" style={{ textAlign: 'center', paddingTop: 'var(--space-16)', paddingBottom: 'var(--space-16)' }}>
+        <div className="section-inner text-center pt-16 pb-16">
           <AnimatedLogo size={48} showText={true} />
           <h1 className="not-found__code">404</h1>
           <h2 className="page-title">Page not found</h2>

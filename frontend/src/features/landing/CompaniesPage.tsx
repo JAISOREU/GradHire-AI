@@ -22,7 +22,7 @@ export const CompaniesPage = () => {
             action={
               preview ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  <span className="text-sm text-text-secondary">
                     Showing a preview
                   </span>
                   <Link to="/register">
@@ -38,13 +38,13 @@ export const CompaniesPage = () => {
       {preview && (
         <section className="section-full">
           <div className="section-inner">
-            <div className="card" style={{ padding: 'var(--space-4)', background: 'var(--color-primary-soft, #eef2ff)', border: '1px solid var(--color-primary, #4f46e5)' }}>
+            <div className="card p-4 bg-primary-soft border border-primary">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <p style={{ margin: 0, fontWeight: 600, color: 'var(--color-primary, #4f46e5)' }}>
+                  <p className="m-0 font-semibold text-primary">
                     Unlock full access
                   </p>
-                  <p className="text-sm" style={{ margin: 'var(--space-1) 0 0', color: 'var(--color-text-secondary)' }}>
+                  <p className="text-sm mt-1 text-text-secondary">
                     Sign up to browse all companies, follow organizations, and get personalized updates.
                   </p>
                 </div>

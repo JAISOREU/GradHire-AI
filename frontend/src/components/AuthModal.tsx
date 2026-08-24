@@ -1,8 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
-import { FormInput, FormSelect } from './FormField';
+import { FormField } from './FormField';
 import { ThemeBackground } from './ThemeBackground';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { api, ApiError } from '../core/api/client';
 import { getRoleLabel } from '../core/utils/roleLabels';
 
@@ -12,10 +15,9 @@ type AuthModalProps = {
   open: boolean;
   onClose: () => void;
   onSuccess: (data: AuthResponse) => void;
-  triggerRef?: React.Ref<HTMLButtonElement>;
 };
 
-export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalProps) => {
+export const AuthModal = ({ open, onClose, onSuccess }: AuthModalProps) => {
   const [mode, setMode] = useState<Mode>('signin');
   const [role, setRole] = useState<'STUDENT' | 'EMPLOYER'>('STUDENT');
   const [email, setEmail] = useState('');
@@ -24,7 +26,6 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -34,47 +35,6 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
       setTimeout(() => firstInputRef.current?.focus(), 50);
     }
   }, [open, mode]);
-
-  useEffect(() => {
-    if (!open) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (triggerRef && typeof triggerRef !== 'function') {
-          const el = (triggerRef as React.RefObject<HTMLButtonElement>).current;
-          setTimeout(() => el?.focus(), 0);
-        }
-        onClose();
-      }
-      if (event.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey) {
-          if (document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
-  const switchMode = (m: Mode) => {
-    setMode(m);
-    setError('');
-  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -98,16 +58,21 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
     }
   };
 
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    setError('');
+  };
+
   return (
-    <div className="auth-overlay" role="dialog" aria-modal="true" aria-label={mode === 'signin' ? 'Sign in' : 'Create account'} onClick={onClose}>
-      <div className="auth-modal fade-in" ref={modalRef} onClick={(e) => e.stopPropagation()}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="auth-modal">
         <ThemeBackground />
-        <div className="auth-modal__head">
-          <h2>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</h2>
-          <button className="auth-modal__close" onClick={onClose} aria-label="Close" type="button">
-            ×
-          </button>
-        </div>
+        <DialogHeader>
+          <DialogTitle>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</DialogTitle>
+          <DialogDescription>
+            {mode === 'signin' ? 'Sign in to access your dashboard' : 'Join Gradture AI to find your next opportunity'}
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="auth-tabs" role="tablist">
           <button
@@ -132,32 +97,73 @@ export const AuthModal = ({ open, onClose, onSuccess, triggerRef }: AuthModalPro
 
         <form onSubmit={handleSubmit} className="stack">
           {mode === 'register' && (
-            <FormInput label="Name" id="auth-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+            <FormField label="Name" id="auth-name" required={mode === 'register'}>
+              <Input
+                id="auth-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                autoComplete="name"
+              />
+            </FormField>
           )}
 
-          <FormInput label="Email" id="auth-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" ref={mode === 'signin' ? firstInputRef : undefined} />
+          <FormField label="Email" id="auth-email" required>
+            <Input
+              ref={mode === 'signin' ? firstInputRef : undefined}
+              id="auth-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+            />
+          </FormField>
 
-          <div style={{ position: 'relative' }}>
-            <FormInput label="Password" id="auth-password" type={showPassword ? 'text' : 'password'} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
-            <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </div>
+          <FormField label="Password" id="auth-password" required>
+            <div className="relative">
+              <Input
+                id="auth-password"
+                type={showPassword ? 'text' : 'password'}
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-2 top-[2.65rem] bg-transparent border-none cursor-pointer text-sm text-text-secondary"
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+          </FormField>
 
           {mode === 'register' && (
-            <FormSelect label="I am a…" id="auth-role" value={role} onChange={(e) => setRole(e.target.value as 'STUDENT' | 'EMPLOYER')} options={[
-              { value: 'STUDENT', label: getRoleLabel('STUDENT') },
-              { value: 'EMPLOYER', label: getRoleLabel('EMPLOYER') },
-            ]} />
+            <FormField label="I am a…" id="auth-role" required>
+              <Select
+                id="auth-role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as 'STUDENT' | 'EMPLOYER')}
+                options={[
+                  { value: 'STUDENT', label: getRoleLabel('STUDENT') },
+                  { value: 'EMPLOYER', label: getRoleLabel('EMPLOYER') },
+                ]}
+              />
+            </FormField>
           )}
 
           {error && <div className="message message--error" role="alert">{error}</div>}
 
-          <Button type="submit" disabled={submitting}>
-            {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
-          </Button>
+          <DialogFooter>
+            <Button type="submit" disabled={submitting} className="w-full">
+              {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

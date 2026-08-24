@@ -8,41 +8,41 @@ export const CreateAccountVisual = () => {
       <svg viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id="acc-panel" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-surface-muted)" />
-            <stop offset="100%" stopColor="var(--color-surface)" />
+            <stop offset="0%" stopColor="var(--color-surface-muted, #fefcf8)" />
+            <stop offset="100%" stopColor="var(--color-surface, #ffffff)" />
           </linearGradient>
           <linearGradient id="acc-btn" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-primary)" />
-            <stop offset="100%" stopColor="var(--color-info)" />
+            <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" />
+            <stop offset="100%" stopColor="var(--color-info, #2563eb)" />
           </linearGradient>
         </defs>
 
         <g className="acc-panel">
           <rect x="70" y="20" width="280" height="250" rx="16" fill="url(#acc-panel)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="70" y="20" width="280" height="44" rx="16" fill="var(--color-surface-muted)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <rect x="70" y="52" width="280" height="12" fill="var(--color-surface-muted)" stroke="none" />
-          <text x="210" y="48" textAnchor="middle" fill="var(--color-text)" fontSize="13" fontWeight="700">Create your account</text>
+          <rect x="70" y="20" width="280" height="44" rx="16" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <rect x="70" y="52" width="280" height="12" fill="var(--color-surface-muted, #fefcf8)" stroke="none" />
+          <text x="210" y="48" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="13" fontWeight="700">Create your account</text>
         </g>
 
         <g className="acc-avatar">
-          <circle cx="210" cy="92" r="16" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary)" strokeWidth="1.5" />
-          <circle cx="210" cy="88" r="5" fill="var(--color-text)" />
-          <path d="M198 100 Q210 107 222 100" stroke="var(--color-text)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          <circle cx="210" cy="92" r="16" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" />
+          <circle cx="210" cy="88" r="5" fill="var(--color-text, #1a1814)" />
+          <path d="M198 100 Q210 107 222 100" stroke="var(--color-text, #1a1814)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
         </g>
 
         <g className="acc-field acc-field--1">
-          <rect x="92" y="118" width="236" height="28" rx="7" fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth="1" />
-          <text x="108" y="136" fill="var(--color-text)" fontSize="10">you@example.com</text>
+          <rect x="92" y="118" width="236" height="28" rx="7" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
+          <text x="108" y="136" fill="var(--color-text, #1a1814)" fontSize="10">you@example.com</text>
         </g>
 
         <g className="acc-field acc-field--2">
-          <rect x="92" y="154" width="236" height="28" rx="7" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="108" y="172" fill="var(--color-text)" fontSize="10">••••••••</text>
+          <rect x="92" y="154" width="236" height="28" rx="7" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="108" y="172" fill="var(--color-text, #1a1814)" fontSize="10">••••••••</text>
         </g>
 
         <g className="acc-field acc-field--3">
-          <rect x="92" y="190" width="236" height="28" rx="7" fill="var(--color-surface)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
-          <text x="108" y="208" fill="var(--color-text)" fontSize="10">Your name (optional)</text>
+          <rect x="92" y="190" width="236" height="28" rx="7" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
+          <text x="108" y="208" fill="var(--color-text, #1a1814)" fontSize="10">Your name (optional)</text>
         </g>
 
         <g className="acc-btn">
@@ -51,9 +51,9 @@ export const CreateAccountVisual = () => {
         </g>
 
         <g className="acc-check">
-          <circle cx="330" cy="36" r="14" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-text)" strokeWidth="1.5" />
-          <path d="M 322 36 L 327 41 L 338 30" stroke="var(--color-text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <text x="326" y="78" textAnchor="end" fill="var(--color-text)" fontSize="8" fontWeight="700">Account created</text>
+          <circle cx="330" cy="36" r="14" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-text, #1a1814)" strokeWidth="1.5" />
+          <path d="M 322 36 L 327 41 L 338 30" stroke="var(--color-text, #1a1814)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <text x="326" y="78" textAnchor="end" fill="var(--color-text, #1a1814)" fontSize="8" fontWeight="700">Account created</text>
         </g>
       </svg>
 

@@ -1,229 +1,253 @@
-import { useEffect, useRef, useState } from 'react';
-import { ScrollReveal } from '../../../animations';
-import { MOTION } from '../../../animations/motion-tokens';
+import { useId, useMemo, useRef } from 'react';
+import { motion, useInView, useReducedMotion } from 'motion/react';
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const heroReveal = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 1.2,
+      ease: EASE,
+      when: 'beforeChildren',
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const heroChild = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: EASE },
+  },
+};
+
+const drawLine = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: { pathLength: 1, opacity: 0.5, transition: { duration: 0.8, ease: EASE } },
+};
 
 export const HeroVisual = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const rafRef = useRef<number>(0);
-  const targetRef = useRef({ x: 0, y: 0 });
-  const currentRef = useRef({ x: 0, y: 0 });
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const svgId = useId();
+  const inView = useInView(wrapperRef, { once: true, amount: 0.2 });
+  const reduceMotion = useReducedMotion();
 
-  useEffect(() => {
-    const animate = () => {
-      const lerp = 0.08;
-      const dx = targetRef.current.x - currentRef.current.x;
-      const dy = targetRef.current.y - currentRef.current.y;
-      currentRef.current.x += dx * lerp;
-      currentRef.current.y += dy * lerp;
-      if (Math.abs(dx) > 0.0005 || Math.abs(dy) > 0.0005) {
-        setMousePos({ ...currentRef.current });
-      }
-      rafRef.current = requestAnimationFrame(animate);
-    };
+  const floatCandidate = useMemo(() => ({
+    y: [0, -2, 0],
+    transition: {
+      duration: 7.5,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'mirror' as const,
+    } as const,
+  }), []);
 
-    rafRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const floatJob = useMemo(() => ({
+    y: [0, -2, 0],
+    transition: {
+      duration: 8.5,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'mirror' as const,
+    } as const,
+  }), []);
 
-  const visualStyle: React.CSSProperties = {
-    transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 12}px)`,
-    transition: 'transform 0.15s ease-out',
+  const aiPulse = useMemo(() => ({
+    scale: [1, 1.12, 1],
+    opacity: [0.9, 0.55, 0.9],
+    transition: {
+      duration: 3,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'mirror' as const,
+    } as const,
+  }), []);
+
+  const cardHover = {
+    scale: 1.01,
+    transition: { duration: 0.3, ease: EASE },
+  };
+
+  const cardHoverJob = {
+    scale: 1.01,
+    y: -2,
+    transition: { duration: 0.3, ease: EASE },
+  };
+
+  const aiHover = {
+    scale: 1.03,
+    transition: { duration: 0.3, ease: EASE },
   };
 
   return (
-    <ScrollReveal
-      options={{
-        threshold: 0.2,
-        once: true,
-        duration: MOTION.duration.slowest,
-        distance: MOTION.distance.lg,
-        blur: MOTION.blur.md,
-        scale: 1,
-        direction: 'up',
-      }}
-      className="hero-visual-wrapper"
+    <div
+      ref={wrapperRef}
+      className="hero-visual-wrapper relative w-full"
     >
       <div
         className="hero-visual"
-        style={visualStyle}
         aria-hidden="true"
       >
-        <svg viewBox="0 0 800 560" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <motion.svg
+          viewBox="0 0 800 500"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid meet"
+          variants={heroReveal}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+        >
           <defs>
-            <radialGradient id="hero-glow-ai" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.25" />
-              <stop offset="60%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.06" />
+            <radialGradient id={`${svgId}-hero-glow`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.05" />
+              <stop offset="60%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.02" />
               <stop offset="100%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0" />
             </radialGradient>
-            <radialGradient id="hero-glow-secondary" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0" />
-            </radialGradient>
 
-            <linearGradient id="stream-left" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--color-warning, #d97706)" stopOpacity="0.75" />
-              <stop offset="100%" stopColor="var(--color-warning, #d97706)" stopOpacity="0.15" />
-            </linearGradient>
-            <linearGradient id="stream-right" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--color-success, #059669)" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="var(--color-success, #059669)" stopOpacity="0.75" />
-            </linearGradient>
-            <linearGradient id="stream-center" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="var(--color-success, #059669)" stopOpacity="0.25" />
-            </linearGradient>
-
-            <linearGradient id="ai-engine-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.2" />
-            </linearGradient>
-            <linearGradient id="profile-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.05" />
-              <stop offset="100%" stopColor="var(--color-warning, #d97706)" stopOpacity="0.1" />
-            </linearGradient>
-            <linearGradient id="match-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-primary-soft, #eef2ff)" />
-              <stop offset="50%" stopColor="var(--color-warning-soft, #fffbeb)" />
-              <stop offset="100%" stopColor="var(--color-info-soft, #eff6ff)" />
-            </linearGradient>
-
-            <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="var(--color-primary, #4f46e5)" floodOpacity="0.08" />
-            </filter>
-            <filter id="hero-shadow-strong" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="var(--color-primary, #4f46e5)" floodOpacity="0.12" />
+            <filter id={`${svgId}-card-shadow`} x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="var(--color-text, #1a1814)" floodOpacity="0.06" />
             </filter>
 
-            <clipPath id="profile-clip">
-              <circle cx="200" cy="340" r="52" />
-            </clipPath>
-            <clipPath id="jobs-clip">
-              <circle cx="600" cy="340" r="52" />
-            </clipPath>
-            <clipPath id="engine-clip">
-              <circle cx="400" cy="100" r="78" />
+            <linearGradient id={`${svgId}-ai-indicator-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="var(--color-primary, #4f46e5)" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="var(--color-info, #2563eb)" stopOpacity="0.04" />
+            </linearGradient>
+
+            <clipPath id={`${svgId}-candidate-clip`}>
+              <rect x="80" y="160" width="220" height="48" rx="12" />
             </clipPath>
 
-            <path id="skills-text-arc-top" d="M 128 340 A 72 72 0 0 1 272 340" fill="none" />
-            <path id="skills-text-arc-bottom" d="M 272 340 A 72 72 0 0 1 128 340" fill="none" />
+            <clipPath id={`${svgId}-job-clip`}>
+              <rect x="500" y="140" width="220" height="48" rx="12" />
+            </clipPath>
           </defs>
 
-          <circle cx="400" cy="100" r="180" fill="url(#hero-glow-ai)" opacity="0.5" className="hero-visual__glow" />
-          <circle cx="400" cy="100" r="110" fill="url(#hero-glow-secondary)" opacity="0.3" className="hero-visual__glow" />
+          <motion.circle
+            cx="400"
+            cy="250"
+            r="220"
+            fill={`url(#${svgId}-hero-glow)`}
+            opacity="0.6"
+            variants={heroChild}
+          />
 
-          <g className="hero-visual__node hero-visual__node--profile">
-            <circle cx="200" cy="340" r="62" fill="var(--color-surface, #ffffff)" stroke="var(--color-warning, #d97706)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-            <circle cx="200" cy="340" r="58" fill="url(#profile-grad)" className="hero-visual__profile-bg" />
+          <motion.g className="hero-visual__layer hero-visual__layer--bg" variants={heroChild}>
+            <motion.g
+              className="hero-visual__card hero-visual__card--candidate origin-[190px_250px]"
+              variants={heroChild}
+              animate={reduceMotion ? undefined : floatCandidate}
+              whileHover={reduceMotion ? undefined : cardHover}
+            >
+              <motion.rect
+                x="80" y="160" width="220" height="180" rx="12"
+                fill="var(--color-surface, #ffffff)"
+                stroke="var(--color-border, #e8e2d8)"
+                strokeWidth="1"
+                filter={`url(#${svgId}-card-shadow)`}
+              />
+              <motion.rect x="80" y="160" width="220" height="48" rx="12" fill="var(--color-surface-muted, #fefcf8)" />
+              <motion.rect x="80" y="196" width="220" height="12" fill="var(--color-surface-muted, #fefcf8)" />
 
-            <g clipPath="url(#profile-clip)">
-              <circle cx="200" cy="340" r="52" fill="var(--color-surface, #ffffff)" />
-              <circle cx="200" cy="340" r="20" fill="var(--color-warning-soft, #fffbeb)" className="hero-visual__profile-avatar" />
-              <circle cx="200" cy="340" r="8" fill="var(--color-warning, #d97706)" className="hero-visual__profile-core" />
+              <motion.circle cx="108" cy="184" r="16" fill="var(--color-primary-soft, #eef2ff)" />
+              <motion.text x="108" y="188" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="10" fontWeight="700">AR</motion.text>
 
-              <g className="hero-visual__skills-typo">
-                <text fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">
-                  <textPath href="#skills-text-arc-top" startOffset="50%" textAnchor="middle">
-                    React · Python · TypeScript
-                  </textPath>
-                </text>
-                <text fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">
-                  <textPath href="#skills-text-arc-bottom" startOffset="50%" textAnchor="middle">
-                    SQL · Git · Node.js
-                  </textPath>
-                </text>
-              </g>
-            </g>
+              <motion.text x="134" y="178" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="600">Alex Rivera</motion.text>
+              <motion.text x="134" y="192" fill="var(--color-text-tertiary, #7a756e)" fontSize="9" fontWeight="500">Frontend Developer</motion.text>
 
-            <circle cx="200" cy="340" r="62" fill="none" stroke="var(--color-warning, #d97706)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__profile-ring" />
-            <text x="200" y="405" textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Your Profile</text>
-          </g>
+              <motion.rect x="96" y="228" width="40" height="22" rx="6" fill="var(--color-primary-soft, #eef2ff)" />
+              <motion.text x="116" y="242" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="8" fontWeight="600">React</motion.text>
 
-          <g className="hero-visual__node hero-visual__node--engine">
-            <circle cx="400" cy="100" r="95" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" strokeDasharray="8 6" opacity="0.25" className="hero-visual__engine-ring" />
+              <motion.rect x="142" y="228" width="52" height="22" rx="6" fill="var(--color-info-soft, #eff6ff)" />
+              <motion.text x="168" y="242" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="8" fontWeight="600">TypeScript</motion.text>
 
-            <circle cx="400" cy="100" r="84" fill="var(--color-surface, #ffffff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" filter="url(#hero-shadow-strong)" />
-            <circle cx="400" cy="100" r="79" fill="url(#ai-engine-grad)" className="hero-visual__engine-bg" />
+              <motion.rect x="200" y="228" width="44" height="22" rx="6" fill="var(--color-warning-soft, #fffbeb)" />
+              <motion.text x="222" y="242" textAnchor="middle" fill="var(--color-warning, #d97706)" fontSize="8" fontWeight="600">Node.js</motion.text>
 
-            <g clipPath="url(#engine-clip)">
-              <circle cx="400" cy="100" r="78" fill="var(--color-surface, #ffffff)" />
-              <line x1="400" y1="100" x2="356" y2="64" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.45" />
-              <line x1="400" y1="100" x2="444" y2="64" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.45" />
-              <line x1="400" y1="100" x2="356" y2="136" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.45" />
-              <line x1="400" y1="100" x2="444" y2="136" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.45" />
-              <line x1="356" y1="64" x2="444" y2="64" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.3" />
-              <line x1="356" y1="136" x2="444" y2="136" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.3" />
-              <line x1="356" y1="64" x2="356" y2="136" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.3" />
-              <line x1="444" y1="64" x2="444" y2="136" stroke="var(--color-info, #2563eb)" strokeWidth="1" opacity="0.3" />
+              <motion.line x1="96" y1="268" x2="284" y2="268" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
 
-              <circle cx="400" cy="100" r="8" fill="var(--color-primary, #4f46e5)" className="hero-visual__engine-core" />
-              <circle cx="356" cy="64" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node hero-visual__engine-node--1" />
-              <circle cx="444" cy="64" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node hero-visual__engine-node--2" />
-              <circle cx="356" cy="136" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node hero-visual__engine-node--3" />
-              <circle cx="444" cy="136" r="4" fill="var(--color-info, #2563eb)" className="hero-visual__engine-node hero-visual__engine-node--4" />
-              <circle cx="400" cy="50" r="3" fill="var(--color-primary, #4f46e5)" opacity="0.45" className="hero-visual__engine-node hero-visual__engine-node--5" />
-              <circle cx="400" cy="150" r="3" fill="var(--color-primary, #4f46e5)" opacity="0.45" className="hero-visual__engine-node hero-visual__engine-node--6" />
-            </g>
+              <motion.text x="96" y="285" fill="var(--color-text-tertiary, #7a756e)" fontSize="8" fontWeight="500">Technical fit</motion.text>
+              <motion.rect x="96" y="292" width="120" height="4" rx="2" fill="var(--color-primary, #4f46e5)" opacity="0.2" />
 
-            <circle cx="400" cy="100" r="84" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1.5" opacity="0.18" className="hero-visual__engine-pulse" />
+              <motion.text x="96" y="308" fill="var(--color-text-tertiary, #7a756e)" fontSize="8" fontWeight="500">Experience</motion.text>
+              <motion.rect x="96" y="315" width="80" height="4" rx="2" fill="var(--color-success, #059669)" opacity="0.2" />
+            </motion.g>
 
-            <text x="400" y="60" textAnchor="middle" fill="var(--color-text)" fontSize="14" fontWeight="700" className="hero-visual__invert-text">Gradture AI</text>
-            <text x="400" y="150" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="9" fontWeight="500" className="hero-visual__invert-text">Matching Engine</text>
-          </g>
+            <motion.g
+              className="hero-visual__card hero-visual__card--job origin-[610px_250px]"
+              variants={heroChild}
+              animate={reduceMotion ? undefined : floatJob}
+              whileHover={reduceMotion ? undefined : cardHoverJob}
+            >
+              <motion.rect x="500" y="140" width="220" height="200" rx="12" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" filter={`url(#${svgId}-card-shadow)`} />
+              <motion.rect x="500" y="140" width="220" height="48" rx="12" fill="var(--color-surface-muted, #fefcf8)" />
+              <motion.rect x="500" y="176" width="220" height="12" fill="var(--color-surface-muted, #fefcf8)" />
 
-          <g className="hero-visual__node hero-visual__node--jobs">
-            <circle cx="600" cy="340" r="62" fill="var(--color-surface, #ffffff)" stroke="var(--color-success, #059669)" strokeWidth="1.5" filter="url(#hero-shadow)" />
-            <circle cx="600" cy="340" r="58" fill="url(#profile-grad)" className="hero-visual__jobs-bg" />
+              <motion.text x="516" y="164" fill="var(--color-text, #1a1814)" fontSize="11" fontWeight="600">Frontend Developer</motion.text>
+              <motion.text x="516" y="178" fill="var(--color-text-tertiary, #7a756e)" fontSize="9" fontWeight="500">Acme Technologies</motion.text>
 
-            <g clipPath="url(#jobs-clip)">
-              <circle cx="600" cy="340" r="52" fill="var(--color-surface, #ffffff)" />
-              <rect x="564" y="318" width="72" height="18" rx="3.5" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
-              <circle cx="572" cy="327" r="5" fill="var(--color-primary-soft, #eef2ff)" />
-              <text x="572" y="329.5" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="6" fontWeight="700">A</text>
-              <text x="586" y="325" fill="var(--color-text)" fontSize="6" fontWeight="600" className="hero-visual__invert-text">Frontend Dev</text>
-              <text x="586" y="333" fill="var(--color-text-secondary, var(--color-text))" fontSize="5" className="hero-visual__invert-text">Acme Corp</text>
-              <circle cx="624" cy="327" r="6.5" fill="var(--color-success-soft, #ecfdf5)" />
-              <text x="624" y="329.5" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="6" fontWeight="700">94%</text>
+              <motion.rect x="516" y="252" width="64" height="24" rx="6" fill="var(--color-success-soft, #ecfdf5)" />
+              <motion.text x="548" y="268" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="10" fontWeight="700" className="hero-visual__match-badge">94% Match</motion.text>
 
-              <rect x="564" y="344" width="72" height="18" rx="3.5" fill="var(--color-surface-muted, #fefcf8)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" className="hero-visual__job-card" />
-              <circle cx="572" cy="353" r="5" fill="var(--color-info-soft, #eff6ff)" />
-              <text x="572" y="355.5" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="6" fontWeight="700">G</text>
-              <text x="586" y="351" fill="var(--color-text)" fontSize="6" fontWeight="600" className="hero-visual__invert-text">UI Designer</text>
-              <text x="586" y="359" fill="var(--color-text-secondary, var(--color-text))" fontSize="5" className="hero-visual__invert-text">Globex</text>
-              <circle cx="624" cy="353" r="6.5" fill="var(--color-success-soft, #ecfdf5)" />
-              <text x="624" y="355.5" textAnchor="middle" fill="var(--color-success, #059669)" fontSize="6" fontWeight="700">87%</text>
-            </g>
+              <motion.line x1="516" y1="292" x2="704" y2="292" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
 
-            <circle cx="600" cy="340" r="62" fill="none" stroke="var(--color-success, #059669)" strokeWidth="1" strokeDasharray="6 4" className="hero-visual__jobs-ring" />
-            <text x="600" y="405" textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="600" className="hero-visual__invert-text">Top Matches</text>
-          </g>
+              <motion.rect x="516" y="214" width="44" height="22" rx="6" fill="var(--color-primary-soft, #eef2ff)" />
+              <motion.text x="538" y="228" textAnchor="middle" fill="var(--color-primary, #4f46e5)" fontSize="8" fontWeight="600">React</motion.text>
 
-          <g className="hero-visual__node hero-visual__node--match">
-            <circle cx="400" cy="355" r="54" fill="url(#match-grad)" stroke="var(--color-primary, #4f46e5)" strokeWidth="2.5" filter="url(#hero-shadow-strong)" />
-            <circle cx="400" cy="355" r="43" fill="none" stroke="var(--color-primary, #4f46e5)" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="4 3" />
-            <text x="400" y="350" textAnchor="middle" fill="var(--color-text)" fontSize="32" fontWeight="700" className="hero-visual__invert-text">96%</text>
-            <text x="400" y="367" textAnchor="middle" fill="var(--color-text-secondary, var(--color-text))" fontSize="8.5" fontWeight="600" className="hero-visual__invert-text">AI-Powered Match</text>
-            <circle cx="400" cy="355" r="54" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="2" opacity="0.25" className="hero-visual__pulse" />
-          </g>
+              <motion.rect x="566" y="214" width="52" height="22" rx="6" fill="var(--color-info-soft, #eff6ff)" />
+              <motion.text x="592" y="228" textAnchor="middle" fill="var(--color-info, #2563eb)" fontSize="8" fontWeight="600">TypeScript</motion.text>
 
-          <g className="hero-visual__connections">
-            <path d="M262 295 Q340 230 360 175" stroke="url(#stream-left)" strokeWidth="2.2" strokeDasharray="6 4" fill="none" opacity="0.7" className="hero-visual__stream" />
-            <circle r="2.2" fill="var(--color-warning, #d97706)" opacity="0.85">
-              <animateMotion dur="2.2s" repeatCount="indefinite" path="M262 295 Q340 230 360 175" />
-            </circle>
+              <motion.text x="516" y="310" fill="var(--color-primary, #4f46e5)" fontSize="9" fontWeight="600" className="hero-visual__link">View opportunity →</motion.text>
+            </motion.g>
+          </motion.g>
 
-            <path d="M440 165 Q520 240 558 295" stroke="url(#stream-right)" strokeWidth="2.2" strokeDasharray="6 4" fill="none" opacity="0.7" className="hero-visual__stream" />
-            <circle r="2.2" fill="var(--color-success, #059669)" opacity="0.85">
-              <animateMotion dur="2.2s" repeatCount="indefinite" path="M440 165 Q520 240 558 295" />
-            </circle>
+          <motion.g className="hero-visual__layer hero-visual__layer--mid" variants={heroChild}>
+            <motion.g
+              className="hero-visual__ai-indicator origin-[400px_250px]"
+              animate={reduceMotion ? undefined : aiPulse}
+              whileHover={reduceMotion ? undefined : aiHover}
+            >
+              <motion.circle cx="400" cy="250" r="32" fill={`url(#${svgId}-ai-indicator-grad)`} />
+              <motion.circle cx="400" cy="250" r="8" fill="var(--color-primary, #4f46e5)" className="hero-visual__ai-dot" />
+              <motion.circle cx="400" cy="250" r="16" fill="none" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" opacity="0.15" className="hero-visual__ai-ring" />
 
-            <path d="M400 180 L400 320" stroke="url(#stream-center)" strokeWidth="2.2" fill="none" opacity="0.65" className="hero-visual__stream hero-visual__stream--center" />
-            <circle r="1.8" fill="var(--color-primary, #4f46e5)" opacity="0.85">
-              <animateMotion dur="1.5s" repeatCount="indefinite" path="M400 180 L400 320" />
-            </circle>
-          </g>
-        </svg>
+              <motion.text x="400" y="210" textAnchor="middle" fill="var(--color-text, #1a1814)" fontSize="10" fontWeight="600" className="hero-visual__ai-label">AI Matching</motion.text>
+              <motion.text x="400" y="300" textAnchor="middle" fill="var(--color-text-tertiary, #7a756e)" fontSize="8" fontWeight="500" className="hero-visual__ai-sub">Analyzing profile</motion.text>
+            </motion.g>
+          </motion.g>
+
+          <motion.g className="hero-visual__layer hero-visual__layer--connections" variants={heroChild}>
+            <motion.path
+              d="M300 250 Q340 250 368 250"
+              stroke="var(--color-border, #e8e2d8)"
+              strokeWidth="1"
+              strokeDasharray="6 5"
+              fill="none"
+              opacity="0"
+              className="hero-visual__conn"
+              variants={drawLine}
+            />
+            <motion.path
+              d="M432 250 Q460 250 500 250"
+              stroke="var(--color-border, #e8e2d8)"
+              strokeWidth="1"
+              strokeDasharray="6 5"
+              fill="none"
+              opacity="0"
+              className="hero-visual__conn"
+              variants={drawLine}
+            />
+            <motion.circle r="2" fill="var(--color-primary, #4f46e5)" opacity="0" className="hero-visual__particle hero-visual__particle--1">
+              <animateMotion dur="1.8s" repeatCount="1" begin="0.6s" fill="freeze" path="M300 250 Q340 250 400 250" />
+            </motion.circle>
+            <motion.circle r="2" fill="var(--color-primary, #4f46e5)" opacity="0" className="hero-visual__particle hero-visual__particle--2">
+              <animateMotion dur="1.8s" repeatCount="1" begin="0.9s" fill="freeze" path="M400 250 Q460 250 500 250" />
+            </motion.circle>
+          </motion.g>
+        </motion.svg>
 
         <style>{`
           .hero-visual-wrapper {
@@ -235,6 +259,8 @@ export const HeroVisual = () => {
           .hero-visual {
             position: relative;
             width: 100%;
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
           }
 
           .hero-visual svg {
@@ -243,285 +269,34 @@ export const HeroVisual = () => {
             display: block;
           }
 
-          .hero-visual__glow {
-            opacity: 0;
-            transform: scale(0.85);
-            transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-
-          .scroll-reveal--visible .hero-visual__glow {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__node {
-            opacity: 0;
-            transform: translateY(16px) scale(0.92);
-            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-
-          .scroll-reveal--visible .hero-visual__node--profile { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.05s; }
-          .scroll-reveal--visible .hero-visual__node--engine { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.2s; }
-          .scroll-reveal--visible .hero-visual__node--jobs { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.4s; }
-          .scroll-reveal--visible .hero-visual__node--match { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.55s; }
-
-          .hero-visual__connections path {
-            stroke-dasharray: 240;
-            stroke-dashoffset: 240;
-            transition: stroke-dashoffset 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-
-          .scroll-reveal--visible .hero-visual__connections path {
-            stroke-dashoffset: 0;
-          }
-
-          .scroll-reveal--visible .hero-visual__connections path:nth-of-type(1) { transition-delay: 0.15s; }
-          .scroll-reveal--visible .hero-visual__connections path:nth-of-type(2) { transition-delay: 0.25s; }
-          .scroll-reveal--visible .hero-visual__connections path:nth-of-type(3) { transition-delay: 0.35s; }
-
-          .hero-visual__stream--center {
-            stroke-dasharray: 120;
-            stroke-dashoffset: 120;
-            transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-
-          .hero-visual__pulse {
-            animation: hero-pulse 3.5s ease-in-out infinite;
-            transform-box: fill-box;
-            transform-origin: center;
-          }
-
-          @keyframes hero-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.4; }
-            50% { transform: scale(1.18); opacity: 0; }
-          }
-
-          .hero-visual__profile-bg {
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.9s ease 0.1s, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
-          }
-
-          .scroll-reveal--visible .hero-visual__profile-bg {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__profile-avatar {
-            opacity: 0;
-            transform: scale(0.5);
-            transition: opacity 0.7s ease 0.2s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
-          }
-
-          .scroll-reveal--visible .hero-visual__profile-avatar {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__profile-core {
-            opacity: 0;
-            transform: scale(0);
-            transition: opacity 0.5s ease 0.3s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
-          }
-
-          .scroll-reveal--visible .hero-visual__profile-core {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-           .hero-visual__skills-typo {
-             opacity: 0;
-             transform: rotate(0deg);
-             transition: opacity 0.7s ease 0.35s;
-           }
-
-           .scroll-reveal--visible .hero-visual__skills-typo {
-             opacity: 1;
-             animation: skills-rotate 30s linear infinite;
-             transform-origin: 200px 340px;
-           }
-
-           .hero-visual__skills-typo text {
-             animation: skills-highlight 3s ease-in-out infinite;
-           }
-
-           .scroll-reveal--visible .hero-visual__skills-typo text:nth-child(1) { animation-delay: 0s; }
-           .scroll-reveal--visible .hero-visual__skills-typo text:nth-child(2) { animation-delay: 1.5s; }
-
-           @keyframes skills-rotate {
-             from { transform: rotate(0deg); }
-             to { transform: rotate(360deg); }
-           }
-
-           @keyframes skills-highlight {
-             0%, 100% { opacity: 0.75; }
-             50% { opacity: 1; }
-           }
-
-           .hero-visual__profile-ring {
-            opacity: 0;
-            stroke-dasharray: 8 4;
-            stroke-dashoffset: 100;
-            transition: opacity 0.7s ease 0.15s, stroke-dashoffset 1.8s ease 0.15s;
-          }
-
-          .scroll-reveal--visible .hero-visual__profile-ring {
-            opacity: 0.55;
-            stroke-dashoffset: 0;
-          }
-
-          @keyframes profile-orbit {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-
-          .hero-visual__engine-bg {
-            opacity: 0;
-            transform: scale(0.85);
-            transition: opacity 0.9s ease 0.15s, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
-          }
-
-          .scroll-reveal--visible .hero-visual__engine-bg {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__engine-core {
-            opacity: 0;
-            transform: scale(0);
-            transition: opacity 0.5s ease 0.3s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
-          }
-
-          .scroll-reveal--visible .hero-visual__engine-core {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__engine-node {
-            opacity: 0;
-            transform: scale(0);
-            transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-          }
-
-          .scroll-reveal--visible .hero-visual__engine-node {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .scroll-reveal--visible .hero-visual__engine-node--1 { transition-delay: 0.35s; }
-          .scroll-reveal--visible .hero-visual__engine-node--2 { transition-delay: 0.4s; }
-          .scroll-reveal--visible .hero-visual__engine-node--3 { transition-delay: 0.45s; }
-          .scroll-reveal--visible .hero-visual__engine-node--4 { transition-delay: 0.5s; }
-          .scroll-reveal--visible .hero-visual__engine-node--5 { transition-delay: 0.5s; }
-          .scroll-reveal--visible .hero-visual__engine-node--6 { transition-delay: 0.55s; }
-
-          .hero-visual__engine-ring {
-            opacity: 0;
-            stroke-dasharray: 12 8;
-            stroke-dashoffset: 60;
-            transition: opacity 0.7s ease 0.25s, stroke-dashoffset 2.2s ease 0.25s;
-          }
-
-          .scroll-reveal--visible .hero-visual__engine-ring {
-            opacity: 0.45;
-            stroke-dashoffset: 0;
-          }
-
-          .hero-visual__engine-pulse {
-            animation: engine-pulse 4.5s ease-in-out infinite;
-            transform-origin: 400px 100px;
-          }
-
-          @keyframes engine-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.25; }
-            50% { transform: scale(1.06); opacity: 0.08; }
-          }
-
-          .hero-visual__jobs-bg {
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.9s ease 0.2s, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
-          }
-
-          .scroll-reveal--visible .hero-visual__jobs-bg {
-            opacity: 1;
-            transform: scale(1);
-          }
-
-          .hero-visual__job-card {
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-
-          .scroll-reveal--visible .hero-visual__job-card:nth-of-type(1) { opacity: 1; transform: translateY(0); transition-delay: 0.45s; }
-          .scroll-reveal--visible .hero-visual__job-card:nth-of-type(2) { opacity: 1; transform: translateY(0); transition-delay: 0.55s; }
-
-          .hero-visual__jobs-ring {
-            opacity: 0;
-            stroke-dasharray: 8 6;
-            stroke-dashoffset: 80;
-            transition: opacity 0.7s ease 0.25s, stroke-dashoffset 2.2s ease 0.25s;
-          }
-
-          .scroll-reveal--visible .hero-visual__jobs-ring {
-            opacity: 0.45;
-            stroke-dashoffset: 0;
-          }
-
-          .hero-visual:hover .hero-visual__profile-orbit g {
-            transform: scale(1.12);
-            transform-box: fill-box;
-            transform-origin: center;
-            transition: transform 0.25s ease;
-          }
-
-          .hero-visual:hover .hero-visual__job-card {
-            transform: translateY(-2px);
-            transition: transform 0.25s ease;
-          }
-
-          .hero-visual:hover .hero-visual__engine-core {
-            transform: scale(1.2);
-            transform-box: fill-box;
-            transform-origin: center;
-            transition: transform 0.35s ease;
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            .hero-visual__node,
-            .hero-visual__glow,
-            .hero-visual__connections path {
-              transition-duration: 0.01ms !important;
-              transition-delay: 0ms !important;
-            }
-            .hero-visual__engine-pulse,
-            .hero-visual__skills-typo,
-            .hero-visual__pulse {
-              animation: none;
-            }
-            .hero-visual__skills-typo {
-              opacity: 1 !important;
-              transform: none !important;
-            }
-            .hero-visual__profile-avatar,
-            .hero-visual__profile-core,
-            .hero-visual__engine-core,
-            .hero-visual__engine-node,
-            .hero-visual__job-card {
-              opacity: 1 !important;
-              transform: none !important;
-            }
+          .hero-visual__link {
+            cursor: pointer;
           }
 
           @media (max-width: 768px) {
-            .hero-visual__node--profile { transform: scale(0.85); }
-            .hero-visual__node--engine { transform: scale(0.85); }
-            .hero-visual__node--jobs { transform: scale(0.85); }
-            .hero-visual__node--match { transform: scale(0.85); }
+            .hero-visual__card--candidate {
+              transform: scale(0.72);
+              transform-origin: 160px 240px;
+            }
+
+            .hero-visual__card--job {
+              transform: scale(0.72);
+              transform-origin: 640px 240px;
+            }
+
+            .hero-visual__ai-indicator {
+              transform: scale(0.85);
+              transform-origin: 400px 250px;
+            }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .hero-visual__particle {
+              display: none;
+            }
           }
         `}</style>
       </div>
-    </ScrollReveal>
+    </div>
   );
 };

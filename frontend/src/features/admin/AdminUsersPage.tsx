@@ -57,7 +57,7 @@ export const AdminUsersPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Users</h1>
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="mb-4 flex gap-2 items-center flex-wrap">
         <select className="select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
           <option value="">All roles</option>
           <option value="STUDENT">Student</option>
@@ -75,10 +75,10 @@ export const AdminUsersPage = () => {
               <label className="form-label" htmlFor="user-email">Email</label>
               <input id="user-email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" required />
             </div>
-            <div className="form-group" style={{ position: 'relative' }}>
+            <div className="form-group relative">
               <label className="form-label" htmlFor="user-password">Password</label>
               <input id="user-password" className="input" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
-              <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              <button type="button" onClick={() => setShowPassword((prev) => !prev)} className="absolute right-2 top-[2.65rem] bg-transparent border-none cursor-pointer text-sm text-text-secondary">
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
@@ -107,7 +107,7 @@ export const AdminUsersPage = () => {
                   <span>{new Date(u.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div className="flex gap-2 items-center">
                 <select className="select" value={u.role} onChange={(e) => handleRoleChange(u.id, e.target.value)}>
                   <option value="STUDENT">Student</option>
                   <option value="EMPLOYER">Employer</option>

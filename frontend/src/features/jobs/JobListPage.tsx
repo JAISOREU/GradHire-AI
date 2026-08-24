@@ -113,7 +113,7 @@ export const JobListPage = () => {
             action={
               preview ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  <span className="text-sm text-text-secondary">
                     Showing a preview
                   </span>
                   <Link to="/register">
@@ -129,13 +129,13 @@ export const JobListPage = () => {
       {preview && (
         <section className="section-full">
           <div className="section-inner">
-            <div className="card" style={{ padding: 'var(--space-4)', background: 'var(--color-primary-soft, #eef2ff)', border: '1px solid var(--color-primary, #4f46e5)' }}>
+            <div className="card p-4 bg-primary-soft border border-primary">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <p style={{ margin: 0, fontWeight: 600, color: 'var(--color-primary, #4f46e5)' }}>
+                  <p className="m-0 font-semibold text-primary">
                     Unlock full access
                   </p>
-                  <p className="text-sm" style={{ margin: 'var(--space-1) 0 0', color: 'var(--color-text-secondary)' }}>
+                  <p className="text-sm mt-1 text-text-secondary">
                     Sign up to browse all opportunities, save jobs, and track your applications.
                   </p>
                 </div>
@@ -151,29 +151,27 @@ export const JobListPage = () => {
 
       <section className="section-full">
         <div className="section-inner">
-          <div className="card section--mt" style={{ padding: 'var(--space-5)' }}>
-            <div className="filter-bar" style={{ flexWrap: 'wrap' }}>
+          <div className="card section--mt p-5">
+            <div className="filter-bar flex-wrap">
               {!preview && (
                 <>
                   <Tooltip content="Search by job title, company, or skills">
-                    <input
-                      className="input"
-                      type="search"
-                      placeholder="Search jobs, companies..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      style={{ flex: '1 1 240px' }}
-                    />
+                      <input
+                        className="input flex-[1_1_240px]"
+                        type="search"
+                        placeholder="Search jobs, companies..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                   </Tooltip>
                   <Tooltip content="Filter by location">
-                    <input
-                      className="input"
-                      type="text"
-                      placeholder="Location"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      style={{ flex: '1 1 160px' }}
-                    />
+                      <input
+                        className="input flex-[1_1_160px]"
+                        type="text"
+                        placeholder="Location"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
                   </Tooltip>
                 </>
               )}
@@ -219,14 +217,14 @@ export const JobListPage = () => {
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
-              <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+            <div className="flex justify-between items-center flex-wrap gap-2">
+              <span className="text-sm text-text-secondary">
                 {preview
                   ? `Previewing ${jobs.length} of ${total} opportunities`
                   : `Showing ${firstIndex}–${lastIndex} of ${total} results`}
               </span>
               {!preview && (
-                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                <div className="flex gap-2">
                   <Tooltip content="Refresh job listings">
                     <button className="btn btn--sm" onClick={() => reload()} disabled={loading}>
                       Refresh
@@ -253,46 +251,46 @@ export const JobListPage = () => {
                   const location = job.location || 'Remote';
                   return (
                     <article key={job.id} className={`list-item card--hover mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap', marginBottom: 'var(--space-1)' }}>
-                            <h3 className="list-item__title" style={{ margin: 0 }}>
-                              <Link to={`/jobs/${job.id}`} className="link-reset" style={{ color: 'inherit' }}>
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h3 className="list-item__title m-0">
+                              <Link to={`/jobs/${job.id}`} className="link-reset">
                                 {job.title}
                               </Link>
                             </h3>
                             {isExternal && (
-                              <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
+                              <span className="badge badge--external bg-info-soft text-info">
                                 External Listing
                               </span>
                             )}
                           </div>
-                          <div className="list-item__meta" style={{ flexWrap: 'wrap' }}>
+                          <div className="list-item__meta flex-wrap">
                             <span>{company}</span>
                             <span>{location}</span>
                             <Badge kind={resolveBadgeKind(job.type)}>
                               {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
                             </Badge>
                             {job.workplaceType && (
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>
+                              <span className="text-text-tertiary">
                                 {job.workplaceType === 'ONSITE' ? 'Work from office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : 'Remote'}
                               </span>
                             )}
                             {job.experienceLevel && (
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>
+                              <span className="text-text-tertiary">
                                 {job.experienceLevel.replace(/_/g, ' ').toLowerCase()}
                               </span>
                             )}
                             {salary && (
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>
+                              <span className="text-text-tertiary">
                                 {salary}
                               </span>
                             )}
-                            <span style={{ color: 'var(--color-text-muted)' }}>{formatTimeAgo(job.createdAt)}</span>
+                            <span className="text-text-muted">{formatTimeAgo(job.createdAt)}</span>
                           </div>
-                          {isExternal && job.sourceName && (
-                            <div style={{ marginTop: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                              <span>Source: <span style={{ fontWeight: 600 }}>{job.sourceName}</span></span>
+                            {isExternal && job.sourceName && (
+                              <div className="mt-2 text-sm text-text-secondary flex items-center gap-2 flex-wrap">
+                                <span>Source: <span className="font-semibold">{job.sourceName}</span></span>
                               {job.applicationUrl && (
                                 <Link to={job.applicationUrl} target="_blank" rel="noopener noreferrer" className="btn btn--sm btn--secondary" onClick={(e) => e.stopPropagation()}>
                                   Apply on Original Site
@@ -312,11 +310,11 @@ export const JobListPage = () => {
           </div>
 
           {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-2)', marginTop: 'var(--space-6)' }}>
+            <div className="flex justify-center gap-2 mt-6">
               <button className="btn btn--secondary" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
                 Previous
               </button>
-              <span style={{ alignSelf: 'center', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+              <span className="self-center text-sm text-text-secondary">
                 Page {page} of {totalPages}
               </span>
               <button className="btn btn--secondary" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>

@@ -1,4 +1,5 @@
 import { forwardRef, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { cn } from '../lib/utils';
 
 type FormFieldProps = {
   label: string;
@@ -15,6 +16,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
   success?: string;
   hint?: string;
+  iconRight?: React.ReactNode;
 };
 
 type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -33,66 +35,63 @@ type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 };
 
 export const FormField = ({ label, id, error, success, hint, required, children }: FormFieldProps) => {
-  const errorId = `${id}-error`;
-  const successId = `${id}-success`;
-  const hintId = `${id}-hint`;
   return (
-    <div className="form-group">
-      <label className="form-label" htmlFor={id}>
+    <div className="space-y-1.5">
+      <label className="block text-sm font-medium text-text" htmlFor={id}>
         {label}
-        {required && <span className="required" aria-hidden="true"> *</span>}
+        {required && <span className="ml-0.5 text-danger" aria-hidden="true">*</span>}
       </label>
       {children}
-      {error && <div id={errorId} className="form-error" role="alert">{error}</div>}
-      {success && !error && <div id={successId} className="form-success" role="status">{success}</div>}
-      {hint && !error && !success && <div id={hintId} className="form-hint">{hint}</div>}
+      {error && <p id={`${id}-error`} className="text-sm text-danger" role="alert">{error}</p>}
+      {success && !error && <p id={`${id}-success`} className="text-sm text-success" role="status">{success}</p>}
+      {hint && !error && !success && <p id={`${id}-hint`} className="text-sm text-text-tertiary">{hint}</p>}
     </div>
   );
 };
 
-export const FormInput = forwardRef<HTMLInputElement, InputProps>(({ label, id, error, success, hint, required, className = '', ...rest }, ref) => {
+export const FormInput = forwardRef<HTMLInputElement, InputProps>(({ label, id, error, success, hint, required, className = '', iconRight, ...rest }, ref) => {
   const inputId = id || rest.name || label.toLowerCase().replace(/\s+/g, '-');
-  const errorId = `${inputId}-error`;
-  const successId = `${inputId}-success`;
-  const hintId = `${inputId}-hint`;
-  const describeId = [
-    error ? errorId : undefined,
-    success ? successId : undefined,
-    hint && !error && !success ? hintId : undefined,
-  ].filter(Boolean).join(' ') || undefined;
   return (
     <FormField label={label} id={inputId} error={error} success={success} hint={hint} required={required}>
-      <input
-        id={inputId}
-        className={`input ${error ? 'is-error' : ''} ${success ? 'is-success' : ''} ${className}`}
-        required={required}
-        aria-invalid={!!error}
-        aria-describedby={describeId}
-        ref={ref}
-        {...rest}
-      />
+      <div className="relative">
+        <input
+          id={inputId}
+          className={cn(
+            'flex h-10 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            iconRight && 'pr-10',
+            error && 'border-danger focus-visible:ring-danger',
+            success && 'border-success focus-visible:ring-success',
+            className
+          )}
+          required={required}
+          aria-invalid={!!error}
+          ref={ref}
+          {...rest}
+        />
+        {iconRight && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            {iconRight}
+          </div>
+        )}
+      </div>
     </FormField>
   );
 });
 
 export const FormTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ label, id, error, success, hint, required, className = '', ...rest }, ref) => {
   const inputId = id || rest.name || label.toLowerCase().replace(/\s+/g, '-');
-  const errorId = `${inputId}-error`;
-  const successId = `${inputId}-success`;
-  const hintId = `${inputId}-hint`;
-  const describeId = [
-    error ? errorId : undefined,
-    success ? successId : undefined,
-    hint && !error && !success ? hintId : undefined,
-  ].filter(Boolean).join(' ') || undefined;
   return (
     <FormField label={label} id={inputId} error={error} success={success} hint={hint} required={required}>
       <textarea
         id={inputId}
-        className={`textarea ${error ? 'is-error' : ''} ${success ? 'is-success' : ''} ${className}`}
+        className={cn(
+          'flex min-h-[80px] w-full rounded-md border border-border bg-surface px-3 py-2 text-sm transition-colors placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          error && 'border-danger focus-visible:ring-danger',
+          success && 'border-success focus-visible:ring-success',
+          className
+        )}
         required={required}
         aria-invalid={!!error}
-        aria-describedby={describeId}
         ref={ref}
         {...rest}
       />
@@ -102,22 +101,18 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ la
 
 export const FormSelect = forwardRef<HTMLSelectElement, SelectProps>(({ label, id, error, success, hint, required, options, className = '', ...rest }, ref) => {
   const selectId = id || rest.name || label.toLowerCase().replace(/\s+/g, '-');
-  const errorId = `${selectId}-error`;
-  const successId = `${selectId}-success`;
-  const hintId = `${selectId}-hint`;
-  const describeId = [
-    error ? errorId : undefined,
-    success ? successId : undefined,
-    hint && !error && !success ? hintId : undefined,
-  ].filter(Boolean).join(' ') || undefined;
   return (
     <FormField label={label} id={selectId} error={error} success={success} hint={hint} required={required}>
       <select
         id={selectId}
-        className={`select ${error ? 'is-error' : ''} ${success ? 'is-success' : ''} ${className}`}
+        className={cn(
+          'flex h-9 w-full rounded-md border border-border bg-surface px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          error && 'border-danger focus-visible:ring-danger',
+          success && 'border-success focus-visible:ring-success',
+          className
+        )}
         required={required}
         aria-invalid={!!error}
-        aria-describedby={describeId}
         ref={ref}
         {...rest}
       >

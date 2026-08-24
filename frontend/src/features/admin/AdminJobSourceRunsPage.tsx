@@ -31,7 +31,7 @@ export const AdminJobSourceRunsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Ingestion Runs</h1>
-      <p className="text-secondary text-sm" style={{ marginBottom: '1rem' }}>Source ID: {id}</p>
+      <p className="text-secondary text-sm mb-4">Source ID: {id}</p>
 
       <AdminListPage
         items={runs}
@@ -56,7 +56,7 @@ export const AdminJobSourceRunsPage = () => {
               </div>
             </div>
              {run.errors && Object.keys(run.errors).length > 0 && (
-              <div className="message message--error" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+               <div className="message message--error mt-2 text-sm">
                 <strong>Errors:</strong> {JSON.stringify(run.errors)}
               </div>
             )}

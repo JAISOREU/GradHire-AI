@@ -10,7 +10,7 @@ export const Skeleton = ({ lines = 3, className = '', variant = 'text' }: Skelet
       <div className={`skeleton-card ${className}`}>
         <div className="skeleton skeleton-text skeleton-card__title" />
         <div className="skeleton skeleton-text skeleton-card__body" />
-        <div className="skeleton skeleton-text skeleton-card__body" style={{ width: '90%' }} />
+        <div className="skeleton skeleton-text skeleton-card__body w-[90%]" />
         <div className="skeleton skeleton-text skeleton-card__body--short" />
       </div>
     );
@@ -31,14 +31,13 @@ export const Skeleton = ({ lines = 3, className = '', variant = 'text' }: Skelet
   }
 
   return (
-    <div className={`skeleton skeleton-text ${className}`} style={{ display: 'grid', gap: '0.75rem' }}>
+    <div className={`skeleton skeleton-text grid gap-3 ${className}`}>
       {Array.from({ length: lines }).map((_, index) => (
         <div
           key={index}
-          className="skeleton skeleton-text"
+          className="skeleton skeleton-text h-4"
           style={{
             width: `${Math.max(30, 100 - index * 15)}%`,
-            height: '1rem',
           }}
         />
       ))}

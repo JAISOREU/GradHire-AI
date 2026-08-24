@@ -153,18 +153,18 @@ export const StudentDashboardPage = () => {
             <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
           )
         ) : (
-          <div className="card" style={{ padding: '1rem' }}>
+          <div className="card p-4">
             <EmptyState
               icon="🎯"
               title="Complete your profile to receive personalized job recommendations"
               text="Add your education, skills, and experience so we can match you with the right opportunities."
             />
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="mt-4 flex flex-col gap-2">
               {(aiReadiness?.missing ?? []).map((key: string) => {
                 const link = missingSectionLinks[key];
                 if (!link) return null;
                 return (
-                  <Link key={key} to={link.to} style={{ alignSelf: 'flex-start', textDecoration: 'none' }}>
+                  <Link key={key} to={link.to} className="self-start no-underline">
                     <Button variant="secondary" size="sm">{link.label}</Button>
                   </Link>
                 );

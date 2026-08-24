@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, lazy, Suspense } from 'react';
 import { Button } from '../../components/Button';
 import { Icon } from '../../components/Icon';
 import { AnimatedLogo } from '../../components/AnimatedLogo';
-import { HeroVisual } from './visuals/HeroVisual';
 import { FEATURES, FeatureSlide } from './WhyGradture';
-import { HowItWorks } from './HowItWorks';
 import { SiteFooter } from '../../layouts/SiteFooter';
 import { LandingPresentation, PresentationSlide } from './LandingPresentation';
 import { useAuth } from '../../core/auth/AuthContext';
+
+const HeroVisual = lazy(() => import('./visuals/HeroVisual').then((m) => ({ default: m.HeroVisual })));
+const HowItWorks = lazy(() => import('./HowItWorks').then((m) => ({ default: m.HowItWorks })));
 
 const HERO_INDICATORS = [
   'Smart matching',
@@ -50,7 +51,9 @@ const HeroNode = () => {
           </div>
         </div>
         <div className="hero-visual-wrap hero-anim hero-anim--visual">
-          <HeroVisual />
+          <Suspense fallback={<div className="hero-visual-placeholder" aria-hidden="true" />}>
+            <HeroVisual />
+          </Suspense>
         </div>
       </div>
     </React.Fragment>
@@ -86,7 +89,9 @@ const CtaNode = () => {
         <span className="cta-footer-divider__mark">{'\u2726'}</span>
         <span className="cta-footer-divider__line" />
       </div>
-      <SiteFooter />
+      <Suspense fallback={<div className="h-24" aria-hidden="true" />}>
+        <SiteFooter />
+      </Suspense>
     </div>
   );
 };
@@ -110,7 +115,11 @@ export const HomePage = () => {
         id: 'how-it-works',
         label: 'How it works',
         scrollable: true,
-        node: <HowItWorks />,
+        node: (
+          <Suspense fallback={<div className="h-64 flex items-center justify-center" aria-hidden="true" />}>
+            <HowItWorks />
+          </Suspense>
+        ),
       },
       {
         id: 'cta',

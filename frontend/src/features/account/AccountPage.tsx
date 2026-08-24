@@ -535,7 +535,7 @@ function SkillsSection({ userId: _userId, onSectionClick }: { userId: string; on
       {loading ? <Skeleton variant="table" lines={3} /> : (
         <div className="flex flex-wrap gap-2">
           {items.map((skill) => (
-            <span key={skill.id} className="badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span key={skill.id} className="badge inline-flex items-center gap-2">
               {skill.name} {skill.level && <span className="text-xs opacity-75">({skill.level})</span>}
               <button onClick={() => remove(skill.id)} className="text-danger hover:underline text-xs">×</button>
             </span>
@@ -1407,7 +1407,7 @@ export const AccountPage = () => {
                 { to: '/admin/audit-logs', label: 'Audit logs', icon: 'security' },
                 { to: '/admin/settings', label: 'Settings', icon: 'settings' },
               ].map((item) => (
-                <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3 no-underline text-inherit">
                   <Icon name={item.icon as any} size={18} />
                   <span className="text-sm font-medium">{item.label}</span>
                   <Icon name="chevron-right" size={16} className="ml-auto text-muted" />

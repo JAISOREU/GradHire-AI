@@ -3,7 +3,7 @@ import type { AuthUser } from '../core/types';
 import { Button } from './Button';
 import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Avatar } from './Avatar';
 
 type HeaderProps = {
@@ -124,10 +124,10 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
         </div>
 
         <nav className="public-nav" aria-label="Primary" style={navStyle}>
-          <Link to="/">Home</Link>
-          <Link to="/jobs">Jobs</Link>
-          <Link to="/companies">Companies</Link>
-          <Link to="/about">About</Link>
+          <NavLink to="/" end className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
+          <NavLink to="/jobs" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Jobs</NavLink>
+          <NavLink to="/companies" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Companies</NavLink>
+          <NavLink to="/about" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>About</NavLink>
         </nav>
 
         {user ? (

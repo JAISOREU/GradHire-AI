@@ -2,10 +2,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
-import { ThemeBackground } from '../../components/ThemeBackground';
+import { AuthLayout } from '../../components/AuthLayout';
 import { roleHomePath } from '../../core/utils/navigation';
 import { useFormValidation } from '../../core/hooks/useFormValidation';
 import { z } from 'zod';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 const loginSchema = z.object({
@@ -19,6 +20,7 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const { values, errors, touched, isSubmitting, formError, handleChange, handleBlur, handleSubmit } = useFormValidation({
     schema: loginSchema,
     initialValues: { email: '', password: '' },
@@ -29,31 +31,94 @@ export const LoginPage = () => {
   });
 
   return (
-    <div className="auth-page fade-in">
-      <ThemeBackground />
-      <div className="auth-card">
-        <div className="auth-card__header">
-          <h2>Welcome back</h2>
-          <p className="card__subtitle">Sign in to your Gradture account.</p>
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Sign in to your Gradture account."
+      footer={
+        <>
+          Don&apos;t have an account? <Link to="/register">Create one</Link>
+        </>
+      }
+    >
+      {isSubmitting ? (
+        <div className="stack mt-4 space-y-4">
+          <div className="space-y-2">
+            <div className="skeleton skeleton-text w-[30%] h-3.5" />
+            <div className="skeleton skeleton-text w-full h-10" />
+          </div>
+          <div className="space-y-2">
+            <div className="skeleton skeleton-text w-[30%] h-3.5" />
+            <div className="skeleton skeleton-text w-full h-10" />
+          </div>
+          <div className="skeleton skeleton-text w-full h-10" />
         </div>
+      ) : (
         <form onSubmit={handleSubmit} className="stack mt-4">
-          <FormInput label="Email" id="login-email" type="email" required value={values.email} onChange={(e) => handleChange('email', e.target.value)} onBlur={() => handleBlur('email')} placeholder="you@example.com" error={touched.email ? errors.email : undefined} />
-          <div style={{ position: 'relative' }}>
-            <FormInput label="Password" id="login-password" type={showPassword ? 'text' : 'password'} required value={values.password} onChange={(e) => handleChange('password', e.target.value)} onBlur={() => handleBlur('password')} placeholder="Your password" error={touched.password ? errors.password : undefined} />
-            <button type="button" onClick={() => setShowPassword((prev) => !prev)} style={{ position: 'absolute', right: '0.5rem', top: '2.65rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
+          <FormInput
+            label="Email"
+            id="login-email"
+            type="email"
+            autoComplete="email"
+            required
+            value={values.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            onBlur={() => handleBlur('email')}
+            placeholder="you@example.com"
+            error={touched.email ? errors.email : undefined}
+          />
+          <div>
+          <FormInput
+            label="Password"
+            id="login-password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            required
+            value={values.password}
+            onChange={(e) => handleChange('password', e.target.value)}
+            onBlur={() => handleBlur('password')}
+            placeholder="Your password"
+            error={touched.password ? errors.password : undefined}
+            iconRight={
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="pointer-events-auto"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            }
+          />
           </div>
           {formError && <div className="message message--error" role="alert">{formError}</div>}
           <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+              />
+              Remember me
+            </label>
             <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Signing in…' : 'Sign in'}</Button>
+          </div>
+          <div className="text-right">
             <Link to="/forgot-password" className="text-sm text-secondary hover:text-primary">Forgot password?</Link>
           </div>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-surface px-2 text-text-tertiary">Or continue with</span>
+            </div>
+          </div>
+          <Button type="button" variant="secondary" className="w-full" disabled={isSubmitting}>
+            <span className="font-medium">GitHub</span>
+          </Button>
         </form>
-        <p className="auth-card__foot">
-          Don&apos;t have an account? <Link to="/register">Create one</Link>
-        </p>
-      </div>
-    </div>
+      )}
+    </AuthLayout>
   );
 };

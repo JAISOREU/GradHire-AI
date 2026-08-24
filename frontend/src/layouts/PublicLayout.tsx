@@ -147,7 +147,7 @@ export const PublicLayout = () => {
       <SkipLink />
       {!isHome && <header ref={headerRef} className={headerClassName} style={headerStyle}>
         <div className="app-header__inner" style={innerStyle}>
-          <Link to={homeRoute} className="brand" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', ...brandStyle }}>
+          <Link to={homeRoute} className="brand inline-flex items-center no-underline text-inherit" style={brandStyle}>
             <span className="header-logo__mark" aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />

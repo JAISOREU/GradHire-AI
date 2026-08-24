@@ -75,7 +75,7 @@ export const StudentRecommendedJobsPage = () => {
       )}
 
       {fallback && ready && (
-        <div className="alert alert--info" style={{ marginBottom: '1rem' }}>
+        <div className="alert alert--info mb-4">
           Recommendations are based on profile matching. enrichment will be applied when available.
         </div>
       )}
@@ -101,12 +101,12 @@ export const StudentRecommendedJobsPage = () => {
                 </div>
               </div>
               {(job.matchReasons.length > 0 || job.matchedSkills.length > 0) && (
-                <div style={{ marginTop: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div className="mt-3 flex flex-wrap gap-2">
                   {job.matchedSkills.slice(0, 4).map((skill) => (
-                    <span key={skill} className="badge badge--primary" style={{ fontSize: '0.75rem' }}>{skill}</span>
+                    <span key={skill} className="badge badge--primary text-xs">{skill}</span>
                   ))}
                   {job.matchReasons.slice(0, 2).map((reason, idx) => (
-                    <span key={idx} style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{reason}</span>
+                    <span key={idx} className="text-xs text-text-secondary">{reason}</span>
                   ))}
                 </div>
               )}
@@ -117,14 +117,14 @@ export const StudentRecommendedJobsPage = () => {
             icon="✨"
             title="No recommendations yet"
             text="We could not find matching roles right now. Try broadening your profile or check back later."
-            action={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <Link to="/student/account"><Button size="sm">Update profile</Button></Link>
-                <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing || aiLoading}>
-                  {refreshing ? 'Refreshing…' : 'Try again'}
-                </Button>
-              </div>
-            }
+              action={
+                <div className="flex flex-col gap-2">
+                  <Link to="/student/account"><Button size="sm">Update profile</Button></Link>
+                  <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing || aiLoading}>
+                    {refreshing ? 'Refreshing…' : 'Try again'}
+                  </Button>
+                </div>
+              }
           />
         ) : (
           <div className="card section--mt">
@@ -133,12 +133,12 @@ export const StudentRecommendedJobsPage = () => {
               title="Complete your profile to receive personalized job recommendations"
               text="Add your education, skills, and experience so we can match you with the right opportunities."
             />
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="mt-4 flex flex-col gap-2">
               {missing.map((key) => {
                 const link = missingSectionLinks[key];
                 if (!link) return null;
                 return (
-                  <Link key={key} to={link.to} style={{ alignSelf: 'flex-start', textDecoration: 'none' }}>
+                  <Link key={key} to={link.to} className="self-start no-underline">
                     <Button variant="secondary" size="sm">{link.label}</Button>
                   </Link>
                 );

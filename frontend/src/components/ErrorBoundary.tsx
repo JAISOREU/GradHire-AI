@@ -38,13 +38,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback;
       }
       return (
-        <div className="page fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem' }}>
-          <h1 style={{ fontSize: '2rem' }}>Something went wrong</h1>
+        <div className="page fade-in flex flex-col items-center justify-center min-h-screen gap-4">
+          <h1 className="text-4xl font-bold">Something went wrong</h1>
           <p className="card__subtitle">An unexpected error occurred. Please refresh the page.</p>
           <button className="btn btn--primary" onClick={() => this.setState({ hasError: false, error: null })}>
             Try again
           </button>
-          <pre style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', maxWidth: '600px', overflow: 'auto' }}>
+          <pre className="text-xs text-faint max-w-[600px] overflow-auto">
             {this.state.error?.message}
           </pre>
         </div>

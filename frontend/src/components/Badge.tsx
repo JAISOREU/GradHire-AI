@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
+import { cn } from '../lib/utils';
 
 export type BadgeKind = 'hiring' | 'internship' | 'applied' | 'withdrawn' | 'open' | 'closed' | 'archived' | 'external' | 'muted';
 
@@ -33,6 +34,18 @@ const KIND_ICONS: Record<BadgeKind, string> = {
   muted: 'help',
 };
 
+const KIND_STYLES: Record<BadgeKind, string> = {
+  hiring: 'bg-success-soft text-success border-success/20',
+  internship: 'bg-warning-soft text-warning border-warning/20',
+  applied: 'bg-info-soft text-info border-info/20',
+  withdrawn: 'bg-surface-muted text-text-tertiary border-border',
+  open: 'bg-success-soft text-success border-success/20',
+  closed: 'bg-danger-soft text-danger border-danger/20',
+  archived: 'bg-surface-muted text-text-tertiary border-border',
+  external: 'bg-info-soft text-info border-info/20',
+  muted: 'bg-surface-muted text-text-secondary border-border',
+};
+
 /** Resolve a badge kind from a raw status/type string. */
 export const resolveBadgeKind = (value?: string): BadgeKind => {
   const v = value?.toLowerCase() ?? '';
@@ -46,8 +59,8 @@ export const resolveBadgeKind = (value?: string): BadgeKind => {
 };
 
 export const Badge = ({ kind, children, icon }: BadgeProps) => (
-  <span className={`badge badge--${kind}`} role="status">
-    <span className="badge__icon" aria-hidden="true">
+  <span className={cn('inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium', KIND_STYLES[kind])} role="status">
+    <span className="flex-shrink-0" aria-hidden="true">
       {icon || <Icon name={KIND_ICONS[kind] as any} size={12} />}
     </span>
     <span>{children ?? KIND_LABELS[kind]}</span>

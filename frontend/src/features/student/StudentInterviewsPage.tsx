@@ -54,7 +54,7 @@ export const StudentInterviewsPage = () => {
                   {inv.location && <p className="card__subtitle section--mt">Location: {inv.location}</p>}
                   {inv.meetingLink && (
                     <Tooltip content="Join the interview meeting">
-                      <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                      <a href={inv.meetingLink} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm section--mt no-underline inline-block">
                         Join meeting
                       </a>
                     </Tooltip>
@@ -63,7 +63,7 @@ export const StudentInterviewsPage = () => {
                 </article>
               ))}
             </div>
-            <div className="flex items-center justify-between section--mt" style={{ gap: 'var(--space-2)' }}>
+            <div className="flex items-center justify-between section--mt gap-2">
               <span className="text-sm text-secondary">Page {page} of {totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="secondary" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>Previous</Button>

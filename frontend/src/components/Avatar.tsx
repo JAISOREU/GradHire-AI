@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { cn } from '../lib/utils';
 
 type AvatarProps = {
   src?: string;
@@ -34,6 +35,14 @@ function resolveAvatarSrc(src?: string, userId?: string): string | undefined {
   return src;
 }
 
+const SIZE_CLASSES: Record<string, string> = {
+  xs: 'h-6 w-6 text-xs',
+  sm: 'h-8 w-8 text-sm',
+  md: 'h-10 w-10 text-sm',
+  lg: 'h-12 w-12 text-base',
+  xl: 'h-16 w-16 text-lg',
+};
+
 export const Avatar = ({ src, alt = '', name, initials, size = 'md', userId, className = '' }: AvatarProps) => {
   const computedInitials = useMemo(() => getInitials(name, initials), [name, initials]);
   const [failed, setFailed] = useState(false);
@@ -49,12 +58,12 @@ export const Avatar = ({ src, alt = '', name, initials, size = 'md', userId, cla
 
   return (
     <div
-      className={`avatar avatar--${size} ${showFallback ? 'avatar--fallback' : ''} ${className}`}
+      className={cn('overflow-hidden rounded-full bg-surface-muted', SIZE_CLASSES[size], showFallback && 'flex items-center justify-center text-white', className)}
       style={fallbackStyle}
       aria-label={alt || computedInitials}
     >
-      {!showFallback && <img src={resolvedSrc} alt={alt} onError={() => setFailed(true)} />}
-      {showFallback && <span>{computedInitials}</span>}
+      {!showFallback && <img src={resolvedSrc} alt={alt} onError={() => setFailed(true)} className="h-full w-full object-cover" />}
+      {showFallback && <span className="font-medium">{computedInitials}</span>}
     </div>
   );
 };

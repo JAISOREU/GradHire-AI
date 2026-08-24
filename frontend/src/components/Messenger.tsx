@@ -187,7 +187,7 @@ export const Messenger = ({
       <div className="messenger__sidebar">
         <div className="messenger__sidebar-header">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-secondary uppercase tracking-wide" style={{ margin: 0 }}>
+            <h2 className="text-sm font-semibold text-secondary uppercase tracking-wide m-0">
               Messages
             </h2>
             <Button
@@ -200,7 +200,7 @@ export const Messenger = ({
             </Button>
           </div>
           {showNewMessage && (
-            <div className="mt-2 p-2 border rounded" style={{ background: 'var(--color-surface-muted)' }}>
+            <div className="mt-2 p-2 border rounded bg-surface-muted">
               <FormInput
                 label="To"
                 value={newRecipient}
@@ -214,31 +214,26 @@ export const Messenger = ({
                 size="sm"
                 onClick={handleNewConversation}
                 disabled={!newRecipient.trim() || loadingRecipients}
-                style={{ width: '100%' }}
+                className="w-full"
               >
                 {loadingRecipients ? 'Searching…' : 'Search'}
               </Button>
               {recipients && recipients.length > 0 && (
-                <div className="mt-2" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                <div className="mt-2 max-h-48 overflow-y-auto">
                   {recipients.map((r) => (
-                    <button
-                      key={r.id}
-                      type="button"
-                      className="w-full text-left p-2 rounded cursor-pointer border-0"
-                      style={{
-                        background: 'transparent',
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--color-text)',
-                      }}
-                      onClick={() => handleSelectRecipient(r.id)}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'var(--color-surface-hover)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                      }}
+                      <button
+                        key={r.id}
+                        type="button"
+                        className="w-full text-left p-2 rounded cursor-pointer border-0 bg-transparent text-sm text-text"
+                        onClick={() => handleSelectRecipient(r.id)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'var(--color-surface-hover)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent';
+                        }}
                     >
-                      <div style={{ fontWeight: 600 }}>{r.name}</div>
+                      <div className="font-semibold">{r.name}</div>
                     </button>
                   ))}
                 </div>
@@ -247,11 +242,10 @@ export const Messenger = ({
           )}
           <input
             type="search"
-            className="input mt-2"
+            className="input mt-2 w-full"
             placeholder={searchPlaceholder}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            style={{ width: '100%' }}
           />
         </div>
 
@@ -277,21 +271,16 @@ export const Messenger = ({
                 <div className="messenger__avatar">
                   {convo.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="messenger__conversation-body" style={{ minWidth: 0 }}>
+                <div className="messenger__conversation-body min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span className="font-medium text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                       {convo.name}
                     </span>
-                    <span className="text-xs text-faint" style={{ flexShrink: 0, marginLeft: 'var(--space-2)' }}>
+                    <span className="text-xs text-faint flex-shrink-0 ml-2">
                       {formatTime(convo.lastMessageAt)}
                     </span>
                   </div>
-                  <div className="text-sm text-tertiary" style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    marginTop: '2px'
-                  }}>
+                  <div className="text-sm text-tertiary overflow-hidden text-ellipsis whitespace-nowrap mt-0.5">
                     {convo.lastMessage}
                   </div>
                 </div>
@@ -311,11 +300,11 @@ export const Messenger = ({
           <>
             <div className="messenger__chat-header">
               <div className="flex items-center gap-2">
-                <div className="messenger__avatar" style={{ width: '32px', height: '32px', fontSize: 'var(--text-sm)' }}>
+                <div className="messenger__avatar w-8 h-8 text-sm">
                   {selectedConvo.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{selectedConvo.name}</div>
+                  <div className="font-semibold text-sm">{selectedConvo.name}</div>
                 </div>
               </div>
             </div>

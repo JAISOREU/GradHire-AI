@@ -70,10 +70,10 @@ export const JobDetailPage = () => {
           <div className="card section--mt">
         <PageHeader
           title={
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+            <div className="flex items-center gap-3 flex-wrap">
               <span>{job.title}</span>
               {isExternal && (
-                <span className="badge badge--external" style={{ background: 'var(--color-info-soft)', color: 'var(--color-info)' }}>
+                <span className="badge badge--external bg-info-soft text-info">
                   External Listing
                 </span>
               )}
@@ -119,7 +119,7 @@ export const JobDetailPage = () => {
           </div>
         </div>
 
-        <div className="section--mt" style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+        <div className="section--mt flex gap-3 flex-wrap">
           {isExternal && job.applicationUrl ? (
             <Tooltip content="Apply directly on the company website">
               <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
@@ -152,28 +152,28 @@ export const JobDetailPage = () => {
       {job.description && (
         <div className="card section--mt">
           <h3 className="card__title">Overview</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.description)}</div>
+          <div className="card__subtitle whitespace-pre-wrap">{cleanText(job.description)}</div>
         </div>
       )}
 
       {(job.responsibilities ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Responsibilities</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.responsibilities)}</div>
+          <div className="card__subtitle whitespace-pre-wrap">{cleanText(job.responsibilities)}</div>
         </div>
       )}
 
       {(job.requiredQualifications ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Requirements</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.requiredQualifications)}</div>
+          <div className="card__subtitle whitespace-pre-wrap">{cleanText(job.requiredQualifications)}</div>
         </div>
       )}
 
       {(job.preferredQualifications ?? '').trim() && (
         <div className="card section--mt">
           <h3 className="card__title">Preferred Qualifications</h3>
-          <div className="card__subtitle" style={{ whiteSpace: 'pre-wrap' }}>{cleanText(job.preferredQualifications)}</div>
+          <div className="card__subtitle whitespace-pre-wrap">{cleanText(job.preferredQualifications)}</div>
         </div>
       )}
 
@@ -202,9 +202,9 @@ export const JobDetailPage = () => {
       {(job.benefits ?? []).length > 0 && (
         <div className="card section--mt">
           <h3 className="card__title">Benefits</h3>
-          <ul style={{ paddingLeft: 'var(--space-5)', margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <ul className="pl-5 m-0 flex flex-col gap-2">
             {job.benefits!.map((benefit) => (
-              <li key={benefit.id} style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{benefit.name}</li>
+              <li key={benefit.id} className="text-sm text-text-secondary">{benefit.name}</li>
             ))}
           </ul>
         </div>
@@ -220,8 +220,8 @@ export const JobDetailPage = () => {
       {isExternal && (
         <div className="card section--mt">
           <h3 className="card__title">Original Posting</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <span style={{ color: 'var(--color-text-secondary)' }}>
+          <div className="flex flex-col gap-2">
+            <span className="text-text-secondary">
               {job.sourceName || 'External source'}
             </span>
             {job.sourceUrl && (

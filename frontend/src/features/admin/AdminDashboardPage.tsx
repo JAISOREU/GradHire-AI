@@ -18,8 +18,8 @@ export const AdminDashboardPage = () => {
         <div className="status-strip status-strip--4 section--mt">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="stat-card">
-              <div className="skeleton skeleton-text" style={{ width: '60%', height: '0.875rem' }} />
-              <div className="skeleton skeleton-text" style={{ width: '40%', height: '1.5rem', marginTop: '0.5rem' }} />
+              <div className="skeleton skeleton-text w-[60%] h-3.5" />
+              <div className="skeleton skeleton-text w-[40%] h-6 mt-2" />
             </div>
           ))}
         </div>
@@ -94,7 +94,7 @@ export const AdminDashboardPage = () => {
         subtitle="Common admin tasks."
         className="section--mt"
       >
-        <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+        <div className="flex gap-3 flex-wrap">
           <Link to="/admin/users"><Button variant="secondary">Manage users</Button></Link>
           <Link to="/admin/jobs"><Button variant="secondary">Review jobs</Button></Link>
           <Link to="/admin/applications"><Button variant="secondary">View applications</Button></Link>

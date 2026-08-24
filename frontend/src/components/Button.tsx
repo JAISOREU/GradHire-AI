@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { cn } from '../lib/utils';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'lg' | 'md' | 'sm';
@@ -15,15 +16,28 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const Button = ({ variant = 'primary', size = 'md', loading = false, icon, iconRight, to, className = '', children, disabled, ...rest }: ButtonProps) => {
-  const classes = `btn btn--${variant} btn--${size} ${className}`.trim();
+  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-[1px]';
+  const variantClasses: Record<Variant, string> = {
+    primary: 'bg-primary text-primary-text hover:bg-primary-hover',
+    secondary: 'bg-surface border border-border text-text hover:bg-surface-muted',
+    ghost: 'text-text hover:bg-surface-muted',
+    danger: 'bg-danger text-white hover:bg-danger/90',
+  };
+  const sizeClasses: Record<Size, string> = {
+    lg: 'min-h-[3rem] px-6 text-base rounded-md',
+    md: 'min-h-[2.75rem] px-4 text-sm rounded-md',
+    sm: 'min-h-[2.25rem] px-3 text-xs rounded-md',
+  };
+
+  const classes = cn(baseClasses, variantClasses[variant], sizeClasses[size], className);
 
   if (to && !loading) {
     return (
       <Link to={to} className={classes} {...rest as any}>
-        <span className="btn__content">
-          {icon && <span className="btn__icon btn__icon--left" aria-hidden="true">{icon}</span>}
-          <span className="btn__label">{children}</span>
-          {iconRight && <span className="btn__icon btn__icon--right" aria-hidden="true">{iconRight}</span>}
+        <span className="flex items-center gap-2">
+          {icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
+          <span>{children}</span>
+          {iconRight && <span className="flex-shrink-0" aria-hidden="true">{iconRight}</span>}
         </span>
       </Link>
     );
@@ -31,11 +45,11 @@ export const Button = ({ variant = 'primary', size = 'md', loading = false, icon
 
   return (
     <button className={classes} disabled={disabled || loading} {...rest}>
-      <span className="btn__content">
-        {loading && <span className="spinner spinner--sm" aria-hidden="true" />}
-        {!loading && icon && <span className="btn__icon btn__icon--left" aria-hidden="true">{icon}</span>}
-        <span className="btn__label" style={{ opacity: loading ? 0.7 : 1 }}>{children}</span>
-        {!loading && iconRight && <span className="btn__icon btn__icon--right" aria-hidden="true">{iconRight}</span>}
+      <span className="flex items-center gap-2">
+        {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />}
+        {!loading && icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
+        <span className={cn('flex items-center gap-2', loading && 'opacity-70')}>{children}</span>
+        {!loading && iconRight && <span className="flex-shrink-0" aria-hidden="true">{iconRight}</span>}
       </span>
     </button>
   );

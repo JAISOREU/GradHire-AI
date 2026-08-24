@@ -66,17 +66,16 @@ export const StudentCompaniesPage = () => {
         title="Explore companies"
         subtitle="Discover organizations hiring on Gradture."
         action={
-          <input
-            type="search"
-            className="input"
-            placeholder="Search companies…"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: '16rem' }}
-          />
+           <input
+             type="search"
+             className="input w-40"
+             placeholder="Search companies…"
+             value={search}
+             onChange={(e) => {
+               setSearch(e.target.value);
+               setPage(1);
+             }}
+           />
         }
       />
 
@@ -91,18 +90,18 @@ export const StudentCompaniesPage = () => {
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="card card--spacious">
-              <div className="skeleton" style={{ height: '1.5rem', width: '70%', marginBottom: '0.75rem' }} />
-              <div className="skeleton" style={{ height: '1rem', width: '40%', marginBottom: '0.5rem' }} />
-              <div className="skeleton" style={{ height: '1rem', width: '50%' }} />
+              <div className="skeleton h-6 w-[70%] mb-3" />
+              <div className="skeleton h-4 w-[40%] mb-2" />
+              <div className="skeleton h-4 w-[50%]" />
             </div>
           ))
         ) : visibleCompanies.length > 0 ? (
           visibleCompanies.map((company) => (
-            <div key={company.id} className="card card--spacious" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <Link to={`/companies/${company.id}`} className="link-reset" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div key={company.id} className="card card--spacious flex flex-col gap-3">
+              <Link to={`/companies/${company.id}`} className="link-reset no-underline text-inherit">
                 <div>
-                  <h3 className="list-item__title" style={{ marginBottom: '0.5rem' }}>{company.name}</h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', alignItems: 'center' }}>
+                  <h3 className="list-item__title mb-2">{company.name}</h3>
+                  <div className="flex flex-wrap gap-2 mb-3 items-center">
                     {company.industry && (
                       <span className="badge badge--primary">{company.industry}</span>
                     )}
@@ -111,13 +110,13 @@ export const StudentCompaniesPage = () => {
                     )}
                   </div>
                   {company.description && (
-                    <p className="text-sm text-secondary" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                     <p className="text-sm text-secondary line-clamp-2">
                       {company.description}
                     </p>
                   )}
                 </div>
               </Link>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+              <div className="flex justify-between items-center mt-auto">
                 <span className="text-xs text-faint">
                   {followed.has(company.id) ? 'Following' : 'Not following'}
                 </span>
@@ -134,7 +133,7 @@ export const StudentCompaniesPage = () => {
             </div>
           ))
         ) : (
-          <div style={{ gridColumn: '1 / -1' }}>
+          <div className="col-span-full">
             <EmptyState
               icon="🏢"
               title="No companies found"
@@ -145,7 +144,7 @@ export const StudentCompaniesPage = () => {
       </div>
 
       {!loading && hasMore && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+        <div className="flex justify-center mt-8">
           <Button variant="secondary" onClick={() => setPage((p) => p + 1)}>
             Load more
           </Button>

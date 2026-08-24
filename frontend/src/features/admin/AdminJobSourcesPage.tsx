@@ -158,7 +158,7 @@ export const AdminJobSourcesPage = () => {
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Job Sources</h1>
 
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
+      <div className="mb-4 flex gap-2">
         <Button variant={showForm ? 'secondary' : 'primary'} onClick={() => { resetForm(); setShowForm(!showForm); }}>
           {showForm ? 'Cancel' : 'Add Job Source'}
         </Button>
@@ -168,24 +168,24 @@ export const AdminJobSourcesPage = () => {
       </div>
 
       {showForm && (
-        <div className="card" style={{ marginBottom: '1rem', padding: '1rem' }}>
-          <div style={{ display: 'grid', gap: '0.75rem', maxWidth: '600px' }}>
+        <div className="card mb-4 p-4">
+          <div className="grid gap-3 max-w-2xl">
             {error && (
               <div className="message message--error">
                 {error}
               </div>
             )}
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Name</label>
+              <label className="block mb-1 font-semibold">Name</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Company</label>
+              <label className="block mb-1 font-semibold">Company</label>
               <input className="input" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+            <div className="grid grid-cols-3 gap-3">
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Source Type</label>
+                <label className="block mb-1 font-semibold">Source Type</label>
                  <select className="select" value={form.sourceType} onChange={(e) => setForm({ ...form, sourceType: e.target.value as JobSourceType })}>
                    <option value="API">API</option>
                    <option value="RSS">RSS</option>
@@ -194,7 +194,7 @@ export const AdminJobSourcesPage = () => {
                  </select>
                </div>
                <div>
-                 <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Parser Type</label>
+                  <label className="block mb-1 font-semibold">Parser Type</label>
                  <select className="select" value={form.parserType} onChange={(e) => setForm({ ...form, parserType: e.target.value as JobSourceParserType })}>
                    <option value="GENERIC">Generic</option>
                    <option value="GREENHOUSE">Greenhouse</option>
@@ -206,7 +206,7 @@ export const AdminJobSourcesPage = () => {
                  </select>
                </div>
                <div>
-                 <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Auth Type</label>
+                  <label className="block mb-1 font-semibold">Auth Type</label>
                  <select className="select" value={form.authenticationType} onChange={(e) => setForm({ ...form, authenticationType: e.target.value as JobSourceAuthType })}>
                    <option value="NONE">None</option>
                    <option value="API_KEY">API Key</option>
@@ -216,20 +216,20 @@ export const AdminJobSourcesPage = () => {
                </div>
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Base URL</label>
+              <label className="block mb-1 font-semibold">Base URL</label>
               <input className="input" value={form.baseUrl} onChange={(e) => setForm({ ...form, baseUrl: e.target.value })} />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Feed URL</label>
+              <label className="block mb-1 font-semibold">Feed URL</label>
               <input className="input" value={form.feedUrl} onChange={(e) => setForm({ ...form, feedUrl: e.target.value })} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Crawl Interval (min)</label>
+                 <label className="block mb-1 font-semibold">Crawl Interval (min)</label>
                 <input className="input" type="number" value={form.crawlInterval} onChange={(e) => setForm({ ...form, crawlInterval: Number(e.target.value) })} />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>Rate Limit (req/min)</label>
+                 <label className="block mb-1 font-semibold">Rate Limit (req/min)</label>
                 <input className="input" type="number" value={form.rateLimit} onChange={(e) => setForm({ ...form, rateLimit: Number(e.target.value) })} />
               </div>
             </div>
@@ -263,7 +263,7 @@ export const AdminJobSourcesPage = () => {
                     <span>Parser: {parserTypeLabels[s.parserType ?? 'GENERIC']}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div className="flex gap-2 flex-wrap">
                   <Button variant="secondary" size="sm" onClick={() => handleTest(s.id)} disabled={testing === s.id}>
                     {testing === s.id ? 'Testing...' : 'Test'}
                   </Button>
@@ -272,24 +272,24 @@ export const AdminJobSourcesPage = () => {
                   <Button variant="danger" size="sm" onClick={() => handleDelete(s.id)}>Delete</Button>
                 </div>
               </div>
-              <div className="text-secondary text-sm" style={{ marginTop: '0.5rem' }}>
+              <div className="text-secondary text-sm mt-2">
                 <a href={s.feedUrl} target="_blank" rel="noreferrer">{s.feedUrl}</a>
-                <span style={{ marginLeft: '1rem' }}>Interval: {s.crawlInterval}m</span>
-                <span style={{ marginLeft: '1rem' }}>Failures: {s.failureCount}</span>
-                <span style={{ marginLeft: '1rem' }}>Last run: {formatTimeSince(s.lastRunAt)}</span>
-                <span style={{ marginLeft: '1rem' }}>Last success: {formatTimeSince(s.lastSuccessAt)}</span>
+                <span className="ml-4">Interval: {s.crawlInterval}m</span>
+                <span className="ml-4">Failures: {s.failureCount}</span>
+                <span className="ml-4">Last run: {formatTimeSince(s.lastRunAt)}</span>
+                <span className="ml-4">Last success: {formatTimeSince(s.lastSuccessAt)}</span>
               </div>
               {s.lastError && (
-                <div className="text-danger text-sm" style={{ marginTop: '0.5rem' }}>
+                <div className="text-danger text-sm mt-2">
                   Error: {s.lastError}
                 </div>
               )}
               {testResult && (
-                <div className="text-sm" style={{ marginTop: '0.5rem', color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                <div className={`text-sm mt-2 ${testResult.success ? 'text-success' : 'text-danger'}`}>
                   Test: {testResult.message} {testResult.discovered > 0 ? `(${testResult.discovered} jobs)` : ''}
                 </div>
               )}
-              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+              <div className="mt-2 flex gap-2">
                 <Button variant="secondary" size="sm" onClick={() => handleToggle(s.id, s.enabled)}>
                   {s.enabled ? 'Disable' : 'Enable'}
                 </Button>

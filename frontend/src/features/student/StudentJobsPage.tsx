@@ -203,7 +203,7 @@ export const StudentJobsPage = () => {
             action={
               <div className="flex gap-2 items-center">
                 {user?.name && (
-                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  <span className="text-sm text-text-secondary">
                     Hi, {user.name.split(' ')[0]}
                   </span>
                 )}
@@ -222,18 +222,11 @@ export const StudentJobsPage = () => {
       <section className="section-full">
         <div className="section-inner">
           <div
-            className="card section--mt"
-            style={{
-              padding: 'var(--space-5)',
-              position: 'sticky',
-              top: '1rem',
-              zIndex: 10,
-              boxShadow: 'var(--shadow-sm)',
-            }}
+            className="card section--mt p-5 sticky top-4 z-10 shadow-sm"
           >
-            <div className="filter-bar" style={{ flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <div className="filter-bar flex-wrap items-center gap-3">
               <Tooltip content="Search by job title, company, or skills">
-                <div className="flex items-center gap-2" style={{ flex: '1 1 240px' }}>
+                <div className="flex items-center gap-2 flex-[1_1_240px]">
                   <Icon name="search" size={18} />
                   <input
                     className="input"
@@ -246,7 +239,7 @@ export const StudentJobsPage = () => {
                 </div>
               </Tooltip>
               <Tooltip content="Filter by city or region">
-                <div className="flex items-center gap-2" style={{ flex: '1 1 160px' }}>
+                <div className="flex items-center gap-2 flex-[1_1_160px]">
                   <Icon name="search" size={18} />
                   <input
                     className="input"
@@ -318,9 +311,8 @@ export const StudentJobsPage = () => {
                 <Tooltip content="Remove all active filters">
                   <button
                     type="button"
-                    className="btn btn--sm btn--secondary"
+                    className="btn btn--sm btn--secondary whitespace-nowrap"
                     onClick={clearFilters}
-                    style={{ whiteSpace: 'nowrap' }}
                   >
                     Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
                   </button>
@@ -329,14 +321,7 @@ export const StudentJobsPage = () => {
             </div>
 
             <div
-              className="flex items-center justify-between"
-              style={{
-                marginTop: 'var(--space-3)',
-                gap: 'var(--space-2)',
-                flexWrap: 'wrap',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-secondary)',
-              }}
+              className="flex items-center justify-between mt-3 gap-2 flex-wrap text-sm text-text-secondary"
             >
               <span>
                 {loading
@@ -386,33 +371,25 @@ export const StudentJobsPage = () => {
                       onMouseEnter={() => setHovered(job.id)}
                       onMouseLeave={() => setHovered(null)}
                     >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          gap: 'var(--space-4)',
-                        }}
-                      >
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex-1 min-w-0">
                           <div
-                            className="list-item__head"
-                            style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}
+                            className="list-item__head flex items-start gap-3"
                           >
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <h3 className="list-item__title" style={{ margin: 0 }}>
-                                <Link to={`/jobs/${job.id}`} className="link-reset" style={{ color: 'inherit' }}>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="list-item__title m-0">
+                                <Link to={`/jobs/${job.id}`} className="link-reset">
                                   {job.title}
                                 </Link>
                               </h3>
-                              <div className="list-item__meta" style={{ flexWrap: 'wrap' }}>
+                              <div className="list-item__meta flex-wrap">
                                 <span>{company}</span>
                                 <span>{location}</span>
                                 <Badge kind={resolveBadgeKind(job.type)}>
                                   {job.type.toLowerCase().replace('_', ' ')}
                                 </Badge>
                                 {job.workplaceType && (
-                                  <span style={{ color: 'var(--color-text-tertiary)' }}>
+                                  <span className="text-text-tertiary">
                                     {job.workplaceType === 'ONSITE'
                                       ? 'Work from office'
                                       : job.workplaceType === 'HYBRID'
@@ -421,26 +398,17 @@ export const StudentJobsPage = () => {
                                   </span>
                                 )}
                                 {job.experienceLevel && (
-                                  <span style={{ color: 'var(--color-text-tertiary)' }}>
+                                  <span className="text-text-tertiary">
                                     {labelFor(job.experienceLevel, EXPERIENCE_LEVELS)}
                                   </span>
                                 )}
                                 {salary && (
-                                  <span style={{ color: 'var(--color-text-tertiary)' }}>{salary}</span>
+                                  <span className="text-text-tertiary">{salary}</span>
                                 )}
                               </div>
                             </div>
                             {matchScore > 0 && (
-                              <div
-                                className="match-score"
-                                role="progressbar"
-                                aria-valuenow={matchScore}
-                                aria-valuemin={0}
-                                aria-valuemax={100}
-                                aria-valuetext={`${matchScore}% match score`}
-                                aria-label={`Match score ${matchScore}%`}
-                                style={{ flexShrink: 0 }}
-                              >
+                              <div className="match-score flex-shrink-0" role="progressbar" aria-valuenow={matchScore} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${matchScore}% match score`} aria-label={`Match score ${matchScore}%`}>
                                 <div className="match-score__top">
                                   <span>Match</span>
                                   <strong>{Math.round(matchScore)}%</strong>
@@ -452,38 +420,26 @@ export const StudentJobsPage = () => {
                             )}
                           </div>
 
-                          <div
-                            className="list-item__meta"
-                            style={{
-                              marginTop: 'var(--space-2)',
-                              flexWrap: 'wrap',
-                              gap: 'var(--space-2)',
-                            }}
-                          >
+                          <div className="list-item__meta mt-2 flex-wrap gap-2">
                             {job.workplaceType ? null : (
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>Remote-friendly</span>
+                              <span className="text-text-tertiary">Remote-friendly</span>
                             )}
-                            <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)' }}>
+                            <span className="text-text-muted text-xs">
                               Posted {formatTimeAgo(job.createdAt)}
                             </span>
                             {isExternal && job.sourceName ? (
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>
+                              <span className="text-text-tertiary">
                                 Source: {job.sourceName}
                               </span>
                             ) : null}
                           </div>
                         </div>
 
-                        <div
-                          className="flex items-center gap-2"
-                          style={{
-                            flexShrink: 0,
-                            opacity: hovered === job.id ? 1 : 0.55,
-                            transform: hovered === job.id ? 'translateX(0)' : 'translateX(-4px)',
-                            transition: 'opacity 0.18s ease, transform 0.18s ease',
-                          }}
-                          aria-label={`Actions for ${job.title}`}
-                        >
+                        <div className="flex items-center gap-2 flex-shrink-0" style={{
+                          opacity: hovered === job.id ? 1 : 0.55,
+                          transform: hovered === job.id ? 'translateX(0)' : 'translateX(-4px)',
+                          transition: 'opacity 0.18s ease, transform 0.18s ease',
+                        }}>
                           <Tooltip content={isSaved ? 'Remove from saved jobs' : 'Save this job'}>
                             <Button
                               size="sm"
@@ -537,12 +493,7 @@ export const StudentJobsPage = () => {
 
             {totalPages > 1 && (
               <div
-                className="flex items-center justify-center"
-                style={{
-                  gap: 'var(--space-2)',
-                  marginTop: 'var(--space-6)',
-                  flexWrap: 'wrap',
-                }}
+                className="flex items-center justify-center gap-2 mt-6 flex-wrap"
               >
                 <Button
                   size="sm"
@@ -560,18 +511,17 @@ export const StudentJobsPage = () => {
                     visible === false &&
                     pageNumber === (page < totalPages / 2 ? Math.max(2, page + 2) : Math.min(totalPages - 1, page - 2));
                   if (isEllipsis) {
-                    return <span key={`e-${i}`} style={{ color: 'var(--color-text-tertiary)', fontSize: 'var(--text-sm)' }}>…</span>;
+                    return <span key={`e-${i}`} className="text-text-tertiary text-sm">…</span>;
                   }
                   if (!visible) return null;
                   return (
                     <button
                       key={pageNumber}
                       type="button"
-                      className={`btn btn--sm ${pageNumber === page ? 'btn--primary' : 'btn--secondary'}`}
+                      className={`btn btn--sm ${pageNumber === page ? 'btn--primary' : 'btn--secondary'} min-w-9`}
                       onClick={() => setPage(pageNumber)}
                       disabled={loading}
                       aria-current={pageNumber === page ? 'page' : undefined}
-                      style={{ minWidth: '2.25rem' }}
                     >
                       {pageNumber}
                     </button>
