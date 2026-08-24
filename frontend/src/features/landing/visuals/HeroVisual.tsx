@@ -120,19 +120,19 @@ export const HeroVisual = () => {
               <circle cx="200" cy="340" r="8" fill="var(--color-warning, #d97706)" className="hero-visual__profile-core" />
 
               <g className="hero-visual__profile-orbit">
-                <g transform="translate(200, 314)">
+                <g transform="translate(200, 302)">
                   <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
                   <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">React</text>
                 </g>
-                <g transform="translate(232, 340)">
+                <g transform="translate(238, 340)">
                   <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
                   <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">Python</text>
                 </g>
-                <g transform="translate(200, 366)">
+                <g transform="translate(200, 378)">
                   <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1" />
                   <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">SQL</text>
                 </g>
-                <g transform="translate(168, 340)">
+                <g transform="translate(162, 340)">
                   <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
                   <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">Design</text>
                 </g>
