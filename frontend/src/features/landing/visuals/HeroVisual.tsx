@@ -221,9 +221,9 @@ export const HeroVisual = () => {
               <animateMotion dur="2.2s" repeatCount="indefinite" path="M440 165 Q520 240 558 295" />
             </circle>
 
-            <path d="M400 180 L400 299" stroke="url(#stream-center)" strokeWidth="2.2" fill="none" opacity="0.65" className="hero-visual__stream hero-visual__stream--center" />
+            <path d="M400 180 L400 320" stroke="url(#stream-center)" strokeWidth="2.2" fill="none" opacity="0.65" className="hero-visual__stream hero-visual__stream--center" />
             <circle r="1.8" fill="var(--color-primary, #4f46e5)" opacity="0.85">
-              <animateMotion dur="1.5s" repeatCount="indefinite" path="M400 180 L400 284" />
+              <animateMotion dur="1.5s" repeatCount="indefinite" path="M400 180 L400 320" />
             </circle>
           </g>
         </svg>
