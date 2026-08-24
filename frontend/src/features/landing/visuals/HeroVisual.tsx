@@ -105,6 +105,9 @@ export const HeroVisual = () => {
             <clipPath id="engine-clip">
               <circle cx="400" cy="100" r="78" />
             </clipPath>
+
+            <path id="skills-text-arc-top" d="M 128 340 A 72 72 0 0 1 272 340" fill="none" />
+            <path id="skills-text-arc-bottom" d="M 272 340 A 72 72 0 0 1 128 340" fill="none" />
           </defs>
 
           <circle cx="400" cy="100" r="180" fill="url(#hero-glow-ai)" opacity="0.5" className="hero-visual__glow" />
@@ -119,23 +122,17 @@ export const HeroVisual = () => {
               <circle cx="200" cy="340" r="20" fill="var(--color-warning-soft, #fffbeb)" className="hero-visual__profile-avatar" />
               <circle cx="200" cy="340" r="8" fill="var(--color-warning, #d97706)" className="hero-visual__profile-core" />
 
-              <g className="hero-visual__profile-orbit">
-                <g transform="translate(200, 302)">
-                  <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-                  <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">React</text>
-                </g>
-                <g transform="translate(238, 340)">
-                  <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-info-soft, #eff6ff)" stroke="var(--color-info, #2563eb)" strokeWidth="1" />
-                  <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">Python</text>
-                </g>
-                <g transform="translate(200, 378)">
-                  <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-success-soft, #ecfdf5)" stroke="var(--color-success, #059669)" strokeWidth="1" />
-                  <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">SQL</text>
-                </g>
-                <g transform="translate(162, 340)">
-                  <rect x="-15" y="-6" width="30" height="12" rx="6" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-primary, #4f46e5)" strokeWidth="1" />
-                  <text x="0" y="2.5" textAnchor="middle" fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">Design</text>
-                </g>
+              <g className="hero-visual__skills-typo">
+                <text fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">
+                  <textPath href="#skills-text-arc-top" startOffset="50%" textAnchor="middle">
+                    React · Python · TypeScript
+                  </textPath>
+                </text>
+                <text fill="var(--color-text)" fontSize="7.5" fontWeight="600" className="hero-visual__invert-text">
+                  <textPath href="#skills-text-arc-bottom" startOffset="50%" textAnchor="middle">
+                    SQL · Git · Node.js
+                  </textPath>
+                </text>
               </g>
             </g>
 
@@ -332,19 +329,36 @@ export const HeroVisual = () => {
             transform: scale(1);
           }
 
-          .hero-visual__profile-orbit {
-            opacity: 0;
-            transform: rotate(0deg);
-            transition: opacity 0.7s ease 0.35s;
-          }
+           .hero-visual__skills-typo {
+             opacity: 0;
+             transform: rotate(0deg);
+             transition: opacity 0.7s ease 0.35s;
+           }
 
-          .scroll-reveal--visible .hero-visual__profile-orbit {
-            opacity: 1;
-            animation: profile-orbit 12s linear infinite;
-            transform-origin: 200px 340px;
-          }
+           .scroll-reveal--visible .hero-visual__skills-typo {
+             opacity: 1;
+             animation: skills-rotate 30s linear infinite;
+             transform-origin: 200px 340px;
+           }
 
-          .hero-visual__profile-ring {
+           .hero-visual__skills-typo text {
+             animation: skills-highlight 3s ease-in-out infinite;
+           }
+
+           .scroll-reveal--visible .hero-visual__skills-typo text:nth-child(1) { animation-delay: 0s; }
+           .scroll-reveal--visible .hero-visual__skills-typo text:nth-child(2) { animation-delay: 1.5s; }
+
+           @keyframes skills-rotate {
+             from { transform: rotate(0deg); }
+             to { transform: rotate(360deg); }
+           }
+
+           @keyframes skills-highlight {
+             0%, 100% { opacity: 0.75; }
+             50% { opacity: 1; }
+           }
+
+           .hero-visual__profile-ring {
             opacity: 0;
             stroke-dasharray: 8 4;
             stroke-dashoffset: 100;
@@ -482,9 +496,13 @@ export const HeroVisual = () => {
               transition-delay: 0ms !important;
             }
             .hero-visual__engine-pulse,
-            .hero-visual__profile-orbit,
+            .hero-visual__skills-typo,
             .hero-visual__pulse {
               animation: none;
+            }
+            .hero-visual__skills-typo {
+              opacity: 1 !important;
+              transform: none !important;
             }
             .hero-visual__profile-avatar,
             .hero-visual__profile-core,
