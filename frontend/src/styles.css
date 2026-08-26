@@ -2631,9 +2631,10 @@ input[type='file']::file-selector-button:hover {
 
 [data-theme='light'] .auth-card {
   box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 0, 0, 0.04);
-  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-muted) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 3px solid var(--color-primary);
 }
 
 .auth-card:focus-within {
@@ -5975,6 +5976,16 @@ html {
   box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
+[data-theme='light'] .feature-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.015), transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .feature-visual::before {
   content: '';
   position: absolute;
@@ -6247,6 +6258,16 @@ html {
 
 [data-theme='light'] .step-visual {
   box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='light'] .step-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.015), transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .step-visual svg {
