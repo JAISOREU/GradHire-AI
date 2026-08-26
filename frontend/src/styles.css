@@ -167,8 +167,10 @@
   --background-secondary: #020617;
   --surface: #0a0f1e;
   --surface-elevated: #111827;
-  --surface-hover: #1a2332;
-  --border: #1e2a3a;
+  --surface-hover: #1e293b;
+  --border: #334155;
+  --border-strong: #475569;
+  --surface-muted: #111827;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
@@ -201,10 +203,10 @@
   --color-bg: #000000;
   --color-surface: #0a0f1e;
   --color-surface-rgb: 10, 15, 30;
-  --color-border: #1e2a3a;
-  --color-border-strong: #2d3a4d;
-  --color-surface-muted: #0a0f1e;
-  --color-surface-hover: #1a2332;
+  --color-border: #334155;
+  --color-border-strong: #475569;
+  --color-surface-muted: #111827;
+  --color-surface-hover: #1e293b;
   --color-text: #f1f5f9;
   --color-text-secondary: #cbd5e1;
   --color-text-tertiary: #94a3b8;
@@ -2799,6 +2801,11 @@ input[type='file']::file-selector-button:hover {
   box-shadow: var(--shadow-sm);
 }
 
+[data-theme='dark'] .auth-tab.is-active {
+  background: var(--color-surface-hover);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
 .role-picker {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3441,7 +3448,7 @@ input[type='file']::file-selector-button:hover {
   background: var(--color-text);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--color-surface);
   font-weight: 800;
   font-size: var(--text-sm);
 }
@@ -3847,6 +3854,10 @@ input[type='file']::file-selector-button:hover {
   flex-shrink: 0;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .theme-toggle {
+  border: 1px solid var(--color-border);
 }
 
 .theme-toggle:hover {
@@ -4402,7 +4413,7 @@ html {
   font-weight: 700;
   border-radius: var(--radius-full);
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-surface);
   letter-spacing: 0.04em;
 }
 
@@ -5367,7 +5378,7 @@ html {
 .avatar {
   border-radius: var(--radius-full);
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-surface);
   display: grid;
   place-items: center;
   font-weight: 700;
