@@ -206,43 +206,44 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
             <ThemeToggle />
           </span>
           <div className="header-dropdown" ref={dropdownRef}>
-          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-            <div
-              className="header-dropdown__trigger"
-              role="button"
-              aria-haspopup="true"
-              aria-expanded={dropdownOpen}
-            >
+          <div
+            className="header-dropdown__trigger"
+            role="button"
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen}
+            onClick={() => setDropdownOpen((prev) => !prev)}
+          >
+            <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
+          </div>
+          {dropdownOpen && (
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => {}}>
-                <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
-              </DropdownMenuItem>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => {}}>
-              <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
-                <span>Dashboard</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => {}}>
-              <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                <span aria-hidden="true"><Icon name="home" size={18} /></span>
-                <span>Home</span>
-              </Link>
-            </DropdownMenuItem>
-            {roleMenuItems.map((item) => (
-              <DropdownMenuItem key={item.to} onSelect={() => {}}>
-                <Link to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                  {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
-                  <span>{item.label}</span>
+                <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                  <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
+                  <span>Dashboard</span>
                 </Link>
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => { setDropdownOpen(false); setConfirmLogout(true); }}>
-              <span className="header-dropdown__item header-dropdown__item--danger">Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenu>
+              <DropdownMenuItem onSelect={() => {}}>
+                <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                  <span aria-hidden="true"><Icon name="home" size={18} /></span>
+                  <span>Home</span>
+                </Link>
+              </DropdownMenuItem>
+              {roleMenuItems.map((item) => (
+                <DropdownMenuItem key={item.to} onSelect={() => {}}>
+                  <Link to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                    {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
+                    <span>{item.label}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => { setDropdownOpen(false); setConfirmLogout(true); }}>
+                <span className="header-dropdown__item header-dropdown__item--danger">Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenu>
+          )}
         </div>
         </div>
       </div>
