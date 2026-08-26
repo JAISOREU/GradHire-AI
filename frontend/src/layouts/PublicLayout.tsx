@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, NavLink } from 'react-router-dom';
 import { useAuth } from '../core/auth/AuthContext';
 import { Button } from '../components/Button';
 import { SkipLink } from '../components/SkipLink';
@@ -175,17 +175,17 @@ export const PublicLayout = () => {
             <Icon name="menu" size={22} />
           </button>
           <nav className="public-nav" aria-label="Primary" style={navStyle}>
-            <Link to="/">Home</Link>
-            <Link to="/jobs">Jobs</Link>
-            <Link to="/companies">Companies</Link>
-            <Link to="/about">About</Link>
+            <NavLink to="/" end className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
+            <NavLink to="/jobs" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Jobs</NavLink>
+            <NavLink to="/companies" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Companies</NavLink>
+            <NavLink to="/about" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>About</NavLink>
           </nav>
           <div className={`public-nav-overlay ${mobileNavOpen ? 'is-open' : ''}`} onClick={() => setMobileNavOpen(false)} aria-hidden="true" />
           <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`} ref={mobileNavRef} role="dialog" aria-modal="true" aria-label="Navigation menu" aria-labelledby="mobile-nav-toggle">
-            <Link to="/" onClick={() => setMobileNavOpen(false)}>Home</Link>
-            <Link to="/jobs" onClick={() => setMobileNavOpen(false)}>Jobs</Link>
-            <Link to="/companies" onClick={() => setMobileNavOpen(false)}>Companies</Link>
-            <Link to="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
+            <NavLink to="/" end onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Home</NavLink>
+            <NavLink to="/jobs" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Jobs</NavLink>
+            <NavLink to="/companies" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Companies</NavLink>
+            <NavLink to="/about" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>About</NavLink>
           </div>
           <div className="header-user" style={userGroupStyle}>
             <span style={themeStyle}>

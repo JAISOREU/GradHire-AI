@@ -276,7 +276,7 @@ export const Messenger = ({
                     <span className="font-medium text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                       {convo.name}
                     </span>
-                    <span className="text-xs text-faint flex-shrink-0 ml-2">
+                    <span className="text-xs text-muted flex-shrink-0 ml-2">
                       {formatTime(convo.lastMessageAt)}
                     </span>
                   </div>

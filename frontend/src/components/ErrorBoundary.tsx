@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <button className="btn btn--primary" onClick={() => this.setState({ hasError: false, error: null })}>
             Try again
           </button>
-          <pre className="text-xs text-faint max-w-[600px] overflow-auto">
+          <pre className="text-xs text-muted max-w-[600px] overflow-auto">
             {this.state.error?.message}
           </pre>
         </div>

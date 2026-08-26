@@ -41,7 +41,7 @@
   --color-text: #1a1814;
   --color-text-secondary: #5c5852;
   --color-text-tertiary: #7a756e;
-  --color-text-faint: #c4bfb7;
+  --color-text-faint: #9ca3af;
   --color-text-muted: #8c8680;
 
   /* Radius */
@@ -2650,7 +2650,7 @@ input[type='file']::file-selector-button:hover {
   margin-top: var(--space-5);
   text-align: center;
   font-size: var(--text-sm);
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 @media (max-width: 640px) {

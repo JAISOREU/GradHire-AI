@@ -63,7 +63,7 @@ export const StudentSavedJobsPage = () => {
                     </Button>
                   </Tooltip>
                 </div>
-                 <p className="text-faint text-sm section--mt">
+                 <p className="text-muted text-sm section--mt">
                   Saved {new Date(item.savedAt).toLocaleDateString()}
                 </p>
               </Link>

@@ -73,7 +73,7 @@ export const StudentApplicationsPage = () => {
                 {(app as any).lastEvent && (
                    <div className="text-sm text-secondary section--mt border-l-2 border-border pl-4">
                     <strong>{(app as any).lastEvent.newStatus}</strong> — {(app as any).lastEvent.message || 'Status updated'}
-                    <div className="text-xs text-faint">{new Date((app as any).lastEvent.createdAt).toLocaleString()}</div>
+                     <div className="text-xs text-muted">{new Date((app as any).lastEvent.createdAt).toLocaleString()}</div>
                   </div>
                 )}
               </article>

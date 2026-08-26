@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
+import { AuthLayout } from '../../components/AuthLayout';
 import { authApi } from '../../core/api/endpoints/auth';
+import { CheckCircle2 } from 'lucide-react';
 
 export const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
@@ -36,22 +38,34 @@ export const VerifyEmailPage = () => {
     };
   }, [token, navigate]);
 
+  const footer = status === 'error' ? (
+    <>
+      <Link to="/forgot-password">Request a new link</Link>
+    </>
+  ) : undefined;
+
   return (
-    <div className="auth-page fade-in">
-      <div className="auth-card">
-        <div className="auth-card__header">
-          <h2>Verify your email</h2>
-          <p className="card__subtitle">We are verifying your email address.</p>
+    <AuthLayout
+      title="Verify your email"
+      subtitle="We are verifying your email address."
+      footer={footer}
+    >
+      {status === 'loading' && <p className="message message--info">Verifying…</p>}
+      {status === 'success' && (
+        <div className="auth-success" role="status">
+          <CheckCircle2 size={32} className="auth-success__icon" aria-hidden="true" />
+          <p>{message}</p>
+          <Link to="/login"><Button className="mt-4">Back to sign in</Button></Link>
         </div>
-        {status === 'loading' && <p className="message message--info">Verifying…</p>}
-        {status === 'success' && <p className="message message--success">{message}</p>}
-        {status === 'error' && (
-          <>
-            <p className="message message--error">{message}</p>
-            <Link to="/login"><Button className="w-full mt-4">Back to sign in</Button></Link>
-          </>
-        )}
-      </div>
-    </div>
+      )}
+      {status === 'error' && (
+        <>
+          <p className="message message--error" role="alert">{message}</p>
+          <div className="mt-4">
+            <Button to="/login" className="w-full">Back to sign in</Button>
+          </div>
+        </>
+      )}
+    </AuthLayout>
   );
 };

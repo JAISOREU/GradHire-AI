@@ -106,7 +106,7 @@ export const StudentCompaniesPage = () => {
                       <span className="badge badge--primary">{company.industry}</span>
                     )}
                     {company.location && (
-                      <span className="text-faint text-sm">{company.location}</span>
+                      <span className="text-muted text-sm">{company.location}</span>
                     )}
                   </div>
                   {company.description && (
@@ -117,7 +117,7 @@ export const StudentCompaniesPage = () => {
                 </div>
               </Link>
               <div className="flex justify-between items-center mt-auto">
-                <span className="text-xs text-faint">
+                <span className="text-xs text-muted">
                   {followed.has(company.id) ? 'Following' : 'Not following'}
                 </span>
                 <Tooltip content={followed.has(company.id) ? 'Unfollow this company' : 'Follow this company'}>
