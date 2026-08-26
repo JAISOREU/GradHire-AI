@@ -109,7 +109,7 @@ export const HeroVisual = () => {
             </radialGradient>
 
             <filter id={`${svgId}-card-shadow`} x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="var(--color-text, #1a1814)" floodOpacity="0.06" />
+              <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="var(--color-text, #1a1814)" floodOpacity="0.12" />
             </filter>
 
             <linearGradient id={`${svgId}-ai-indicator-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
