@@ -5,8 +5,6 @@ import { Icon } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { Avatar } from './Avatar';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { roleHomePath } from '../core/utils/navigation';
 import type { UserRole } from '../core/types';
 
@@ -24,6 +22,7 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   const [confirmLogout, setConfirmLogout] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const logoutModalRef = useRef<HTMLDivElement>(null);
   const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user.role as UserRole);
 
@@ -59,6 +58,37 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownOpen]);
+
+  useEffect(() => {
+    if (!confirmLogout) return;
+    const modal = logoutModalRef.current;
+    if (!modal) return;
+    const focusable = modal.querySelectorAll<HTMLElement>('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setConfirmLogout(false);
+      }
+      if (event.key === 'Tab') {
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    first.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [confirmLogout]);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -201,66 +231,56 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
           <Icon name="menu" size={22} />
         </Button>
 
-        <div className="header-user flex items-center gap-2.5" style={{ opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
+        <div className="header-user" style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
           <span style={themeStyle}>
             <ThemeToggle />
           </span>
           <div className="header-dropdown" ref={dropdownRef}>
-          <div
-            className="header-dropdown__trigger"
-            role="button"
-            aria-haspopup="true"
-            aria-expanded={dropdownOpen}
-            onClick={() => setDropdownOpen((prev) => !prev)}
-          >
-            <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
-          </div>
-          {dropdownOpen && (
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => {}}>
-                <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                  <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
-                  <span>Dashboard</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => {}}>
-                <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                  <span aria-hidden="true"><Icon name="home" size={18} /></span>
-                  <span>Home</span>
-                </Link>
-              </DropdownMenuItem>
+            <button
+              type="button"
+              className="header-dropdown__trigger"
+              aria-haspopup="true"
+              aria-expanded={dropdownOpen}
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              aria-label={displayName}
+            >
+              <Avatar src={user.avatarUrl} name={displayName} size="sm" userId={user.id} />
+            </button>
+            <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="menu">
+              <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
+                <span>Dashboard</span>
+              </Link>
+              <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                <span aria-hidden="true"><Icon name="home" size={18} /></span>
+                <span>Home</span>
+              </Link>
               {roleMenuItems.map((item) => (
-                <DropdownMenuItem key={item.to} onSelect={() => {}}>
-                  <Link to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                    {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
-                    <span>{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
+                <Link key={item.to} to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
+                  {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
+                  <span>{item.label}</span>
+                </Link>
               ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => { setDropdownOpen(false); setConfirmLogout(true); }}>
-                <span className="header-dropdown__item header-dropdown__item--danger">Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenu>
-          )}
-        </div>
+              <div className="header-dropdown__separator" role="separator" />
+              <button type="button" className="header-dropdown__item header-dropdown__item--danger" onClick={() => setConfirmLogout(true)} role="menuitem" tabIndex={dropdownOpen ? 0 : -1}>
+                <span>Log out</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {confirmLogout && (
-        <Dialog open={confirmLogout} onOpenChange={setConfirmLogout}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Log out?</DialogTitle>
-              <DialogDescription>You will need to sign in again to access your dashboard.</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title" aria-label="Confirm logout">
+          <div className="modal" ref={logoutModalRef}>
+            <h3 id="logout-modal-title" className="card__title">Log out?</h3>
+            <p className="card__subtitle">You will need to sign in again to access your dashboard.</p>
+            <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-5)' }}>
               <Button variant="secondary" onClick={() => setConfirmLogout(false)}>Cancel</Button>
               <Button variant="danger" onClick={() => { setConfirmLogout(false); onLogout(); }}>Log out</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </div>
+          </div>
+        </div>
       )}
     </header>
   );

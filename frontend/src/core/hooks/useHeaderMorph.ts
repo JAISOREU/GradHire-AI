@@ -3,6 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const lerp = (start: number, end: number, progress: number) => start + (end - start) * progress;
 
+const isDesktopDevice = () => {
+  if (typeof navigator === 'undefined') return true;
+  const ua = navigator.userAgent || '';
+  const touchSupport = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0;
+  const mobileOrTablet = /android|iPad|iPhone|iPod|webOS/i.test(ua);
+  return !(touchSupport && mobileOrTablet);
+};
+
 export const useHeaderMorph = (enabled = true) => {
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -13,13 +21,18 @@ export const useHeaderMorph = (enabled = true) => {
   });
   const ticking = useRef(false);
   const reducedMotion = useRef(false);
+  const desktop = useRef(isDesktopDevice());
 
   useEffect(() => {
     reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
 
   useEffect(() => {
-    if (!enabled || reducedMotion.current) return;
+    desktop.current = isDesktopDevice();
+  });
+
+  useEffect(() => {
+    if (!enabled || reducedMotion.current || desktop.current) return;
 
     const handleScroll = () => {
       if (!ticking.current) {
@@ -52,37 +65,37 @@ export const useHeaderMorph = (enabled = true) => {
     return () => observer.disconnect();
   }, []);
 
-  const p = reducedMotion.current ? 0 : progress;
+  const p = reducedMotion.current || desktop.current ? 0 : progress;
 
-  const height = enabled ? lerp(64, 48, p) : 64;
-  const borderRadius = enabled ? lerp(0, 9999, p) : 0;
-  const paddingX = enabled ? lerp(24, 16, p) : 24;
-  const backgroundOpacity = enabled ? lerp(1, theme === 'dark' ? 0.8 : 0.85, p) : 1;
-  const borderOpacity = enabled ? lerp(0, theme === 'dark' ? 0.2 : 0.12, p) : 0;
-  const shadowOpacity = enabled ? lerp(0, theme === 'dark' ? 0.12 : 0.08, p) : 0;
+  const height = enabled && !desktop.current ? lerp(64, 48, p) : 64;
+  const borderRadius = enabled && !desktop.current ? lerp(0, 9999, p) : 0;
+  const paddingX = enabled && !desktop.current ? lerp(24, 16, p) : 24;
+  const backgroundOpacity = enabled && !desktop.current ? lerp(1, theme === 'dark' ? 0.8 : 0.85, p) : 1;
+  const borderOpacity = enabled && !desktop.current ? lerp(0, theme === 'dark' ? 0.2 : 0.12, p) : 0;
+  const shadowOpacity = enabled && !desktop.current ? lerp(0, theme === 'dark' ? 0.12 : 0.08, p) : 0;
 
-  const groupGap = enabled ? lerp(16, 8, p) : 16;
-  const itemGap = enabled ? lerp(12, 8, p) : 12;
+  const groupGap = enabled && !desktop.current ? lerp(16, 8, p) : 16;
+  const itemGap = enabled && !desktop.current ? lerp(12, 8, p) : 12;
 
-  const logoScale = enabled ? lerp(1, 0.85, p) : 1;
+  const logoScale = enabled && !desktop.current ? lerp(1, 0.85, p) : 1;
   const titleOpacity = 1;
-  const titleScale = enabled ? lerp(1, 0.92, p) : 1;
+  const titleScale = enabled && !desktop.current ? lerp(1, 0.92, p) : 1;
 
-  const navOpacity = enabled ? lerp(1, 0, clamp(p * 2.5, 0, 1)) : 1;
-  const navFlex = enabled ? lerp(1, 0, clamp(p * 2.5, 0, 1)) : 1;
-  const navPadding = enabled ? lerp(16, 0, clamp(p * 3, 0, 1)) : 16;
-  const navGap = enabled ? lerp(16, 0, clamp(p * 2.5, 0, 1)) : 16;
+  const navOpacity = enabled && !desktop.current ? lerp(1, 0, clamp(p * 2.5, 0, 1)) : 1;
+  const navFlex = enabled && !desktop.current ? lerp(1, 0, clamp(p * 2.5, 0, 1)) : 1;
+  const navPadding = enabled && !desktop.current ? lerp(16, 0, clamp(p * 3, 0, 1)) : 16;
+  const navGap = enabled && !desktop.current ? lerp(16, 0, clamp(p * 2.5, 0, 1)) : 16;
 
-  const userOpacity = enabled ? lerp(1, 1, p) : 1;
-  const avatarScale = enabled ? lerp(1, 0.85, p) : 1;
+  const userOpacity = enabled && !desktop.current ? lerp(1, 1, p) : 1;
+  const avatarScale = enabled && !desktop.current ? lerp(1, 0.85, p) : 1;
   const metaOpacity = 1;
 
   const themeOpacity = 1;
 
-  const brandMargin = enabled ? lerp(0, 4, p) : 0;
-  const userMargin = enabled ? lerp(4, 4, p) : 0;
+  const brandMargin = enabled && !desktop.current ? lerp(0, 4, p) : 0;
+  const userMargin = enabled && !desktop.current ? lerp(4, 4, p) : 4;
 
-  const isMorphed = enabled ? p >= 0.5 : false;
+  const isMorphed = enabled && !desktop.current ? p >= 0.5 : false;
 
   const surfaceColor = theme === 'dark' ? '10, 15, 30' : '255, 255, 255';
   const borderColor = theme === 'dark' ? '30, 42, 58' : '232, 226, 216';

@@ -199,10 +199,12 @@
   --color-info-soft: #172554;
 
   --color-bg: #000000;
+  --color-surface: #0a0f1e;
   --color-surface-rgb: 10, 15, 30;
   --color-border: #1e2a3a;
   --color-border-strong: #2d3a4d;
   --color-surface-muted: #0a0f1e;
+  --color-surface-hover: #1a2332;
   --color-text: #f1f5f9;
   --color-text-secondary: #cbd5e1;
   --color-text-tertiary: #94a3b8;
