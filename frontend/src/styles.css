@@ -2630,7 +2630,8 @@ input[type='file']::file-selector-button:hover {
 }
 
 [data-theme='light'] .auth-card {
-  box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-muted) 100%);
 }
 
 .auth-card:focus-within {
@@ -5170,6 +5171,10 @@ html {
   justify-content: center;
   overflow: visible;
   width: 100%;
+}
+
+[data-theme='light'] .hero-visual-wrap {
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0, 0, 0, 0.02), transparent 70%);
 }
 
 @media (min-width: 1024px) {
