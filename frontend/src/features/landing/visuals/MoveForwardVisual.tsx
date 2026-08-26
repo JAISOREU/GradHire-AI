@@ -67,7 +67,7 @@ export const MoveForwardVisual = () => {
           <circle cx="108" cy="214" r="3.5" fill="var(--color-success)" />
           <text x="118" y="218" fill="var(--color-text)" fontSize="10" fontWeight="600">Application in progress</text>
           <rect x="278" y="206" width="44" height="16" rx="4" fill="var(--color-text)" />
-          <text x="300" y="218" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="700" className="hero-visual__invert-text">Active</text>
+           <text x="300" y="218" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="700">Active</text>
         </g>
       </svg>
 

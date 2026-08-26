@@ -77,8 +77,8 @@ export const SkillMatchingVisual = () => {
         <g className="match-badge">
           <circle cx="210" cy="140" r="45" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1.5" />
           <circle cx="210" cy="140" r="36" fill="none" stroke="url(#match-ring)" strokeWidth="4" strokeDasharray="190" strokeDashoffset="24" strokeLinecap="round" transform="rotate(-90 210 140)" />
-          <text x="210" y="136" textAnchor="middle" fill="var(--color-text)" fontSize="15" fontWeight="700" className="hero-visual__invert-text">75%</text>
-          <text x="210" y="152" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600" className="hero-visual__invert-text">Profile Match</text>
+           <text x="210" y="136" textAnchor="middle" fill="var(--color-text)" fontSize="15" fontWeight="700">75%</text>
+           <text x="210" y="152" textAnchor="middle" fill="var(--color-text)" fontSize="9" fontWeight="600">Profile Match</text>
         </g>
       </svg>
 

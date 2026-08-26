@@ -16,17 +16,17 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const Button = ({ variant = 'primary', size = 'md', loading = false, icon, iconRight, to, className = '', children, disabled, ...rest }: ButtonProps) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-[1px]';
+  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]';
   const variantClasses: Record<Variant, string> = {
-    primary: 'bg-primary text-primary-text hover:bg-primary-hover',
-    secondary: 'bg-surface border border-border text-text hover:bg-surface-muted',
+    primary: 'bg-primary text-primary-text hover:bg-primary-hover shadow-sm hover:shadow-md',
+    secondary: 'bg-surface-muted text-text hover:bg-border-strong/20',
     ghost: 'text-text hover:bg-surface-muted',
-    danger: 'bg-danger text-white hover:bg-danger/90',
+    danger: 'bg-danger text-white hover:bg-danger/90 shadow-sm hover:shadow-md',
   };
   const sizeClasses: Record<Size, string> = {
-    lg: 'min-h-[3rem] px-6 text-base rounded-md',
-    md: 'min-h-[2.75rem] px-4 text-sm rounded-md',
-    sm: 'min-h-[2.25rem] px-3 text-xs rounded-md',
+    lg: 'min-h-[3rem] px-6 text-base rounded-lg',
+    md: 'min-h-[2.75rem] px-4 text-sm rounded-lg',
+    sm: 'min-h-[2.25rem] px-3 text-xs rounded-lg',
   };
 
   const classes = cn(baseClasses, variantClasses[variant], sizeClasses[size], className);

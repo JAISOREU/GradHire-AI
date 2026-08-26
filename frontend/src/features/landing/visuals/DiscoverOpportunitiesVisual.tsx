@@ -25,7 +25,7 @@ export const DiscoverOpportunitiesVisual = () => {
           <rect x="58" y="40" width="304" height="30" rx="8" fill="var(--color-surface, #ffffff)" stroke="var(--color-border-strong, #d5cfc6)" strokeWidth="1" />
           <circle cx="76" cy="55" r="5" stroke="var(--color-text)" strokeWidth="1.5" fill="none" />
           <line x1="79" y1="58" x2="84" y2="63" stroke="var(--color-text)" strokeWidth="1.5" strokeLinecap="round" />
-          <text x="96" y="59" fill="var(--color-text)" fontSize="10" className="hero-visual__invert-text">Search opportunities...</text>
+           <text x="96" y="59" fill="var(--color-text)" fontSize="10">Search opportunities...</text>
         </g>
 
         <g className="disc-filter">
@@ -40,8 +40,8 @@ export const DiscoverOpportunitiesVisual = () => {
         <g className="disc-card disc-card--1">
           <rect x="58" y="116" width="304" height="38" rx="9" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" />
           <circle cx="80" cy="135" r="7" fill="var(--color-border, #e8e2d8)" />
-          <text x="98" y="131" fill="var(--color-text)" fontSize="10" fontWeight="600" className="hero-visual__invert-text">Technology Company</text>
-          <text x="98" y="144" fill="var(--color-text)" fontSize="9" className="hero-visual__invert-text">Remote · Full-time</text>
+           <text x="98" y="131" fill="var(--color-text)" fontSize="10" fontWeight="600">Technology Company</text>
+           <text x="98" y="144" fill="var(--color-text)" fontSize="9">Remote · Full-time</text>
           <rect x="326" y="128" width="22" height="13" rx="4" fill="var(--color-primary-soft, #eef2ff)" stroke="var(--color-text)" strokeWidth="1" />
           <text x="337" y="138" textAnchor="middle" fill="var(--color-text)" fontSize="8" fontWeight="700">95%</text>
         </g>
