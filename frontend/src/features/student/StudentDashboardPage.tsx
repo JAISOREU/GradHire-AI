@@ -13,7 +13,11 @@ import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 import { ScrollReveal, AnimatedCounter } from '../../animations';
+import { Icon } from '../../components/Icon';
 import type { AiRecommendation } from '../../core/types';
+
+const KPI_STAGGER = 80;
+const SECTION_STAGGER = 100;
 
 export const StudentDashboardPage = () => {
   const { user } = useAuth();
@@ -46,7 +50,7 @@ export const StudentDashboardPage = () => {
         subtitle="Your job search at a glance."
       />
 
-      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '1200ms', distance: '20px', direction: 'up' }}>
+      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up' }}>
         <div className="status-strip section--mt">
           {(jobsError || appsError || profileError) && (
             <div className="message message--error" role="alert">
@@ -55,7 +59,7 @@ export const StudentDashboardPage = () => {
           )}
           <KPICard
             label="Applications"
-            value={<AnimatedCounter to={appCount} duration={1200} delay={0} />}
+            value={<AnimatedCounter to={appCount} duration={1000} delay={0} />}
             icon="📨"
             trend={{ direction: appCount > 0 ? 'up' : 'neutral', value: `${appCount} total`, label: 'applications' }}
             action={
@@ -64,9 +68,10 @@ export const StudentDashboardPage = () => {
           />
           <KPICard
             label="Profile"
-            value={<AnimatedCounter to={profileCompletePct} duration={1200} delay={100} format={(v) => `${Math.round(v)}%`} />}
+            value={<AnimatedCounter to={profileCompletePct} duration={1000} delay={KPI_STAGGER} format={(v) => `${Math.round(v)}%`} />}
             icon="🎯"
             trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
+            progress={profileCompletePct}
             action={
               <Link to="/student/account"><Button variant="ghost" size="sm">Update</Button></Link>
             }
@@ -82,7 +87,7 @@ export const StudentDashboardPage = () => {
           />
           <KPICard
             label="Saved Jobs"
-            value={<AnimatedCounter to={savedCount} duration={1200} delay={200} />}
+            value={<AnimatedCounter to={savedCount} duration={1000} delay={KPI_STAGGER * 2} />}
             icon="🔖"
             trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
             action={
@@ -92,14 +97,15 @@ export const StudentDashboardPage = () => {
         </div>
       </ScrollReveal>
 
-      <DashboardSection
-        title="Recent applications"
-        subtitle="Track the status of roles you've applied to."
-        action={
-          <Link to="/student/applications"><Button variant="ghost" size="sm">View all →</Button></Link>
-        }
-        className="section--mt"
-      >
+      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up', delay: SECTION_STAGGER }}>
+        <DashboardSection
+          title="Recent applications"
+          subtitle="Track the status of roles you've applied to."
+          action={
+            <Link to="/student/applications"><Button variant="ghost" size="sm">View all →</Button></Link>
+          }
+          className="section--mt"
+        >
         {appsLoading ? (
           <Skeleton variant="table" lines={4} />
         ) : applications && applications.length > 0 ? (
@@ -119,18 +125,20 @@ export const StudentDashboardPage = () => {
             </div>
           ))
         ) : (
-          <EmptyState icon="📨" title="No applications yet" text="Apply to jobs to track them here." action={<Link to="/jobs"><Button size="sm">Browse jobs</Button></Link>} />
+          <EmptyState icon="📨" title="No applications yet" text="Start applying to jobs and track your progress here." action={<Link to="/jobs"><Button size="sm">Browse jobs</Button></Link>} />
         )}
-      </DashboardSection>
+        </DashboardSection>
+      </ScrollReveal>
 
-      <DashboardSection
-        title={hasRecommendationAccess ? "Top matches for you" : "Unlock recommendations"}
-        subtitle={hasRecommendationAccess ? "ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
-        action={
-          <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm">{hasRecommendationAccess ? 'View all →' : 'Complete profile'}</Button></Link>
-        }
-        className="section--mt"
-      >
+      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up', delay: SECTION_STAGGER * 2 }}>
+        <DashboardSection
+          title={hasRecommendationAccess ? "Top matches for you" : "Unlock recommendations"}
+          subtitle={hasRecommendationAccess ? "Ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
+          action={
+            <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm">{hasRecommendationAccess ? 'View all →' : 'Complete profile'}</Button></Link>
+          }
+          className="section--mt"
+        >
         {hasRecommendationAccess ? (
           aiLoading ? (
             <Skeleton variant="table" lines={3} />
@@ -153,18 +161,20 @@ export const StudentDashboardPage = () => {
             <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
           )
         ) : (
-          <div className="card p-4">
-            <EmptyState
-              icon="🎯"
-              title="Complete your profile to receive personalized job recommendations"
-              text="Add your education, skills, and experience so we can match you with the right opportunities."
-            />
-            <div className="mt-4 flex flex-col gap-2">
+          <div className="auth-locked-recommendations">
+            <div className="auth-locked-recommendations__icon" aria-hidden="true">
+              <Icon name="lock" size={20} />
+            </div>
+            <div className="auth-locked-recommendations__body">
+              <h3 className="auth-locked-recommendations__title">Complete your profile</h3>
+              <p className="auth-locked-recommendations__text">Add your education, skills, and experience to unlock personalized job matches.</p>
+            </div>
+            <div className="auth-locked-recommendations__actions">
               {(aiReadiness?.missing ?? []).map((key: string) => {
                 const link = missingSectionLinks[key];
                 if (!link) return null;
                 return (
-                  <Link key={key} to={link.to} className="self-start no-underline">
+                  <Link key={key} to={link.to} className="no-underline">
                     <Button variant="secondary" size="sm">{link.label}</Button>
                   </Link>
                 );
@@ -173,6 +183,7 @@ export const StudentDashboardPage = () => {
           </div>
         )}
       </DashboardSection>
+      </ScrollReveal>
     </div>
   );
 };

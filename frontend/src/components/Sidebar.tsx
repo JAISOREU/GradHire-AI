@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import type { NavItem, NavSection } from '../core/utils/navigation';
 import { Icon } from './Icon';
+import { Logo } from './Logo';
 
 type SidebarProps = {
   sections?: NavSection[];
@@ -15,17 +16,20 @@ type SidebarProps = {
 export const Sidebar = ({ sections, items, title, footer, className, collapsed, onToggle }: SidebarProps) => (
   <aside className={`sidebar ${className ?? ''} ${collapsed ? 'is-collapsed' : ''}`} aria-label={title}>
     <div className="sidebar__head">
-      <span className="sidebar__head-text">{title}</span>
+      <div className="sidebar__brand">
+        <Logo size={28} />
+        <span className="sidebar__head-text">{title}</span>
+      </div>
       {onToggle && (
         <button
           type="button"
           onClick={onToggle}
-          className="sidebar__toggle"
+          className="sidebar__toggle sidebar__toggle--collapse"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <span className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--collapsed' : ''}`} aria-hidden="true">
-            <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={20} />
+            <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={18} />
           </span>
         </button>
       )}

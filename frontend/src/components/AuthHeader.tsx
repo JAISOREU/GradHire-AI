@@ -16,7 +16,7 @@ type AuthHeaderProps = {
   sidebarOpen?: boolean;
 };
 
-export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen }: AuthHeaderProps) => {
+export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sidebarOpen }: AuthHeaderProps) => {
   const displayName = user.name || user.email;
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
@@ -136,21 +136,6 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
     transition: 'gap 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
   };
 
-  const brandStyle: React.CSSProperties = {
-    gap: `${morph.itemGap}px`,
-    marginLeft: `${morph.brandMargin}px`,
-    transform: `scale(${morph.logoScale})`,
-    transformOrigin: 'left center',
-    transition: 'gap 0.35s cubic-bezier(0.22, 1, 0.36, 1), margin-left 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    opacity: morph.titleOpacity,
-    transform: `scale(${morph.titleScale})`,
-    transformOrigin: 'left center',
-    transition: 'opacity 0.35s ease, transform 0.35s ease',
-  };
-
   const themeStyle: React.CSSProperties = {
     opacity: morph.themeOpacity,
     transition: 'opacity 0.35s ease',
@@ -197,29 +182,10 @@ export const AuthHeader = ({ title, user, onToggleSidebar, onLogout, sidebarOpen
   return (
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
       <div className="app-header__inner" style={innerStyle}>
-        <Link to={homeRoute} className="brand inline-flex items-center no-underline text-inherit" style={brandStyle}>
-          <span className="header-logo__mark" aria-hidden="true">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
-              <path d="M20 24V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="header-logo-tassel" />
-              <circle cx="20" cy="33" r="2" fill="currentColor" className="header-logo-tassel-dot" />
-              <circle cx="4" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--1" />
-              <circle cx="20" cy="8" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--2" />
-              <circle cx="36" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--3" />
-              <circle cx="20" cy="24" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--4" />
-              <path d="M4 16H36M20 8V24M4 16L20 24M36 16L20 24" stroke="currentColor" strokeWidth="1" opacity="0.3" className="header-logo-lines" />
-            </svg>
-          </span>
-          <span className="header-logo__text" style={titleStyle}>
-            <span className="header-logo__inner">{title.split(' ').map((word, i, arr) => {
-              const isLast = i === arr.length - 1;
-              if (isLast && arr.length > 1) {
-                return <span key={i} className="header-logo__ai">{word} </span>;
-              }
-              return <span key={i}>{word} </span>;
-            })}</span>
-          </span>
-        </Link>
+        <div className="app-header__brand">
+          <span className="app-header__title">Talent</span>
+        </div>
+
         <Button
           variant="ghost"
           size="sm"

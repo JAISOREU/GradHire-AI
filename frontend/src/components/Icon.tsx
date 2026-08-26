@@ -50,7 +50,7 @@ import {
   Lock,
 } from 'lucide-react';
 
-type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'arrow-up' | 'arrow-down' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo' | 'resume' | 'reports' | 'ai' | 'database' | 'api' | 'email' | 'cms' | 'feature' | 'backup' | 'security';
+type IconName = 'dashboard' | 'applications' | 'jobs' | 'saved' | 'profile' | 'settings' | 'messages' | 'notifications' | 'analytics' | 'interviews' | 'company' | 'users' | 'audit' | 'developer' | 'home' | 'search' | 'filter' | 'plus' | 'arrow-right' | 'arrow-left' | 'arrow-up' | 'arrow-down' | 'chevron-right' | 'chevron-left' | 'menu' | 'close' | 'check' | 'x' | 'mail' | 'bell' | 'star' | 'heart' | 'trash' | 'edit' | 'eye' | 'download' | 'upload' | 'external' | 'link' | 'copy' | 'refresh' | 'loader' | 'sun' | 'moon' | 'logo' | 'resume' | 'reports' | 'ai' | 'database' | 'api' | 'email' | 'cms' | 'feature' | 'backup' | 'security' | 'lock';
 
 type IconProps = {
   name: IconName;
@@ -115,6 +115,7 @@ const COMPONENT_MAP: Record<IconName, React.FC<LucideProps>> = {
   feature: Lightbulb,
   backup: Download,
   security: Lock,
+  lock: Lock,
 };
 
 export const Icon = ({ name, size = 20, className = '', 'aria-hidden': ariaHidden = true }: IconProps) => {
