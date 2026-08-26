@@ -137,10 +137,11 @@ export const HeroVisual = () => {
 
           <motion.g className="hero-visual__layer hero-visual__layer--bg" variants={heroChild}>
             <motion.g
-              className="hero-visual__card hero-visual__card--candidate origin-[190px_250px]"
+              className="hero-visual__card hero-visual__card--candidate"
               variants={heroChild}
               animate={reduceMotion ? undefined : floatCandidate}
               whileHover={reduceMotion ? undefined : cardHover}
+              style={{ transformOrigin: '190px 250px' }}
             >
               <motion.rect
                 x="80" y="160" width="220" height="180" rx="12"
@@ -177,10 +178,11 @@ export const HeroVisual = () => {
             </motion.g>
 
             <motion.g
-              className="hero-visual__card hero-visual__card--job origin-[610px_250px]"
+              className="hero-visual__card hero-visual__card--job"
               variants={heroChild}
               animate={reduceMotion ? undefined : floatJob}
               whileHover={reduceMotion ? undefined : cardHoverJob}
+              style={{ transformOrigin: '610px 250px' }}
             >
               <motion.rect x="500" y="140" width="220" height="200" rx="12" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e8e2d8)" strokeWidth="1" filter={`url(#${svgId}-card-shadow)`} />
               <motion.rect x="500" y="140" width="220" height="48" rx="12" fill="var(--color-surface-muted, #fefcf8)" />
@@ -206,9 +208,10 @@ export const HeroVisual = () => {
 
           <motion.g className="hero-visual__layer hero-visual__layer--mid" variants={heroChild}>
             <motion.g
-              className="hero-visual__ai-indicator origin-[400px_250px]"
+              className="hero-visual__ai-indicator"
               animate={reduceMotion ? undefined : aiPulse}
               whileHover={reduceMotion ? undefined : aiHover}
+              style={{ transformOrigin: '400px 250px' }}
             >
               <motion.circle cx="400" cy="250" r="32" fill={`url(#${svgId}-ai-indicator-grad)`} />
               <motion.circle cx="400" cy="250" r="8" fill="var(--color-primary, #4f46e5)" className="hero-visual__ai-dot" />
