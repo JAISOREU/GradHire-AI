@@ -2632,6 +2632,8 @@ input[type='file']::file-selector-button:hover {
 [data-theme='light'] .auth-card {
   box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 0, 0, 0.04);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-muted) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .auth-card:focus-within {
@@ -5198,6 +5200,10 @@ html {
   height: auto;
   transition: transform 0.15s ease-out;
   will-change: transform;
+}
+
+[data-theme='light'] .hero-visual {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.06));
 }
 
 @media (hover: hover) {
