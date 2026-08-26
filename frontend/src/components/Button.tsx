@@ -31,26 +31,26 @@ export const Button = ({ variant = 'primary', size = 'md', loading = false, icon
 
   const classes = cn(baseClasses, variantClasses[variant], sizeClasses[size], className);
 
+  const content = (
+    <span className="flex items-center gap-2">
+      {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />}
+      {!loading && icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
+      <span className={cn('flex items-center gap-2', loading && 'opacity-70')}>{children}</span>
+      {!loading && iconRight && <span className="flex-shrink-0" aria-hidden="true">{iconRight}</span>}
+    </span>
+  );
+
   if (to && !loading) {
     return (
       <Link to={to} className={classes} {...rest as any}>
-        <span className="flex items-center gap-2">
-          {icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
-          <span>{children}</span>
-          {iconRight && <span className="flex-shrink-0" aria-hidden="true">{iconRight}</span>}
-        </span>
+        {content}
       </Link>
     );
   }
 
   return (
     <button className={classes} disabled={disabled || loading} {...rest}>
-      <span className="flex items-center gap-2">
-        {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />}
-        {!loading && icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
-        <span className={cn('flex items-center gap-2', loading && 'opacity-70')}>{children}</span>
-        {!loading && iconRight && <span className="flex-shrink-0" aria-hidden="true">{iconRight}</span>}
-      </span>
+      {content}
     </button>
   );
 };

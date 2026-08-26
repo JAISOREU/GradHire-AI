@@ -34,7 +34,7 @@ const HeroNode = () => {
             Discover opportunities that fit your skills, education, experience, and goals while building a stronger profile for the right employers.
           </p>
           <div className="hero-actions hero-anim hero-anim--actions">
-            <Button to={jobsLink} size="lg" className="btn--primary--hero" iconRight={<Icon name="arrow-right" size={18} />}>
+            <Button to={jobsLink} size="lg" iconRight={<Icon name="arrow-right" size={18} />}>
               Browse jobs
             </Button>
             <Button to="/register" variant="secondary" size="lg">
@@ -74,12 +74,12 @@ const CtaNode = () => {
               <p className="cta-card__subtitle">
                 Join talent and employers already using Gradture AI.
               </p>
-              <div className="hero-actions">
-                <Button to="/register" className="btn--primary--hero">Create account</Button>
-                <Button to={jobsLink} variant="secondary">
-                  Browse jobs
-                </Button>
-              </div>
+               <div className="hero-actions">
+                 <Button to="/register" size="lg">Create account</Button>
+                 <Button to={jobsLink} variant="secondary" size="lg">
+                   Browse jobs
+                 </Button>
+               </div>
             </div>
           </section>
         </div>
