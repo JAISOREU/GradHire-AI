@@ -174,20 +174,19 @@ export const FeatureSlide = ({ feature, index }: { feature: Feature; index: numb
           </div>
         )}
       </div>
-      <div className="feature-story__visual">
-        <ScrollReveal
-          options={{
-            threshold: 0.2,
-            once: true,
-            duration: MOTION.duration.slowest,
-            distance: MOTION.distance.lg,
-            blur: MOTION.blur.md,
-            direction: getAnimationDirection(),
-          }}
-        >
-          {VisualComponent && <VisualComponent />}
-        </ScrollReveal>
-      </div>
+      <ScrollReveal
+        options={{
+          threshold: 0.2,
+          once: true,
+          duration: MOTION.duration.slowest,
+          distance: MOTION.distance.lg,
+          blur: MOTION.blur.md,
+          direction: getAnimationDirection(),
+        }}
+        className="feature-story__visual"
+      >
+        {VisualComponent && <VisualComponent />}
+      </ScrollReveal>
     </div>
   );
 };
