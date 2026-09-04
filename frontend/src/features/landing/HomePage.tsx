@@ -28,7 +28,7 @@ const HeroNode = () => {
             <AnimatedLogo size={96} showText={true} />
           </div>
           <h1 className="hero-title hero-anim hero-anim--title">
-            Find the career you always wanted
+            Find work that feels like your next chapter
           </h1>
           <p className="hero-subtitle hero-anim hero-anim--subtitle">
             Discover opportunities that fit your skills, education, experience, and goals while building a stronger profile for the right employers.
