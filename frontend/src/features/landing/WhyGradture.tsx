@@ -1,13 +1,6 @@
 import { ScrollReveal, StaggerContainer, StaggerChild } from '../../animations';
 import { MOTION } from '../../animations/motion-tokens';
-import { SmartMatchingVisual } from './visuals/SmartMatchingVisual';
-import { ResumeParsingVisual } from './visuals/ResumeParsingVisual';
-import { JobHubVisual } from './visuals/JobHubVisual';
-import { RealTimeNotificationsVisual } from './visuals/RealTimeNotificationsVisual';
-import { DirectMessagingVisual } from './visuals/DirectMessagingVisual';
-import { ApplicationTrackingVisual } from './visuals/ApplicationTrackingVisual';
-import { SkillMatchingVisual } from './visuals/SkillMatchingVisual';
-import { PrivacyFirstVisual } from './visuals/PrivacyVisual';
+import { ProductUiVisual } from './visuals/ProductUiVisual';
 
 export interface Feature {
   id: string;
@@ -103,20 +96,8 @@ export const FEATURES: Feature[] = [
   },
 ];
 
-const VISUAL_COMPONENTS: Record<number, React.FC> = {
-  0: SmartMatchingVisual,
-  1: ResumeParsingVisual,
-  2: JobHubVisual,
-  3: RealTimeNotificationsVisual,
-  4: DirectMessagingVisual,
-  5: ApplicationTrackingVisual,
-  6: SkillMatchingVisual,
-  7: PrivacyFirstVisual,
-};
-
 export const FeatureSlide = ({ feature, index }: { feature: Feature; index: number }) => {
   const isEven = index % 2 === 0;
-  const VisualComponent = VISUAL_COMPONENTS[index];
 
   const getAnimationDirection = (): 'up' | 'left' | 'right' => {
     if (index === 0) return 'up';
@@ -185,7 +166,7 @@ export const FeatureSlide = ({ feature, index }: { feature: Feature; index: numb
             direction: getAnimationDirection(),
           }}
         >
-          {VisualComponent && <VisualComponent />}
+          <ProductUiVisual variant={feature.id} />
         </ScrollReveal>
       </div>
     </div>

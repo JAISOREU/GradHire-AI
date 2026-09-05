@@ -77,6 +77,7 @@ export const PublicLayout = () => {
 
   const headerClassName = [
     'app-header',
+    isHome ? 'app-header--landing' : '',
     morph.progress > 0.1 ? 'app-header--morphing' : '',
     morph.isMorphed ? 'app-header--bubble' : '',
   ]
@@ -145,7 +146,7 @@ export const PublicLayout = () => {
   return (
     <div className="public-layout">
       <SkipLink />
-      {!isHome && <header ref={headerRef} className={headerClassName} style={headerStyle}>
+      <header ref={headerRef} className={headerClassName} style={headerStyle}>
         <div className="app-header__inner" style={innerStyle}>
           <Link to={homeRoute} className="brand inline-flex items-center no-underline text-inherit" style={brandStyle}>
             <span className="header-logo__mark" aria-hidden="true">
@@ -207,7 +208,7 @@ export const PublicLayout = () => {
             )}
           </div>
         </div>
-      </header>}
+      </header>
 
       <main id="main-content" className="public-main">
         <Outlet />
