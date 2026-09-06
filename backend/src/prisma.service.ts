@@ -27,4 +27,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   async onModuleDestroy() {
     await this.$disconnect().catch(() => undefined);
   }
+
+  async syncJobCompany(jobId: string, companyId?: string | null): Promise<void> {
+    if (!companyId) return;
+    const company = await this.company.findUnique({
+      where: { id: companyId },
+      select: { name: true },
+    });
+    if (company) {
+      await this.job.update({
+        where: { id: jobId },
+        data: { company: company.name },
+      });
+    }
+  }
 }

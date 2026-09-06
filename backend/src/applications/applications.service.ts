@@ -59,7 +59,7 @@ export class ApplicationsService {
           },
         },
       },
-      include: { statusHistory: true, events: true },
+      include: { statusHistory: true, events: true, job: true },
     });
 
     await this.notifications.create(job.employerId, `New application received for "${job.title}" at ${job.company}`, application.id, 'APPLICATION');
@@ -95,10 +95,8 @@ export class ApplicationsService {
     }
 
     return {
-      id: application.id,
-      jobId,
-      status: application.status,
-      createdAt: (application as any).createdAt,
+      ...application,
+      job: { ...application.job, type: String(application.job.type) },
     };
   }
 
@@ -138,7 +136,7 @@ export class ApplicationsService {
       id: a.id,
       status: a.status,
       submittedAt: a.createdAt,
-      lastUpdated: a.lastStatusChangeAt,
+      lastStatusChangeAt: a.lastStatusChangeAt,
       job: a.job,
       lastEvent: (a.statusHistory as any)?.[0],
     }));
@@ -219,7 +217,9 @@ export class ApplicationsService {
       status: a.status,
       submittedAt: a.createdAt,
       viewedAt: a.viewedAt,
-      student: a.student,
+      studentId: a.studentId,
+      jobId: a.jobId,
+      job: a.job,
       lastEvent: (a.statusHistory as any)?.[0],
       interview: a.interview,
     }));

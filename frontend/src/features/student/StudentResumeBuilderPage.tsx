@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useState } from 'react';
 import { studentsApi } from '../../core/api/endpoints/students';
 import { api } from '../../core/api/client';
@@ -59,7 +60,7 @@ export const StudentResumeBuilderPage = () => {
                 {loading ? 'Generating…' : 'Generate resume suggestions'}
               </Button>
             </div>
-            {error && <div className="message message--error">{error}</div>}
+            {error && <Alert>{error}</Alert>}
 
              {recommendations.length > 0 && (
                <div className="recommendation-list section--mt">

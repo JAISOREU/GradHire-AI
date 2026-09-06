@@ -1,5 +1,4 @@
 import * as React from "react"
-import { ChevronDown } from "lucide-react"
 
 import { cn } from '../../lib/utils'
 
@@ -31,7 +30,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50 pointer-events-none" />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none text-xs">▼</span>
       </div>
     )
   }

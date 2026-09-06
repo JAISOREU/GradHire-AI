@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi } from '../../core/api/endpoints/students';
 import { useToast } from '../../core/toast/ToastContext';
@@ -39,9 +40,9 @@ export const StudentApplicationsPage = () => {
       <PageHeader title="My applications" subtitle="Track the status of every role you&apos;ve applied to." />
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load applications.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        <Alert>
+          {error ?? 'Failed to load applications.'} <button onClick={reload} className="link">Retry</button>
+        </Alert>
       )}
 
       <div className="list-container">
@@ -49,7 +50,7 @@ export const StudentApplicationsPage = () => {
           <Skeleton variant="table" lines={5} />
         ) : applications && applications.length > 0 ? (
           <div className="list">
-            {withdrawError && <div className="message message--error" role="alert">{withdrawError}</div>}
+            {withdrawError && <Alert>{withdrawError}</Alert>}
             {applications.map((app) => (
               <article key={app.id} className="list-item">
                 <div className="list-item__head">
@@ -70,10 +71,10 @@ export const StudentApplicationsPage = () => {
                     </Tooltip>
                   )}
                 </div>
-                {(app as any).lastEvent && (
+                {app.lastEvent && (
                    <div className="text-sm text-secondary section--mt border-l-2 border-border pl-4">
-                    <strong>{(app as any).lastEvent.newStatus}</strong> — {(app as any).lastEvent.message || 'Status updated'}
-                     <div className="text-xs text-muted">{new Date((app as any).lastEvent.createdAt).toLocaleString()}</div>
+                    <strong>{app.lastEvent.newStatus}</strong> — {app.lastEvent.message || 'Status updated'}
+                     <div className="text-xs text-muted">{new Date(app.lastEvent.createdAt).toLocaleString()}</div>
                   </div>
                 )}
               </article>

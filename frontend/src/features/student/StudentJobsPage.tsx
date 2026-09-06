@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
@@ -8,7 +9,6 @@ import { useToast } from '../../core/toast/ToastContext';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
-import { Icon } from '../../components/Icon';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { Tooltip } from '../../components/Tooltip';
@@ -208,9 +208,6 @@ export const StudentJobsPage = () => {
                   </span>
                 )}
                 <span className="badge badge--muted">
-                  <span className="badge__icon" aria-hidden="true">
-                    <Icon name="saved" size={12} />
-                  </span>
                   <span>Saved {savedCount}</span>
                 </span>
               </div>
@@ -227,7 +224,6 @@ export const StudentJobsPage = () => {
             <div className="filter-bar flex-wrap items-center gap-3">
               <Tooltip content="Search by job title, company, or skills">
                 <div className="flex items-center gap-2 flex-[1_1_240px]">
-                  <Icon name="search" size={18} />
                   <input
                     className="input"
                     type="search"
@@ -240,7 +236,6 @@ export const StudentJobsPage = () => {
               </Tooltip>
               <Tooltip content="Filter by city or region">
                 <div className="flex items-center gap-2 flex-[1_1_160px]">
-                  <Icon name="search" size={18} />
                   <input
                     className="input"
                     type="text"
@@ -346,12 +341,12 @@ export const StudentJobsPage = () => {
             {loading ? (
               <LoadingState label="Loading opportunities…" />
             ) : error ? (
-              <div className="message message--error" role="alert">
-                {(error as any)?.message ?? 'Failed to load opportunities.'}{' '}
+              <Alert>
+                {error ?? 'Failed to load jobs.'}{' '}
                 <button onClick={reload} className="link">
                   Retry
                 </button>
-              </div>
+              </Alert>
             ) : jobs.length > 0 ? (
               <div className="list">
                 {jobs.map((job, index) => {
@@ -455,7 +450,6 @@ export const StudentJobsPage = () => {
                              <Button
                                size="sm"
                                variant="secondary"
-                               icon={<Icon name="arrow-right" size={14} />}
                                onClick={() => handleApply(job)}
                              >
                                Apply
@@ -469,7 +463,6 @@ export const StudentJobsPage = () => {
               </div>
             ) : (
               <EmptyState
-                iconName="jobs"
                 title="No jobs found"
                 text={
                   activeFilterCount > 0

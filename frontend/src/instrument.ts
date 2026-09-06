@@ -1,28 +1,47 @@
 import * as Sentry from '@sentry/react';
 
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  environment: import.meta.env.MODE,
-  release: import.meta.env.VITE_APP_VERSION,
+const dsn = import.meta.env.VITE_SENTRY_DSN;
+const isProd = import.meta.env.MODE === 'production';
 
-  dataCollection: {
-    userInfo: false,
-    httpBodies: [],
-  },
+// Only initialize Sentry when a DSN is configured.
+// In development without a DSN, skip initialization entirely —
+// this avoids pulling the full SDK into the bundle.
+if (dsn) {
+  Sentry.init({
+    dsn,
+    environment: import.meta.env.MODE,
+    release: import.meta.env.VITE_APP_VERSION,
 
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration({
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
-  ],
+    dataCollection: {
+      userInfo: false,
+      httpBodies: [],
+    },
 
-  tracesSampleRate: 1.0,
-  tracePropagationTargets: ['localhost', /^https:\/\/gradture\.ai\/api/],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      // Only enable Session Replay in production to avoid the ~130 KB bundle cost in dev
+      ...(isProd
+        ? [
+               Sentry.replayIntegration({
+               maskAllText: true,
+               blockAllMedia: true,
+             }),
+          ]
+        : []),
+    ],
 
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
+    tracesSampleRate: isProd ? 1.0 : 0.1,
+    tracePropagationTargets: ['localhost', /^https:\/\/gradture\.ai\/api/],
 
-  enableLogs: true,
-});
+    // Replay sampling is only relevant when the integration is active
+    ...(isProd
+      ? {
+          replaysSessionSampleRate: 0.1,
+          replaysOnErrorSampleRate: 1.0,
+        }
+      : {}),
+
+    enableLogs: false,
+  });
+}
+

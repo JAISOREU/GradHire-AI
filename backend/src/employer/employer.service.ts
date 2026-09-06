@@ -96,6 +96,8 @@ export class EmployerService {
 
     const job = await this.prisma.job.create({ data: data as any });
 
+    await this.prisma.syncJobCompany(job.id, body.companyId);
+
     if (body.location) {
       await this.prisma.jobLocation.create({
         data: {
@@ -179,7 +181,86 @@ export class EmployerService {
 
     await this.cache.invalidate('jobs:*');
 
-    return this.prisma.job.update({ where: { id: jobId }, data: data as any });
+    // Update related entities in a transaction
+    await this.prisma.$transaction(async (tx) => {
+      // Update main job record
+      await tx.job.update({ where: { id: jobId }, data: data as any });
+
+      // Update location if provided
+      if (body.location) {
+        await tx.jobLocation.upsert({
+          where: { jobId },
+          update: {
+            country: (body.location.country as string) ?? job.country ?? '',
+            region: (body.location.region as string) ?? null,
+            city: (body.location.city as string) ?? '',
+            postalCode: (body.location.postalCode as string) ?? null,
+            address: (body.location.address as string) ?? null,
+            latitude: (body.location.latitude as number) ?? null,
+            longitude: (body.location.longitude as number) ?? null,
+            timezone: (body.location.timezone as string) ?? null,
+          },
+          create: {
+            jobId,
+            country: (body.location.country as string) ?? job.country ?? '',
+            region: (body.location.region as string) ?? null,
+            city: (body.location.city as string) ?? '',
+            postalCode: (body.location.postalCode as string) ?? null,
+            address: (body.location.address as string) ?? null,
+            latitude: (body.location.latitude as number) ?? null,
+            longitude: (body.location.longitude as number) ?? null,
+            timezone: (body.location.timezone as string) ?? null,
+          },
+        });
+      }
+
+      // Update skills if provided
+      if (body.skills !== undefined) {
+        await tx.jobSkill.deleteMany({ where: { jobId } });
+        if (body.skills.length > 0) {
+          await tx.jobSkill.createMany({
+            data: body.skills.map((skill) => ({
+              jobId,
+              name: skill.name,
+              required: skill.required ?? true,
+            })),
+          });
+        }
+      }
+
+      // Update benefits if provided
+      if (body.benefits !== undefined) {
+        await tx.jobBenefit.deleteMany({ where: { jobId } });
+        if (body.benefits.length > 0) {
+          await tx.jobBenefit.createMany({
+            data: body.benefits.map((name) => ({
+              jobId,
+              name,
+              custom: true,
+            })),
+          });
+        }
+      }
+
+      // Update requirements if provided
+      if (body.requirements !== undefined) {
+        await tx.jobRequirement.deleteMany({ where: { jobId } });
+        if (body.requirements.length > 0) {
+          await tx.jobRequirement.createMany({
+            data: body.requirements.map((req, index) => ({
+              jobId,
+              type: req.type as any,
+              description: req.description,
+              order: index,
+            })),
+          });
+        }
+      }
+    });
+
+    await this.prisma.syncJobCompany(jobId, body.companyId);
+
+    return this.prisma.job.findUnique({ where: { id: jobId } });
   }
 
   async deleteJob(user: AuthUser, jobId: string) {
@@ -198,8 +279,11 @@ export class EmployerService {
 
   async getEmployerProfile(user: AuthUser) {
     this.requireEmployer(user);
-    const profile = await this.prisma.user.findUnique({ where: { id: user.id }, select: { id: true, email: true, role: true, employerProfile: true } });
-    return profile ?? { id: user.id, email: user.email, role: user.role };
+    const profile = await this.prisma.employerProfile.findUnique({ where: { userId: user.id } });
+    if (!profile) {
+      throw new NotFoundException('Employer profile not found');
+    }
+    return profile;
   }
 
   async updateEmployerProfile(user: AuthUser, body: { companyName?: string; name?: string; industry?: string; location?: string; description?: string; website?: string; phone?: string }) {
@@ -291,6 +375,13 @@ export class EmployerService {
     const rejected = counts['REJECTED'] ?? 0;
     const withdrawn = counts['WITHDRAWN'] ?? 0;
 
+    const newApplicants = await this.prisma.application.count({
+      where: {
+        job: { employerId: user.id },
+        submittedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      } as any,
+    });
+
     const views = await this.prisma.job.aggregate({
       where: { employerId: user.id, status: 'PUBLISHED' },
       _sum: { views: true },
@@ -301,7 +392,8 @@ export class EmployerService {
       applicationsToday,
       views: views._sum.views ?? 0,
       pendingInterviews: interviewing,
-      totalApplications,
+      totalApplicants: totalApplications,
+      newApplicants,
       awaitingReview,
       shortlisted,
       interviewing,

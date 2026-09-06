@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useParams } from 'react-router-dom';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { Button } from '../../components/Button';
@@ -134,7 +135,7 @@ export const EmployerEditJobPage = () => {
   }
 
   if (error) {
-    return <div className="page fade-in"><div className="message message--error" role="alert">{error}</div></div>;
+    return <div className="page fade-in"><Alert>{error}</Alert></div>;
   }
 
   return (
@@ -200,7 +201,7 @@ export const EmployerEditJobPage = () => {
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting || saving}>{saving ? 'Saving…' : 'Save changes'}</Button>
           </div>
-          {formError && <div className="message message--error" role="alert">{formError}</div>}
+          {formError && <Alert>{formError}</Alert>}
         </form>
       </div>
     </div>

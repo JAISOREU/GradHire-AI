@@ -7,6 +7,7 @@ function createMockPrisma() {
   const users: Array<Record<string, unknown>> = [];
   const profiles: Array<Record<string, unknown>> = [];
   const employerProfiles: Array<Record<string, unknown>> = [];
+  const refreshTokens: Array<Record<string, unknown>> = [];
 
   const prisma = {
     user: {
@@ -85,9 +86,40 @@ function createMockPrisma() {
         return profile;
       },
     },
+    refreshToken: {
+      create: async ({ data }: { data: Record<string, unknown> }) => {
+        const token = { id: `token-${refreshTokens.length + 1}`, ...data, revokedAt: null };
+        refreshTokens.push(token);
+        return token;
+      },
+      findMany: async ({ where }: { where: Record<string, unknown> }) => {
+        return refreshTokens.filter((t) => {
+          if (where.revokedAt === null && t.revokedAt !== null) return false;
+          const expiresFilter = where.expiresAt as { gte?: string } | undefined;
+          if (expiresFilter?.gte) {
+            return new Date(t.expiresAt as string) >= new Date(expiresFilter.gte);
+          }
+          return true;
+        });
+      },
+      update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+        const idx = refreshTokens.findIndex((t) => t.id === where.id);
+        if (idx === -1) throw new Error('not found');
+        refreshTokens[idx] = { ...refreshTokens[idx], ...data };
+        return refreshTokens[idx];
+      },
+      updateMany: async ({ where, data }: { where: { userId?: string; revokedAt?: null }; data: Record<string, unknown> }) => {
+        for (const t of refreshTokens) {
+          if (where.userId && t.userId !== where.userId) continue;
+          if (where.revokedAt === null && t.revokedAt !== null) continue;
+          Object.assign(t, data);
+        }
+        return { count: refreshTokens.length };
+      },
+    },
   };
 
-  return { prisma, users, profiles, employerProfiles };
+  return { prisma, users, profiles, employerProfiles, refreshTokens };
 }
 
 function createMockEmail() {
@@ -139,8 +171,9 @@ test('register creates STUDENT user with profile when name is provided', async (
   assert.equal(result.user.email, 'student@test.dev');
   assert.equal(result.user.role, 'STUDENT');
   assert.equal(result.user.name, 'Test Student');
-  assert.equal(res.getCookies().length, 1);
+  assert.equal(res.getCookies().length, 2);
   assert.equal(res.getCookies()[0].name, 'access_token');
+  assert.equal(res.getCookies()[1].name, 'refresh_token');
 });
 
 test('register creates EMPLOYER user without profile', async () => {
@@ -187,8 +220,9 @@ test('login returns token for valid credentials', async () => {
   const result = await service.login({ email: 'login@test.dev', password: 'CorrectPass1!' }, res as never);
 
   assert.ok(result.accessToken);
+  assert.ok(result.refreshToken);
   assert.equal(result.user.email, 'login@test.dev');
-  assert.equal(res.getCookies().length, 1);
+  assert.equal(res.getCookies().length, 2);
 });
 
 test('login rejects invalid password', async () => {
@@ -242,17 +276,23 @@ test('validateToken rejects expired token', async () => {
 
 test('refresh issues new token for valid token', async () => {
   const { prisma, users } = createMockPrisma();
-  users.push({ id: 'user-1', email: 'refresh@test.dev', role: 'EMPLOYER', avatarUrl: null, profile: null, employerProfile: { companyName: 'Test Corp' } });
+  const bcrypt = await import('bcryptjs');
+  const hash = await bcrypt.hash('CorrectPass1!', 12);
+  users.push({ id: 'user-1', email: 'refresh@test.dev', passwordHash: hash, role: 'EMPLOYER', avatarUrl: null, profile: null, employerProfile: { companyName: 'Test Corp' } });
   const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
-  const res = createMockRes();
+  const loginRes = createMockRes();
 
-  const token = service['buildAuthResponse']({ id: 'user-1', email: 'refresh@test.dev', role: 'EMPLOYER', name: 'Test Corp' }).accessToken;
-  const result = await service.refresh(token, res as never);
+  const loginResult = await service.login({ email: 'refresh@test.dev', password: 'CorrectPass1!' }, loginRes as never);
+  assert.ok(loginResult.refreshToken);
+
+  const res = createMockRes();
+  const result = await service.refresh(loginResult.refreshToken, res as never);
 
   assert.ok(result.accessToken);
+  assert.ok(result.refreshToken);
   assert.equal(result.user.email, 'refresh@test.dev');
   assert.equal(result.user.name, 'Test Corp');
-  assert.equal(res.getCookies().length, 1);
+  assert.equal(res.getCookies().length, 2);
 });
 
 test('clearAuthCookie clears cookie with proper options', async () => {

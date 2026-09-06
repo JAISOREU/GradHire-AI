@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { api, getStoredToken, setStoredToken, clearStoredToken, ApiError } from './client';
+import { api, getStoredToken, setStoredToken, clearStoredToken, ApiError, setAuthRefresh, clearRequestCache } from './client';
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 const FULL_TEST_URL = API_BASE ? `${API_BASE}/test` : '/test';
@@ -19,6 +19,8 @@ describe('api client', () => {
     localStorage.clear();
     document.cookie = 'XSRF-TOKEN=test-csrf-token; path=/';
     vi.resetAllMocks();
+    clearRequestCache();
+    setAuthRefresh(null);
   });
 
   it('returns parsed JSON on success', async () => {
@@ -121,6 +123,64 @@ describe('api client', () => {
 
     const result = await api('/test', { method: 'DELETE' });
     expect(result).toBeNull();
+  });
+
+  it('retries concurrent requests after a successful token refresh', async () => {
+    // First fetch call for each request returns 401, the second (retry) returns 200.
+    let callCount = 0;
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockImplementation(() => {
+      callCount++;
+      if (callCount <= 2) {
+        // Both initial requests get 401
+        return Promise.resolve(
+          mockResponse({
+            ok: false,
+            status: 401,
+            json: () => Promise.resolve({ message: 'Unauthorized' }),
+          }),
+        );
+      }
+      // Retry requests succeed
+      return Promise.resolve(
+        mockResponse({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ success: true }),
+        }),
+      );
+    });
+
+    // Register a refresh callback that succeeds
+    setAuthRefresh(async () => true);
+
+    // Fire two requests concurrently — both should get 401, both should retry after refresh
+    const [r1, r2] = await Promise.all([api('/test1'), api('/test2')]);
+    expect(r1).toEqual({ success: true });
+    expect(r2).toEqual({ success: true });
+    expect(fetch).toHaveBeenCalledTimes(4);
+
+    setAuthRefresh(null);
+  });
+
+  it('throws original error when token refresh fails for concurrent requests', async () => {
+    global.fetch = vi.fn<unknown[], Promise<Response>>().mockResolvedValue(
+      mockResponse({
+        ok: false,
+        status: 401,
+        json: () => Promise.resolve({ message: 'Unauthorized' }),
+      }),
+    );
+
+    // Register a refresh callback that fails
+    setAuthRefresh(async () => false);
+
+    // Both requests should fail with 401
+    const [r1, r2] = await Promise.allSettled([api('/test1'), api('/test2')]);
+    expect(r1.status).toBe('rejected');
+    expect(r2.status).toBe('rejected');
+    expect((r1 as PromiseRejectedResult).reason).toMatchObject({ status: 401, message: 'Unauthorized' });
+
+    setAuthRefresh(null);
   });
 });
 

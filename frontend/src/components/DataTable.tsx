@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Skeleton } from './Skeleton';
 
 type Column<T> = {
   key: string;
@@ -45,7 +46,7 @@ export function DataTable<T>({
               <div key={i} className="data-table__row">
                 {columns.map((col) => (
                   <div key={col.key} className={`data-table__td ${col.className ?? ''}`}>
-                    <div className="skeleton skeleton-text" style={{ width: `${70 + (i % 3) * 10}%` }} />
+                    <Skeleton variant="text" lines={1} />
                   </div>
                 ))}
                 {actions && <div className="data-table__td data-table__td--actions" />}

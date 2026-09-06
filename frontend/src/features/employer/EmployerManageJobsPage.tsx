@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { Link } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobsApi } from '../../core/api/endpoints/jobs';
@@ -44,7 +45,7 @@ export const EmployerManageJobsPage = () => {
       />
 
       <div className="section--mt">
-        {archiveError && <div className="message message--error" role="alert">{archiveError}</div>}
+        {archiveError && <Alert>{archiveError}</Alert>}
         {loading ? (
           <Skeleton variant="table" lines={5} />
         ) : jobs && jobs.length > 0 ? (
@@ -99,7 +100,7 @@ export const EmployerManageJobsPage = () => {
             </table>
           </div>
         ) : (
-          <EmptyState icon="🗂️" title="No jobs posted" text="Post your first opening to start receiving applicants." action={<Link to="/employer/post-job"><Button size="sm">Post a job</Button></Link>} />
+          <EmptyState title="No jobs posted" text="Post your first opening to start receiving applicants." action={<Link to="/employer/post-job"><Button size="sm">Post a job</Button></Link>} />
         )}
       </div>
     </div>

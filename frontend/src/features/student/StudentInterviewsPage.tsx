@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
 import { interviewsApi } from '../../core/api/endpoints/interviews';
 import { EmptyState } from '../../components/EmptyState';
@@ -27,9 +28,9 @@ export const StudentInterviewsPage = () => {
       <PageHeader title="My interviews" subtitle="View your scheduled interviews." />
 
       {error && (
-        <div className="message message--error" role="alert">
+        <Alert>
           {error ?? 'Failed to load interviews.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        </Alert>
       )}
 
       <div className="list-container">

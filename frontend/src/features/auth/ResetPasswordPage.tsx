@@ -1,15 +1,20 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
 import { AuthLayout } from '../../components/AuthLayout';
+import { Alert } from '../../components/Alert';
+import { Skeleton } from '../../components/Skeleton';
 import { useFormValidation } from '../../core/hooks/useFormValidation';
 import { z } from 'zod';
 import { authApi } from '../../core/api/endpoints/auth';
-import { Eye, EyeOff, CheckCircle2 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
   confirmPassword: z.string().min(1, 'Please confirm your password'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
@@ -70,22 +75,11 @@ export const ResetPasswordPage = () => {
     >
       {success ? (
         <div className="auth-success" role="status">
-          <CheckCircle2 size={32} className="auth-success__icon" aria-hidden="true" />
           <p>Password reset successfully. Redirecting to sign in…</p>
           <Link to="/login"><Button className="mt-4">Go to sign in</Button></Link>
         </div>
       ) : isSubmitting ? (
-        <div className="stack mt-4 space-y-4">
-          <div className="space-y-2">
-            <div className="skeleton skeleton-text w-[30%] h-3.5" />
-            <div className="skeleton skeleton-text w-full h-10" />
-          </div>
-          <div className="space-y-2">
-            <div className="skeleton skeleton-text w-[30%] h-3.5" />
-            <div className="skeleton skeleton-text w-full h-10" />
-          </div>
-          <div className="skeleton skeleton-text w-full h-10" />
-        </div>
+        <Skeleton lines={3} className="mt-4" />
       ) : (
         <form onSubmit={handleSubmit} className="stack mt-4">
           <div>
@@ -104,10 +98,9 @@ export const ResetPasswordPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="pointer-events-auto"
+                    className="pointer-events-auto text-xs text-secondary hover:text-primary uppercase tracking-wide"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPassword ? '(hide)' : '(show)'}
                   </button>
                 }
               />
@@ -128,15 +121,14 @@ export const ResetPasswordPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirm((prev) => !prev)}
-                    aria-label={showConfirm ? 'Hide password' : 'Show password'}
-                    className="pointer-events-auto"
+                    className="pointer-events-auto text-xs text-secondary hover:text-primary uppercase tracking-wide"
                   >
-                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showConfirm ? '(hide)' : '(show)'}
                   </button>
                 }
               />
           </div>
-          {formError && <div className="message message--error" role="alert">{formError}</div>}
+          {formError && <Alert>{formError}</Alert>}
           <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Resetting…' : 'Reset password'}</Button>
         </form>
       )}

@@ -6,6 +6,7 @@ import { getRoleLabel } from '../../core/utils/roleLabels';
 import { DashboardSection } from '../../components/DashboardSection';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
+import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 
 export const AdminDashboardPage = () => {
@@ -17,10 +18,7 @@ export const AdminDashboardPage = () => {
         <PageHeader title="Admin Dashboard" subtitle="Platform overview and key metrics." />
         <div className="status-strip status-strip--4 section--mt">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="stat-card">
-              <div className="skeleton skeleton-text w-[60%] h-3.5" />
-              <div className="skeleton skeleton-text w-[40%] h-6 mt-2" />
-            </div>
+            <Skeleton key={i} variant="profile" />
           ))}
         </div>
       </div>
@@ -43,7 +41,7 @@ export const AdminDashboardPage = () => {
         <KPICard
           label="Total users"
           value={stats.users}
-          icon="👥"
+
           action={
             <Link to="/admin/users"><Button variant="ghost" size="sm">Manage</Button></Link>
           }
@@ -51,7 +49,7 @@ export const AdminDashboardPage = () => {
         <KPICard
           label="Active jobs"
           value={stats.activeJobs}
-          icon="🗂️"
+
           trend={{ direction: 'up', value: `${stats.activeJobs} open`, label: 'listings' }}
           action={
             <Link to="/admin/jobs"><Button variant="ghost" size="sm">Review</Button></Link>
@@ -60,7 +58,7 @@ export const AdminDashboardPage = () => {
         <KPICard
           label="Applications"
           value={stats.applicationsToday}
-          icon="📨"
+
           trend={{ direction: 'up', value: `${stats.applicationsToday} today`, label: 'submissions' }}
           action={
             <Link to="/admin/applications"><Button variant="ghost" size="sm">View</Button></Link>
@@ -69,7 +67,7 @@ export const AdminDashboardPage = () => {
         <KPICard
           label="Unread notifications"
           value={stats.notificationsUnread}
-          icon="🔔"
+
           trend={{ direction: stats.notificationsUnread > 0 ? 'down' : 'up', value: stats.notificationsUnread > 0 ? 'Needs attention' : 'All caught up', label: 'status' }}
           action={
             <Link to="/admin/notifications"><Button variant="ghost" size="sm">Check</Button></Link>
@@ -83,9 +81,9 @@ export const AdminDashboardPage = () => {
         className="section--mt"
       >
         <div className="status-strip status-strip--3">
-          <KPICard label={getRoleLabel('STUDENT')} value={stats.students} icon="🎓" />
-          <KPICard label="Employers" value={stats.employers} icon="🏢" />
-          <KPICard label="Total users" value={stats.users} icon="👥" />
+          <KPICard label={getRoleLabel('STUDENT')} value={stats.students}  />
+          <KPICard label="Employers" value={stats.employers}  />
+          <KPICard label="Total users" value={stats.users} />
         </div>
       </DashboardSection>
 

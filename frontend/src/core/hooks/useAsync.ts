@@ -18,23 +18,27 @@ export const useAsync = <T>(fetcher: () => Promise<T>, deps: unknown[] = []): As
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
+
     fetcher()
       .then((result) => {
-        if (active) {
+        if (active && !controller.signal.aborted) {
           setData(result);
           setLoading(false);
         }
       })
       .catch((err: unknown) => {
-        if (active) {
+        if (active && !controller.signal.aborted) {
           setError(err instanceof Error ? err.message : 'Something went wrong');
           setLoading(false);
         }
       });
+
     return () => {
       active = false;
+      controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, tick]);

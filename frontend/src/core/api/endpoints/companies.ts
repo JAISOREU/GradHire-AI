@@ -1,5 +1,5 @@
 import { api } from '../client';
-import type { Job } from '../../types';
+import type { EmployerJob } from '../../types';
 
 export const companiesApi = {
   list: (page = 1, limit = 20) =>
@@ -7,7 +7,7 @@ export const companiesApi = {
       `/api/v1/companies?page=${page}&limit=${limit}`,
       { requiresAuth: false },
     ).then((r) => r.items ?? []),
-  getById: (id: string) => api<{ id: string; name: string; industry?: string; location?: string; description?: string; logo?: string; jobs: Job[] }>(`/api/v1/companies/${id}`, { requiresAuth: false }),
+  getById: (id: string) => api<{ id: string; name: string; industry?: string; location?: string; description?: string; logo?: string; jobs: EmployerJob[] }>(`/api/v1/companies/${id}`, { requiresAuth: false }),
   searchEmployers: (q: string) =>
     api<{ items: Array<{ id: string; name: string; industry?: string; location?: string }> }>(`/api/v1/companies/search/employers?q=${encodeURIComponent(q)}`),
   follow: (companyId: string) => api<{ followed: boolean; companyId: string }>(`/api/v1/companies/${companyId}/follow`, { method: 'POST' }),

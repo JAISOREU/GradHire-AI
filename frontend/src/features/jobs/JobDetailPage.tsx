@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useParams, Link } from 'react-router-dom';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { applicationsApi } from '../../core/api/endpoints/applications';
@@ -5,7 +6,6 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useToast } from '../../core/toast/ToastContext';
 import { Button } from '../../components/Button';
-import { Icon } from '../../components/Icon';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
@@ -51,7 +51,7 @@ export const JobDetailPage = () => {
   };
 
   if (loading) return <LoadingState label="Loading job…" />;
-  if (!job) return <EmptyState icon="🔍" title="Job not found" text="This job may no longer be available." />;
+  if (!job) return <EmptyState title="Job not found" text="This job may no longer be available." />;
 
   const salary = formatSalary(job);
   const isExternal = !!job.isExternal;
@@ -123,7 +123,7 @@ export const JobDetailPage = () => {
           {isExternal && job.applicationUrl ? (
             <Tooltip content="Apply directly on the company website">
               <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer">
-                <Button iconRight={<Icon name="external" size={16} />}>Apply on Company Site</Button>
+                <Button>Apply on Company Site</Button>
               </a>
             </Tooltip>
           ) : isAuthenticated && user && user.role === 'STUDENT' ? (
@@ -146,7 +146,7 @@ export const JobDetailPage = () => {
             <Link to="/login"><Button>Sign in to apply</Button></Link>
           )}
         </div>
-        {error && <div className="message message--error section--mt" role="alert">{error}</div>}
+        {error && <Alert className="section--mt">{error}</Alert>}
       </div>
 
       {job.description && (

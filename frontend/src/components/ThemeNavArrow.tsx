@@ -69,21 +69,7 @@ export const ThemeNavArrow = ({ active, goTo, lastIndex, isTransitioning, reduce
 
       {/* Inner container */}
       <span className="theme-nav-arrow__inner" aria-hidden="true">
-        {/* Arrow SVG with morphing path */}
-        <svg
-          className="theme-nav-arrow__svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path
-            className="theme-nav-arrow__path"
-            d={isDown ? 'M12 5v14M5 12l7 7 7-7' : 'M12 19V5M5 12l7-7 7 7'}
-          />
-        </svg>
+        <span className="theme-nav-arrow__text">{isDown ? '↓' : '↑'}</span>
       </span>
 
       {/* Ripple effect */}

@@ -18,7 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cmd.exe /c "cd C:\\Portfolio\\GradTure\\frontend && npx vite"',
+    command: 'npx vite',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

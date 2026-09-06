@@ -36,7 +36,7 @@ export type Job = {
   company: string;
   location: string;
   type: JobType;
-  matchScore: number;
+  matchScore?: number;
   description?: string | null;
   salaryMin?: number | null;
   salaryMax?: number | null;
@@ -252,8 +252,6 @@ export type AiReadiness = {
   checks: { key: string; required: boolean; ready: boolean }[];
 };
 
-export type Profile = StudentProfile;
-
 export type HealthResponse = {
   status: string;
   service: string;
@@ -328,6 +326,14 @@ export type Application = {
   createdAt: string;
   job?: ApplicationJob;
   studentId?: string;
+  student?: {
+    id: string;
+    email: string;
+    profile?: {
+      name?: string;
+      skills?: string[];
+    } | null;
+  } | null;
   jobId?: string;
   source?: ApplicationSource;
   coverLetter?: string;
@@ -563,6 +569,7 @@ export type PaginatedResponse<T> = {
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
 };
 
 export type Company = {
@@ -662,6 +669,7 @@ export type EmployerJob = {
   noExperienceRequired?: boolean;
   internshipAccepted?: boolean;
   applicantCountVisible?: boolean;
+  applicantCount?: number;
   autoCloseAfterDeadline?: boolean;
   companyRef?: { name?: string; industry?: string; logo?: string; description?: string } | null;
   benefits?: JobBenefit[];
@@ -675,40 +683,3 @@ export type JobSourceStatus = 'ACTIVE' | 'PAUSED' | 'ERROR' | 'RATE_LIMITED';
 export type IngestionJobStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
 export type ImportedJobStatus = 'IMPORTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'EXPIRED' | 'ARCHIVED';
 
-export type JobSource = {
-  id: string;
-  name: string;
-  company: string;
-  sourceType: JobSourceType;
-  baseUrl: string;
-  feedUrl: string;
-  enabled: boolean;
-  crawlInterval: number;
-  lastRunAt?: string;
-  lastSuccessAt?: string;
-  lastFailureAt?: string;
-  failureCount: number;
-  status: JobSourceStatus;
-  fieldMapping?: Record<string, string>;
-  rateLimit?: number;
-  attribution?: string;
-  config?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type JobSourceRun = {
-  id: string;
-  sourceId: string;
-  status: IngestionJobStatus;
-  startedAt?: string;
-  finishedAt?: string;
-  discovered: number;
-  imported: number;
-  updated: number;
-  duplicates: number;
-  rejected: number;
-  errors?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-};

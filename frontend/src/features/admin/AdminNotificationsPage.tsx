@@ -2,11 +2,18 @@ import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
 import { AdminListPage } from '../../components/AdminListPage';
 import { Button } from '../../components/Button';
-import type { PaginatedResponse } from '../../core/types';
+
+type AdminNotification = {
+  id: string;
+  message: string;
+  recipient: { email: string };
+  read: boolean;
+  createdAt: string;
+};
 
 export const AdminNotificationsPage = () => {
   const { data: notifications, loading, reload } = useAsync(() => adminApi.notifications(), []);
-  const items = (notifications as PaginatedResponse<{ id: string; message: string; recipient: { email: string }; read: boolean; createdAt: string }> | undefined)?.items ?? [];
+  const items = (notifications as { items: AdminNotification[] } | undefined)?.items ?? [];
 
   const handleMarkRead = async (id: string) => {
     try {

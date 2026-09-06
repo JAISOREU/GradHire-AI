@@ -11,9 +11,9 @@ import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
+import { Alert } from '../../components/Alert';
 import { PageHeader } from '../../components/PageHeader';
 import { ScrollReveal, AnimatedCounter } from '../../animations';
-import { Icon } from '../../components/Icon';
 import type { AiRecommendation } from '../../core/types';
 
 const KPI_STAGGER = 80;
@@ -53,14 +53,12 @@ export const StudentDashboardPage = () => {
       <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up' }}>
         <div className="status-strip section--mt">
           {(jobsError || appsError || profileError) && (
-            <div className="message message--error" role="alert">
-              Some dashboard data failed to load. Please refresh the page.
-            </div>
+            <Alert>Some dashboard data failed to load. Please refresh the page.</Alert>
           )}
           <KPICard
             label="Applications"
             value={<AnimatedCounter to={appCount} duration={1000} delay={0} />}
-            icon="📨"
+
             trend={{ direction: appCount > 0 ? 'up' : 'neutral', value: `${appCount} total`, label: 'applications' }}
             action={
               <Link to="/student/applications"><Button variant="ghost" size="sm">View all</Button></Link>
@@ -69,7 +67,7 @@ export const StudentDashboardPage = () => {
           <KPICard
             label="Profile"
             value={<AnimatedCounter to={profileCompletePct} duration={1000} delay={KPI_STAGGER} format={(v) => `${Math.round(v)}%`} />}
-            icon="🎯"
+
             trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
             progress={profileCompletePct}
             action={
@@ -79,7 +77,7 @@ export const StudentDashboardPage = () => {
           <KPICard
             label="Matches"
             value={hasRecommendationAccess ? 'Available' : 'Locked'}
-            icon="✨"
+
             trend={{ direction: hasRecommendationAccess ? 'up' : 'neutral', value: hasRecommendationAccess ? 'Active' : 'Complete profile', label: 'recommendations' }}
             action={
               <Link to="/student/recommended"><Button variant="ghost" size="sm">Explore</Button></Link>
@@ -88,7 +86,7 @@ export const StudentDashboardPage = () => {
           <KPICard
             label="Saved Jobs"
             value={<AnimatedCounter to={savedCount} duration={1000} delay={KPI_STAGGER * 2} />}
-            icon="🔖"
+
             trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
             action={
               <Link to="/student/saved"><Button variant="ghost" size="sm">Browse</Button></Link>
@@ -162,9 +160,6 @@ export const StudentDashboardPage = () => {
           )
         ) : (
           <div className="auth-locked-recommendations">
-            <div className="auth-locked-recommendations__icon" aria-hidden="true">
-              <Icon name="lock" size={20} />
-            </div>
             <div className="auth-locked-recommendations__body">
               <h3 className="auth-locked-recommendations__title">Complete your profile</h3>
               <p className="auth-locked-recommendations__text">Add your education, skills, and experience to unlock personalized job matches.</p>

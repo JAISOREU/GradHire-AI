@@ -34,17 +34,23 @@ const DropdownMenu = ({ open, onOpenChange, children }: DropdownMenuProps) => {
 
   return (
     <DropdownMenuContext.Provider value={{ onClose }}>
-      <div className="fixed inset-0 z-50" onClick={onClose}>
-        <div
-          role="menu"
-          className={cn(
-            "absolute rounded-md border border-border bg-surface shadow-md",
-            "min-w-[8rem] overflow-hidden"
-          )}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {children}
-        </div>
+      <button
+        type="button"
+        className="fixed inset-0 z-50 border-none cursor-pointer"
+        onClick={onClose}
+        aria-label="Close menu"
+      >
+        <span className="sr-only">Close menu</span>
+      </button>
+      <div
+        role="menu"
+        className={cn(
+          "absolute rounded-md border border-border bg-surface shadow-md",
+          "min-w-[8rem] overflow-hidden"
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
       </div>
     </DropdownMenuContext.Provider>
   )

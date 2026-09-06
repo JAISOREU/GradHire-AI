@@ -1,0 +1,3 @@
+-- Baseline migration: refresh tokens already exist in the live database.
+-- This migration is intentionally empty and exists only to bring the migration
+-- history in sync with the current schema state without resetting the database.

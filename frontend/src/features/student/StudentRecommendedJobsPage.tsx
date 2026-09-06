@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
 import { recommendationsApi } from '../../core/api/endpoints/jobs';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
@@ -69,9 +70,9 @@ export const StudentRecommendedJobsPage = () => {
       />
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load recommendations.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        <Alert>
+          {error ?? 'Failed to load recommendations.'} <button onClick={reload} className="link">Retry</button>
+        </Alert>
       )}
 
       {fallback && ready && (

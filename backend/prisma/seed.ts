@@ -1,14 +1,22 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
+const DEMO_PASSWORD = 'DemoPassword123!';
+
+async function hashPassword(): Promise<string> {
+  return bcrypt.hash(DEMO_PASSWORD, 12);
+}
 
 async function main() {
+  const passwordHash = await hashPassword();
+
   const employer = await prisma.user.upsert({
     where: { email: 'employer@demo.gradhire.ai' },
     update: {},
     create: {
       email: 'employer@demo.gradhire.ai',
-      passwordHash: 'demo-hash',
+      passwordHash,
       role: 'EMPLOYER',
       employerProfile: {
         create: {
@@ -26,7 +34,7 @@ async function main() {
     update: {},
     create: {
       email: 'student@demo.gradhire.ai',
-      passwordHash: 'demo-hash',
+      passwordHash,
       role: 'STUDENT',
       profile: {
         create: {
@@ -71,7 +79,7 @@ async function main() {
     },
   });
 
-  console.log('Seed complete:', { employer: employer.email, student: student.email, job: job.title });
+  console.log('Seed complete:', { employer: employer.email, student: student.email, job: job.title, demoPassword: DEMO_PASSWORD });
 }
 
 main()

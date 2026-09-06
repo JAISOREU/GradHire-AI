@@ -30,8 +30,20 @@ function createMockPrisma() {
         }
         return applications.find((a) => a.id === where.id) ?? null;
       },
-      create: async ({ data }: { data: Record<string, unknown> }) => {
-        const app = { id: `app-${applications.length + 1}`, ...data };
+      create: async ({ data, include }: { data: Record<string, unknown>; include?: Record<string, boolean> }) => {
+        const app: Record<string, unknown> = { id: `app-${applications.length + 1}`, ...data };
+        if (include?.job) {
+          const job = jobs.find((j) => j.id === data.jobId) as Record<string, unknown> | undefined;
+          if (job) {
+            app.job = { ...job };
+          }
+        }
+        if (include?.statusHistory) {
+          app.statusHistory = [];
+        }
+        if (include?.events) {
+          app.events = [];
+        }
         applications.push(app);
         return app;
       },

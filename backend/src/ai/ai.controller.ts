@@ -53,7 +53,6 @@ function buildCacheKey(prefix: string, userId: string, ...args: (string | number
 }
 
 @Controller('ai')
-@UseGuards(AuthGuard)
 export class AiController {
   constructor(private readonly ai: AiService, private readonly prisma: PrismaService, private readonly cache: CacheService) {}
 

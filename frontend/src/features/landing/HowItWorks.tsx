@@ -1,10 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { ScrollReveal, StaggerContainer, StaggerChild } from '../../animations';
 import { MOTION } from '../../animations/motion-tokens';
-import { CreateAccountVisual } from './visuals/CreateAccountVisual';
-import { BuildProfileVisual } from './visuals/BuildProfileVisual';
-import { DiscoverOpportunitiesVisual } from './visuals/DiscoverOpportunitiesVisual';
-import { MoveForwardVisual } from './visuals/MoveForwardVisual';
+import { MatchInline, TalentFlowInline, ApplicationsInline, PrivacyInline } from './inline';
 
 const STEPS = [
   {
@@ -14,7 +11,7 @@ const STEPS = [
     text: 'Create your account and get started in minutes.',
     details: 'Start with the basic information needed to establish your account. Once registered, you can continue building your profile and access the parts of the platform available to your role.',
     supporting: ['Email', 'Password', 'Name', 'Account created', 'Profile initialized'],
-    visual: CreateAccountVisual,
+    visual: PrivacyInline,
   },
   {
     number: '02',
@@ -23,7 +20,7 @@ const STEPS = [
     text: 'Add your skills, experience, resume, and career preferences.',
     details: 'A more complete profile gives the platform better information to work with. Add your education, skills, experience, resume, projects, certifications, and preferences so opportunities and recommendations are evaluated against information you actually provide.',
     supporting: ['Skills', 'Education', 'Experience', 'Resume', 'Projects', 'Preferences'],
-    visual: BuildProfileVisual,
+    visual: ApplicationsInline,
   },
   {
     number: '03',
@@ -32,7 +29,7 @@ const STEPS = [
     text: 'Discover opportunities that align with your skills and goals.',
     details: 'Browse available jobs and internships through the discovery experience. Search and filter opportunities using the criteria that matter to you, then open complete job details before deciding whether to apply.',
     supporting: ['Search opportunities', 'Remote', 'Full-time', 'Internship'],
-    visual: DiscoverOpportunitiesVisual,
+    visual: TalentFlowInline,
   },
   {
     number: '04',
@@ -41,7 +38,7 @@ const STEPS = [
     text: 'Apply, communicate, track progress, and take your next step.',
     details: 'Once you find an opportunity, continue through the employment process from the same platform. Submit applications, communicate when available, monitor progress, and stay aware of important updates as your application moves forward.',
     supporting: ['Applied', 'Reviewed', 'Interview', 'Next step'],
-    visual: MoveForwardVisual,
+    visual: MatchInline,
   },
 ];
 
@@ -52,19 +49,19 @@ export const HowItWorks = () => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const stepEls = section.querySelectorAll('.journey-step');
+    const stepEls = section.querySelectorAll('.how-step');
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('journey-step--inview');
+            entry.target.classList.add('how-step--inview');
           } else {
-            entry.target.classList.remove('journey-step--inview');
+            entry.target.classList.remove('how-step--inview');
           }
         });
       },
-      { threshold: 0.3, rootMargin: '-40px 0px -40px 0px' }
+      { threshold: 0.2, rootMargin: '-40px 0px -40px 0px' }
     );
 
     stepEls.forEach((el) => observer.observe(el));
@@ -76,72 +73,53 @@ export const HowItWorks = () => {
     <section className="how-section" ref={sectionRef} aria-labelledby="how-it-works-title">
       <div className="how-header">
         <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slowest, distance: MOTION.distance.lg, direction: 'up' }}>
-          <h2 id="how-it-works-title" className="section-title gradient-text gradient-text--subtle how-header__title">
+          <h2 id="how-it-works-title" className="how-header__title">
             How it works
           </h2>
         </ScrollReveal>
         <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up', delay: 100 }}>
-          <p className="section-subtitle">
+          <p className="how-header__subtitle">
             From creating your profile to discovering the right opportunity, Gradture AI keeps the journey simple.
           </p>
         </ScrollReveal>
       </div>
 
-      <div className="journey">
-        <div className="journey__steps">
-          {STEPS.map((step, index) => {
-            const StepVisual = step.visual;
-            const isEven = index % 2 === 0;
+      <div className="how-steps">
+        {STEPS.map((step, index) => {
+          const StepVisual = step.visual;
 
-            return (
-              <div
-                key={step.number}
-                className={`journey-step ${isEven ? 'journey-step--text-left' : 'journey-step--text-right'}`}
-                data-step-index={index}
-              >
-                <div className="journey-step__marker" aria-hidden="true" />
-                <div className="journey-step__visual">
-                  <ScrollReveal
-                    options={{
-                      threshold: 0.2,
-                      once: true,
-                      duration: MOTION.duration.slowest,
-                      distance: MOTION.distance.lg,
-                      blur: MOTION.blur.md,
-                      direction: isEven ? 'left' : 'right',
-                    }}
-                  >
-                    <StepVisual />
-                  </ScrollReveal>
-                </div>
-                <div className="journey-step__content">
-                  <StaggerContainer options={{ stagger: MOTION.stagger.sm, once: true }} className="journey-step__text-content">
-                    <StaggerChild>
-                      <span className="journey-step__label">{step.label}</span>
-                    </StaggerChild>
-                    <StaggerChild>
-                      <span className="journey-step__number" aria-hidden="true">{step.number}</span>
-                    </StaggerChild>
-                    <StaggerChild>
-                      <h3 className="journey-step__title">{step.title}</h3>
-                    </StaggerChild>
-                    <StaggerChild>
-                      <p className="journey-step__text">{step.text}</p>
-                    </StaggerChild>
-                    <StaggerChild>
-                      <p className="journey-step__details">{step.details}</p>
-                    </StaggerChild>
-                    <StaggerChild>
-                      <ul className="journey-step__supporting" aria-label={`${step.title} details`}>
-                        {step.supporting.map((item) => <li key={item}>{item}</li>)}
-                      </ul>
-                    </StaggerChild>
-                  </StaggerContainer>
-                </div>
+          return (
+            <div key={step.number} className="how-step" data-step-index={index}>
+              <div className="how-step__marker" aria-hidden="true">
+                <span className="how-step__number">{step.number}</span>
               </div>
-            );
-          })}
-        </div>
+              <div className="how-step__content">
+                <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up' }}>
+                  <span className="how-step__label">{step.label}</span>
+                  <h3 className="how-step__title">{step.title}</h3>
+                </ScrollReveal>
+                <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.sm, direction: 'up', delay: 100 }}>
+                  <p className="how-step__text">{step.text}</p>
+                </ScrollReveal>
+                <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.sm, direction: 'up', delay: 150 }}>
+                  <p className="how-step__details">{step.details}</p>
+                </ScrollReveal>
+                <StaggerContainer options={{ stagger: MOTION.stagger.sm, once: true, threshold: 0.2 }} className="how-step__supporting">
+                  {step.supporting.map((item) => (
+                    <StaggerChild key={item}>
+                      <span className="how-step__chip">{item}</span>
+                    </StaggerChild>
+                  ))}
+                </StaggerContainer>
+              </div>
+              <div className="how-step__visual">
+                <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up', delay: 100 }}>
+                  <StepVisual />
+                </ScrollReveal>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <style>{`
@@ -156,144 +134,159 @@ export const HowItWorks = () => {
         }
 
         .how-header__title {
-          margin-bottom: var(--space-4, 1rem);
+          font-family: var(--font-display);
+          font-size: clamp(1.75rem, 3vw, 2.5rem);
+          font-weight: 700;
+          color: var(--color-text);
+          margin: 0 0 var(--space-3, 0.75rem);
+          letter-spacing: -0.02em;
         }
 
-        .section-subtitle {
+        .how-header__subtitle {
           max-width: var(--container-narrow, 720px);
           margin: 0 auto;
           font-size: var(--text-lg, 1.125rem);
           color: var(--color-text-secondary);
+          line-height: 1.6;
         }
 
-        .journey {
-          position: relative;
+        .how-steps {
           max-width: var(--container-max, 1200px);
           margin: 0 auto;
           padding: 0 var(--space-6, 1.5rem);
-        }
-
-        .journey__steps {
           display: flex;
           flex-direction: column;
           gap: var(--space-16, 4rem);
           position: relative;
         }
 
-        .journey__steps::before {
+        .how-steps::before {
           content: '';
           position: absolute;
-          left: 24px;
+          left: 20px;
           top: 0;
           bottom: 0;
           width: 2px;
-          background: linear-gradient(to bottom, var(--color-border), var(--color-primary), var(--color-border));
-          opacity: 0.3;
+          background: linear-gradient(to bottom, var(--color-border), var(--color-text-tertiary), var(--color-border));
+          opacity: 0.25;
           z-index: 0;
         }
 
         @media (min-width: 768px) {
-          .journey__steps::before {
+          .how-steps::before {
             left: 50%;
             transform: translateX(-50%);
           }
         }
 
-        .journey-step {
+        .how-step {
           display: grid;
           grid-template-columns: 1fr;
           gap: var(--space-6, 1.5rem);
           align-items: center;
           position: relative;
+          opacity: 0;
+          transform: translate3d(0, 20px, 0);
+          transition: opacity 650ms cubic-bezier(0.22, 1, 0.36, 1), transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        @media (min-width: 768px) {
-          .journey-step {
+        .how-step--inview {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+
+        @media (min-width: 1024px) {
+          .how-step {
             grid-template-columns: 1fr 1fr;
-            gap: var(--space-12, 3rem);
+            gap: clamp(var(--space-10), 4vw, var(--space-16));
           }
         }
 
-        .journey-step__marker {
+        .how-step__marker {
           display: none;
           position: absolute;
-          left: 16px;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
+          left: 12px;
+          top: 24px;
+          width: 32px;
+          height: 32px;
+          border-radius: var(--radius-full);
           background: var(--color-surface);
-          border: 3px solid var(--color-primary);
+          border: 2px solid var(--color-text-tertiary);
           z-index: 2;
-          top: 40px;
+          align-items: center;
+          justify-content: center;
         }
 
-        .journey-step--inview .journey-step__marker {
-          background: var(--color-primary);
-          box-shadow: 0 0 0 6px var(--color-primary-soft);
+        .how-step--inview .how-step__marker {
+          background: var(--color-text);
+          border-color: var(--color-text);
+        }
+
+        .how-step__number {
+          font-family: var(--font-display);
+          font-size: var(--text-xs);
+          font-weight: 700;
+          color: var(--color-text-tertiary);
+        }
+
+        .how-step--inview .how-step__number {
+          color: var(--color-surface);
         }
 
         @media (min-width: 768px) {
-          .journey-step__marker {
-            display: block;
+          .how-step__marker {
+            display: flex;
             left: 50%;
-            top: 50px;
+            top: 32px;
             transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
           }
         }
 
-        .journey-step__visual {
-          position: relative;
-        }
-
-        .journey-step__content {
+        .how-step__content {
           display: flex;
           flex-direction: column;
           gap: var(--space-3, 0.75rem);
+          position: relative;
+          z-index: 1;
         }
 
-        .journey-step__label {
+        .how-step__label {
           display: inline-block;
           font-size: var(--text-xs, 0.75rem);
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: var(--color-primary);
+          color: var(--color-text-tertiary);
           margin-bottom: var(--space-1, 0.25rem);
         }
 
-        .journey-step__number {
-          font-size: var(--text-5xl, 3.75rem);
-          font-weight: 800;
-          line-height: 1;
-          color: var(--color-text);
-          opacity: 0.08;
-          position: absolute;
-          top: -1.5rem;
-          left: -0.5rem;
-          pointer-events: none;
-        }
-
-        .journey-step__title {
+        .how-step__title {
+          font-family: var(--font-display);
           font-size: var(--text-3xl, 1.875rem);
           font-weight: 700;
           color: var(--color-text);
           margin: 0;
+          letter-spacing: -0.02em;
         }
 
-        .journey-step__text {
+        .how-step__text {
           font-size: var(--text-lg, 1.125rem);
           color: var(--color-text-secondary);
           margin: 0;
+          line-height: 1.6;
         }
 
-        .journey-step__details {
+        .how-step__details {
           color: var(--color-text-secondary);
           font-size: var(--text-base, 1rem);
-          opacity: 0.8;
+          opacity: 0.75;
           margin: 0;
+          line-height: 1.6;
         }
 
-        .journey-step__supporting {
+        .how-step__supporting {
           display: flex;
           flex-wrap: wrap;
           gap: var(--space-2, 0.5rem);
@@ -302,42 +295,49 @@ export const HowItWorks = () => {
           list-style: none;
         }
 
-        .journey-step__supporting li {
-          padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+        .how-step__chip {
+          display: inline-block;
+          padding: 0.25rem 0.625rem;
           border-radius: var(--radius-full, 9999px);
           font-size: var(--text-xs, 0.75rem);
           font-weight: 500;
-          background: var(--color-primary-soft, #eef2ff);
-          color: var(--color-primary);
-          border: 1px solid var(--color-primary);
+          background: var(--color-surface-muted);
+          color: var(--color-text-secondary);
+          border: 1px solid var(--color-border);
+          transition: background-color var(--transition-theme), border-color var(--transition-theme), color var(--transition-theme);
+        }
+
+        .how-step__visual {
+          position: relative;
+          display: flex;
+          justify-content: center;
         }
 
         @media (max-width: 768px) {
-          .journey-step {
+          .how-step {
             grid-template-columns: 1fr;
             gap: var(--space-6, 1.5rem);
           }
 
-          .journey-step__visual {
+          .how-step__visual {
             order: -1;
           }
 
-          .journey__progress-dot {
-            width: 10px;
-            height: 10px;
+          .how-step__marker {
+            display: none;
+          }
+
+          .how-step {
+            padding-left: var(--space-8, 2rem);
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .journey-step {
+          .how-step {
             opacity: 1 !important;
             transform: none !important;
             transition-duration: 0.01ms !important;
             transition-delay: 0ms !important;
-          }
-
-          .journey__progress-fill {
-            transition-duration: 0.01ms !important;
           }
         }
       `}</style>

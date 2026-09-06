@@ -14,11 +14,9 @@ interface LandingPresentationProps {
 }
 
 const TRANSITION_MS = 850;
-const WHEEL_THRESHOLD = 24;
-const EVENTS_PER_SLIDE = 2;
+const WHEEL_THRESHOLD = 80;
 const SWIPE_THRESHOLD = 50;
 const RAIL_ANIMATION_MS = 620;
-const SLIDE_PROGRESS_MS = 6000;
 
 const NEXT_KEYS = ['ArrowDown', 'ArrowRight', 'PageDown', ' ', 'Spacebar'];
 const PREV_KEYS = ['ArrowUp', 'ArrowLeft', 'PageUp'];
@@ -29,28 +27,15 @@ const isInteractiveElement = (target: EventTarget | null): boolean => {
   return Boolean(el.closest('input, textarea, select, button, a, [contenteditable="true"], [role="button"]'));
 };
 
-const lockInput = (isTransitioning: React.MutableRefObject<boolean>, scrollCount: React.MutableRefObject<number>, duration: number) => {
-  isTransitioning.current = true;
-  window.setTimeout(() => {
-    isTransitioning.current = false;
-    scrollCount.current = 0;
-  }, duration);
-};
-
 export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   const lastIndex = slides.length - 1;
   const [active, setActive] = useState(0);
   const [railLeaving, setRailLeaving] = useState<{ index: number; direction: 'forward' | 'backward' } | null>(null);
   const activeRef = useRef(0);
   const isTransitioning = useRef(false);
-  const scrollCount = useRef(0);
-  const scrollDirection = useRef<1 | -1 | null>(null);
   const railAnimationTimeout = useRef<number | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [reduced, setReduced] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const progressRef = useRef(0);
-  const startTimeRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -63,9 +48,11 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   const duration = reduced ? 0 : TRANSITION_MS;
 
   const goTo = useCallback(
-    (next: number, updateHash = true) => {
+    (next: number) => {
       const target = Math.max(0, Math.min(lastIndex, next));
       if (target === activeRef.current) return;
+      if (isTransitioning.current) return;
+
       const previous = activeRef.current;
       const direction = target > previous ? 'forward' : 'backward';
       if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
@@ -73,16 +60,12 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       railAnimationTimeout.current = window.setTimeout(() => setRailLeaving(null), reduced ? 0 : RAIL_ANIMATION_MS);
       activeRef.current = target;
       setActive(target);
-      if (updateHash) {
-        try {
-          window.history.replaceState(null, '', `#${slides[target].id}`);
-        } catch {
-          /* ignore */
-        }
-      }
-      lockInput(isTransitioning, scrollCount, duration);
+      isTransitioning.current = true;
+      window.setTimeout(() => {
+        isTransitioning.current = false;
+      }, duration);
     },
-    [lastIndex, slides, duration]
+    [lastIndex, duration, reduced]
   );
 
   // Reset scroll position of scrollable slides when they become active.
@@ -93,36 +76,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     }
   }, [active]);
 
-  useEffect(() => {
-    if (reduced) {
-      setProgress(0);
-      progressRef.current = 0;
-      return;
-    }
-
-    setProgress(0);
-    progressRef.current = 0;
-    startTimeRef.current = performance.now();
-    let rafId = 0;
-
-    const tick = () => {
-      const elapsed = performance.now() - startTimeRef.current;
-      const pct = Math.min(100, (elapsed / SLIDE_PROGRESS_MS) * 100);
-      progressRef.current = pct;
-      setProgress(pct);
-
-      if (pct < 100) {
-        rafId = requestAnimationFrame(tick);
-      } else if (activeRef.current < lastIndex) {
-        goTo(activeRef.current + 1);
-      }
-    };
-
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [active, reduced, goTo, lastIndex]);
-
-  // Wheel: every EVENTS_PER_SLIDE valid events advances exactly one slide.
+  // Wheel: advance only when at bottom for scrollable slides.
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       const slideEl = slideRefs.current[activeRef.current];
@@ -135,12 +89,28 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
         const atTop = el.scrollTop <= 0;
         const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
         const goingDown = delta > 0;
-        if ((goingDown && !atBottom) || (!goingDown && !atTop)) {
-          return; // let the inner content scroll natively
+
+        if (goingDown && !atBottom) {
+          return; // let inner content scroll natively
         }
+        if (!goingDown && !atTop) {
+          return; // let inner content scroll natively
+        }
+        // At boundary: require an additional scroll gesture to advance
+        if (goingDown && atBottom) {
+          e.preventDefault();
+          goTo(activeRef.current + 1);
+          return;
+        }
+        if (!goingDown && atTop) {
+          e.preventDefault();
+          goTo(activeRef.current - 1);
+          return;
+        }
+        return;
       }
 
-      e.preventDefault();
+      // Non-scrollable slide: direct navigation
       if (isTransitioning.current) return;
       if (abs < WHEEL_THRESHOLD) return;
 
@@ -149,15 +119,8 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
         return;
       }
 
-      if (scrollDirection.current !== null && scrollDirection.current !== dir) {
-        scrollCount.current = 0;
-      }
-      scrollDirection.current = dir;
-      scrollCount.current += 1;
-      if (scrollCount.current >= EVENTS_PER_SLIDE) {
-        scrollCount.current = 0;
-        goTo(activeRef.current + dir);
-      }
+      e.preventDefault();
+      goTo(activeRef.current + dir);
     };
 
     window.addEventListener('wheel', onWheel, { passive: false });
@@ -201,7 +164,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [goTo, lastIndex]);
 
-  // Touch / swipe (one swipe = one slide).
+  // Touch / swipe: manual pagination only.
   const touch = useRef({ startY: 0, lastY: 0, active: false });
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
@@ -223,6 +186,10 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       const el = slideEl as HTMLElement;
       const atTop = el.scrollTop <= 0;
       const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      if ((dy > 0 && !atBottom) || (dy < 0 && !atTop)) {
+        return; // native scroll already consumed the gesture
+      }
+      // At boundary: allow the swipe to potentially advance
       if ((dy > 0 && atBottom) || (dy < 0 && atTop)) {
         e.preventDefault();
       }
@@ -243,13 +210,23 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
         if ((goingDown && !atBottom) || (!goingDown && !atTop)) {
           return; // native scroll already consumed the gesture
         }
+        if (goingDown && atBottom) {
+          goTo(activeRef.current + 1);
+          return;
+        }
+        if (!goingDown && atTop) {
+          goTo(activeRef.current - 1);
+          return;
+        }
+        return;
       }
 
+      // Non-scrollable slide: direct swipe navigation
+      if (isTransitioning.current) return;
       const dir = dy > 0 ? 1 : -1;
       if ((dir > 0 && activeRef.current >= lastIndex) || (dir < 0 && activeRef.current <= 0)) {
         return;
       }
-      if (isTransitioning.current) return;
       goTo(activeRef.current + dir);
     };
 
@@ -267,6 +244,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   useEffect(() => {
     const apply = (idx: number) => {
       if (idx < 0 || idx > lastIndex || idx === activeRef.current) return;
+      if (isTransitioning.current) return;
       const previous = activeRef.current;
       const direction = idx > previous ? 'forward' : 'backward';
       if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
@@ -274,7 +252,10 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       railAnimationTimeout.current = window.setTimeout(() => setRailLeaving(null), reduced ? 0 : RAIL_ANIMATION_MS);
       activeRef.current = idx;
       setActive(idx);
-      lockInput(isTransitioning, scrollCount, duration);
+      isTransitioning.current = true;
+      window.setTimeout(() => {
+        isTransitioning.current = false;
+      }, duration);
     };
     const onHash = () => {
       const id = window.location.hash.replace('#', '');
@@ -287,7 +268,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     if (initialIdx > 0) apply(initialIdx);
 
     return () => window.removeEventListener('hashchange', onHash);
-  }, [slides, lastIndex, duration]);
+  }, [slides, lastIndex, duration, reduced]);
 
   return (
     <div
@@ -332,7 +313,6 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
 
       <aside className="presentation-rail" aria-live="polite" aria-atomic="true" aria-label={`Slide ${active + 1}: ${slides[active].label}`}>
         <span className="presentation-rail__line" aria-hidden="true" />
-        <span className="presentation-rail__progress" aria-hidden="true" style={{ height: `${progress}%` }} />
         {railLeaving && (
           <span className={`presentation-rail__label presentation-rail__label--leaving presentation-rail__label--${railLeaving.direction}`} aria-hidden="true">
             <span>{String(railLeaving.index + 1).padStart(2, '0')}</span>

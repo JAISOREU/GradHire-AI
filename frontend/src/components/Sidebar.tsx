@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom';
 import type { NavItem, NavSection } from '../core/utils/navigation';
-import { Icon } from './Icon';
 import { Logo } from './Logo';
 
 type SidebarProps = {
@@ -28,9 +27,7 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--collapsed' : ''}`} aria-hidden="true">
-            <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={18} />
-          </span>
+          <span className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--collapsed' : ''}`} aria-hidden="true" />
         </button>
       )}
     </div>
@@ -48,9 +45,6 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
                   aria-label={item.label}
                   title={item.label}
                 >
-                  <span className="sidebar__icon" aria-hidden="true">
-                    <Icon name={item.icon as any} size={22} />
-                  </span>
                   <span className="sidebar__label">{item.label}</span>
                 </NavLink>
               ))}
@@ -65,9 +59,6 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
               aria-label={item.label}
               title={item.label}
             >
-              <span className="sidebar__icon" aria-hidden="true">
-                <Icon name={item.icon as any} size={22} />
-              </span>
               <span className="sidebar__label">{item.label}</span>
             </NavLink>
           ))}

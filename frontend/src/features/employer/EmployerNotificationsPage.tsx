@@ -42,7 +42,7 @@ export const EmployerNotificationsPage = () => {
             </article>
           ))
         ) : (
-          <EmptyState icon="🔔" title="No notifications" text="You're all caught up." />
+          <EmptyState title="No notifications" text="You're all caught up." />
         )}
       </div>
     </div>

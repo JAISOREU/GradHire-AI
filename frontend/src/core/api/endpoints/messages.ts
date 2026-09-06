@@ -6,8 +6,8 @@ export const messagesApi = {
     api<PaginatedResponse<Message>>(`/api/v1/messages/me?page=${page}&limit=${limit}`),
 
   send: (to: string, body: string) =>
-    api<{ id: string }>('/api/v1/messages', { method: 'POST', json: { to, body } }),
+    api<Message>('/api/v1/messages', { method: 'POST', json: { to, body } }),
 
   markRead: (id: string) =>
-    api<void>(`/api/v1/messages/${id}/read`, { method: 'PUT' }),
+    api<Message>(`/api/v1/messages/${id}/read`, { method: 'PUT' }),
 };

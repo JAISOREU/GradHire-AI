@@ -1,3 +1,4 @@
+import { Alert } from './Alert';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
@@ -155,7 +156,7 @@ export const AuthModal = ({ open, onClose, onSuccess }: AuthModalProps) => {
             </FormField>
           )}
 
-          {error && <div className="message message--error" role="alert">{error}</div>}
+          {error && <Alert>{error}</Alert>}
 
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">

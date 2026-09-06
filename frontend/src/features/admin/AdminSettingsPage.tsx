@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { FormEvent, useEffect, useState } from 'react';
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
@@ -74,7 +75,7 @@ export const AdminSettingsPage = () => {
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save settings'}</Button>
             </div>
-            {message && <div className="message message--info" role="status">{message}</div>}
+            {message && <Alert variant="info">{message}</Alert>}
           </form>
         </Card>
       </div>

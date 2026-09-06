@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/Button';
+import { Alert } from '../../components/Alert';
 import { AuthLayout } from '../../components/AuthLayout';
 import { authApi } from '../../core/api/endpoints/auth';
-import { CheckCircle2 } from 'lucide-react';
 
 export const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
@@ -50,17 +50,16 @@ export const VerifyEmailPage = () => {
       subtitle="We are verifying your email address."
       footer={footer}
     >
-      {status === 'loading' && <p className="message message--info">Verifying…</p>}
+      {status === 'loading' && <Alert variant="info">Verifying…</Alert>}
       {status === 'success' && (
         <div className="auth-success" role="status">
-          <CheckCircle2 size={32} className="auth-success__icon" aria-hidden="true" />
           <p>{message}</p>
           <Link to="/login"><Button className="mt-4">Back to sign in</Button></Link>
         </div>
       )}
       {status === 'error' && (
         <>
-          <p className="message message--error" role="alert">{message}</p>
+          <Alert>{message}</Alert>
           <div className="mt-4">
             <Button to="/login" className="w-full">Back to sign in</Button>
           </div>

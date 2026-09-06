@@ -13,17 +13,17 @@ interface Particle {
 }
 
 const LIGHT_PALETTE = [
-  'rgba(79, 70, 229, 0.22)',
-  'rgba(37, 99, 235, 0.18)',
-  'rgba(5, 150, 105, 0.14)',
-  'rgba(217, 119, 6, 0.10)',
+  'rgba(0, 0, 0, 0.08)',
+  'rgba(0, 0, 0, 0.06)',
+  'rgba(0, 0, 0, 0.04)',
+  'rgba(0, 0, 0, 0.03)',
 ];
 
 const DARK_PALETTE = [
-  'rgba(129, 140, 248, 0.30)',
-  'rgba(96, 165, 250, 0.25)',
-  'rgba(52, 211, 153, 0.18)',
-  'rgba(251, 191, 36, 0.12)',
+  'rgba(255, 255, 255, 0.12)',
+  'rgba(255, 255, 255, 0.08)',
+  'rgba(255, 255, 255, 0.05)',
+  'rgba(255, 255, 255, 0.03)',
 ];
 
 export const ThemeBackground = () => {
@@ -66,7 +66,7 @@ export const ThemeBackground = () => {
     ctx.clearRect(0, 0, width, height);
 
     const theme = themeRef.current;
-    const lineColor = theme === 'dark' ? '129, 140, 248' : '79, 70, 229';
+    const lineColor = theme === 'dark' ? '255, 255, 255' : '0, 0, 0';
 
     particlesRef.current.forEach((p) => {
       p.x += p.vx;

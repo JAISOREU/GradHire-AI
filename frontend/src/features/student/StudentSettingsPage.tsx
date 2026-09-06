@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { FormEvent, useEffect, useState } from 'react';
 import { studentsApi } from '../../core/api/endpoints/students';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -61,9 +62,9 @@ export const StudentSettingsPage = () => {
       <PageHeader title="Settings" subtitle="Manage your account preferences." />
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load settings.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        <Alert>
+          {error ?? 'Failed to load settings.'} <button onClick={reload} className="link">Retry</button>
+        </Alert>
       )}
 
       <div className="form-container">

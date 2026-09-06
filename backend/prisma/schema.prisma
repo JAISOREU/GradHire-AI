@@ -266,8 +266,23 @@ model User {
   jobViews               JobView[]
   recommendations        Recommendation[]
   companyFollows         CompanyFollow[]
+  refreshTokens          RefreshToken[]
 
   @@index([role])
+}
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Profile {
@@ -899,7 +914,7 @@ model Notification {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  recipient     User          @relation(fields: [recipientId], references: [id])
+  recipient     User          @relation(fields: [recipientId], references: [id], onDelete: Cascade)
   application   Application?  @relation(fields: [applicationId], references: [id], onDelete: SetNull)
 
   @@index([recipientId, read])
@@ -922,7 +937,7 @@ model EmailEvent {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  recipient      User     @relation(fields: [recipientId], references: [id])
+  recipient      User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
   application    Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -958,7 +973,7 @@ model AuditLog {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
 }
@@ -976,8 +991,8 @@ model Message {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
-  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@index([senderId, recipientId])
   @@index([recipientId])
@@ -993,8 +1008,8 @@ model SavedJob {
   jobId     String
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
-  job       Job      @relation(fields: [jobId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@unique([userId, jobId])
   @@index([userId])
@@ -1106,12 +1121,3 @@ model JobSourceJob {
   @@index([sourceId, status])
 }
 
-model PlatformSettings {
-  id              String   @id @default(cuid())
-  key             String   @unique
-  value           String
-  updatedAt       DateTime @updatedAt
-  updatedBy       String?
-
-  @@index([key])
-}

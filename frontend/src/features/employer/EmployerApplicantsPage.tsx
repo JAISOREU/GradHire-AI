@@ -179,7 +179,7 @@ export const EmployerApplicantsPage = () => {
             </table>
           </div>
         ) : (
-          <EmptyState icon="👥" title="No applicants found" text={search || statusFilter !== 'ALL' ? 'Try adjusting your filters.' : 'Applications will appear here as candidates apply.'} />
+          <EmptyState title="No applicants found" text={search || statusFilter !== 'ALL' ? 'Try adjusting your filters.' : 'Applications will appear here as candidates apply.'} />
         )}
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 import path from 'node:path';
 
 const hasSentryAuth = Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT);
@@ -9,19 +8,34 @@ const hasSentryAuth = Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTR
 export default defineConfig({
   build: {
     sourcemap: 'hidden',
+    cssMinify: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          animation: ['motion'],
-          icons: ['lucide-react'],
-          ui: ['@radix-ui/react-alert-dialog', '@radix-ui/react-avatar', '@radix-ui/react-checkbox', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-popover', '@radix-ui/react-progress', '@radix-ui/react-radio-group', '@radix-ui/react-select', '@radix-ui/react-slot', '@radix-ui/react-switch', '@radix-ui/react-tabs', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
-          sentry: ['@sentry/react'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-router')) return 'vendor-router';
+            if (id.includes('motion')) return 'animation';
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('@sentry')) return 'sentry';
+            return 'vendor';
+          }
+          if (id.includes('/src/core/')) return 'core';
+          if (id.includes('/src/components/')) return 'components';
+          if (id.includes('/src/layouts/')) return 'layouts';
+          if (id.includes('/src/features/')) return 'features';
+          if (id.includes('/src/animations/')) return 'animations';
         },
       },
     },
   },
   plugins: [
+    {
+      name: 'debug-config',
+      configResolved(config) {
+        console.log('RESOLVED cssMinify:', config.build.cssMinify);
+        console.log('RESOLVED minify:', config.build.minify);
+      }
+    },
     tailwindcss(),
     react(),
     hasSentryAuth

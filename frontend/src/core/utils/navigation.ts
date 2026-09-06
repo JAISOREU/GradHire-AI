@@ -37,6 +37,7 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
       { to: '/student/messages', label: 'Messages', icon: 'messages' },
       { to: '/student/interviews', label: 'Interviews', icon: 'calendar' },
       { to: '/student/notifications', label: 'Notifications', icon: 'notifications' },
+      { to: '/student/ai-assistant', label: 'AI Assistant', icon: 'ai' },
       { to: '/student/settings', label: 'Settings', icon: 'settings' },
     ],
   },
@@ -86,7 +87,6 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
     label: 'Management',
     items: [
       { to: '/admin/job-sources', label: 'Sources', icon: 'database' },
-      { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'database' },
       { to: '/admin/applications', label: 'Applications', icon: 'applications' },
       { to: '/admin/companies', label: 'Companies', icon: 'company' },
     ],

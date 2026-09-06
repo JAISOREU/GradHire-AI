@@ -33,17 +33,6 @@ export const analyticsApi = {
   },
 };
 
-export const messagesApi = {
-  listMine: async <T>(page = 1, limit = 20): Promise<T[]> => {
-    const data = await api<{ items: T[] }>(`/api/v1/messages/me?page=${page}&limit=${limit}`);
-    return data.items ?? [];
-  },
-  send: (to: string, body: string) =>
-    api<{ id: string }>('/api/v1/messages', { method: 'POST', json: { to, body } }),
-  markRead: (id: string) =>
-    api<void>(`/api/v1/messages/${id}/read`, { method: 'PUT' }),
-};
-
 export const savedJobsApi = {
   listMine: async <T>(page = 1, limit = 20): Promise<T[]> => {
     const data = await api<{ items: T[] }>(`/api/v1/saved-jobs/me?page=${page}&limit=${limit}`);

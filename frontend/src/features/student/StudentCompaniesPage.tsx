@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -8,6 +9,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Button } from '../../components/Button';
 import { PageHeader } from '../../components/PageHeader';
 import { Tooltip } from '../../components/Tooltip';
+import { Skeleton } from '../../components/Skeleton';
 
 const PAGE_SIZE = 12;
 
@@ -80,19 +82,17 @@ export const StudentCompaniesPage = () => {
       />
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load companies.'}{' '}
+        <Alert>
+          {error ?? 'Failed to load companies.'}{' '}
           <button onClick={reload} className="link">Retry</button>
-        </div>
+        </Alert>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="card card--spacious">
-              <div className="skeleton h-6 w-[70%] mb-3" />
-              <div className="skeleton h-4 w-[40%] mb-2" />
-              <div className="skeleton h-4 w-[50%]" />
+              <Skeleton lines={3} />
             </div>
           ))
         ) : visibleCompanies.length > 0 ? (

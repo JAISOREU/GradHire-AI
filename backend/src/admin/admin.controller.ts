@@ -136,8 +136,8 @@ export class AdminController {
     if (!job) {
       throw new NotFoundException('Job not found');
     }
-    await this.prisma.job.delete({ where: { id } });
-    return { deleted: true };
+    await this.prisma.job.update({ where: { id }, data: { status: 'ARCHIVED' } });
+    return { deleted: true, message: 'Job archived successfully' };
   }
 
   @Get('applications')

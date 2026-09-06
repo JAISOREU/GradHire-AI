@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { FormEvent, useEffect, useState } from 'react';
 import { employersApi } from '../../core/api/endpoints/employers';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -107,7 +108,7 @@ export const EmployerSettingsPage = () => {
             <div>
               <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save settings'}</Button>
             </div>
-            {message && <div className="message message--info" role="status">{message}</div>}
+            {message && <Alert variant="info">{message}</Alert>}
           </form>
         </Card>
       </div>

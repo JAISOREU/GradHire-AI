@@ -9,7 +9,7 @@ export const SiteFooter = () => {
       </div>
       <div className="app-footer__cols">
         <div className="app-footer__col">
-          <h4>Product</h4>
+          <h3>Product</h3>
           <ul>
             <li><Link to="/jobs">Jobs</Link></li>
             <li><Link to="/companies">Companies</Link></li>
@@ -17,7 +17,7 @@ export const SiteFooter = () => {
           </ul>
         </div>
         <div className="app-footer__col">
-          <h4>Account</h4>
+          <h3>Account</h3>
           <ul>
             <li><Link to="/register">Register</Link></li>
             <li><Link to="/login">Log in</Link></li>

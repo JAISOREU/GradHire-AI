@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useState } from 'react';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { Button } from '../../components/Button';
@@ -154,8 +155,8 @@ export const EmployerPostJobPage = () => {
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Publishing…' : 'Publish job'}</Button>
           </div>
-          {formError && <div className="message message--error" role="alert">{formError}</div>}
-          {success && <div className="message message--success" role="status">{success}</div>}
+          {formError && <Alert>{formError}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
         </form>
       </div>
     </div>

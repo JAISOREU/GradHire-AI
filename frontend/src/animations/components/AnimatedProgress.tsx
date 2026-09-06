@@ -19,7 +19,7 @@ const SIZE_CLASSES = {
 } as const;
 
 const VARIANT_COLORS = {
-  primary: 'var(--color-primary, #4f46e5)',
+  primary: 'var(--color-primary, #fafafa)',
   success: 'var(--color-success, #059669)',
   warning: 'var(--color-warning, #d97706)',
 } as const;

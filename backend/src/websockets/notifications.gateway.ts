@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { Logger, BadRequestException } from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
+import { PrismaService } from '../prisma.service';
 
 @WebSocketGateway({
   cors: {
@@ -24,7 +25,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   @WebSocketServer()
   server!: Server;
 
-  constructor(private readonly jwt: JwtService) {}
+  constructor(private readonly jwt: JwtService, private readonly prisma: PrismaService) {}
 
   private extractTokenFromHandshake(client: Socket): string | undefined {
     const authToken = client.handshake.auth?.token;
@@ -53,14 +54,31 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
           return;
         }
 
-        const payload = this.jwt.verify(token, { secret: process.env.JWT_SECRET as string });
-        const userId = payload.sub as string;
+        let payload: { sub: string; email: string; role: string; tokenVersion: number };
+        try {
+          payload = this.jwt.verify(token, { secret: process.env.JWT_SECRET as string }) as { sub: string; email: string; role: string; tokenVersion: number };
+        } catch {
+          this.logger.warn(`Socket ${client.id} rejected: invalid token`);
+          client.disconnect();
+          return;
+        }
 
-        client.data.userId = userId;
-        client.join(`user:${userId}`);
-        this.logger.debug(`Socket ${client.id} connected for user ${userId}`);
-      } catch {
-        this.logger.warn(`Socket ${client.id} rejected: invalid token`);
+        const user = await this.prisma.user.findUnique({
+          where: { id: payload.sub },
+          select: { id: true, tokenVersion: true, role: true },
+        });
+
+        if (!user || payload.tokenVersion !== user.tokenVersion) {
+          this.logger.warn(`Socket ${client.id} rejected: token revoked or user not found`);
+          client.disconnect();
+          return;
+        }
+
+        client.data.userId = user.id;
+        client.join(`user:${user.id}`);
+        this.logger.debug(`Socket ${client.id} connected for user ${user.id}`);
+      } catch (error) {
+        this.logger.error(`Socket ${client.id} connection error`, error);
         client.disconnect();
       }
     });

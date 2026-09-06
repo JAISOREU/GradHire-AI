@@ -1,19 +1,24 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormField';
 import { AuthLayout } from '../../components/AuthLayout';
+import { Alert } from '../../components/Alert';
+import { Skeleton } from '../../components/Skeleton';
 import { roleHomePath } from '../../core/utils/navigation';
 import { getRoleLabel } from '../../core/utils/roleLabels';
 import type { UserRole } from '../../core/types';
 import { useFormValidation } from '../../core/hooks/useFormValidation';
 import { z } from 'zod';
-import { GraduationCap, Building2, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
 
 const registerSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
   name: z.string().optional(),
   role: z.enum(['STUDENT', 'EMPLOYER']),
 });
@@ -47,21 +52,10 @@ export const RegisterPage = () => {
       {isSubmitting ? (
         <div className="stack mt-4 space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="skeleton h-16" />
-            <div className="skeleton h-16" />
+            <Skeleton variant="card" />
+            <Skeleton variant="card" />
           </div>
-          <div className="space-y-2">
-            <div className="skeleton skeleton-text w-[30%] h-3.5" />
-            <div className="skeleton skeleton-text w-full h-10" />
-          </div>
-          <div className="space-y-2">
-            <div className="skeleton skeleton-text w-[30%] h-3.5" />
-            <div className="skeleton skeleton-text w-full h-10" />
-          </div>
-          <div className="space-y-2">
-            <div className="skeleton skeleton-text w-[30%] h-3.5" />
-            <div className="skeleton skeleton-text w-full h-10" />
-          </div>
+          <Skeleton lines={3} />
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="stack mt-4">
@@ -72,7 +66,6 @@ export const RegisterPage = () => {
               onClick={() => { setSelectedRole('STUDENT'); handleChange('role', 'STUDENT'); }}
               aria-pressed={selectedRole === 'STUDENT'}
             >
-              <GraduationCap size={20} className="role-option__icon" aria-hidden="true" />
               <strong>{getRoleLabel('STUDENT')}</strong>
               <span>Browse jobs, apply, get recommendations</span>
             </button>
@@ -82,7 +75,6 @@ export const RegisterPage = () => {
               onClick={() => { setSelectedRole('EMPLOYER'); handleChange('role', 'EMPLOYER'); }}
               aria-pressed={selectedRole === 'EMPLOYER'}
             >
-              <Building2 size={20} className="role-option__icon" aria-hidden="true" />
               <strong>{getRoleLabel('EMPLOYER')}</strong>
               <span>Post jobs and review applicants</span>
             </button>
@@ -126,15 +118,14 @@ export const RegisterPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="pointer-events-auto"
+                    className="pointer-events-auto text-xs text-secondary hover:text-primary uppercase tracking-wide"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPassword ? '(hide)' : '(show)'}
                   </button>
                 }
               />
             </div>
-          {formError && <div className="message message--error" role="alert">{formError}</div>}
+          {formError && <Alert>{formError}</Alert>}
           <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting ? 'Creating…' : 'Create account'}</Button>
         </form>
       )}

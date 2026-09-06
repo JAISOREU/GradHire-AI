@@ -9,17 +9,17 @@ import { Card } from '../../components/Card';
 import { FormInput, FormSelect } from '../../components/FormField';
 import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
-import type { Interview } from '../../core/types';
+import type { InterviewType, InterviewStatus, Application, EmployerJob } from '../../core/types';
 
 export const EmployerInterviewsPage = () => {
   const { data: interviews, loading, reload } = useAsync(() => employersApi.listInterviews(), []);
   const [showSchedule, setShowSchedule] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState('');
   const [selectedApplicationId, setSelectedApplicationId] = useState('');
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [applicants, setApplicants] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<EmployerJob[]>([]);
+  const [applicants, setApplicants] = useState<Application[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ type: 'VIDEO' as any, scheduledAt: '', durationMinutes: 60, timezone: '', location: '', meetingLink: '', interviewers: '', notes: '' });
+  const [form, setForm] = useState({ type: 'VIDEO' as InterviewType, scheduledAt: '', durationMinutes: 60, timezone: '', location: '', meetingLink: '', interviewers: '', notes: '' });
   const { addToast } = useToast();
 
   const loadJobs = async () => {
@@ -59,9 +59,9 @@ export const EmployerInterviewsPage = () => {
     }
   };
 
-  const handleUpdateStatus = async (interviewId: string, status: string) => {
+  const handleUpdateStatus = async (interviewId: string, status: InterviewStatus) => {
     try {
-      await interviewsApi.updateStatus(interviewId, status as any);
+      await interviewsApi.updateStatus(interviewId, status);
       addToast('success', `Interview marked as ${status.toLowerCase()}`);
       reload();
     } catch {
@@ -115,7 +115,7 @@ export const EmployerInterviewsPage = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <FormInput label="Timezone" id="int-tz" value={form.timezone} onChange={(e) => setForm({ ...form, timezone: e.target.value })} placeholder="e.g. Asia/Manila" />
-              <FormSelect label="Type" id="int-type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} options={[
+              <FormSelect label="Type" id="int-type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as InterviewType })} options={[
                 { value: 'VIDEO', label: 'Video' },
                 { value: 'PHONE', label: 'Phone' },
                 { value: 'ONSITE', label: 'On-site' },
@@ -133,8 +133,8 @@ export const EmployerInterviewsPage = () => {
       <div className="list mt-4">
         {loading ? (
           <LoadingState label="Loading interviews…" />
-        ) : interviews && (interviews as any).items?.length > 0 ? (
-          (interviews as any).items.map((inv: Interview) => (
+        ) : interviews && interviews.items.length > 0 ? (
+          interviews.items.map((inv) => (
             <article key={inv.id} className="list-item">
               <div className="list-item__head">
                 <div>
@@ -148,7 +148,7 @@ export const EmployerInterviewsPage = () => {
                 </div>
                 <div className="flex gap-2 items-center">
                   <Tooltip content="Update interview status">
-                    <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value)}>
+                    <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value as InterviewStatus)}>
                       <option value="SCHEDULED">Scheduled</option>
                       <option value="COMPLETED">Completed</option>
                       <option value="CANCELLED">Cancelled</option>
@@ -174,7 +174,7 @@ export const EmployerInterviewsPage = () => {
             </article>
           ))
         ) : (
-          <EmptyState icon="🗓️" title="No interviews scheduled" text="When you schedule interviews, they'll appear here." />
+          <EmptyState title="No interviews scheduled" text="When you schedule interviews, they'll appear here." />
         )}
       </div>
     </div>

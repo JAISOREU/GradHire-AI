@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
 import { savedJobsApi } from '../../core/api/endpoints/employers';
 import { useToast } from '../../core/toast/ToastContext';
@@ -36,9 +37,9 @@ export const StudentSavedJobsPage = () => {
       <PageHeader title="Saved jobs" subtitle="Bookmark roles you want to revisit." />
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load saved jobs.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        <Alert>
+          {error ?? 'Failed to load saved jobs.'} <button onClick={reload} className="link">Retry</button>
+        </Alert>
       )}
 
       <div className="list-container">

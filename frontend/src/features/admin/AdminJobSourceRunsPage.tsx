@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useParams } from 'react-router-dom';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobSourcesApi } from '../../core/api/endpoints/jobSources';
@@ -52,13 +53,13 @@ export const AdminJobSourceRunsPage = () => {
                   <span>Rejected: {run.rejected}</span>
                   {run.startedAt && <span>Started: {new Date(run.startedAt).toLocaleString()}</span>}
                   {run.finishedAt && <span>Finished: {new Date(run.finishedAt).toLocaleString()}</span>}
-                </div>
+                 </div>
               </div>
             </div>
              {run.errors && Object.keys(run.errors).length > 0 && (
-               <div className="message message--error mt-2 text-sm">
+                <Alert className="mt-2 text-sm">
                 <strong>Errors:</strong> {JSON.stringify(run.errors)}
-              </div>
+               </Alert>
             )}
           </div>
         )}

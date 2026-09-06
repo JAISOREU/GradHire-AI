@@ -6,6 +6,14 @@ import { EmptyState } from '../../components/EmptyState';
 export const AdminReportsPage = () => {
   const { data: stats } = useAsync(() => adminApi.dashboard(), []);
 
+  type ReportItem = { id: string; label: string; description: string };
+
+  const reports: ReportItem[] = stats ? [
+    { id: 'users', label: 'User report', description: `${stats.users} total users (${stats.students} students, ${stats.employers} employers)` },
+    { id: 'jobs', label: 'Job report', description: `${stats.activeJobs} active job listings` },
+    { id: 'applications', label: 'Application report', description: `${stats.applicationsToday} applications today` },
+  ] : [];
+
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Reports</h1>
@@ -13,17 +21,13 @@ export const AdminReportsPage = () => {
       <div className="section--mt">
         {stats ? (
           <AdminListPage
-            items={[
-              { id: 'users', label: 'User report', description: `${stats.users} total users (${stats.students} students, ${stats.employers} employers)` },
-              { id: 'jobs', label: 'Job report', description: `${stats.activeJobs} active job listings` },
-              { id: 'applications', label: 'Application report', description: `${stats.applicationsToday} applications today` },
-            ]}
+            items={reports}
             renderItem={(item) => (
               <div className="list-item">
                 <div className="list-item__head">
                   <div>
-                    <h3 className="list-item__title card__title">{(item as any).label}</h3>
-                    <div className="list-item__meta">{(item as any).description}</div>
+                    <h3 className="list-item__title card__title">{item.label}</h3>
+                    <div className="list-item__meta">{item.description}</div>
                   </div>
                 </div>
               </div>

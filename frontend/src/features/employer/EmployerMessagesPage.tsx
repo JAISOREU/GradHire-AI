@@ -18,7 +18,7 @@ export const EmployerMessagesPage = () => {
       try {
         const { employersApi } = await import('../../core/api/endpoints/employers');
         const data = await employersApi.listApplicants(undefined, 1, 50);
-        const unique = Array.from(new Map((data as any[]).map((a) => [a.student?.id, { id: a.student?.id, name: a.student?.profile?.name ?? a.student?.email }])).values());
+        const unique = Array.from(new Map(data.map((a) => [a.student?.id, { id: a.student?.id, name: a.student?.profile?.name ?? a.student?.email }])).values());
         setCandidates(unique.filter((c): c is { id: string; name: string } => Boolean(c.id)));
       } catch {
         // ignore

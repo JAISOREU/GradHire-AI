@@ -1,13 +1,14 @@
 import { ScrollReveal, StaggerContainer, StaggerChild } from '../../animations';
 import { MOTION } from '../../animations/motion-tokens';
-import { SmartMatchingVisual } from './visuals/SmartMatchingVisual';
-import { ResumeParsingVisual } from './visuals/ResumeParsingVisual';
-import { JobHubVisual } from './visuals/JobHubVisual';
-import { RealTimeNotificationsVisual } from './visuals/RealTimeNotificationsVisual';
-import { DirectMessagingVisual } from './visuals/DirectMessagingVisual';
-import { ApplicationTrackingVisual } from './visuals/ApplicationTrackingVisual';
-import { SkillMatchingVisual } from './visuals/SkillMatchingVisual';
-import { PrivacyFirstVisual } from './visuals/PrivacyVisual';
+import {
+  ProfileIntelligenceVisual,
+  AIJobMatchingVisual,
+  OpportunityDiscoveryVisual,
+  ApplicationTrackingVisual,
+  MessagingVisual,
+  AICareerGuidanceVisual,
+} from './feature-visuals';
+import { PrivacyInline } from './inline';
 
 export interface Feature {
   id: string;
@@ -18,28 +19,30 @@ export interface Feature {
   details: string;
   supporting: string[];
   highlight?: string;
+  reverse?: boolean;
 }
 
 export const FEATURES: Feature[] = [
   {
     id: 'ai-matching',
     number: '01',
-    label: 'Smart Matching',
-    title: 'Smart matches',
-    text: 'Find opportunities matched to your skills, interests, and goals — not just keywords.',
-    details: 'Gradture AI compares the information you provide in your profile with available opportunities. Skills, experience, education, interests, and career preferences work together to make recommendations more relevant than title or keyword matching alone.',
-    supporting: ['Skills', 'Experience', 'Education', 'Preferences'],
-    highlight: 'AI-powered',
+    label: 'AI Matching',
+    title: 'AI-powered matching',
+    text: 'Get matched with roles based on your actual skills, experience, and career goals — not just keywords.',
+    details: 'Gradture AI analyzes your profile, resume, and preferences against real job requirements. You will see exactly where you match and where there are gaps, so you can make informed decisions about where to apply.',
+    supporting: ['Skills analysis', 'Experience match', 'Gap identification', 'Match explanation'],
+    highlight: 'Transparent AI',
   },
   {
     id: 'resume-intelligence',
     number: '02',
     label: 'Resume Intelligence',
-    title: 'Resume parsing',
-    text: 'Upload your resume and turn its content into structured profile data.',
-    details: 'Gradture AI identifies relevant skills, education, experience, projects, and other career information from your document, preparing profile fields so you do not have to enter every detail from scratch.',
-    supporting: ['Skills extracted', 'Experience identified', 'Education recognized', 'Profile fields prepared'],
-    highlight: 'Intelligent',
+    title: 'Resume analysis',
+    text: 'Upload your resume and receive an AI-powered analysis with scores, strengths, and improvement suggestions.',
+    details: 'Gradture AI extracts structured data from your resume and evaluates it against job requirements. See your match score, identified strengths, missing skills, and specific recommendations for improvement — all grounded in your actual document.',
+    supporting: ['Skills extracted', 'Experience identified', 'Education recognized', 'Improvement suggestions'],
+    highlight: 'AI-powered',
+    reverse: true,
   },
   {
     id: 'job-hub',
@@ -50,46 +53,49 @@ export const FEATURES: Feature[] = [
     details: 'Search, filter, compare, and open job details without relying on multiple disconnected websites. Focus the discovery experience around the location, role type, and opportunity criteria that matter to you.',
     supporting: ['Search', 'Location', 'Job type', 'Remote', 'Internship', 'Experience level'],
     highlight: 'Unified',
+    reverse: true,
   },
   {
-    id: 'notifications',
+    id: 'talent',
     number: '04',
-    label: 'Real-time Updates',
-    title: 'Real-time notifications',
-    text: 'Stay informed when something important happens to an application or opportunity.',
-    details: 'Notifications surface application updates, interview invitations, messages, and newly matched opportunities, so you do not have to repeatedly check every part of the platform for changes.',
-    supporting: ['Application updates', 'Messages', 'Interview invitations', 'New opportunities'],
-    highlight: 'Real-time',
+    label: 'Talent Flow',
+    title: 'From discovery to hire',
+    text: 'Move through the hiring journey in one connected flow.',
+    details: 'Gradture keeps every stage in one place: discover opportunities, match with roles, submit applications, interview, and advance — without switching between disconnected tools.',
+    supporting: ['Discover', 'Match', 'Apply', 'Interview', 'Hired'],
+    highlight: 'End-to-end',
   },
   {
-    id: 'messaging',
+    id: 'employers',
     number: '05',
-    label: 'Communication',
-    title: 'Direct messaging',
-    text: 'Communicate with employers directly inside the platform.',
-    details: 'Keep relevant conversations connected to the employment journey instead of moving between separate communication channels. Follow up, ask questions, and continue discussions with hiring teams in the context of each opportunity.',
-    supporting: ['Employer conversations', 'Message history', 'Online status', 'Conversation context'],
-    highlight: 'Connected',
+    label: 'For Employers',
+    title: 'Find the right candidates',
+    text: 'Review ranked candidates, compare profiles, and move quickly from match to interview.',
+    details: 'Employers get a clear view of candidate fit with match scores, skill alignment, and application context. Spend less time sorting resumes and more time interviewing people who actually fit.',
+    supporting: ['Candidate ranking', 'Match scores', 'Skill alignment', 'Application context'],
+    highlight: 'Hiring made clear',
+    reverse: true,
+  },
+  {
+    id: 'ai-intelligence',
+    number: '06',
+    label: 'AI Intelligence',
+    title: 'Explainable match insights',
+    text: 'Understand why a role fits, not just that it fits.',
+    details: 'Every match includes an AI insight explaining the reasoning behind the recommendation. See strengths, gaps, and concrete suggestions so both candidates and employers can act with clarity.',
+    supporting: ['Match explanation', 'Strengths', 'Improvement areas', 'Transparent reasoning'],
+    highlight: 'Explainable AI',
+    reverse: true,
   },
   {
     id: 'applications',
-    number: '06',
-    label: 'Application Tracking',
-    title: 'Application tracking',
+    number: '07',
+    label: 'Applications',
+    title: 'Track every application',
     text: 'Keep every application organized in one clear timeline.',
     details: 'See where an application currently stands, whether it has been viewed or reviewed, and what the next stage may be. The progress view makes it easier to understand your status without losing track of applications.',
-    supporting: ['Applied', 'Viewed', 'Review', 'Interview', 'Decision'],
+    supporting: ['Applied', 'Screening', 'Interview', 'Offer'],
     highlight: 'Organized',
-  },
-  {
-    id: 'skills',
-    number: '07',
-    label: 'Skill Matching',
-    title: 'Skill matching',
-    text: 'Compare the skills in your profile with the requirements of an opportunity.',
-    details: 'This gives you a clearer view of where you already match a role and where additional skills or experience may be useful. The comparison is based on information you provide, not skills the platform assumes you have.',
-    supporting: ['Your skills', 'Role requirements', 'Matched skills', 'Missing requirements', 'Profile match'],
-    highlight: 'Clear',
   },
   {
     id: 'security',
@@ -100,93 +106,74 @@ export const FEATURES: Feature[] = [
     details: 'Profiles can include resumes, education, experience, applications, and conversations. Gradture AI minimizes unnecessary exposure and uses appropriate access controls so information is available to the people and systems that need it while remaining protected from unauthorized access.',
     supporting: ['Profile', 'Resume', 'Applications', 'Messages', 'Protected'],
     highlight: 'Secure',
+    reverse: true,
   },
 ];
 
 const VISUAL_COMPONENTS: Record<number, React.FC> = {
-  0: SmartMatchingVisual,
-  1: ResumeParsingVisual,
-  2: JobHubVisual,
-  3: RealTimeNotificationsVisual,
-  4: DirectMessagingVisual,
-  5: ApplicationTrackingVisual,
-  6: SkillMatchingVisual,
-  7: PrivacyFirstVisual,
+  0: AIJobMatchingVisual,
+  1: ProfileIntelligenceVisual,
+  2: OpportunityDiscoveryVisual,
+  3: ApplicationTrackingVisual,
+  4: MessagingVisual,
+  5: AICareerGuidanceVisual,
+  6: ApplicationTrackingVisual,
+  7: PrivacyInline,
 };
 
 export const FeatureSlide = ({ feature, index }: { feature: Feature; index: number }) => {
-  const isEven = index % 2 === 0;
   const VisualComponent = VISUAL_COMPONENTS[index];
 
-  const getAnimationDirection = (): 'up' | 'left' | 'right' => {
-    if (index === 0) return 'up';
-    return isEven ? 'left' : 'right';
-  };
-
   return (
-    <div className={`feature-story feature-story--${feature.id} ${isEven ? 'feature-story--text-left' : 'feature-story--text-right'}`}>
-      <div className="feature-story__glow" aria-hidden="true" />
-      <div className="feature-story__watermark" aria-hidden="true">
-        {feature.number}
-      </div>
-      <div className="feature-story__content">
-        <ScrollReveal
-          options={{
-            threshold: 0.2,
-            once: true,
-            duration: MOTION.duration.slowest,
-            distance: MOTION.distance.lg,
-            blur: MOTION.blur.md,
-            direction: getAnimationDirection(),
-          }}
-        >
-          <div className="feature-story__header">
-            <span className="feature-story__number">{feature.number}</span>
-            <span className="feature-story__label">{feature.label}</span>
-          </div>
-          <h3 className="feature-story__title gradient-text">
-            {feature.title}
-          </h3>
-        </ScrollReveal>
+    <div className={`feature-section feature-section--${feature.id} ${feature.reverse ? 'feature-section--reverse' : ''}`}>
+      <div className="feature-section__inner">
+        <div className="feature-section__content">
+          <ScrollReveal
+            options={{
+              threshold: 0.2,
+              once: true,
+              duration: MOTION.duration.slower,
+              distance: MOTION.distance.md,
+              direction: 'up',
+            }}
+          >
+            <div className="feature-section__header">
+              <span className="feature-section__number">{feature.number}</span>
+              <span className="feature-section__label">{feature.label}</span>
+            </div>
+            <h2 className="feature-section__title">{feature.title}</h2>
+          </ScrollReveal>
 
-        <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up', delay: 100 }}>
-          <p className="feature-story__text">{feature.text}</p>
-        </ScrollReveal>
+          <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.sm, direction: 'up', delay: 100 }}>
+            <p className="feature-section__text">{feature.text}</p>
+          </ScrollReveal>
 
-        <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.sm, direction: 'up', delay: 200 }}>
-          <p className="feature-story__details">{feature.details}</p>
-        </ScrollReveal>
+          <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.sm, direction: 'up', delay: 150 }}>
+            <p className="feature-section__details">{feature.details}</p>
+          </ScrollReveal>
 
-        <StaggerContainer options={{ stagger: MOTION.stagger.sm, once: true }} className="feature-story__supporting-wrapper">
-          <ul className="feature-story__supporting" aria-label={`${feature.title} capabilities`}>
+          <StaggerContainer options={{ stagger: MOTION.stagger.sm, once: true, threshold: 0.2 }} className="feature-section__supporting">
             {feature.supporting.map((item) => (
               <StaggerChild key={item}>
-                <li>{item}</li>
+                <span className="feature-section__chip">{item}</span>
               </StaggerChild>
             ))}
-          </ul>
-        </StaggerContainer>
+          </StaggerContainer>
 
-        {feature.highlight && (
-          <div className="feature-story__highlight">
-            <span className="feature-story__highlight-dot" aria-hidden="true" />
-            <span className="feature-story__highlight-text">{feature.highlight}</span>
-          </div>
-        )}
+          {feature.highlight && (
+            <div className="feature-section__highlight">
+              <span className="feature-section__highlight-dot" aria-hidden="true" />
+              <span>{feature.highlight}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="feature-section__visual">
+          <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up', delay: 100 }}>
+            {VisualComponent && <VisualComponent />}
+          </ScrollReveal>
+        </div>
       </div>
-      <ScrollReveal
-        options={{
-          threshold: 0.2,
-          once: true,
-          duration: MOTION.duration.slowest,
-          distance: MOTION.distance.lg,
-          blur: MOTION.blur.md,
-          direction: getAnimationDirection(),
-        }}
-        className="feature-story__visual"
-      >
-        {VisualComponent && <VisualComponent />}
-      </ScrollReveal>
     </div>
   );
 };

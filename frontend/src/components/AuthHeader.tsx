@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './Button';
-import { Icon } from './Icon';
 import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { Avatar } from './Avatar';
@@ -10,7 +9,7 @@ import type { UserRole } from '../core/types';
 
 type AuthHeaderProps = {
   title: string;
-  user: { id: string; email: string; name?: string; role: string; avatarUrl?: string };
+  user: { id: string; email: string; name?: string; role: UserRole; avatarUrl?: string };
   onToggleSidebar: () => void;
   onLogout: () => void;
   sidebarOpen?: boolean;
@@ -24,7 +23,7 @@ export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sid
   const headerRef = useRef<HTMLElement>(null);
   const logoutModalRef = useRef<HTMLDivElement>(null);
   const morph = useHeaderMorph(true);
-  const homeRoute = roleHomePath(user.role as UserRole);
+  const homeRoute = roleHomePath(user.role);
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -145,34 +144,34 @@ export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sid
     switch (user.role) {
       case 'STUDENT':
         return [
-          { to: '/student/account', label: 'Profile', icon: 'profile' as const },
-          { to: '/student/resume', label: 'Resume', icon: 'resume' as const },
-          { to: '/student/resume-builder', label: 'Resume Builder', icon: 'resume' as const },
-          { to: '/student/recommended', label: 'Recommended jobs', icon: 'ai' as const },
+          { to: '/student/account', label: 'Profile' },
+          { to: '/student/resume', label: 'Resume' },
+          { to: '/student/resume-builder', label: 'Resume Builder' },
+          { to: '/student/recommended', label: 'Recommended jobs' },
         ];
       case 'EMPLOYER':
         return [
-          { to: '/employer/company-profile', label: 'Company profile', icon: 'company' as const },
-          { to: '/employer/post-job', label: 'Post Job', icon: 'jobs' as const },
-          { to: '/employer/analytics', label: 'Analytics', icon: 'analytics' as const },
+          { to: '/employer/company-profile', label: 'Company profile' },
+          { to: '/employer/post-job', label: 'Post Job' },
+          { to: '/employer/analytics', label: 'Analytics' },
         ];
       case 'ADMIN':
         return [
-          { to: '/admin/account', label: 'Admin profile', icon: 'profile' as const },
-          { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' as const },
-          { to: '/admin/users', label: 'Users', icon: 'users' as const },
-          { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' as const },
-          { to: '/admin/applications', label: 'Applications', icon: 'applications' as const },
-          { to: '/admin/companies', label: 'Companies', icon: 'company' as const },
-          { to: '/admin/reports', label: 'Reports', icon: 'reports' as const },
-          { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' as const },
-          { to: '/admin/monitoring', label: 'Monitoring', icon: 'dashboard' as const },
-          { to: '/admin/audit-logs', label: 'Audit logs', icon: 'security' as const },
-          { to: '/admin/job-sources', label: 'Job Sources', icon: 'database' as const },
-          { to: '/admin/job-source-runs', label: 'Ingestion Runs', icon: 'database' as const },
-          { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' as const },
-          { to: '/admin/settings', label: 'Settings', icon: 'settings' as const },
-          { to: '/admin/security', label: 'Security', icon: 'security' as const },
+          { to: '/admin/account', label: 'Admin profile' },
+          { to: '/admin/dashboard', label: 'Dashboard' },
+          { to: '/admin/users', label: 'Users' },
+          { to: '/admin/jobs', label: 'Jobs' },
+          { to: '/admin/applications', label: 'Applications' },
+          { to: '/admin/companies', label: 'Companies' },
+          { to: '/admin/reports', label: 'Reports' },
+          { to: '/admin/analytics', label: 'Analytics' },
+          { to: '/admin/monitoring', label: 'Monitoring' },
+          { to: '/admin/audit-logs', label: 'Audit logs' },
+          { to: '/admin/job-sources', label: 'Job Sources' },
+          { to: '/admin/job-source-runs', label: 'Ingestion Runs' },
+          { to: '/admin/notifications', label: 'Notifications' },
+          { to: '/admin/settings', label: 'Settings' },
+          { to: '/admin/security', label: 'Security' },
         ];
       default:
         return [];
@@ -183,7 +182,7 @@ export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sid
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
       <div className="app-header__inner" style={innerStyle}>
         <div className="app-header__brand">
-          <span className="app-header__title">Talent</span>
+          <span className="app-header__title">Gradture</span>
         </div>
 
         <Button
@@ -194,7 +193,7 @@ export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sid
           aria-expanded={sidebarOpen ?? false}
           className="mobile-menu-toggle"
         >
-          <Icon name="menu" size={22} />
+          Menu
         </Button>
 
         <div className="header-user" style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: morph.userOpacity, transition: 'opacity 0.35s ease' }}>
@@ -214,16 +213,13 @@ export const AuthHeader = ({ title: _title, user, onToggleSidebar, onLogout, sid
             </button>
             <div className={`header-dropdown__menu ${dropdownOpen ? 'is-open' : ''}`} role="menu">
               <Link to={homeRoute} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                <span aria-hidden="true"><Icon name="dashboard" size={18} /></span>
                 <span>Dashboard</span>
               </Link>
               <Link to="/" className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                <span aria-hidden="true"><Icon name="home" size={18} /></span>
                 <span>Home</span>
               </Link>
               {roleMenuItems.map((item) => (
                 <Link key={item.to} to={item.to} className="header-dropdown__item" role="menuitem" onClick={() => setDropdownOpen(false)} tabIndex={dropdownOpen ? 0 : -1}>
-                  {item.icon && <span aria-hidden="true"><Icon name={item.icon} size={18} /></span>}
                   <span>{item.label}</span>
                 </Link>
               ))}

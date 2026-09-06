@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
 import { analyticsApi } from '../../core/api/endpoints/employers';
 import { StatCard } from '../../components/StatCard';
@@ -13,21 +14,21 @@ export const EmployerAnalyticsPage = () => {
       <p className="card__subtitle card__subtitle--mt">Track your hiring performance.</p>
 
       {error && (
-        <div className="message message--error" role="alert">
-          {(error as any)?.message ?? 'Failed to load analytics.'} <button onClick={reload} className="link">Retry</button>
-        </div>
+        <Alert>
+          {error ?? 'Failed to load analytics.'} <button onClick={reload} className="link">Retry</button>
+        </Alert>
       )}
 
       {loading && !analytics ? (
         <LoadingState label="Loading analytics…" />
       ) : analytics ? (
         <>
-          <div className="status-strip status-strip--auto">
-             <StatCard label="Active jobs" value={analytics.activeJobs ?? 0} icon="🗂️" />
-             <StatCard label="Applications today" value={analytics.applicationsToday ?? 0} icon="📨" />
-             <StatCard label="Profile views" value={analytics.views ?? 0} icon="👀" />
-             <StatCard label="Pending interviews" value={analytics.pendingInterviews ?? 0} icon="🗓️" />
-          </div>
+           <div className="status-strip status-strip--auto">
+              <StatCard label="Active jobs" value={analytics.activeJobs ?? 0} />
+              <StatCard label="Applications today" value={analytics.applicationsToday ?? 0} />
+              <StatCard label="Profile views" value={analytics.views ?? 0} />
+              <StatCard label="Pending interviews" value={analytics.pendingInterviews ?? 0} />
+           </div>
 
           <div className="card mt-4">
             <h3 className="card__title">Hiring funnel</h3>
@@ -50,7 +51,7 @@ export const EmployerAnalyticsPage = () => {
           </div>
         </>
       ) : (
-       <EmptyState icon="📈" title="No analytics yet" text="Post jobs to start tracking performance." />
+       <EmptyState title="No analytics yet" text="Post jobs to start tracking performance." />
      )}
     </div>
   );

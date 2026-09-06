@@ -305,7 +305,7 @@ export const JobListPage = () => {
                 })}
               </div>
             ) : (
-              <EmptyState iconName="jobs" title="No jobs found" text="Try adjusting your filters or search terms." />
+              <EmptyState title="No jobs found" text="Try adjusting your filters or search terms." />
             )}
           </div>
 

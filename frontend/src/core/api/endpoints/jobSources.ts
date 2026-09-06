@@ -1,13 +1,10 @@
 import { api } from '../client';
-import type { PaginatedResponse } from '../../types';
+import type { PaginatedResponse, JobSourceType, JobSourceStatus, IngestionJobStatus } from '../../types';
+export type { JobSourceType };
 
-export type JobSourceType = 'API' | 'RSS' | 'JSON' | 'HTML';
 export type JobSourceParserType = 'GENERIC' | 'GREENHOUSE' | 'LEVER' | 'ASHBY' | 'SMARTRECRUITERS' | 'ADZUNA' | 'USAJOBS';
 export type JobSourceAuthType = 'NONE' | 'API_KEY' | 'OAUTH' | 'BASIC';
 export type JobSourceHealthStatus = 'HEALTHY' | 'DEGRADED' | 'FAILING' | 'DISABLED' | 'NEVER_TESTED';
-export type JobSourceStatus = 'ACTIVE' | 'PAUSED' | 'ERROR' | 'RATE_LIMITED';
-export type IngestionJobStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
-export type ImportedJobStatus = 'IMPORTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'EXPIRED' | 'ARCHIVED';
 
 export type JobSource = {
   id: string;

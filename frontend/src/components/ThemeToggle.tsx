@@ -1,5 +1,4 @@
 import { useTheme } from '../core/theme/ThemeContext';
-import { Icon } from './Icon';
 
 export const ThemeToggle = () => {
   const { theme, toggleTheme, isTransitioning } = useTheme();
@@ -15,18 +14,10 @@ export const ThemeToggle = () => {
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
       <span className="theme-toggle__bg" aria-hidden="true" />
-      <span className={`theme-toggle__icon-wrap ${isDark ? 'theme-toggle__icon-wrap--dark' : ''}`}>
-        {isDark ? (
-          <Icon name="sun" size={16} className="theme-toggle__svg" />
-        ) : (
-          <Icon name="moon" size={16} className="theme-toggle__svg" />
-        )}
+      <span className="theme-toggle__icon-wrap" aria-hidden="true">
+        <span className="theme-toggle__sun" />
       </span>
-      <span className="theme-toggle__stars" aria-hidden="true">
-        <span className="theme-toggle__star theme-toggle__star--1" />
-        <span className="theme-toggle__star theme-toggle__star--2" />
-        <span className="theme-toggle__star theme-toggle__star--3" />
-      </span>
+      <span className="sr-only">{isDark ? 'Light' : 'Dark'} mode</span>
     </button>
   );
 };

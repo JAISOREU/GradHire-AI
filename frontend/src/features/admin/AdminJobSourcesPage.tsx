@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useState, useEffect } from 'react';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobSourcesApi } from '../../core/api/endpoints/jobSources';
@@ -171,9 +172,9 @@ export const AdminJobSourcesPage = () => {
         <div className="card mb-4 p-4">
           <div className="grid gap-3 max-w-2xl">
             {error && (
-              <div className="message message--error">
+              <Alert>
                 {error}
-              </div>
+              </Alert>
             )}
             <div>
               <label className="block mb-1 font-semibold">Name</label>
@@ -243,8 +244,7 @@ export const AdminJobSourcesPage = () => {
       <AdminListPage
         items={sources}
         loading={loading}
-        emptyIcon="📡"
-        emptyTitle="No job sources"
+         emptyTitle="No job sources"
         emptyText="Add an external job feed to get started."
         renderItem={(s: JobSource) => {
           const testResult = testResults[s.id];

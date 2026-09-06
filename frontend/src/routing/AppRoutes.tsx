@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PublicLayout } from '../layouts/PublicLayout';
-import { StudentLayout } from '../layouts/StudentLayout';
-import { EmployerLayout } from '../layouts/EmployerLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PageTransition } from '../components/PageTransition';
 import { LoadingState } from '../components/LoadingState';
+import { LazyRouteErrorBoundary } from '../components/LazyRouteErrorBoundary';
+import { STUDENT_SIDEBAR_NAV, EMPLOYER_SIDEBAR_NAV, ADMIN_SIDEBAR_NAV } from '../core/utils/navigation';
 
 const HomePage = lazy(() => import('../features/landing/HomePage').then((m) => ({ default: m.HomePage })));
 const AboutPage = lazy(() => import('../features/landing/AboutPage').then((m) => ({ default: m.AboutPage })));
@@ -33,7 +33,7 @@ const AdminSecurityPage = lazy(() => import('../features/admin/AdminSecurityPage
 const AdminDeveloperToolsPage = lazy(() => import('../features/admin/AdminDeveloperToolsPage').then((m) => ({ default: m.AdminDeveloperToolsPage })));
 const AdminJobSourcesPage = lazy(() => import('../features/admin/AdminJobSourcesPage').then((m) => ({ default: m.AdminJobSourcesPage })));
 const AdminJobSourceRunsPage = lazy(() => import('../features/admin/AdminJobSourceRunsPage').then((m) => ({ default: m.AdminJobSourceRunsPage })));
-const AdminLayout = lazy(() => import('../layouts/AdminLayout').then((m) => ({ default: m.AdminLayout })));
+const RoleLayout = lazy(() => import('../layouts/RoleLayout').then((m) => ({ default: m.RoleLayout })));
 const AccountPage = lazy(() => import('../features/account/AccountPage').then((m) => ({ default: m.AccountPage })));
 const JobListPage = lazy(() => import('../features/jobs/JobListPage').then((m) => ({ default: m.JobListPage })));
 const StudentJobsPage = lazy(() => import('../features/student/StudentJobsPage').then((m) => ({ default: m.StudentJobsPage })));
@@ -55,6 +55,7 @@ const StudentNotificationsPage = lazy(() => import('../features/student/StudentN
 const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
 const StudentSettingsPage = lazy(() => import('../features/student/StudentSettingsPage').then((m) => ({ default: m.StudentSettingsPage })));
 const StudentInterviewsPage = lazy(() => import('../features/student/StudentInterviewsPage').then((m) => ({ default: m.StudentInterviewsPage })));
+const AIAssistantPage = lazy(() => import('../features/ai/AIAssistantPage').then((m) => ({ default: m.AIAssistantPage })));
 const EmployerDashboardPage = lazy(() => import('../features/employer/EmployerDashboardPage').then((m) => ({ default: m.EmployerDashboardPage })));
 const EmployerPostJobPage = lazy(() => import('../features/employer/EmployerPostJobPage').then((m) => ({ default: m.EmployerPostJobPage })));
 const EmployerManageJobsPage = lazy(() => import('../features/employer/EmployerManageJobsPage').then((m) => ({ default: m.EmployerManageJobsPage })));
@@ -71,7 +72,9 @@ const Page = ({ children }: { children: React.ReactNode }) => <PageTransition>{c
 
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<LoadingState label="Loading…" />}>
-    {children}
+    <LazyRouteErrorBoundary>
+      {children}
+    </LazyRouteErrorBoundary>
   </Suspense>
 );
 
@@ -94,7 +97,7 @@ export const AppRoutes = () => (
 
     {/* Student (protected) */}
     <Route element={<ProtectedRoute role="STUDENT" />}>
-      <Route element={<StudentLayout />}>
+      <Route element={<RoleLayout role="STUDENT" navConfig={STUDENT_SIDEBAR_NAV} storageKey="sidebar-collapsed-student" />}>
         <Route path="/student/dashboard" element={<LazyPage><Page><StudentDashboardPage /></Page></LazyPage>} />
         <Route path="/student/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
         <Route path="/student/jobs" element={<LazyPage><Page><StudentJobsPage /></Page></LazyPage>} />
@@ -105,15 +108,16 @@ export const AppRoutes = () => (
         <Route path="/student/resume-builder" element={<LazyPage><Page><StudentResumeBuilderPage /></Page></LazyPage>} />
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
         <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
-        <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
-        <Route path="/student/interviews" element={<LazyPage><Page><StudentInterviewsPage /></Page></LazyPage>} />
-        <Route path="/student/settings" element={<LazyPage><Page><StudentSettingsPage /></Page></LazyPage>} />
+         <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
+         <Route path="/student/interviews" element={<LazyPage><Page><StudentInterviewsPage /></Page></LazyPage>} />
+         <Route path="/student/ai-assistant" element={<LazyPage><Page><AIAssistantPage /></Page></LazyPage>} />
+         <Route path="/student/settings" element={<LazyPage><Page><StudentSettingsPage /></Page></LazyPage>} />
       </Route>
     </Route>
 
     {/* Employer (protected) */}
     <Route element={<ProtectedRoute role="EMPLOYER" />}>
-      <Route element={<EmployerLayout />}>
+      <Route element={<RoleLayout role="EMPLOYER" navConfig={EMPLOYER_SIDEBAR_NAV} storageKey="sidebar-collapsed-employer" />}>
         <Route path="/employer/dashboard" element={<LazyPage><Page><EmployerDashboardPage /></Page></LazyPage>} />
         <Route path="/employer/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
         <Route path="/employer/post-job" element={<LazyPage><Page><EmployerPostJobPage /></Page></LazyPage>} />
@@ -132,7 +136,7 @@ export const AppRoutes = () => (
 
     {/* Admin (hidden) */}
     <Route element={<ProtectedRoute role="ADMIN" />}>
-      <Route element={<AdminLayout />}>
+      <Route element={<RoleLayout role="ADMIN" navConfig={ADMIN_SIDEBAR_NAV} storageKey="sidebar-collapsed-admin" />}>
         <Route path="/admin/dashboard" element={<LazyPage><Page><AdminDashboardPage /></Page></LazyPage>} />
         <Route path="/admin/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
         <Route path="/admin/users" element={<LazyPage><Page><AdminUsersPage /></Page></LazyPage>} />

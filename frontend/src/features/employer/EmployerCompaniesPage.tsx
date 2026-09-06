@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -11,19 +12,19 @@ import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { KPICard } from '../../components/KPICard';
-import type { Job } from '../../core/types';
+import type { EmployerJob } from '../../core/types';
 
-type Company = {
+type EmployerCompany = {
   id: string;
   name: string;
   industry?: string;
   location?: string;
   description?: string;
   logo?: string;
-  jobs: Job[];
+  jobs: EmployerJob[];
 };
 
-const EMPTY_COMPANY: Company = {
+const EMPTY_COMPANY: EmployerCompany = {
   id: '',
   name: '',
   industry: '',
@@ -37,7 +38,7 @@ export const EmployerCompaniesPage = () => {
   useAuth();
   const { data: profile, loading: profileLoading } = useAsync(() => employersApi.getProfile(), []);
   const companyName = profile?.companyName;
-  const { data: company, loading: companyLoading, reload: reloadCompany } = useAsync<Company>(
+  const { data: company, loading: companyLoading, reload: reloadCompany } = useAsync<EmployerCompany>(
     () => (companyName ? companiesApi.getById(companyName) : Promise.resolve(EMPTY_COMPANY)),
     [companyName],
   );
@@ -94,7 +95,7 @@ export const EmployerCompaniesPage = () => {
   const isLoading = profileLoading || companyLoading;
   const jobs = company?.jobs ?? [];
   const totalJobs = jobs.length;
-  const totalApplicants = jobs.reduce((sum, job) => sum + ((job as any).applicantCount ?? 0), 0);
+  const totalApplicants = jobs.reduce((sum, job) => sum + (job.applicantCount ?? 0), 0);
 
   if (isLoading) {
     return (
@@ -112,8 +113,8 @@ export const EmployerCompaniesPage = () => {
       <PageHeader title="Company profile" subtitle="Manage your organization's presence on Gradture." />
 
       <div className="status-strip status-strip--2 section--mt">
-        <KPICard label="Total jobs" value={totalJobs} icon="🗂️" />
-        <KPICard label="Total applicants" value={totalApplicants} icon="👥" />
+        <KPICard label="Total jobs" value={totalJobs} />
+        <KPICard label="Total applicants" value={totalApplicants} />
       </div>
 
       <div className="section--mt">
@@ -169,7 +170,7 @@ export const EmployerCompaniesPage = () => {
                   Cancel
                 </Button>
               </div>
-              {message && <div className="message message--info" role="status">{message}</div>}
+              {message && <Alert variant="info">{message}</Alert>}
             </form>
           ) : (
             <div className="company-details">
@@ -227,7 +228,7 @@ export const EmployerCompaniesPage = () => {
                       <td className="text-sm">{job.type}</td>
                       <td className="text-sm">{job.location || 'Remote'}</td>
                       <td><Badge kind={resolveBadgeKind(job.status)}>{job.status}</Badge></td>
-                      <td className="text-secondary text-sm">{(job as any).applicantCount ?? 0}</td>
+                       <td className="text-secondary text-sm">{job.applicantCount ?? 0}</td>
                       <td>
                         <div className="flex gap-1">
                           <Button variant="ghost" size="sm" to={`/employer/edit-job/${job.id}`}>
@@ -244,9 +245,8 @@ export const EmployerCompaniesPage = () => {
               </table>
             </div>
           ) : (
-            <EmptyState
-              icon="💼"
-              title="No job postings yet"
+             <EmptyState
+               title="No job postings yet"
               text="Post your first opening to start receiving applicants."
               action={<Button size="sm" to="/employer/post-job">Post a job</Button>}
             />

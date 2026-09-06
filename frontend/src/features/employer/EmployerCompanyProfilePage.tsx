@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { FormEvent, useEffect, useState } from 'react';
 import { employersApi } from '../../core/api/endpoints/employers';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -7,7 +8,7 @@ import { FormInput, FormTextarea } from '../../components/FormField';
 import { PageHeader } from '../../components/PageHeader';
 import { Progress } from '../../components/Progress';
 
-type Profile = {
+type EmployerCompanyProfile = {
   companyName?: string;
   name?: string;
   industry?: string;
@@ -31,12 +32,12 @@ export const EmployerCompanyProfilePage = () => {
 
   useEffect(() => {
     if (profile) {
-      setName((profile as any).companyName ?? (profile as any).name ?? '');
-      setIndustry((profile as Profile).industry ?? '');
-      setLocation((profile as Profile).location ?? '');
-      setDescription((profile as Profile).description ?? '');
-      setWebsite((profile as Profile).website ?? '');
-      setPhone((profile as Profile).phone ?? '');
+      setName((profile as EmployerCompanyProfile).companyName ?? (profile as EmployerCompanyProfile).name ?? '');
+      setIndustry((profile as EmployerCompanyProfile).industry ?? '');
+      setLocation((profile as EmployerCompanyProfile).location ?? '');
+      setDescription((profile as EmployerCompanyProfile).description ?? '');
+      setWebsite((profile as EmployerCompanyProfile).website ?? '');
+      setPhone((profile as EmployerCompanyProfile).phone ?? '');
     }
   }, [profile]);
 
@@ -55,7 +56,7 @@ export const EmployerCompanyProfilePage = () => {
     setMessage('');
     try {
       const updated = await employersApi.updateProfile({ companyName: name, industry, location, description, website, phone });
-      setMessage(`Saved company profile for ${(updated as Profile).companyName ?? name}.`);
+      setMessage(`Saved company profile for ${(updated as EmployerCompanyProfile).companyName ?? name}.`);
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to save.');
     } finally {
@@ -103,7 +104,7 @@ export const EmployerCompanyProfilePage = () => {
           <div>
             <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save company profile'}</Button>
           </div>
-          {message && <div className="message message--info" role="status">{message}</div>}
+          {message && <Alert variant="info">{message}</Alert>}
         </form>
       </div>
     </div>

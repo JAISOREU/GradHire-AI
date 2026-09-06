@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { useAsync } from '../../core/hooks/useAsync';
 import { adminApi } from '../../core/api/endpoints/admin';
 import { AdminListPage } from '../../components/AdminListPage';
+import { Alert } from '../../components/Alert';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 
@@ -65,7 +66,7 @@ export const AdminUsersPage = () => {
           <option value="ADMIN">Admin</option>
         </select>
         <Button variant={showCreate ? 'secondary' : 'primary'} onClick={() => setShowCreate(!showCreate)}>{showCreate ? 'Cancel' : 'Add user'}</Button>
-        {message && <span className="message message--info">{message}</span>}
+        {message && <Alert variant="info">{message}</Alert>}
       </div>
 
       {showCreate && (
@@ -119,8 +120,7 @@ export const AdminUsersPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="👥"
-        emptyTitle="No users"
+         emptyTitle="No users"
         emptyText="No users found."
       />
     </div>

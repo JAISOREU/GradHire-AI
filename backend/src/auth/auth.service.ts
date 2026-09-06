@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import { EmailService } from '../email/email.service';
+import { RefreshToken } from '@prisma/client';
 
 const JWT_SECRET = (() => {
   const secret = process.env.JWT_SECRET;
@@ -55,8 +56,47 @@ export class AuthService {
     res.cookie('access_token', token, this.getCookieOptions());
   }
 
+  private setRefreshCookie(res: Response, token: string): void {
+    const options = this.getCookieOptions();
+    res.cookie('refresh_token', token, {
+      ...options,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+  }
+
+  private async createRefreshToken(userId: string): Promise<string> {
+    const rawToken = randomUUID() + randomUUID();
+    const tokenHash = await bcrypt.hash(rawToken, 12);
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+    await this.prisma.refreshToken.create({
+      data: {
+        userId,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    return rawToken;
+  }
+
+  private async invalidateRefreshToken(tokenId: string): Promise<void> {
+    await this.prisma.refreshToken.update({
+      where: { id: tokenId },
+      data: { revokedAt: new Date() },
+    });
+  }
+
+  private async invalidateAllRefreshTokens(userId: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+  }
+
   clearAuthCookie(res: Response): void {
     this.clearSessionCookie(res);
+    this.clearRefreshCookie(res);
   }
 
   clearSessionCookie(res: Response): void {
@@ -69,7 +109,24 @@ export class AuthService {
     });
   }
 
-  async register(body: { email: string; password: string; name?: string; role?: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
+  private clearRefreshCookie(res: Response): void {
+    const options = this.getCookieOptions();
+    res.clearCookie('refresh_token', {
+      path: '/',
+      secure: options.secure as boolean,
+      sameSite: options.sameSite as 'none' | 'lax' | 'strict',
+      httpOnly: options.httpOnly as boolean,
+    });
+  }
+
+  async logout(userId: string, res?: Response): Promise<void> {
+    await this.invalidateAllRefreshTokens(userId);
+    if (res) {
+      this.clearAuthCookie(res);
+    }
+  }
+
+  async register(body: { email: string; password: string; name?: string; role?: string }, res?: Response): Promise<{ accessToken: string; refreshToken: string; user: AuthUser }> {
     const role = body.role === 'EMPLOYER' ? 'EMPLOYER' : 'STUDENT';
     if (body.role === 'ADMIN') {
       throw new ConflictException('This endpoint cannot register ADMIN users');
@@ -106,11 +163,14 @@ export class AuthService {
         avatarUrl: user.avatarUrl ?? undefined,
       });
 
+      const refreshToken = await this.createRefreshToken(user.id);
+
       if (res) {
         this.setAuthCookie(res, authResponse.accessToken);
+        this.setRefreshCookie(res, refreshToken);
       }
 
-      return authResponse;
+      return { ...authResponse, refreshToken };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes('Unique constraint') || message.includes('unique')) {
@@ -121,7 +181,7 @@ export class AuthService {
     }
   }
 
-  async login(body: { email: string; password: string }, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
+  async login(body: { email: string; password: string }, res?: Response): Promise<{ accessToken: string; refreshToken: string; user: AuthUser }> {
     const user = await this.prisma.user.findUnique({
       where: { email: body.email.toLowerCase() },
       select: { id: true, email: true, role: true, passwordHash: true, avatarUrl: true, tokenVersion: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
@@ -141,20 +201,28 @@ export class AuthService {
       data: { tokenVersion: { increment: 1 } },
     });
 
-    const authResponse = this.buildAuthResponse({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      name: user.profile?.name || user.employerProfile?.companyName,
-      avatarUrl: user.avatarUrl ?? undefined,
-      tokenVersion: user.tokenVersion + 1,
+    const refreshedUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { id: true, email: true, role: true, avatarUrl: true, tokenVersion: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
     });
+
+    const authResponse = this.buildAuthResponse({
+      id: refreshedUser!.id,
+      email: refreshedUser!.email,
+      role: refreshedUser!.role,
+      name: refreshedUser!.profile?.name || refreshedUser!.employerProfile?.companyName,
+      avatarUrl: refreshedUser!.avatarUrl ?? undefined,
+      tokenVersion: refreshedUser!.tokenVersion,
+    });
+
+    const refreshToken = await this.createRefreshToken(user.id);
 
     if (res) {
       this.setAuthCookie(res, authResponse.accessToken);
+      this.setRefreshCookie(res, refreshToken);
     }
 
-    return authResponse;
+    return { ...authResponse, refreshToken };
   }
 
   private buildAuthResponse(user: AuthUser): { accessToken: string; user: AuthUser } {
@@ -196,28 +264,23 @@ export class AuthService {
     };
   }
 
-  async refresh(token: string, res?: Response): Promise<{ accessToken: string; user: AuthUser }> {
-    let payload: { sub: string; email: string; role: string };
-    try {
-      payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string };
-    } catch (err) {
+  async refresh(rawToken: string, res?: Response): Promise<{ accessToken: string; refreshToken: string; user: AuthUser }> {
+    const token = await this.validateRefreshToken(rawToken);
+    if (!token) {
       if (res) {
         this.clearSessionCookie(res);
+        this.clearRefreshCookie(res);
       }
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    if (!payload?.sub) {
-      throw new UnauthorizedException('Invalid token');
-    }
+    await this.invalidateRefreshToken(token.id);
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-      select: { id: true, email: true, role: true, avatarUrl: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
+    const user = await this.prisma.user.update({
+      where: { id: token.userId },
+      data: { tokenVersion: { increment: 1 } },
+      select: { id: true, email: true, role: true, avatarUrl: true, tokenVersion: true, profile: { select: { name: true } }, employerProfile: { select: { companyName: true } } },
     });
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
 
     const authResponse = this.buildAuthResponse({
       id: user.id,
@@ -225,13 +288,30 @@ export class AuthService {
       role: user.role,
       name: user.profile?.name || user.employerProfile?.companyName,
       avatarUrl: user.avatarUrl ?? undefined,
+      tokenVersion: user.tokenVersion,
     });
+
+    const newRefreshToken = await this.createRefreshToken(user.id);
 
     if (res) {
       this.setAuthCookie(res, authResponse.accessToken);
+      this.setRefreshCookie(res, newRefreshToken);
     }
 
-    return authResponse;
+    return { ...authResponse, refreshToken: newRefreshToken };
+  }
+
+  private async validateRefreshToken(rawToken: string): Promise<RefreshToken | null> {
+    const tokens = await this.prisma.refreshToken.findMany({
+      where: { revokedAt: null, expiresAt: { gte: new Date() } },
+    });
+
+    for (const token of tokens) {
+      if (await bcrypt.compare(rawToken, token.tokenHash)) {
+        return token;
+      }
+    }
+    return null;
   }
 
   async requestPasswordReset(email: string): Promise<{ message: string }> {

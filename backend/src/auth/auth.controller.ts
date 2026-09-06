@@ -30,9 +30,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   async refresh(@Req() req: Request & { cookies?: Record<string, string> }, @Res({ passthrough: true }) res?: Response) {
-    const token = req.cookies?.access_token;
+    const token = req.cookies?.refresh_token;
     if (!token) {
-      throw new UnauthorizedException('Missing token');
+      throw new UnauthorizedException('Missing refresh token');
     }
     return this.auth.refresh(token, res);
   }
@@ -40,10 +40,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res?: Response) {
-    if (res) {
-      this.auth.clearAuthCookie(res);
-    }
+  async logout(@Req() req: Request & { user: AuthUser }, @Res({ passthrough: true }) res?: Response) {
+    await this.auth.logout(req.user.id, res);
     return { message: 'Logged out successfully' };
   }
 

@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -12,7 +13,6 @@ import { FormInput, FormTextarea, FormSelect } from '../../components/FormField'
 import { PageHeader } from '../../components/PageHeader';
 import { Skeleton } from '../../components/Skeleton';
 import { Badge } from '../../components/Badge';
-import { Icon } from '../../components/Icon';
 import { Avatar } from '../../components/Avatar';
 import { EmptyState } from '../../components/EmptyState';
 import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume, Certification } from '../../core/types';
@@ -120,7 +120,7 @@ function SectionHeader({ title, subtitle, onEdit, editing, onSave, onCancel, sav
             <Button size="sm" onClick={onSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
           </>
         ) : (
-          <Button variant="ghost" size="sm" onClick={onEdit}><Icon name="edit" size={16} /> Edit</Button>
+          <Button variant="ghost" size="sm" onClick={onEdit}>Edit</Button>
         )}
       </div>
     </div>
@@ -659,7 +659,7 @@ function ProjectsSection(_props: { onSectionClick?: (section: string) => void })
     setLoading(true);
     try {
       const data = await studentsApi.getProjects();
-      setItems(data as any);
+      setItems(data);
     } catch {
       setItems([]);
     }
@@ -842,7 +842,7 @@ function CareerPreferencesSection({ onSectionClick }: { onSectionClick?: (sectio
       )}
       {!editing && (
         <div className="mt-4">
-          <Button variant="ghost" size="sm" onClick={() => setEditing(true)}><Icon name="edit" size={16} /> Edit preferences</Button>
+          <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>Edit preferences</Button>
         </div>
       )}
     </Card>
@@ -857,7 +857,7 @@ function ProfileVisibilitySection({ profile, onUpdate }: { profile: Record<strin
     setVisibility(value);
     setSaving(true);
     try {
-      await studentsApi.updateProfile({ visibility: value } as any);
+      await studentsApi.updateProfile({ visibility: value });
       onUpdate();
     } finally {
       setSaving(false);
@@ -961,7 +961,7 @@ function ResumeSection() {
       </div>
       <div className="mt-4">
         <label className="btn btn--secondary btn--sm">
-          <Icon name="upload" size={16} /> Upload new resume
+          Upload new resume
           <input
             type="file"
             accept=".pdf,.docx,.txt"
@@ -985,7 +985,7 @@ function ResumeSection() {
           />
         </label>
       </div>
-      {error && <div className="message message--error section--mt" role="alert">{error}</div>}
+      {error && <Alert className="section--mt">{error}</Alert>}
     </Card>
   );
 }
@@ -1089,7 +1089,7 @@ function DangerZone() {
             placeholder="Enter your password"
             required
           />
-          {error && <div className="message message--error" role="alert">{error}</div>}
+           {error && <Alert>{error}</Alert>}
           <div className="flex gap-2">
             <Button variant="danger" size="sm" onClick={handleDelete} disabled={deleting || !password}>
               {deleting ? 'Deleting…' : 'Yes, delete my account'}
@@ -1183,9 +1183,9 @@ export const AccountPage = () => {
     return (
       <div className="page fade-in">
         <PageHeader title="Account" subtitle="Manage your profile and settings." />
-        <div className="message message--error" role="alert">
+        <Alert>
           Failed to load profile. <button onClick={reloadProfile} className="link">Retry</button>
-        </div>
+        </Alert>
       </div>
     );
   }
@@ -1408,9 +1408,8 @@ export const AccountPage = () => {
                 { to: '/admin/settings', label: 'Settings', icon: 'settings' },
               ].map((item) => (
                 <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3 no-underline text-inherit">
-                  <Icon name={item.icon as any} size={18} />
                   <span className="text-sm font-medium">{item.label}</span>
-                  <Icon name="chevron-right" size={16} className="ml-auto text-muted" />
+                  <span className="ml-auto text-muted">›</span>
                 </Link>
               ))}
             </div>

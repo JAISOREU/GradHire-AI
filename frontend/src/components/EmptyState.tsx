@@ -1,20 +1,17 @@
 import type { ReactNode } from 'react';
-import { Icon } from './Icon';
 
 type EmptyStateProps = {
-  icon?: string;
-  iconName?: 'search' | 'jobs' | 'mail' | 'star' | 'heart' | 'users';
+  icon?: ReactNode;
   title: string;
   text?: string;
   action?: ReactNode;
   secondaryAction?: ReactNode;
+  className?: string;
 };
 
-export const EmptyState = ({ icon = '🔍', iconName, title, text, action, secondaryAction }: EmptyStateProps) => (
-  <div className="empty-state">
-    <div className="empty-state__icon" aria-hidden="true">
-      {iconName ? <Icon name={iconName} size={32} /> : <span className="empty-state__icon-emoji">{icon}</span>}
-    </div>
+export const EmptyState = ({ icon, title, text, action, secondaryAction, className = '' }: EmptyStateProps) => (
+  <div className={`empty-state ${className}`.trim()}>
+    {icon && <div className="empty-state__icon" aria-hidden="true">{icon}</div>}
     <div className="empty-state__title">{title}</div>
     {text && <p className="empty-state__text">{text}</p>}
     {(action || secondaryAction) && (
@@ -25,4 +22,3 @@ export const EmptyState = ({ icon = '🔍', iconName, title, text, action, secon
     )}
   </div>
 );
-

@@ -54,19 +54,17 @@ export function useFormValidation<T extends Record<string, unknown>>({
   };
 
   const handleChange = (field: keyof T, value: unknown) => {
-    setValues((prev) => {
-      const next = { ...prev, [field]: value };
-      const fieldErrors = validate(next);
-      setErrors((prevErrors) => {
-        const nextErrors = { ...prevErrors };
-        if (fieldErrors[field]) {
-          nextErrors[field] = fieldErrors[field]!;
-        } else {
-          delete nextErrors[field];
-        }
-        return nextErrors;
-      });
-      return next;
+    const next = { ...values, [field]: value };
+    const fieldErrors = validate(next);
+    setValues(next);
+    setErrors((prev) => {
+      const nextErrors = { ...prev };
+      if (fieldErrors[field]) {
+        nextErrors[field] = fieldErrors[field]!;
+      } else {
+        delete nextErrors[field];
+      }
+      return nextErrors;
     });
   };
 
