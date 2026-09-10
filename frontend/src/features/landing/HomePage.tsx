@@ -54,7 +54,7 @@ const HeroNode = () => {
             ))}
           </div>
         </div>
-        <div className="hero-visual-wrap hero-anim hero-anim--visual">
+        <div className="hero-visual-wrap hero-anim hero-anim--visual spatial-elevated spatial-glass">
             <ProductMatchVisual />
           </div>
       </div>

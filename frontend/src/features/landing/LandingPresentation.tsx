@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useRef, useState, useCallback, CSSProperties } fr
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { ThemeNavArrow } from '../../components/ThemeNavArrow';
 import { AmbientBackground, AmbientBackgroundHandle } from '../../components/AmbientBackground';
+import { SpatialBackground } from '../../components/SpatialBackground';
 
 export interface PresentationSlide {
   id: string;
@@ -345,6 +346,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
         aria-label="Gradture product presentation"
       >
         <AmbientBackground ref={backdropRef} />
+        <SpatialBackground />
         {slides.map((slide, i) => (
         <section
           key={slide.id}

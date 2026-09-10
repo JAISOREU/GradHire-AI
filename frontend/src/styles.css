@@ -8190,3 +8190,317 @@ input[type='file']::file-selector-button:hover {
   font-weight: 600;
   color: var(--color-text-tertiary);
 }
+
+/* ============================================================
+   SPATIAL UI — Depth tokens + glass system
+
+   Spatial tokens resolve differently in light / dark so the
+   depth language feels native to each theme.
+   ============================================================ */
+
+:root {
+  --spatial-shadow-elevated:
+    0 1px 1px rgb(0 0 0 / 0.04),
+    0 4px 12px -2px rgb(0 0 0 / 0.08),
+    0 14px 34px -6px rgb(0 0 0 / 0.10);
+  --spatial-shadow-float:
+    0 2px 2px rgb(0 0 0 / 0.03),
+    0 8px 24px -4px rgb(0 0 0 / 0.10),
+    0 24px 50px -10px rgb(0 0 0 / 0.12);
+  --spatial-glow-primary: rgba(var(--color-primary-rgb), 0.07);
+  --spatial-glow-accent:  rgba(var(--color-primary-rgb), 0.035);
+  --spatial-glass-bg: rgba(255, 255, 255, 0.045);
+  --spatial-glass-border: rgba(255, 255, 255, 0.08);
+  --spatial-glass-blur: 22px;
+}
+
+[data-theme='dark'] {
+  --spatial-glow-primary: rgba(var(--color-primary-rgb), 0.06);
+  --spatial-glow-accent:  rgba(var(--color-primary-rgb), 0.03);
+  --spatial-glass-bg: rgba(255, 255, 255, 0.035);
+  --spatial-glass-border: rgba(255, 255, 255, 0.065);
+}
+
+[data-theme='light'] {
+  --spatial-shadow-elevated:
+    0 1px 1px rgb(0 0 0 / 0.03),
+    0 4px 12px -2px rgb(0 0 0 / 0.06),
+    0 14px 34px -6px rgb(0 0 0 / 0.07);
+  --spatial-shadow-float:
+    0 2px 2px rgb(0 0 0 / 0.02),
+    0 8px 24px -4px rgb(0 0 0 / 0.08),
+    0 24px 50px -10px rgb(0 0 0 / 0.08);
+  --spatial-glass-bg: rgba(255, 255, 255, 0.55);
+  --spatial-glass-border: rgba(255, 255, 255, 0.65);
+  --spatial-glass-blur: 16px;
+}
+
+/* ---- Applied depth classes ---- */
+.spatial-elevated {
+  box-shadow: var(--spatial-shadow-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.spatial-elevated--float {
+  box-shadow: var(--spatial-shadow-float);
+}
+
+.spatial-glass {
+  background: var(--spatial-glass-bg);
+  border: 1px solid var(--spatial-glass-border);
+  backdrop-filter: blur(var(--spatial-glass-blur));
+  -webkit-backdrop-filter: blur(var(--spatial-glass-blur));
+}
+
+.spatial-glow-ring {
+  position: relative;
+}
+
+.spatial-glow-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    var(--spatial-glow-primary),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spatial-glow-ring:hover::before {
+  opacity: 1;
+}
+
+/* ============================================================
+   SPATIAL BACKGROUND — Landing page layered depth
+
+   Structure:
+     .spatial-background        (absolute, full-bleed, behind content)
+       .spatial-background__layers (same size, contains layers)
+         .spatial-layer          (each: absolute, inset 0, pointer-events none)
+
+   Layer speeds (data-depth on the DOM elements):
+     field   0.05   fixed subtle dot grid (no idle drift)
+     aurora  0.10   slow-moving aurora gradient bands
+     glow    0.15   primary-colour focused radial glow
+     orb-a   0.20   decorative blurred orb A
+     orb-b   0.12   decorative blurred orb B
+     glyph   0.25   slow rotating accent marks
+     grain   0.08   subtle fixed film-grain (no idle drift)
+
+   All colours read --color-primary-rgb / --color-surface-rgb,
+   so LIGHT / DARK themes both resolve correctly.
+   ============================================================ */
+
+.spatial-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.spatial-background__layers {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spatial-layer {
+  position: absolute;
+  inset: -80px;
+  width: calc(100% + 160px);
+  height: calc(100% + 160px);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 0.08s linear;
+}
+
+.spatial-layer--field {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(var(--color-primary-rgb) / 0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  transition: none;
+}
+
+[data-theme='dark'] .spatial-layer--field {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(var(--color-primary-rgb) / 0.055) 1px, transparent 1px);
+}
+
+.spatial-layer--aurora {
+  background:
+    radial-gradient(ellipse 65% 45% at 30% -8%, rgb(var(--color-primary-rgb) / 0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 35% at 75% 105%, rgb(var(--color-primary-rgb) / 0.04) 0%, transparent 60%);
+}
+
+[data-theme='dark'] .spatial-layer--aurora {
+  background:
+    radial-gradient(ellipse 65% 45% at 30% -8%, rgb(var(--color-primary-rgb) / 0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 35% at 75% 105%, rgb(var(--color-primary-rgb) / 0.05) 0%, transparent 60%);
+}
+
+.spatial-layer--glow {
+  background:
+    radial-gradient(ellipse 38% 32% at 65% 28%, rgb(var(--color-primary-rgb) / 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 28% 26% at 18% 72%, rgb(var(--color-primary-rgb) / 0.03) 0%, transparent 60%);
+}
+
+[data-theme='dark'] .spatial-layer--glow {
+  background:
+    radial-gradient(ellipse 38% 32% at 65% 28%, rgb(var(--color-primary-rgb) / 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 28% 26% at 18% 72%, rgb(var(--color-primary-rgb) / 0.04) 0%, transparent 60%);
+}
+
+.spatial-layer--orb-a,
+.spatial-layer--orb-b {
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+[data-theme='dark'] .spatial-layer--orb-a,
+[data-theme='dark'] .spatial-layer--orb-b {
+  filter: blur(64px);
+}
+
+.spatial-layer--orb-a {
+  left: 12%;
+  top: 18%;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--color-primary-rgb) / 0.07) 0%, transparent 70%);
+}
+
+.spatial-layer--orb-b {
+  left: auto;
+  right: 8%;
+  top: auto;
+  bottom: 14%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--color-primary-rgb) / 0.055) 0%, transparent 70%);
+}
+
+[data-theme='light'] .spatial-layer--orb-a {
+  background: radial-gradient(circle, rgb(var(--color-primary-rgb) / 0.055) 0%, transparent 70%);
+}
+[data-theme='light'] .spatial-layer--orb-b {
+  background: radial-gradient(circle, rgb(var(--color-primary-rgb) / 0.045) 0%, transparent 70%);
+}
+
+/* Geometric accent marks — small subtle rotating shapes */
+.spatial-layer--glyph {
+  left: 8%;
+  top: 22%;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid rgb(var(--color-primary-rgb) / 0.12);
+  border-radius: 30%;
+  background: transparent;
+  filter: none;
+}
+
+.spatial-layer--glyph::before {
+  content: '';
+  position: absolute;
+  left: 120%;
+  top: 200%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgb(var(--color-primary-rgb) / 0.10);
+}
+
+.spatial-layer--glyph::after {
+  content: '';
+  position: absolute;
+  left: -80%;
+  top: 110%;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid rgb(var(--color-primary-rgb) / 0.09);
+}
+
+/* Film-grain — fixed, never moves, just a subtle texture */
+.spatial-layer--grain {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+[data-theme='light'] .spatial-layer--grain {
+  opacity: 0.18;
+}
+
+/* ---- Mobile: lighter spatial system ---- */
+@media (max-width: 640px) {
+  .spatial-layer--orb-a { width: 180px; height: 180px; filter: blur(40px); }
+  .spatial-layer--orb-b { width: 140px; height: 140px; filter: blur(36px); }
+  .spatial-layer--glyph { display: none; }
+  .spatial-layer--grain { opacity: 0.2; }
+  .spatial-layer--aurora {
+    background:
+      radial-gradient(ellipse 70% 40% at 30% -8%, rgb(var(--color-primary-rgb) / 0.05) 0%, transparent 60%);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .spatial-layer--orb-a { width: 240px; height: 240px; }
+  .spatial-layer--orb-b { width: 200px; height: 200px; }
+}
+
+/* ---- Reduced motion: freeze all spatial transforms ---- */
+@media (prefers-reduced-motion: reduce) {
+  .spatial-layer { transition: none !important; }
+  .spatial-layer--orb-a,
+  .spatial-layer--orb-b { filter: blur(48px); }
+}
+
+/* ============================================================
+   HERO + FEATURE glass/deep surface enhancements
+   ============================================================ */
+
+.hero-visual-wrap.spatial-elevated {
+  box-shadow: var(--spatial-shadow-float);
+  border: 1px solid var(--color-border);
+}
+
+.hero-visual-wrap.spatial-glass {
+  background: var(--spatial-glass-bg);
+  border: 1px solid var(--spatial-glass-border);
+  backdrop-filter: blur(var(--spatial-glass-blur));
+  -webkit-backdrop-filter: blur(var(--spatial-glass-blur));
+  box-shadow: var(--spatial-shadow-float);
+}
+
+.feature-section__visual.spatial-elevated {
+  box-shadow: var(--spatial-shadow-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  overflow: hidden;
+}
+
+.feature-section__visual.spatial-glass {
+  background: var(--spatial-glass-bg);
+  border: 1px solid var(--spatial-glass-border);
+  backdrop-filter: blur(var(--spatial-glass-blur));
+  -webkit-backdrop-filter: blur(var(--spatial-glass-blur));
+  box-shadow: var(--spatial-shadow-elevated);
+}

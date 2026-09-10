@@ -173,7 +173,7 @@ export const FeatureSlide = ({ feature, index }: { feature: Feature; index: numb
           )}
         </div>
 
-        <div className="feature-section__visual">
+        <div className="feature-section__visual spatial-elevated">
           <ScrollReveal options={{ threshold: 0.2, once: true, duration: MOTION.duration.slower, distance: MOTION.distance.md, direction: 'up', delay: 100 }}>
             {VisualComponent && <VisualComponent />}
           </ScrollReveal>
