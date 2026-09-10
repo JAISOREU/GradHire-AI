@@ -1,5 +1,6 @@
 import { Sidebar } from '../components/Sidebar';
 import { AuthHeader } from '../components/AuthHeader';
+import { CommandPalette } from '../components/CommandPalette';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
@@ -60,6 +61,7 @@ export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProp
           {children}
         </main>
       </div>
+      <CommandPalette sections={navConfig} />
     </div>
   );
 };
