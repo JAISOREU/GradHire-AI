@@ -44,7 +44,7 @@ export const StudentNotificationsPage = () => {
             </article>
           ))
         ) : (
-          <EmptyState icon="🔔" title="No notifications" text="You're all caught up." />
+          <EmptyState icon="Bell" title="No notifications" text="You're all caught up." />
         )}
       </div>
     </div>

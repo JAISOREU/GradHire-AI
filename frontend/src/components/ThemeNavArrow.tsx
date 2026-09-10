@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
+import { PhosphorIcon } from './PhosphorIcon';
 
 interface ThemeNavArrowProps {
   active: number;
   goTo: (index: number) => void;
   lastIndex: number;
-  isTransitioning: React.MutableRefObject<boolean>;
   reduced: boolean;
 }
 
-export const ThemeNavArrow = ({ active, goTo, lastIndex, isTransitioning, reduced }: ThemeNavArrowProps) => {
+export const ThemeNavArrow = ({ active, goTo, lastIndex, reduced }: ThemeNavArrowProps) => {
   const [animating, setAnimating] = useState(false);
   const [ripple, setRipple] = useState<{ x: number; y: number; id: number } | null>(null);
 
@@ -20,7 +20,6 @@ export const ThemeNavArrow = ({ active, goTo, lastIndex, isTransitioning, reduce
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (isTransitioning.current) return;
       if (animating) return;
 
       const rect = e.currentTarget.getBoundingClientRect();
@@ -41,7 +40,7 @@ export const ThemeNavArrow = ({ active, goTo, lastIndex, isTransitioning, reduce
         setRipple(null);
       }, reduced ? 50 : 700);
     },
-    [active, direction, goTo, isTransitioning, animating, reduced]
+    [active, direction, goTo, reduced]
   );
 
   if (!visible) return null;
@@ -69,7 +68,9 @@ export const ThemeNavArrow = ({ active, goTo, lastIndex, isTransitioning, reduce
 
       {/* Inner container */}
       <span className="theme-nav-arrow__inner" aria-hidden="true">
-        <span className="theme-nav-arrow__text">{isDown ? '↓' : '↑'}</span>
+        <span className="theme-nav-arrow__text">
+          <PhosphorIcon name={isDown ? 'CaretDown' : 'CaretUp'} size={16} weight="bold" />
+        </span>
       </span>
 
       {/* Ripple effect */}

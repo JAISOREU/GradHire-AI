@@ -5,6 +5,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { NavLink } from 'react-router-dom';
 import { Avatar } from './Avatar';
+import { Logo } from './Logo';
 
 type HeaderProps = {
   user: AuthUser | null;
@@ -106,18 +107,7 @@ export const Header = ({ user, onLogout, onSignIn }: HeaderProps) => {
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
       <div className="app-header__inner" style={innerStyle}>
         <div className="brand" style={brandStyle}>
-          <span className="header-logo__mark" aria-hidden="true">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
-              <path d="M20 24V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="header-logo-tassel" />
-              <circle cx="20" cy="33" r="2" fill="currentColor" className="header-logo-tassel-dot" />
-              <circle cx="4" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--1" />
-              <circle cx="20" cy="8" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--2" />
-              <circle cx="36" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--3" />
-              <circle cx="20" cy="24" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--4" />
-              <path d="M4 16H36M20 8V24M4 16L20 24M36 16L20 24" stroke="currentColor" strokeWidth="1" opacity="0.3" className="header-logo-lines" />
-            </svg>
-          </span>
+          <Logo size={28} />
           <span className="header-logo__text" style={titleStyle}>
             <span className="header-logo__inner">Gradture</span>
           </span>

@@ -5,7 +5,7 @@ export const AdminBackupsPage = () => (
     <h1 className="page-title page-title--admin">Backups</h1>
     <p className="card__subtitle card__subtitle--mt">Manage database backups and restores.</p>
     <div className="section--mt">
-      <EmptyState icon="💾" title="No backups" text="Backups will appear here when configured." />
+      <EmptyState icon="FloppyDisk" title="No backups" text="Backups will appear here when configured." />
     </div>
   </div>
 );

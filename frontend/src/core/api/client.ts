@@ -29,6 +29,7 @@ type RequestOptions = Omit<RequestInit, 'body'> & {
   formData?: FormData;
   requiresAuth?: boolean;
   timeout?: number;
+  bypassCache?: boolean;
 };
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
@@ -157,7 +158,7 @@ const onRefreshed = (success: boolean) => {
 // ============================================================
 
 export const api = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
-  const { json, formData, requiresAuth = true, headers, method, ...rest } = options;
+  const { json, formData, requiresAuth = true, headers, method, bypassCache = false, ...rest } = options;
 
   const finalHeaders: Record<string, string> = { ...(headers as Record<string, string>) };
   if (json !== undefined) {
@@ -175,9 +176,15 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   }
   const url = API_BASE ? `${API_BASE}${path}` : path;
 
+  // Fail fast while the API is known to be offline — no network round trip, no
+  // repeated console noise on every page load.
+  if (Date.now() < offlineUntil) {
+    throw new ApiError('Network error: Gradture servers are unreachable. Please check your connection and try again.', 0);
+  }
+
   // Check cache for identical GET requests
   const cacheKey = getCacheKey(requestMethod, url, body);
-  const cachedRequest = getCachedRequest<T>(cacheKey);
+  const cachedRequest = bypassCache ? undefined : getCachedRequest<T>(cacheKey);
   if (cachedRequest) {
     return cachedRequest.promise;
   }
@@ -192,7 +199,10 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
       credentials: 'include',
       timeout: options.timeout,
     });
+    offlineUntil = 0;
   } catch (networkError) {
+    offlineUntil = Date.now() + API_OFFLINE_COOLDOWN_MS;
+    notifyStatus();
     const reason = networkError instanceof Error ? networkError.message : String(networkError);
     throw new ApiError(`Network error: ${reason}. Please check your connection and try again.`, 0);
   }
@@ -252,3 +262,62 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
 export const getStoredToken = (): string | null => null;
 export const setStoredToken = (_token: string): void => {};
 export const clearStoredToken = (): void => {};
+
+// ============================================================
+// API availability gate — fail fast while the backend is offline
+// ============================================================
+
+const API_OFFLINE_COOLDOWN_MS = 15_000;
+let offlineUntil = 0;
+let probeInFlight: Promise<boolean> | null = null;
+type ApiStatusListener = (offline: boolean) => void;
+const statusListeners = new Set<ApiStatusListener>();
+
+const notifyStatus = (): void => {
+  const offline = Date.now() < offlineUntil;
+  statusListeners.forEach((listener) => {
+    try {
+      listener(offline);
+    } catch {
+      // Ignore listener errors
+    }
+  });
+};
+
+const probeApi = (): Promise<boolean> => {
+  if (probeInFlight) return probeInFlight;
+  probeInFlight = (async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    try {
+      await fetch(`${API_BASE}/api/v1/auth/me`, {
+        method: 'GET',
+        credentials: 'include',
+        signal: controller.signal,
+      });
+      offlineUntil = 0;
+      return true;
+    } catch {
+      offlineUntil = Date.now() + API_OFFLINE_COOLDOWN_MS;
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  })().finally(() => {
+    probeInFlight = null;
+    notifyStatus();
+  });
+  return probeInFlight;
+};
+
+/** Whether the API is currently known to be unreachable (short-circuits fast). */
+export const isApiOffline = (): boolean => Date.now() < offlineUntil;
+
+/** Subscribe to availability changes. Returns an unsubscribe function. */
+export const onApiStatusChange = (listener: ApiStatusListener): (() => void) => {
+  statusListeners.add(listener);
+  return () => statusListeners.delete(listener);
+};
+
+/** Kick off a deduplicated availability probe. Used on app boot. */
+export const probeApiStatus = (): Promise<boolean> => probeApi();

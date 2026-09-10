@@ -39,7 +39,7 @@ export const AdminCompaniesPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="🏢"
+        emptyIcon="Building"
         emptyTitle="No companies"
         emptyText="No companies found."
       />

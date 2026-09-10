@@ -55,7 +55,7 @@ export const AdminJobsPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="🗂️"
+        emptyIcon="FolderOpen"
         emptyTitle="No jobs"
         emptyText="No jobs found."
       />

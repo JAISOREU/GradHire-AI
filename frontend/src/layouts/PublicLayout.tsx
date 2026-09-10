@@ -1,22 +1,33 @@
 import { Link, Outlet, useLocation, NavLink } from 'react-router-dom';
 import { useAuth } from '../core/auth/AuthContext';
 import { Button } from '../components/Button';
-import { SkipLink } from '../components/SkipLink';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useState, useRef, useEffect } from 'react';
 import { roleHomePath } from '../core/utils/navigation';
 import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { SiteFooter } from './SiteFooter';
+import { Logo } from '../components/Logo';
 
 export const PublicLayout = () => {
   const { user, isAuthenticated } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 992);
   const headerRef = useRef<HTMLElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
-  const mobileNavToggleRef = useRef<HTMLButtonElement>(null);
   const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user?.role);
-  const isHome = useLocation().pathname === '/';
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 992;
+      setIsMobile(mobile);
+      if (!mobile) setMobileNavOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -34,6 +45,12 @@ export const PublicLayout = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!mobileNavOpen) return;
@@ -74,6 +91,17 @@ export const PublicLayout = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [mobileNavOpen]);
 
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileNavOpen]);
+
   const headerClassName = [
     'app-header',
     'app-header--landing',
@@ -82,10 +110,6 @@ export const PublicLayout = () => {
     .join(' ');
 
   const headerStyle: React.CSSProperties = {
-    background: 'transparent',
-    borderBottom: '1px solid var(--color-border)',
-    backdropFilter: 'blur(12px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
     transition: 'background-color var(--transition-theme), border-color var(--transition-theme)',
   };
 
@@ -133,37 +157,26 @@ export const PublicLayout = () => {
 
   return (
     <div className="public-layout">
-      <SkipLink />
       {!isHome && (
         <header ref={headerRef} className={headerClassName} style={headerStyle}>
           <div className="app-header__inner" style={innerStyle}>
-            <Link to={homeRoute} className="brand inline-flex items-center no-underline text-inherit" style={brandStyle}>
-              <span className="header-logo__mark" aria-hidden="true">
-                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 8L4 16L20 24L36 16L20 8Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" className="header-logo-cap" />
-                  <path d="M20 24V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="header-logo-tassel" />
-                  <circle cx="20" cy="33" r="2" fill="currentColor" className="header-logo-tassel-dot" />
-                  <circle cx="4" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--1" />
-                  <circle cx="20" cy="8" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--2" />
-                  <circle cx="36" cy="16" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--3" />
-                  <circle cx="20" cy="24" r="2.5" fill="currentColor" className="header-logo-node header-logo-node--4" />
-                  <path d="M4 16H36M20 8V24M4 16L20 24M36 16L20 24" stroke="currentColor" strokeWidth="1" opacity="0.3" className="header-logo-lines" />
-                </svg>
-              </span>
+            <Link
+              to={homeRoute}
+              className="brand inline-flex items-center no-underline text-inherit"
+              style={brandStyle}
+              onClick={(e) => {
+                if (isMobile) {
+                  e.preventDefault();
+                  setMobileNavOpen((prev) => !prev);
+                }
+              }}
+              aria-label={isMobile ? (mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu') : undefined}
+            >
+              <Logo size={28} />
               <span className="header-logo__text" style={titleStyle}>
                 <span className="header-logo__inner">Gradture</span>
               </span>
             </Link>
-            <button
-              type="button"
-              className="mobile-menu-toggle mobile-menu-toggle--landing"
-              onClick={() => setMobileNavOpen((prev) => !prev)}
-              aria-label="Toggle navigation"
-              aria-expanded={mobileNavOpen}
-              ref={mobileNavToggleRef}
-            >
-              <span className="mobile-menu-toggle__label">Menu</span>
-            </button>
             <nav className="public-nav" aria-label="Primary" style={navStyle}>
               <NavLink to="/" end className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
               <NavLink to="/jobs" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Jobs</NavLink>
@@ -171,20 +184,33 @@ export const PublicLayout = () => {
               <NavLink to="/about" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>About</NavLink>
             </nav>
             <div className={`public-nav-overlay ${mobileNavOpen ? 'is-open' : ''}`} onClick={() => setMobileNavOpen(false)} aria-hidden="true" />
-            <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`} ref={mobileNavRef} role="dialog" aria-modal="true" aria-label="Navigation menu" aria-labelledby="mobile-nav-toggle">
-              <NavLink to="/" end onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Home</NavLink>
-              <NavLink to="/jobs" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Jobs</NavLink>
-              <NavLink to="/companies" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>Companies</NavLink>
-              <NavLink to="/about" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => isActive ? 'is-active' : ''}>About</NavLink>
+            <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`} ref={mobileNavRef} role="dialog" aria-modal="true" aria-label="Navigation menu">
+              <NavLink to="/" end onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
+              <NavLink to="/jobs" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Jobs</NavLink>
+              <NavLink to="/companies" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Companies</NavLink>
+              <NavLink to="/about" onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>About</NavLink>
+
+              {isAuthenticated && user ? (
+                <div className="public-nav-drawer__section">
+                  <Button to={homeRoute} onClick={() => setMobileNavOpen(false)} variant="secondary" size="lg" className="public-nav-drawer__btn">Go to dashboard</Button>
+                </div>
+              ) : (
+                <div className="public-nav-drawer__section public-nav-drawer__section--auth">
+                  <Link to="/login" onClick={() => setMobileNavOpen(false)}>
+                    <Button variant="secondary" size="lg" className="public-nav-drawer__btn">Log in</Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setMobileNavOpen(false)}>
+                    <Button variant="primary" size="lg" className="public-nav-drawer__btn">Register</Button>
+                  </Link>
+                </div>
+              )}
             </div>
-            <div className="header-user" style={userGroupStyle}>
+            <div className="header-user header-user--desktop" style={userGroupStyle}>
               <span style={themeStyle}>
                 <ThemeToggle />
               </span>
               {isAuthenticated && user ? (
-                <Link to={homeRoute}>
-                  <Button variant="secondary" size="sm">Go to dashboard</Button>
-                </Link>
+                <Button to={homeRoute} onClick={() => setMobileNavOpen(false)} variant="secondary" size="sm">Go to dashboard</Button>
               ) : (
                 <>
                   <Link to="/login">
@@ -200,7 +226,7 @@ export const PublicLayout = () => {
         </header>
       )}
 
-      <main id="main-content" className="public-main">
+      <main id="main-content" className={`public-main ${!isHome ? 'has-header' : ''}`}>
         <Outlet />
       </main>
 

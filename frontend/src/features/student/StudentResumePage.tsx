@@ -285,7 +285,7 @@ export const StudentResumePage = () => {
             ))}
           </div>
         ) : (
-          <EmptyState icon="📄" title="No resume on file" text="Upload a resume to get started." />
+          <EmptyState icon="FileText" title="No resume on file" text="Upload a resume to get started." />
         )}
       </div>
     </div>

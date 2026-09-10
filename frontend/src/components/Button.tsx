@@ -23,7 +23,7 @@ export const Button = ({ variant = 'primary', size = 'md', loading = false, icon
     primary: 'bg-primary text-primary-text hover:bg-primary-hover',
     secondary: 'bg-surface border border-border text-text hover:bg-surface-muted',
     ghost: 'text-text hover:bg-surface-muted',
-    danger: 'bg-danger text-white hover:bg-danger/90',
+    danger: 'bg-danger text-primary-text hover:bg-danger/90',
   };
   const sizeClasses: Record<Size, string> = {
     lg: 'min-h-[3rem] px-6 text-base',
@@ -49,8 +49,10 @@ export const Button = ({ variant = 'primary', size = 'md', loading = false, icon
   );
 
   if (to && !loading) {
+    // For Link variant, handle disabled via pointer-events and opacity
+    const linkClasses = cn(classes, disabled && 'pointer-events-none opacity-50');
     return (
-      <Link to={to} className={classes} {...rest as any}>
+      <Link to={to} className={linkClasses} {...(disabled ? {} : rest as any)}>
         {content}
       </Link>
     );

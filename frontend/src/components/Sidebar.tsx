@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import type { NavItem, NavSection } from '../core/utils/navigation';
 import { Logo } from './Logo';
+import { PhosphorIcon } from './PhosphorIcon';
 
 type SidebarProps = {
   sections?: NavSection[];
@@ -10,6 +11,10 @@ type SidebarProps = {
   className?: string;
   collapsed?: boolean;
   onToggle?: () => void;
+};
+
+const SidebarIcon = ({ name, size = 20, weight = 'regular' }: { name: NavItem['icon']; size?: number; weight?: 'regular' | 'bold' | 'light' | 'duotone' | 'fill' | 'thin' }) => {
+  return <PhosphorIcon name={name} size={size} weight={weight} className="sidebar__icon" />;
 };
 
 export const Sidebar = ({ sections, items, title, footer, className, collapsed, onToggle }: SidebarProps) => (
@@ -45,6 +50,7 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
                   aria-label={item.label}
                   title={item.label}
                 >
+                  <SidebarIcon name={item.icon} />
                   <span className="sidebar__label">{item.label}</span>
                 </NavLink>
               ))}
@@ -59,6 +65,7 @@ export const Sidebar = ({ sections, items, title, footer, className, collapsed, 
               aria-label={item.label}
               title={item.label}
             >
+              <SidebarIcon name={item.icon} />
               <span className="sidebar__label">{item.label}</span>
             </NavLink>
           ))}

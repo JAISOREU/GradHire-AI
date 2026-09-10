@@ -14,6 +14,7 @@ import { Skeleton } from '../../components/Skeleton';
 import { Alert } from '../../components/Alert';
 import { PageHeader } from '../../components/PageHeader';
 import { ScrollReveal, AnimatedCounter } from '../../animations';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import type { AiRecommendation } from '../../core/types';
 
 const KPI_STAGGER = 80;
@@ -100,7 +101,7 @@ export const StudentDashboardPage = () => {
           title="Recent applications"
           subtitle="Track the status of roles you've applied to."
           action={
-            <Link to="/student/applications"><Button variant="ghost" size="sm">View all →</Button></Link>
+            <Link to="/student/applications"><Button variant="ghost" size="sm" iconRight={<PhosphorIcon name="ArrowRight" size={14} />}>View all</Button></Link>
           }
           className="section--mt"
         >
@@ -123,7 +124,7 @@ export const StudentDashboardPage = () => {
             </div>
           ))
         ) : (
-          <EmptyState icon="📨" title="No applications yet" text="Start applying to jobs and track your progress here." action={<Link to="/jobs"><Button size="sm">Browse jobs</Button></Link>} />
+          <EmptyState icon="EnvelopeOpen" title="No applications yet" text="Start applying to jobs and track your progress here." action={<Link to="/jobs"><Button size="sm">Browse jobs</Button></Link>} />
         )}
         </DashboardSection>
       </ScrollReveal>
@@ -133,7 +134,7 @@ export const StudentDashboardPage = () => {
           title={hasRecommendationAccess ? "Top matches for you" : "Unlock recommendations"}
           subtitle={hasRecommendationAccess ? "Ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
           action={
-            <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm">{hasRecommendationAccess ? 'View all →' : 'Complete profile'}</Button></Link>
+            <Link to={hasRecommendationAccess ? "/jobs" : "/student/account"}><Button variant="ghost" size="sm" iconRight={<PhosphorIcon name="ArrowRight" size={14} />}>{hasRecommendationAccess ? 'View all' : 'Complete profile'}</Button></Link>
           }
           className="section--mt"
         >
@@ -156,7 +157,7 @@ export const StudentDashboardPage = () => {
               </Link>
             ))
           ) : (
-            <EmptyState icon="💼" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
+            <EmptyState icon="Briefcase" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
           )
         ) : (
           <div className="auth-locked-recommendations">

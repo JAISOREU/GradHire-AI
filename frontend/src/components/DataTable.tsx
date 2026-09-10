@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PhosphorIcon, type PhosphorIconName } from './PhosphorIcon';
 import { Skeleton } from './Skeleton';
 
 type Column<T> = {
@@ -12,7 +13,7 @@ type DataTableProps<T> = {
   columns: Column<T>[];
   items: T[];
   keyExtractor: (item: T) => string;
-  emptyIcon?: string;
+  emptyIcon?: PhosphorIconName;
   emptyTitle?: string;
   emptyText?: string;
   loading?: boolean;
@@ -24,7 +25,7 @@ export function DataTable<T>({
   columns,
   items,
   keyExtractor,
-  emptyIcon = '📭',
+  emptyIcon = 'Tray' as PhosphorIconName,
   emptyTitle = 'No data',
   emptyText = 'No items found.',
   loading = false,
@@ -61,7 +62,9 @@ export function DataTable<T>({
   if (!items.length) {
     return (
       <div className="empty-state">
-        <div className="empty-state__icon" aria-hidden="true">{emptyIcon}</div>
+        <div className="empty-state__icon" aria-hidden="true">
+          <PhosphorIcon name={emptyIcon} size={28} weight="duotone" />
+        </div>
         <div className="empty-state__title">{emptyTitle}</div>
         {emptyText && <p className="empty-state__text">{emptyText}</p>}
       </div>

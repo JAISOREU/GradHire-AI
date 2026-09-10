@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, useRef, useState, useCallback } from 'react';
+import { ReactNode, useEffect, useRef, useState, useCallback, CSSProperties } from 'react';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { ThemeNavArrow } from '../../components/ThemeNavArrow';
+import { AmbientBackground, AmbientBackgroundHandle } from '../../components/AmbientBackground';
 
 export interface PresentationSlide {
   id: string;
@@ -27,15 +28,57 @@ const isInteractiveElement = (target: EventTarget | null): boolean => {
   return Boolean(el.closest('input, textarea, select, button, a, [contenteditable="true"], [role="button"]'));
 };
 
+const findPrimaryScroller = (slideEl: HTMLElement | null): HTMLElement | null => {
+  if (!slideEl) return null;
+
+  // Flagged slides (HowItWorks/CTA) scroll the whole page, not an inner card.
+  if (slideEl.dataset.scrollable === 'true') return slideEl;
+
+  // Otherwise prefer the largest scrollable region: compact feature layouts
+  // scroll their internal card body.
+  let best: HTMLElement | null = null;
+  let bestRange = 0;
+  for (const node of [slideEl, ...Array.from(slideEl.querySelectorAll('*'))]) {
+    const el = node as HTMLElement;
+    const oy = getComputedStyle(el).overflowY;
+    if (oy !== 'auto' && oy !== 'scroll') continue;
+    const range = el.scrollHeight - el.clientHeight;
+    if (range > bestRange) {
+      bestRange = range;
+      best = el;
+    }
+  }
+  return bestRange > 4 ? best : null;
+};
+
 export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   const lastIndex = slides.length - 1;
   const [active, setActive] = useState(0);
   const [railLeaving, setRailLeaving] = useState<{ index: number; direction: 'forward' | 'backward' } | null>(null);
+  const [showRail, setShowRail] = useState(true);
   const activeRef = useRef(0);
   const isTransitioning = useRef(false);
   const railAnimationTimeout = useRef<number | null>(null);
+  const railHideTimer = useRef<number | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [reduced, setReduced] = useState(false);
+  const backdropRef = useRef<AmbientBackgroundHandle | null>(null);
+  const previousActiveRef = useRef(0);
+
+  // Show rail briefly on mount and after each navigation, then hide after 1s.
+  useEffect(() => {
+    setShowRail(true);
+    railHideTimer.current = window.setTimeout(() => setShowRail(false), 1000);
+    return () => {
+      if (railHideTimer.current !== null) window.clearTimeout(railHideTimer.current);
+    };
+  }, [active]);
+
+  // Cleanup rail timer on unmount.
+  useEffect(() => () => {
+    if (railHideTimer.current !== null) window.clearTimeout(railHideTimer.current);
+    if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -58,6 +101,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
       setRailLeaving({ index: previous, direction });
       railAnimationTimeout.current = window.setTimeout(() => setRailLeaving(null), reduced ? 0 : RAIL_ANIMATION_MS);
+
       activeRef.current = target;
       setActive(target);
       isTransitioning.current = true;
@@ -68,53 +112,86 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     [lastIndex, duration, reduced]
   );
 
-  // Reset scroll position of scrollable slides when they become active.
+  // Every page must start at the top: reset the slide and all nested scrollers,
+  // and undo the native hash-anchor scroll that browsers apply to the deck.
   useEffect(() => {
     const el = slideRefs.current[active];
-    if (el && el.dataset.scrollable === 'true') {
-      el.scrollTop = 0;
+    if (!el) return;
+    const deck = el.closest('.landing-presentation');
+    if (deck) (deck as HTMLElement).scrollTop = 0;
+    const stack = [el, ...Array.from(el.querySelectorAll('*'))] as HTMLElement[];
+    for (const node of stack) {
+      const oy = getComputedStyle(node).overflowY;
+      if (oy === 'auto' || oy === 'scroll' || node.scrollHeight > node.clientHeight) {
+        node.scrollTop = 0;
+      }
     }
   }, [active]);
 
-  // Wheel: advance only when at bottom for scrollable slides.
+  // Push the interactive backdrop through the deck: the integer part is the
+  // active slide, plus a scroll fraction inside the active slide so the
+  // background parallax stays tied to the page contents. On slide changes we
+  // also announce the new scene and the direction of travel for the surge.
+  useEffect(() => {
+    const direction: 'forward' | 'backward' = active >= previousActiveRef.current ? 'forward' : 'backward';
+    previousActiveRef.current = active;
+    backdropRef.current?.setScene(slides[active].id, direction);
+    backdropRef.current?.setProgress(active);
+  }, [active, slides]);
+
+  useEffect(() => {
+    const el = slideRefs.current[active];
+    if (!el) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const range = el.scrollHeight - el.clientHeight;
+      const frac = range > 4 ? Math.min(1, el.scrollTop / range) : 0;
+      backdropRef.current?.setProgress(active + frac);
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [active]);
+
+  // Wheel: advance only when the page's content is scrolled to its boundary.
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       const slideEl = slideRefs.current[activeRef.current];
       const delta = e.deltaY;
-      const abs = Math.abs(delta);
+      const goingDown = delta > 0;
 
-      const scrollable = slideEl?.dataset.scrollable === 'true';
-      if (scrollable) {
-        const el = slideEl as HTMLElement;
-        const atTop = el.scrollTop <= 0;
-        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-        const goingDown = delta > 0;
+      const scroller = slideEl ? findPrimaryScroller(slideEl) : null;
+      if (scroller) {
+        const atTop = scroller.scrollTop <= 0;
+        const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
 
         if (goingDown && !atBottom) {
-          return; // let inner content scroll natively
+          e.preventDefault();
+          scroller.scrollTop += delta;
+          return;
         }
         if (!goingDown && !atTop) {
-          return; // let inner content scroll natively
+          e.preventDefault();
+          scroller.scrollTop += delta;
+          return;
         }
         // At boundary: require an additional scroll gesture to advance
-        if (goingDown && atBottom) {
-          e.preventDefault();
-          goTo(activeRef.current + 1);
-          return;
-        }
-        if (!goingDown && atTop) {
-          e.preventDefault();
-          goTo(activeRef.current - 1);
-          return;
-        }
+        e.preventDefault();
+        goTo(activeRef.current + (goingDown ? 1 : -1));
         return;
       }
 
-      // Non-scrollable slide: direct navigation
+      // Slide fully fits the viewport: direct navigation
       if (isTransitioning.current) return;
-      if (abs < WHEEL_THRESHOLD) return;
+      if (Math.abs(delta) < WHEEL_THRESHOLD) return;
 
-      const dir = delta > 0 ? 1 : -1;
+      const dir = goingDown ? 1 : -1;
       if ((dir > 0 && activeRef.current >= lastIndex) || (dir < 0 && activeRef.current <= 0)) {
         return;
       }
@@ -126,10 +203,6 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     window.addEventListener('wheel', onWheel, { passive: false });
     return () => window.removeEventListener('wheel', onWheel);
   }, [goTo, lastIndex]);
-
-  useEffect(() => () => {
-    if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
-  }, []);
 
   // Keyboard navigation.
   useEffect(() => {
@@ -164,7 +237,7 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [goTo, lastIndex]);
 
-  // Touch / swipe: manual pagination only.
+  // Touch / swipe: native scroll until boundary, then manual pagination.
   const touch = useRef({ startY: 0, lastY: 0, active: false });
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
@@ -178,18 +251,16 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       const dy = touch.current.lastY - y;
       touch.current.lastY = y;
       const slideEl = slideRefs.current[activeRef.current];
-      const scrollable = slideEl?.dataset.scrollable === 'true';
-      if (!scrollable) {
+      const scroller = slideEl ? findPrimaryScroller(slideEl) : null;
+      if (!scroller) {
         e.preventDefault();
         return;
       }
-      const el = slideEl as HTMLElement;
-      const atTop = el.scrollTop <= 0;
-      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      const atTop = scroller.scrollTop <= 0;
+      const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
       if ((dy > 0 && !atBottom) || (dy < 0 && !atTop)) {
         return; // native scroll already consumed the gesture
       }
-      // At boundary: allow the swipe to potentially advance
       if ((dy > 0 && atBottom) || (dy < 0 && atTop)) {
         e.preventDefault();
       }
@@ -201,27 +272,21 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
       if (Math.abs(dy) < SWIPE_THRESHOLD) return;
 
       const slideEl = slideRefs.current[activeRef.current];
-      const scrollable = slideEl?.dataset.scrollable === 'true';
-      if (scrollable) {
-        const el = slideEl as HTMLElement;
-        const atTop = el.scrollTop <= 0;
-        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      const scroller = slideEl ? findPrimaryScroller(slideEl) : null;
+      if (scroller) {
+        const atTop = scroller.scrollTop <= 0;
+        const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
         const goingDown = dy > 0;
         if ((goingDown && !atBottom) || (!goingDown && !atTop)) {
           return; // native scroll already consumed the gesture
         }
-        if (goingDown && atBottom) {
-          goTo(activeRef.current + 1);
-          return;
-        }
-        if (!goingDown && atTop) {
-          goTo(activeRef.current - 1);
-          return;
+        if ((goingDown && atBottom) || (!goingDown && atTop)) {
+          goTo(activeRef.current + (goingDown ? 1 : -1));
         }
         return;
       }
 
-      // Non-scrollable slide: direct swipe navigation
+      // Slide fully fits the viewport: direct swipe navigation
       if (isTransitioning.current) return;
       const dir = dy > 0 ? 1 : -1;
       if ((dir > 0 && activeRef.current >= lastIndex) || (dir < 0 && activeRef.current <= 0)) {
@@ -245,11 +310,13 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
     const apply = (idx: number) => {
       if (idx < 0 || idx > lastIndex || idx === activeRef.current) return;
       if (isTransitioning.current) return;
+
       const previous = activeRef.current;
       const direction = idx > previous ? 'forward' : 'backward';
       if (railAnimationTimeout.current !== null) window.clearTimeout(railAnimationTimeout.current);
       setRailLeaving({ index: previous, direction });
       railAnimationTimeout.current = window.setTimeout(() => setRailLeaving(null), reduced ? 0 : RAIL_ANIMATION_MS);
+
       activeRef.current = idx;
       setActive(idx);
       isTransitioning.current = true;
@@ -271,15 +338,17 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   }, [slides, lastIndex, duration, reduced]);
 
   return (
-    <div
-      className="landing-presentation"
-      role="region"
-      aria-roledescription="presentation"
-      aria-label="Gradture product presentation"
-    >
-      {slides.map((slide, i) => (
+<div
+        className="landing-presentation"
+        role="region"
+        aria-roledescription="presentation"
+        aria-label="Gradture product presentation"
+      >
+        <AmbientBackground ref={backdropRef} />
+        {slides.map((slide, i) => (
         <section
           key={slide.id}
+          id={slide.id}
           ref={(el) => {
             slideRefs.current[i] = el;
           }}
@@ -288,13 +357,16 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
           } ${slide.id === 'hero' ? 'hero-slide' : ''}`}
           data-scrollable={slide.scrollable ? 'true' : 'false'}
           aria-hidden={i === active ? undefined : true}
-          style={{
-            transform: `translateY(${(i - active) * 100}%)`,
-            opacity: Math.abs(i - active) <= 1 ? 1 : 0,
-            transitionDuration: `${duration}ms`,
-            pointerEvents: i === active ? 'auto' : 'none',
-            zIndex: i === active ? 3 : 1,
-          }}
+          style={
+            {
+              '--slide-offset': (i - active) * 100,
+              '--slide-duration': `${duration}ms`,
+              opacity: Math.abs(i - active) <= 1 ? 1 : 0,
+              transitionDuration: `${duration}ms`,
+              pointerEvents: i === active ? 'auto' : 'none',
+              zIndex: i === active ? 3 : 1,
+            } as CSSProperties
+          }
         >
           {slide.node}
         </section>
@@ -305,13 +377,17 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
           active={active}
           goTo={goTo}
           lastIndex={lastIndex}
-          isTransitioning={isTransitioning}
           reduced={reduced}
         />
         <ThemeToggle />
       </div>
 
-      <aside className="presentation-rail" aria-live="polite" aria-atomic="true" aria-label={`Slide ${active + 1}: ${slides[active].label}`}>
+      <aside
+        className={`presentation-rail ${showRail ? 'presentation-rail--visible' : ''}`}
+        aria-live="polite"
+        aria-atomic="true"
+        aria-label={`Slide ${active + 1}: ${slides[active].label}`}
+      >
         <span className="presentation-rail__line" aria-hidden="true" />
         {railLeaving && (
           <span className={`presentation-rail__label presentation-rail__label--leaving presentation-rail__label--${railLeaving.direction}`} aria-hidden="true">

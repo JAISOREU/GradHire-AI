@@ -3,7 +3,7 @@ import type { UserRole } from '../types';
 export type NavItem = {
   label: string;
   to: string;
-  icon: string;
+  icon: keyof typeof import('@phosphor-icons/react');
 };
 
 export type NavSection = {
@@ -15,30 +15,30 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/student/dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/student/jobs', label: 'Browse Jobs', icon: 'jobs' },
-      { to: '/student/companies', label: 'Companies', icon: 'company' },
-      { to: '/student/applications', label: 'Applications', icon: 'applications' },
-      { to: '/student/saved', label: 'Saved Jobs', icon: 'saved' },
+      { to: '/student/dashboard', label: 'Dashboard', icon: 'Square' },
+      { to: '/student/jobs', label: 'Browse Jobs', icon: 'Briefcase' },
+      { to: '/student/companies', label: 'Companies', icon: 'Buildings' },
+      { to: '/student/applications', label: 'Applications', icon: 'PaperPlaneRight' },
+      { to: '/student/saved', label: 'Saved Jobs', icon: 'Bookmark' },
     ],
   },
   {
     label: 'Career',
     items: [
-      { to: '/student/resume', label: 'Resume', icon: 'resume' },
-      { to: '/student/resume-builder', label: 'Resume Builder', icon: 'resume' },
-      { to: '/student/recommended', label: 'Recommended', icon: 'ai' },
+      { to: '/student/resume', label: 'Resume', icon: 'FileText' },
+      { to: '/student/resume-builder', label: 'Resume Builder', icon: 'PencilSimpleLine' },
+      { to: '/student/recommended', label: 'Recommended', icon: 'Sparkle' },
     ],
   },
   {
     label: 'Profile',
     items: [
-      { to: '/student/account', label: 'Profile', icon: 'profile' },
-      { to: '/student/messages', label: 'Messages', icon: 'messages' },
-      { to: '/student/interviews', label: 'Interviews', icon: 'calendar' },
-      { to: '/student/notifications', label: 'Notifications', icon: 'notifications' },
-      { to: '/student/ai-assistant', label: 'AI Assistant', icon: 'ai' },
-      { to: '/student/settings', label: 'Settings', icon: 'settings' },
+      { to: '/student/account', label: 'Profile', icon: 'User' },
+      { to: '/student/messages', label: 'Messages', icon: 'ChatCircle' },
+      { to: '/student/interviews', label: 'Interviews', icon: 'Calendar' },
+      { to: '/student/notifications', label: 'Notifications', icon: 'Bell' },
+      { to: '/student/ai-assistant', label: 'AI Assistant', icon: 'Sparkle' },
+      { to: '/student/settings', label: 'Settings', icon: 'Gear' },
     ],
   },
 ];
@@ -49,25 +49,25 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/employer/dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/employer/jobs', label: 'Jobs', icon: 'jobs' },
-      { to: '/employer/applicants', label: 'Applicants', icon: 'users' },
-      { to: '/employer/interviews', label: 'Interviews', icon: 'calendar' },
+      { to: '/employer/dashboard', label: 'Dashboard', icon: 'Square' },
+      { to: '/employer/jobs', label: 'Jobs', icon: 'Briefcase' },
+      { to: '/employer/applicants', label: 'Applicants', icon: 'Users' },
+      { to: '/employer/interviews', label: 'Interviews', icon: 'Calendar' },
     ],
   },
   {
     label: 'Company',
     items: [
-      { to: '/employer/company-profile', label: 'Company', icon: 'company' },
-      { to: '/employer/companies', label: 'Browse Companies', icon: 'company' },
+      { to: '/employer/company-profile', label: 'Company', icon: 'Buildings' },
+      { to: '/employer/companies', label: 'Browse Companies', icon: 'Buildings' },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/employer/messages', label: 'Messages', icon: 'messages' },
-      { to: '/employer/notifications', label: 'Notifications', icon: 'notifications' },
-      { to: '/employer/settings', label: 'Settings', icon: 'settings' },
+      { to: '/employer/messages', label: 'Messages', icon: 'ChatCircle' },
+      { to: '/employer/notifications', label: 'Notifications', icon: 'Bell' },
+      { to: '/employer/settings', label: 'Settings', icon: 'Gear' },
     ],
   },
 ];
@@ -78,47 +78,47 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/admin/users', label: 'Users', icon: 'users' },
-      { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
+      { to: '/admin/dashboard', label: 'Dashboard', icon: 'Square' },
+      { to: '/admin/users', label: 'Users', icon: 'Users' },
+      { to: '/admin/jobs', label: 'Jobs', icon: 'Briefcase' },
     ],
   },
   {
     label: 'Management',
     items: [
-      { to: '/admin/job-sources', label: 'Sources', icon: 'database' },
-      { to: '/admin/applications', label: 'Applications', icon: 'applications' },
-      { to: '/admin/companies', label: 'Companies', icon: 'company' },
+      { to: '/admin/job-sources', label: 'Sources', icon: 'Database' },
+      { to: '/admin/applications', label: 'Applications', icon: 'PaperPlaneRight' },
+      { to: '/admin/companies', label: 'Companies', icon: 'Buildings' },
     ],
   },
   {
     label: 'Monitoring',
     items: [
-      { to: '/admin/reports', label: 'Reports', icon: 'reports' },
-      { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
-      { to: '/admin/monitoring', label: 'Monitoring', icon: 'dashboard' },
-      { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'security' },
+      { to: '/admin/reports', label: 'Reports', icon: 'ChartBar' },
+      { to: '/admin/analytics', label: 'Analytics', icon: 'ChartLineUp' },
+      { to: '/admin/monitoring', label: 'Monitoring', icon: 'Square' },
+      { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'Shield' },
     ],
   },
   {
     label: 'System',
     items: [
-      { to: '/admin/database', label: 'Database', icon: 'settings' },
-      { to: '/admin/api-keys', label: 'API Keys', icon: 'settings' },
-      { to: '/admin/email-templates', label: 'Email Templates', icon: 'settings' },
-      { to: '/admin/cms', label: 'CMS', icon: 'settings' },
-      { to: '/admin/feature-flags', label: 'Feature Flags', icon: 'settings' },
-      { to: '/admin/backups', label: 'Backups', icon: 'settings' },
-      { to: '/admin/security', label: 'Security', icon: 'security' },
-      { to: '/admin/developer-tools', label: 'Developer Tools', icon: 'settings' },
+      { to: '/admin/database', label: 'Database', icon: 'Gear' },
+      { to: '/admin/api-keys', label: 'API Keys', icon: 'Key' },
+      { to: '/admin/email-templates', label: 'Email Templates', icon: 'Envelope' },
+      { to: '/admin/cms', label: 'CMS', icon: 'Gear' },
+      { to: '/admin/feature-flags', label: 'Feature Flags', icon: 'Gear' },
+      { to: '/admin/backups', label: 'Backups', icon: 'Gear' },
+      { to: '/admin/security', label: 'Security', icon: 'Shield' },
+      { to: '/admin/developer-tools', label: 'Developer Tools', icon: 'Gear' },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/admin/account', label: 'Profile', icon: 'profile' },
-      { to: '/admin/notifications', label: 'Notifications', icon: 'notifications' },
-      { to: '/admin/settings', label: 'Settings', icon: 'settings' },
+      { to: '/admin/account', label: 'Profile', icon: 'User' },
+      { to: '/admin/notifications', label: 'Notifications', icon: 'Bell' },
+      { to: '/admin/settings', label: 'Settings', icon: 'Gear' },
     ],
   },
 ];

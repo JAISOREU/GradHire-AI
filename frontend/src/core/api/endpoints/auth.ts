@@ -27,4 +27,7 @@ export const authApi = {
 
   verifyEmail: (token: string) =>
     api<{ message: string }>(`/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`, { requiresAuth: false }),
+
+  oauthInitiate: (provider: 'google' | 'github' | 'linkedin') =>
+    api<{ url: string }>(`/api/v1/auth/oauth/${provider}`, { method: 'GET', requiresAuth: false, bypassCache: true }),
 };

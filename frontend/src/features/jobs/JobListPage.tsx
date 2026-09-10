@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { useAsync } from '../../core/hooks/useAsync';
-import { Badge, resolveBadgeKind } from '../../components/Badge';
+import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { MorphingText } from '../../components/MorphingText';
 import { PageHeader } from '../../components/PageHeader';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { Tooltip } from '../../components/Tooltip';
 import type { JobType, ExperienceLevel, WorkplaceType } from '../../core/types';
 
@@ -66,6 +67,9 @@ const formatSalary = (job: { salaryMin?: number | null; salaryMax?: number | nul
   return 'Negotiable';
 };
 
+const workplaceLabel = (wt?: WorkplaceType | null) =>
+  wt === 'ONSITE' ? 'Work from office' : wt === 'HYBRID' ? 'Hybrid' : wt === 'REMOTE' ? 'Remote' : null;
+
 export const JobListPage = () => {
   const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState('');
@@ -104,25 +108,37 @@ export const JobListPage = () => {
   const firstIndex = total === 0 ? 0 : (page - 1) * limit + 1;
   const lastIndex = Math.min(page * limit, total);
 
+  const hasInternships = jobs.some((j) => j.type === 'INTERNSHIP');
+  const hasRemote = jobs.some((j) => j.workplaceType === 'REMOTE' || j.workplaceType === 'HYBRID');
+
   return (
     <div className="public-page">
       <section className="section-full">
         <div className="section-inner">
-          <PageHeader
-            title={<MorphingText text="Find the career you always wanted" as="span" />}
-            action={
-              preview ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-text-secondary">
-                    Showing a preview
-                  </span>
-                  <Link to="/register">
-                    <Button size="sm">Sign up to see all</Button>
-                  </Link>
-                </div>
-              ) : undefined
-            }
-          />
+          <div className="public-hero">
+            <PageHeader
+              title={<MorphingText text="Find the career you always wanted" as="span" />}
+              subtitle="Fresh opportunities from companies hiring graduates and students — matched to your skills, not just your search terms."
+              action={
+                preview ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-text-secondary">
+                      Showing a preview
+                    </span>
+                    <Link to="/register">
+                      <Button size="sm">Sign up to see all</Button>
+                    </Link>
+                  </div>
+                ) : undefined
+              }
+            />
+            <div className="public-hero__chips">
+              {total > 0 && <span className="public-hero__chip"><PhosphorIcon name="Sparkle" size={14} /> {total} live {total === 1 ? 'role' : 'roles'}</span>}
+              {hasInternships && <span className="public-hero__chip"><PhosphorIcon name="GraduationCap" size={14} /> Internships</span>}
+              {hasRemote && <span className="public-hero__chip"><PhosphorIcon name="House" size={14} /> Remote / hybrid</span>}
+              <span className="public-hero__chip"><PhosphorIcon name="MapPin" size={14} /> Try “Manila” or “Remote”</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -136,7 +152,7 @@ export const JobListPage = () => {
                     Unlock full access
                   </p>
                   <p className="text-sm mt-1 text-text-secondary">
-                    Sign up to browse all opportunities, save jobs, and track your applications.
+                    Browse every open role, save jobs, and track your applications in one place.
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -243,64 +259,59 @@ export const JobListPage = () => {
             {loading ? (
               <LoadingState label="Loading opportunities…" />
             ) : jobs.length > 0 ? (
-              <div className="list">
+              <div className="flex flex-col gap-4">
                 {jobs.map((job, index) => {
                   const salary = formatSalary(job);
                   const isExternal = !!job.isExternal;
                   const company = job.company || job.companyRef?.name || 'Not specified';
                   const location = job.location || 'Remote';
+                  const experience = job.experienceLevel ? job.experienceLevel.replace(/_/g, ' ').toLowerCase() : null;
+                  const wt = workplaceLabel(job.workplaceType);
+                  const skills = (job.requiredSkills ?? []).slice(0, 3);
+                  const extraSkills = Math.max(0, (job.requiredSkills ?? []).length - 3);
                   return (
-                    <article key={job.id} className={`list-item card--hover mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}>
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <h3 className="list-item__title m-0">
-                              <Link to={`/jobs/${job.id}`} className="link-reset">
-                                {job.title}
-                              </Link>
-                            </h3>
+                    <Link
+                      key={job.id}
+                      to={`/jobs/${job.id}`}
+                      className={`card card--hover link-reset job-card mask-reveal mask-reveal--delay-${Math.min(index + 1, 4)}`}
+                    >
+                      <div className="job-card__top">
+                        <div>
+                          <div className="job-card__title">
+                            {job.title}
                             {isExternal && (
-                              <span className="badge badge--external bg-info-soft text-info">
-                                External Listing
-                              </span>
+                              <span className="badge badge--external bg-info-soft text-info ml-2">External</span>
                             )}
                           </div>
-                          <div className="list-item__meta flex-wrap">
-                            <span>{company}</span>
-                            <span>{location}</span>
-                            <Badge kind={resolveBadgeKind(job.type)}>
-                              {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
-                            </Badge>
-                            {job.workplaceType && (
-                              <span className="text-text-tertiary">
-                                {job.workplaceType === 'ONSITE' ? 'Work from office' : job.workplaceType === 'HYBRID' ? 'Hybrid' : 'Remote'}
-                              </span>
-                            )}
-                            {job.experienceLevel && (
-                              <span className="text-text-tertiary">
-                                {job.experienceLevel.replace(/_/g, ' ').toLowerCase()}
-                              </span>
-                            )}
-                            {salary && (
-                              <span className="text-text-tertiary">
-                                {salary}
-                              </span>
-                            )}
-                            <span className="text-text-muted">{formatTimeAgo(job.createdAt)}</span>
-                          </div>
-                            {isExternal && job.sourceName && (
-                              <div className="mt-2 text-sm text-text-secondary flex items-center gap-2 flex-wrap">
-                                <span>Source: <span className="font-semibold">{job.sourceName}</span></span>
-                              {job.applicationUrl && (
-                                <Link to={job.applicationUrl} target="_blank" rel="noopener noreferrer" className="btn btn--sm btn--secondary" onClick={(e) => e.stopPropagation()}>
-                                  Apply on Original Site
-                                </Link>
-                              )}
-                            </div>
-                          )}
+                          <div className="job-card__company"><PhosphorIcon name="Building" size={14} /> {company}</div>
+                        </div>
+                        <div className="job-card__side">
+                          <span className="job-card__salary">{salary}</span>
+                          <span className="job-card__action">View <PhosphorIcon name="ArrowRight" size={14} weight="bold" /></span>
                         </div>
                       </div>
-                    </article>
+
+                      <div className="job-card__meta">
+                        <span className="job-card__meta-item"><PhosphorIcon name="MapPin" size={14} /> {location}</span>
+                        <span className="job-card__meta-item">
+                          <PhosphorIcon name="Briefcase" size={14} /> {job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}
+                        </span>
+                        {wt && <span className="job-card__meta-item"><PhosphorIcon name="House" size={14} /> {wt}</span>}
+                        {experience && <span className="job-card__meta-item"><PhosphorIcon name="GraduationCap" size={14} /> {experience}</span>}
+                        <span className="job-card__meta-item"><PhosphorIcon name="Clock" size={14} /> {formatTimeAgo(job.createdAt)}</span>
+                      </div>
+
+                      {skills.length > 0 && (
+                        <div className="job-card__skills">
+                          {skills.map((skill) => (
+                            <Badge key={skill} kind="muted">{skill}</Badge>
+                          ))}
+                          {extraSkills > 0 && (
+                            <span className="text-xs text-text-tertiary">+{extraSkills} more</span>
+                          )}
+                        </div>
+                      )}
+                    </Link>
                   );
                 })}
               </div>

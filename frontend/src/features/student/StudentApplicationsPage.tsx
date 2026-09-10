@@ -81,7 +81,7 @@ export const StudentApplicationsPage = () => {
             ))}
           </div>
         ) : (
-          <EmptyState icon="📨" title="No applications yet" text="Apply to featured opportunities to track them here." />
+          <EmptyState icon="EnvelopeOpen" title="No applications yet" text="Apply to featured opportunities to track them here." />
         )}
       </div>
     </div>

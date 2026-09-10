@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { useRef } from 'react';
+import { PhosphorIcon } from '../../../components/PhosphorIcon';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -80,7 +81,7 @@ const EmployersInline = () => {
 
         <div className="inline-ui__employers-footer">
           <span className="inline-ui__employers-footer-label">Sort by</span>
-          <span className="inline-ui__employers-footer-value">Match score ↓</span>
+          <span className="inline-ui__employers-footer-value">Match score <PhosphorIcon name="ArrowDown" size={11} weight="bold" /></span>
         </div>
       </motion.div>
       <style>{`
@@ -246,6 +247,39 @@ const EmployersInline = () => {
           font-size: var(--text-sm);
           font-weight: 600;
           color: var(--visual-text);
+        }
+
+        @media (max-width: 640px) {
+          .inline-ui--employers {
+            max-width: 100%;
+          }
+          .inline-ui__employer {
+            flex-wrap: wrap;
+            gap: var(--space-2);
+          }
+          .inline-ui__employer-rank {
+            width: 24px;
+            font-size: var(--text-xs);
+          }
+          .inline-ui__employer-info {
+            flex: 1 1 0;
+            min-width: 0;
+          }
+          .inline-ui__employer-name {
+            font-size: var(--text-sm);
+          }
+          .inline-ui__employer-skills {
+            width: 100%;
+            order: 10;
+          }
+          .inline-ui__employer-score-ring {
+            width: 36px;
+            height: 36px;
+            margin-left: auto;
+          }
+          .inline-ui__employer-score {
+            font-size: 9px;
+          }
         }
       `}</style>
     </div>

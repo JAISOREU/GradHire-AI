@@ -84,14 +84,15 @@ export const EmployerApplicantsPage = () => {
           </div>
         </Tooltip>
         <Tooltip content="Filter applicants by job ID">
-          <input
-            type="text"
-            className="input"
-            placeholder="Filter by job ID (optional)"
-            value={jobId}
-            onChange={(e) => setJobId(e.target.value)}
-            style={{ width: '220px' }}
-          />
+          <div className="w-full min-w-0 flex-1 md:max-w-xs">
+            <input
+              type="text"
+              className="input"
+              placeholder="Filter by job ID (optional)"
+              value={jobId}
+              onChange={(e) => setJobId(e.target.value)}
+            />
+          </div>
         </Tooltip>
         <Tooltip content="Filter by application stage">
           <select

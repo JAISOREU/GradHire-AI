@@ -33,12 +33,12 @@ export const AdminReportsPage = () => {
               </div>
             )}
             loading={false}
-            emptyIcon="📊"
+            emptyIcon="ChartBar"
             emptyTitle="No reports"
             emptyText="Reports will appear here."
           />
         ) : (
-          <EmptyState icon="📊" title="Loading reports" text="Reports will appear here." />
+          <EmptyState icon="ChartBar" title="Loading reports" text="Reports will appear here." />
         )}
       </div>
     </div>

@@ -73,7 +73,7 @@ export const StudentInterviewsPage = () => {
             </div>
           </>
         ) : (
-          <EmptyState icon="🗓️" title="No interviews scheduled" text="When employers schedule interviews, they will appear here." />
+          <EmptyState icon="CalendarCheck" title="No interviews scheduled" text="When employers schedule interviews, they will appear here." />
         )}
       </div>
     </div>

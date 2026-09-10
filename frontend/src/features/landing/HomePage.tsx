@@ -6,6 +6,7 @@ import { SiteFooter } from '../../layouts/SiteFooter';
 import { LandingPresentation, PresentationSlide } from './LandingPresentation';
 import { useAuth } from '../../core/auth/AuthContext';
 import { ProductMatchVisual } from './visuals/ProductMatchVisual';
+import { AnimatedLogo } from '../../components/AnimatedLogo';
 
 const HowItWorks = lazy(() => import('./HowItWorks').then((m) => ({ default: m.HowItWorks })));
 
@@ -21,8 +22,11 @@ const HeroNode = () => {
 
   return (
     <React.Fragment>
-      <div className="hero-inner hero-inner--product">
-        <div className="hero-content hero-content--product">
+      <div className="hero-inner">
+        <div className="hero-content">
+          <div className="hero-anim hero-anim--brand mb-2">
+            <AnimatedLogo size={40} showText={true} />
+          </div>
           <div className="hero-badge hero-anim hero-anim--logo">
             <span className="hero-badge__dot" aria-hidden="true" />
             AI-Powered Career Matching
@@ -50,9 +54,9 @@ const HeroNode = () => {
             ))}
           </div>
         </div>
-        <div className="hero-visual-wrap hero-visual-wrap--product hero-anim hero-anim--visual">
-          <ProductMatchVisual />
-        </div>
+        <div className="hero-visual-wrap hero-anim hero-anim--visual">
+            <ProductMatchVisual />
+          </div>
       </div>
     </React.Fragment>
   );

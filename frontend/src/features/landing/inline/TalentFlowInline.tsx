@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { useRef } from 'react';
+import { PhosphorIcon, type PhosphorIconName } from '../../../components/PhosphorIcon';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -8,12 +9,12 @@ const TalentFlowInline = () => {
   const inView = useInView(ref, { once: true, amount: 0.5 });
   const reduceMotion = useReducedMotion();
 
-  const steps = [
-    { label: 'Discover', icon: '🔍', active: true },
-    { label: 'Match', icon: '⭐', active: true },
-    { label: 'Apply', icon: '📤', active: false },
-    { label: 'Interview', icon: '💬', active: false },
-    { label: 'Hired', icon: '✅', active: false },
+  const steps: Array<{ label: string; icon: PhosphorIconName; active: boolean }> = [
+    { label: 'Discover', icon: 'MagnifyingGlass', active: true },
+    { label: 'Match', icon: 'Star', active: true },
+    { label: 'Apply', icon: 'PaperPlaneTilt', active: false },
+    { label: 'Interview', icon: 'ChatCircle', active: false },
+    { label: 'Hired', icon: 'CheckCircle', active: false },
   ];
 
   return (
@@ -36,7 +37,7 @@ const TalentFlowInline = () => {
         <div className="inline-ui__flow-steps">
           {steps.map((step, i) => (
             <div key={step.label} className={`inline-ui__flow-step ${step.active ? 'inline-ui__flow-step--active' : ''}`}>
-              <div className="inline-ui__flow-step-icon">{step.icon}</div>
+              <div className="inline-ui__flow-step-icon"><PhosphorIcon name={step.icon} size={22} weight="duotone" /></div>
               <span className="inline-ui__flow-label">{step.label}</span>
               {i < steps.length - 1 && <div className="inline-ui__flow-connector" />}
             </div>
@@ -122,12 +123,14 @@ const TalentFlowInline = () => {
           align-items: center;
           justify-content: center;
           font-size: 20px;
+          color: var(--visual-text-muted);
           border: 1px solid var(--visual-border);
           transition: background-color var(--transition-theme), border-color var(--transition-theme), transform var(--transition-fast);
         }
         .inline-ui__flow-step--active .inline-ui__flow-step-icon {
           background: var(--visual-accent-soft);
           border-color: var(--visual-accent);
+          color: var(--visual-accent);
           transform: scale(1.05);
         }
         .inline-ui__flow-connector {
@@ -185,18 +188,40 @@ const TalentFlowInline = () => {
         }
 
         @media (max-width: 640px) {
-          .inline-ui__flow-step-icon {
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
+          .inline-ui__flow-steps {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-3);
+            padding: var(--space-4);
+          }
+          .inline-ui__flow-step {
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-3);
+            width: 100%;
           }
           .inline-ui__flow-connector {
-            top: 18px;
-            left: calc(50% + 18px);
-            right: calc(-50% + 18px);
+            position: absolute;
+            top: 24px;
+            left: 19px;
+            right: auto;
+            bottom: auto;
+            width: 2px;
+            height: calc(100% + var(--space-3));
+            background: var(--visual-border);
+            z-index: 0;
+          }
+          .inline-ui__flow-step-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            flex-shrink: 0;
+            z-index: 1;
           }
           .inline-ui__flow-label {
-            font-size: 10px;
+            font-size: var(--text-sm);
+            text-align: left;
+            letter-spacing: 0.04em;
           }
         }
       `}</style>

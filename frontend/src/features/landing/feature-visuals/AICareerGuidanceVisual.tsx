@@ -115,19 +115,28 @@ const AICareerGuidanceVisual = () => {
           </div>
         </div>
       </motion.div>
-      <style>{`
-        .feature-visual--guidance {
-          width: 100%;
-          max-width: 520px;
-        }
-        .feature-visual__card {
-          background: var(--visual-surface);
-          border: 1px solid var(--visual-border);
-          border-radius: var(--visual-radius);
-          box-shadow: var(--visual-shadow);
-          overflow: hidden;
-          transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
-        }
+<style>{`
+          .feature-visual--guidance {
+            width: 100%;
+            max-width: 900px;
+          }
+          @media (min-width: 641px) {
+            .feature-visual--guidance {
+              max-width: 900px;
+            }
+          }
+.feature-visual--guidance .feature-visual__card {
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            background: var(--visual-surface);
+            border: 1px solid var(--visual-border);
+            border-radius: var(--visual-radius);
+            box-shadow: var(--visual-shadow);
+            transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
+          }
         .feature-visual__bar {
           display: flex;
           align-items: center;
@@ -156,20 +165,26 @@ const AICareerGuidanceVisual = () => {
         }
         .feature-visual__bar-badge {
           margin-left: auto;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
-          padding: 2px 8px;
+          padding: 3px 8px;
           border-radius: var(--radius-full);
           background: var(--visual-accent-soft);
           color: var(--visual-accent);
+          border: 1px solid var(--visual-accent);
+          overflow: hidden;
+          white-space: nowrap;
         }
         .feature-visual__guidance-body {
           padding: var(--space-4);
           display: flex;
           flex-direction: column;
           gap: var(--space-4);
+          flex: 1;
+          min-height: 0;
+          overflow-y: auto;
         }
-        .feature-visual__guidance-header {
+         .feature-visual__guidance-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
@@ -216,16 +231,19 @@ const AICareerGuidanceVisual = () => {
           background: var(--visual-surface-muted);
           border-radius: var(--radius-md);
           border: 1px solid var(--visual-border);
-          font-size: var(--text-sm);
-          color: var(--visual-text-muted);
-          line-height: 1.6;
+           font-size: var(--text-sm);
+           color: var(--visual-text);
+           line-height: 1.6;
           transition: background-color var(--transition-theme), border-color var(--transition-theme);
         }
-        .feature-visual__skills-dashboard {
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-3);
-        }
+         .feature-visual__skills-dashboard {
+           display: flex;
+           flex-direction: column;
+           gap: var(--space-3);
+           flex: 1;
+           min-height: 0;
+           overflow-y: auto;
+         }
         .feature-visual__skills-header {
           display: flex;
           align-items: baseline;
@@ -319,13 +337,18 @@ const AICareerGuidanceVisual = () => {
           color: var(--visual-text);
           line-height: 1;
         }
-        .feature-visual__guidance-stat-label {
-          font-size: 10px;
-          color: var(--visual-text-muted);
-          font-weight: 500;
-        }
+         .feature-visual__guidance-stat-label {
+           font-size: 10px;
+           color: var(--visual-text-muted);
+           font-weight: 500;
+         }
+          .feature-visual--guidance button {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
 
-        @media (max-width: 640px) {
+         @media (max-width: 640px) {
           .feature-visual__guidance-header {
             flex-direction: column;
           }

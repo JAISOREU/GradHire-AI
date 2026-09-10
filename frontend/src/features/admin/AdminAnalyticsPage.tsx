@@ -8,7 +8,7 @@ export const AdminAnalyticsPage = () => (
       items={[]}
       renderItem={() => null}
       loading={false}
-      emptyIcon="📊"
+      emptyIcon="ChartBar"
       emptyTitle="No analytics"
       emptyText="Analytics data will appear here."
     />

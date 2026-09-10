@@ -20,7 +20,7 @@ export const AdminJobSourceRunsPage = () => {
     return (
       <div className="page fade-in">
         <h1 className="page-title page-title--admin">Ingestion Runs</h1>
-        <EmptyState icon="⚠️" title="Missing source" text="No source ID was provided." />
+        <EmptyState icon="Warning" title="Missing source" text="No source ID was provided." />
       </div>
     );
   }
@@ -37,7 +37,7 @@ export const AdminJobSourceRunsPage = () => {
       <AdminListPage
         items={runs}
         loading={loading}
-        emptyIcon="🔄"
+        emptyIcon="ArrowsClockwise"
         emptyTitle="No runs"
         emptyText="No ingestion runs found for this source."
         renderItem={(run) => (

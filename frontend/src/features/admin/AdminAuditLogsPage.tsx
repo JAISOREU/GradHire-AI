@@ -26,7 +26,7 @@ export const AdminAuditLogsPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="📋"
+        emptyIcon="ClipboardText"
         emptyTitle="No audit logs"
         emptyText="No audit logs found."
       />

@@ -44,7 +44,7 @@ export const AdminNotificationsPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="🔔"
+        emptyIcon="Bell"
         emptyTitle="No notifications"
         emptyText="No notifications found."
       />

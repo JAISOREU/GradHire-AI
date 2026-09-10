@@ -28,7 +28,7 @@ export const AdminDashboardPage = () => {
   if (!stats) {
     return (
       <div className="page fade-in">
-        <EmptyState icon="📊" title="No data available" text="Dashboard metrics are being collected." />
+        <EmptyState icon="ChartBar" title="No data available" text="Dashboard metrics are being collected." />
       </div>
     );
   }

@@ -46,7 +46,7 @@ export const AdminApplicationsPage = () => {
           </div>
         )}
         loading={loading}
-        emptyIcon="📨"
+        emptyIcon="EnvelopeOpen"
         emptyTitle="No applications"
         emptyText="No applications found."
       />

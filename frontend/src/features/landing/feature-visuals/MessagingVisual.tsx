@@ -154,14 +154,18 @@ const MessagingVisual = () => {
       <style>{`
         .feature-visual--messaging {
           width: 100%;
-          max-width: 720px;
+          max-width: 900px;
         }
         .feature-visual__card {
+          overflow: hidden;
+          width: 100%;
+          max-width: 900px;
+          display: flex;
+          flex-direction: column;
           background: var(--visual-surface);
           border: 1px solid var(--visual-border);
           border-radius: var(--visual-radius);
           box-shadow: var(--visual-shadow);
-          overflow: hidden;
           transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
         }
         .feature-visual__bar {
@@ -201,7 +205,9 @@ const MessagingVisual = () => {
           grid-template-columns: 1fr;
           gap: 1px;
           background: var(--visual-border);
-          min-height: 380px;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
         }
         @media (min-width: 768px) {
           .feature-visual__messaging-body {
@@ -217,6 +223,33 @@ const MessagingVisual = () => {
           background: var(--visual-surface);
           display: flex;
           flex-direction: column;
+          overflow-y: auto;
+          min-height: 0;
+        }
+        .feature-visual__chat {
+          background: var(--visual-surface);
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          min-height: 0;
+        }
+        .feature-visual__chat-messages {
+          flex: 1;
+          padding: var(--space-4);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-3);
+          overflow-y: auto;
+          min-height: 0;
+        }
+        .feature-visual__context {
+          background: var(--visual-surface);
+          padding: var(--space-4);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-3);
+          overflow-y: auto;
+          min-height: 0;
         }
         .feature-visual__conversations-header {
           padding: var(--space-3) var(--space-4);
@@ -365,6 +398,7 @@ const MessagingVisual = () => {
           flex-direction: column;
           gap: var(--space-3);
           overflow-y: auto;
+          min-height: 0;
         }
         .feature-visual__message {
           display: flex;
@@ -404,6 +438,7 @@ const MessagingVisual = () => {
           padding: var(--space-3) var(--space-4);
           border-top: 1px solid var(--visual-border);
           transition: border-color var(--transition-theme);
+          flex-shrink: 0;
         }
         .feature-visual__chat-input-field {
           flex: 1;
@@ -424,6 +459,9 @@ const MessagingVisual = () => {
           font-size: var(--text-sm);
           font-weight: 600;
           cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .feature-visual__context {
           background: var(--visual-surface);
@@ -431,11 +469,14 @@ const MessagingVisual = () => {
           display: flex;
           flex-direction: column;
           gap: var(--space-3);
+          overflow-y: auto;
+          min-height: 0;
         }
         .feature-visual__context-header {
           padding-bottom: var(--space-3);
           border-bottom: 1px solid var(--visual-border);
           transition: border-color var(--transition-theme);
+          flex-shrink: 0;
         }
         .feature-visual__context-title {
           font-size: var(--text-xs);
@@ -466,12 +507,18 @@ const MessagingVisual = () => {
         }
 
         @media (max-width: 767px) {
+          .feature-visual--messaging {
+            max-width: 100%;
+          }
           .feature-visual__conversations {
             max-height: 180px;
             overflow-y: auto;
+            min-height: 0;
           }
           .feature-visual__chat-messages {
             max-height: 240px;
+            overflow-y: auto;
+            min-height: 0;
           }
         }
       `}</style>

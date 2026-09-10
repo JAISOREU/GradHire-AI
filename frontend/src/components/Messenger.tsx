@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { FormInput } from './FormField';
 import { EmptyState } from './EmptyState';
 import { LoadingState } from './LoadingState';
+import { PhosphorIcon } from './PhosphorIcon';
 
 type Conversation = {
   id: string;
@@ -255,7 +256,7 @@ export const Messenger = ({
           ) : filteredConversations.length === 0 ? (
             <div className="p-4">
               <EmptyState
-                icon="💬"
+                icon="ChatCircle"
                 title="No conversations"
                 text="Start a new conversation to begin messaging."
               />
@@ -313,7 +314,7 @@ export const Messenger = ({
               {selectedMessages.length === 0 ? (
                 <div className="p-4">
                   <EmptyState
-                    icon="👋"
+                    icon="HandWaving"
                     title="No messages yet"
                     text="Say hello to start the conversation!"
                   />
@@ -333,8 +334,15 @@ export const Messenger = ({
                         <div className={`messenger__message-time ${isSent ? 'messenger__message-time--sent' : 'messenger__message-time--received'}`}>
                           {formatMessageTime(msg.createdAt)}
                           {isSent && (
-                            <span style={{ marginLeft: '4px' }}>
-                              {msg.read ? '✓✓' : '✓'}
+                            <span style={{ marginLeft: '4px', display: 'inline-flex', gap: '2px' }}>
+                              {msg.read ? (
+                                <>
+                                  <PhosphorIcon name="Check" size={10} weight="bold" />
+                                  <PhosphorIcon name="Check" size={10} weight="bold" />
+                                </>
+                              ) : (
+                                <PhosphorIcon name="Check" size={10} weight="bold" />
+                              )}
                             </span>
                           )}
                         </div>
@@ -376,7 +384,7 @@ export const Messenger = ({
         ) : (
           <div className="messenger__empty">
             <EmptyState
-              icon="💬"
+              icon="ChatCircle"
               title="Select a conversation"
               text="Choose a conversation from the sidebar to start chatting."
             />

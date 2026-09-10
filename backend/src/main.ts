@@ -100,7 +100,7 @@ async function bootstrap() {
       return next();
     }
 
-    const publicPaths = ['/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/refresh', '/api/v1/auth/forgot-password', '/api/v1/auth/reset-password', '/api/v1/auth/verify-email', '/api/v1/auth/logout', '/api/v1/auth/send-verification'];
+    const publicPaths = ['/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/refresh', '/api/v1/auth/forgot-password', '/api/v1/auth/reset-password', '/api/v1/auth/verify-email', '/api/v1/auth/logout', '/api/v1/auth/send-verification', '/api/v1/auth/oauth/google/callback', '/api/v1/auth/oauth/github/callback', '/api/v1/auth/oauth/linkedin/callback'];
     if (publicPaths.includes(req.path)) {
       return next();
     }

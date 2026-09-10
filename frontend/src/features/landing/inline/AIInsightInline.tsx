@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { useRef } from 'react';
+import { PhosphorIcon } from '../../../components/PhosphorIcon';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -39,15 +40,15 @@ const AIInsightInline = () => {
             <span className="inline-ui__insight-section-title">Strengths</span>
             <div className="inline-ui__insight-list">
               <div className="inline-ui__insight-item">
-                <span className="inline-ui__insight-check">✓</span>
+                <span className="inline-ui__insight-check"><PhosphorIcon name="Check" size={12} weight="bold" /></span>
                 <span>React component architecture</span>
               </div>
               <div className="inline-ui__insight-item">
-                <span className="inline-ui__insight-check">✓</span>
+                <span className="inline-ui__insight-check"><PhosphorIcon name="Check" size={12} weight="bold" /></span>
                 <span>TypeScript type safety</span>
               </div>
               <div className="inline-ui__insight-item">
-                <span className="inline-ui__insight-check">✓</span>
+                <span className="inline-ui__insight-check"><PhosphorIcon name="Check" size={12} weight="bold" /></span>
                 <span>API integration experience</span>
               </div>
             </div>
@@ -57,11 +58,11 @@ const AIInsightInline = () => {
             <span className="inline-ui__insight-section-title">Areas to improve</span>
             <div className="inline-ui__insight-list">
               <div className="inline-ui__insight-item inline-ui__insight-item--warn">
-                <span className="inline-ui__insight-check">!</span>
+                <span className="inline-ui__insight-check"><PhosphorIcon name="WarningCircle" size={12} weight="bold" /></span>
                 <span>Add containerization projects</span>
               </div>
               <div className="inline-ui__insight-item inline-ui__insight-item--warn">
-                <span className="inline-ui__insight-check">!</span>
+                <span className="inline-ui__insight-check"><PhosphorIcon name="WarningCircle" size={12} weight="bold" /></span>
                 <span>Advanced SQL query practice</span>
               </div>
             </div>
@@ -230,6 +231,25 @@ const AIInsightInline = () => {
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.06em;
+        }
+
+        @media (max-width: 640px) {
+          .inline-ui--insight {
+            max-width: 100%;
+          }
+          .inline-ui__insight-body {
+            gap: var(--space-3);
+          }
+          .inline-ui__insight-text {
+            font-size: var(--text-xs);
+          }
+          .inline-ui__insight-footer {
+            flex-direction: column;
+            gap: var(--space-3);
+          }
+          .inline-ui__insight-metric-value {
+            font-size: var(--text-base);
+          }
         }
       `}</style>
     </div>

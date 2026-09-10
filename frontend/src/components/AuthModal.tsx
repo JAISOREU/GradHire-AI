@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { AuthResponse } from '../core/types';
 import { Button } from './Button';
 import { FormField } from './FormField';
-import { ThemeBackground } from './ThemeBackground';
+import { AmbientBackground } from './AmbientBackground';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -67,7 +67,7 @@ export const AuthModal = ({ open, onClose, onSuccess }: AuthModalProps) => {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="auth-modal">
-        <ThemeBackground />
+        <AmbientBackground scene="auth" />
         <DialogHeader>
           <DialogTitle>{mode === 'signin' ? 'Welcome back' : 'Create your account'}</DialogTitle>
           <DialogDescription>

@@ -266,23 +266,28 @@ model User {
   jobViews               JobView[]
   recommendations        Recommendation[]
   companyFollows         CompanyFollow[]
-  refreshTokens          RefreshToken[]
+  oauthIdentities        OAuthIdentity[]
 
   @@index([role])
 }
 
-model RefreshToken {
-  id         String    @id @default(cuid())
-  userId     String
-  tokenHash  String    @unique
-  expiresAt  DateTime
-  revokedAt  DateTime?
-  createdAt  DateTime  @default(now())
+model OAuthIdentity {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String   @db.Text
+  providerId   String   @db.Text
+  email        String?  @db.Text
+  name         String?  @db.Text
+  avatarUrl    String?  @db.Text
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([provider, providerId])
   @@index([userId])
-  @@index([expiresAt])
+  @@index([provider, email])
 }
 
 model Profile {
@@ -968,12 +973,12 @@ model Recommendation {
 
 model AuditLog {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String?
   action    String
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
 }
@@ -1120,4 +1125,3 @@ model JobSourceJob {
   @@index([status])
   @@index([sourceId, status])
 }
-

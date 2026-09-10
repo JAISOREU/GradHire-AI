@@ -15,6 +15,7 @@ import { Skeleton } from '../../components/Skeleton';
 import { Badge } from '../../components/Badge';
 import { Avatar } from '../../components/Avatar';
 import { EmptyState } from '../../components/EmptyState';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume, Certification } from '../../core/types';
 
 const VISIBILITY_OPTIONS = [
@@ -86,7 +87,9 @@ function AiReadiness({ readiness, onSectionClick }: { readiness: AiReadiness | n
         {readiness.checks.map((check) => (
           <div key={check.key} className="flex items-center justify-between text-sm">
             <span className={check.ready ? 'text-primary' : 'text-tertiary'}>{check.key}</span>
-            <span>{check.ready ? '✓' : '○'}</span>
+            <span className={check.ready ? 'text-primary' : 'text-tertiary'}>
+              <PhosphorIcon name={check.ready ? 'CheckCircle' : 'Circle'} size={16} weight={check.ready ? 'fill' : 'regular'} />
+            </span>
           </div>
         ))}
       </div>
@@ -342,7 +345,7 @@ function EducationSection({ userId: _userId, onSectionClick }: { userId: string;
               </div>
             </div>
           ))}
-          {items.length === 0 && <EmptyState icon="🎓" title="No education added" text="Add your first education entry." />}
+          {items.length === 0 && <EmptyState icon="GraduationCap" title="No education added" text="Add your first education entry." />}
         </div>
       )}
       {editing ? (
@@ -446,7 +449,7 @@ function ExperienceSection({ userId: _userId, onSectionClick }: { userId: string
               </div>
             </div>
           ))}
-          {items.length === 0 && <EmptyState icon="💼" title="No experience added" text="Add your first work experience." />}
+          {items.length === 0 && <EmptyState icon="Briefcase" title="No experience added" text="Add your first work experience." />}
         </div>
       )}
       {editing && (
@@ -622,7 +625,7 @@ function CertificationsSection(_props: { onSectionClick?: (section: string) => v
               </div>
             </div>
           ))}
-          {items.length === 0 && <EmptyState icon="🏆" title="No certifications added" text="Add professional certifications to strengthen your profile." />}
+          {items.length === 0 && <EmptyState icon="Trophy" title="No certifications added" text="Add professional certifications to strengthen your profile." />}
         </div>
       )}
       {editing && (
@@ -714,7 +717,7 @@ function ProjectsSection(_props: { onSectionClick?: (section: string) => void })
               </div>
             </div>
           ))}
-          {items.length === 0 && <EmptyState icon="🚀" title="No projects added" text="Add projects to demonstrate your skills." />}
+          {items.length === 0 && <EmptyState icon="Rocket" title="No projects added" text="Add projects to demonstrate your skills." />}
         </div>
       )}
       {editing && (

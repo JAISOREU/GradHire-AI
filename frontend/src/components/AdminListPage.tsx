@@ -1,14 +1,15 @@
 import { Fragment } from 'react';
+import { PhosphorIcon, type PhosphorIconName } from './PhosphorIcon';
 import { Skeleton } from './Skeleton';
 import { EmptyState } from './EmptyState';
 
 type AdminListPageProps<T> = {
   title?: string;
-  icon?: string;
+  icon?: PhosphorIconName;
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
   loading: boolean;
-  emptyIcon?: string;
+  emptyIcon?: PhosphorIconName;
   emptyTitle: string;
   emptyText: string;
 };
@@ -19,7 +20,7 @@ export const AdminListPage = <T,>({
   items,
   renderItem,
   loading,
-  emptyIcon = '📭',
+  emptyIcon = 'Tray',
   emptyTitle,
   emptyText,
 }: AdminListPageProps<T>) => {
@@ -43,7 +44,11 @@ export const AdminListPage = <T,>({
     <div className="list-container">
       {title && (
         <div className="list-container__header">
-          {icon && <span className="list-container__icon" aria-hidden="true">{icon}</span>}
+          {icon && (
+            <span className="list-container__icon" aria-hidden="true">
+              <PhosphorIcon name={icon} size={20} weight="duotone" />
+            </span>
+          )}
           <h2 className="page-title">{title}</h2>
         </div>
       )}

@@ -4,3 +4,7 @@ export { EmployersInline } from './EmployersInline';
 export { AIInsightInline } from './AIInsightInline';
 export { ApplicationsInline } from './ApplicationsInline';
 export { PrivacyInline } from './PrivacyInline';
+export { AccountSetupInline } from './AccountSetupInline';
+export { ProfileSetupInline } from './ProfileSetupInline';
+export { OpportunityDiscoveryInline } from './OpportunityDiscoveryInline';
+export { ApplicationProgressInline } from './ApplicationProgressInline';

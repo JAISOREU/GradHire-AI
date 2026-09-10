@@ -1,4 +1,4 @@
-import { ThemeBackground } from './ThemeBackground';
+import { AmbientBackground } from './AmbientBackground';
 
 type AuthLayoutProps = {
   title: string;
@@ -11,7 +11,7 @@ type AuthLayoutProps = {
 export const AuthLayout = ({ title, subtitle, children, footer, showBackground = true }: AuthLayoutProps) => {
   return (
     <div className="auth-page fade-in">
-      {showBackground && <ThemeBackground />}
+      {showBackground && <AmbientBackground scene="auth" />}
       <div className="auth-card">
         <div className="auth-card__header">
           <h2>{title}</h2>

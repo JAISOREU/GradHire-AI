@@ -71,7 +71,7 @@ export const StudentSavedJobsPage = () => {
             ))}
           </div>
         ) : (
-          <EmptyState icon="🔖" title="No saved jobs yet" text="Save jobs you like to keep them here." />
+          <EmptyState icon="BookmarkSimple" title="No saved jobs yet" text="Save jobs you like to keep them here." />
         )}
       </div>
     </div>

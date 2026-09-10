@@ -5,6 +5,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { Badge, resolveBadgeKind } from '../../components/Badge';
 import { PageHeader } from '../../components/PageHeader';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 
 export const CompanyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +16,7 @@ export const CompanyDetailPage = () => {
     <div className="public-page">
       <section className="section-full">
         <div className="section-inner">
-          <Link to="/companies" className="back-link">← Back to companies</Link>
+          <Link to="/companies" className="back-link"><PhosphorIcon name="ArrowLeft" size={14} /> Back to companies</Link>
           {loading ? (
             <div className="card section--mt">
               <LoadingState label="Loading company…" />
@@ -43,19 +44,19 @@ export const CompanyDetailPage = () => {
                               <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : 'Hiring'}</Badge>
                             </div>
                           </div>
-                          <span className="list-item__action">View →</span>
+                          <span className="list-item__action">View <PhosphorIcon name="ArrowRight" size={14} weight="bold" /></span>
                         </div>
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <EmptyState icon="💼" title="No open roles" text={`There are no open roles at ${company.name} right now.`} />
+                  <EmptyState icon="Briefcase" title="No open roles" text={`There are no open roles at ${company.name} right now.`} />
                 )}
               </div>
             </>
           ) : (
             <div className="section--mt">
-              <EmptyState icon="🏢" title="Company not found" text="This company may not be listed yet." />
+              <EmptyState icon="Building" title="Company not found" text="This company may not be listed yet." />
             </div>
           )}
         </div>

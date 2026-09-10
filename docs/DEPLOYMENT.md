@@ -258,7 +258,7 @@ FRONTEND_URL=https://gradture.ai
 
 #### Vercel:
 ```
-VITE_API_URL=https://api.gradture.ai/api/v1
+VITE_API_URL=https://api.gradture.ai
 ```
 
 **Redeploy both services** after updating environment variables.

@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { ScrollReveal, StaggerContainer, StaggerChild } from '../../animations';
 import { MOTION } from '../../animations/motion-tokens';
-import { MatchInline, TalentFlowInline, ApplicationsInline, PrivacyInline } from './inline';
+import { AccountSetupInline, ProfileSetupInline, OpportunityDiscoveryInline, ApplicationProgressInline } from './inline';
 
 const STEPS = [
   {
@@ -11,7 +11,7 @@ const STEPS = [
     text: 'Create your account and get started in minutes.',
     details: 'Start with the basic information needed to establish your account. Once registered, you can continue building your profile and access the parts of the platform available to your role.',
     supporting: ['Email', 'Password', 'Name', 'Account created', 'Profile initialized'],
-    visual: PrivacyInline,
+    visual: AccountSetupInline,
   },
   {
     number: '02',
@@ -20,7 +20,7 @@ const STEPS = [
     text: 'Add your skills, experience, resume, and career preferences.',
     details: 'A more complete profile gives the platform better information to work with. Add your education, skills, experience, resume, projects, certifications, and preferences so opportunities and recommendations are evaluated against information you actually provide.',
     supporting: ['Skills', 'Education', 'Experience', 'Resume', 'Projects', 'Preferences'],
-    visual: ApplicationsInline,
+    visual: ProfileSetupInline,
   },
   {
     number: '03',
@@ -29,7 +29,7 @@ const STEPS = [
     text: 'Discover opportunities that align with your skills and goals.',
     details: 'Browse available jobs and internships through the discovery experience. Search and filter opportunities using the criteria that matter to you, then open complete job details before deciding whether to apply.',
     supporting: ['Search opportunities', 'Remote', 'Full-time', 'Internship'],
-    visual: TalentFlowInline,
+    visual: OpportunityDiscoveryInline,
   },
   {
     number: '04',
@@ -38,7 +38,7 @@ const STEPS = [
     text: 'Apply, communicate, track progress, and take your next step.',
     details: 'Once you find an opportunity, continue through the employment process from the same platform. Submit applications, communicate when available, monitor progress, and stay aware of important updates as your application moves forward.',
     supporting: ['Applied', 'Reviewed', 'Interview', 'Next step'],
-    visual: MatchInline,
+    visual: ApplicationProgressInline,
   },
 ];
 

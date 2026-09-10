@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from '../../lib/utils'
+import { PhosphorIcon } from '../PhosphorIcon'
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: { value: string; label: string }[]
@@ -30,7 +31,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none text-xs">▼</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none"><PhosphorIcon name="CaretDown" size={12} weight="bold" /></span>
       </div>
     )
   }

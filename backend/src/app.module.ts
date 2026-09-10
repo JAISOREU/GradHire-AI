@@ -26,6 +26,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ScreeningModule } from './screening/screening.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { OAuthModule } from './oauth/oauth.module';
 import { UsersModule } from './users/users.module';
 import { JobSourcesModule } from './job-sources/job-sources.module';
 import { IngestionModule } from './ingestion/ingestion.module';
@@ -57,6 +58,7 @@ import { RecommendationService } from './ai/recommendation.service';
     UsersModule,
     JobSourcesModule,
     IngestionModule,
+    OAuthModule,
   ],
   controllers: [AppController, ProfileController, MetricsController],
   providers: [

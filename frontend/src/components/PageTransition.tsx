@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 
 type PageTransitionProps = {
   children: ReactNode;
@@ -6,6 +7,7 @@ type PageTransitionProps = {
 };
 
 export const PageTransition = ({ children, transitionKey }: PageTransitionProps) => {
+  const location = useLocation();
   const [status, setStatus] = useState<'enter' | 'active' | 'exit'>('enter');
 
   useEffect(() => {
@@ -15,6 +17,12 @@ export const PageTransition = ({ children, transitionKey }: PageTransitionProps)
     });
     return () => cancelAnimationFrame(raf);
   }, [transitionKey]);
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   return (
     <div

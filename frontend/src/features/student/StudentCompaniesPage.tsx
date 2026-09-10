@@ -135,7 +135,7 @@ export const StudentCompaniesPage = () => {
         ) : (
           <div className="col-span-full">
             <EmptyState
-              icon="🏢"
+              icon="Building"
               title="No companies found"
               text={search ? 'Try adjusting your search terms.' : 'Check back soon for new companies.'}
             />

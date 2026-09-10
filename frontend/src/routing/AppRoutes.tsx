@@ -40,11 +40,12 @@ const StudentJobsPage = lazy(() => import('../features/student/StudentJobsPage')
 const StudentCompaniesPage = lazy(() => import('../features/student/StudentCompaniesPage').then((m) => ({ default: m.StudentCompaniesPage })));
 const EmployerCompaniesPage = lazy(() => import('../features/employer/EmployerCompaniesPage').then((m) => ({ default: m.EmployerCompaniesPage })));
 const JobDetailPage = lazy(() => import('../features/jobs/JobDetailPage').then((m) => ({ default: m.JobDetailPage })));
-const LoginPage = lazy(() => import('../features/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
-const RegisterPage = lazy(() => import('../features/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })));
+const LoginPage = lazy(() => import('../features/auth/AuthPage').then((m) => ({ default: m.AuthPage })));
+const RegisterPage = lazy(() => import('../features/auth/AuthPage').then((m) => ({ default: m.AuthPage })));
 const ForgotPasswordPage = lazy(() => import('../features/auth/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
 const ResetPasswordPage = lazy(() => import('../features/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
 const VerifyEmailPage = lazy(() => import('../features/auth/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
+const AuthCallbackPage = lazy(() => import('../features/auth/AuthCallbackPage').then((m) => ({ default: m.AuthCallbackPage })));
 const StudentDashboardPage = lazy(() => import('../features/student/StudentDashboardPage').then((m) => ({ default: m.StudentDashboardPage })));
 const StudentResumePage = lazy(() => import('../features/student/StudentResumePage').then((m) => ({ default: m.StudentResumePage })));
 const StudentApplicationsPage = lazy(() => import('../features/student/StudentApplicationsPage').then((m) => ({ default: m.StudentApplicationsPage })));
@@ -88,11 +89,12 @@ export const AppRoutes = () => (
       <Route path="/jobs/:id" element={<LazyPage><Page><JobDetailPage /></Page></LazyPage>} />
       <Route path="/companies" element={<LazyPage><Page><CompaniesPage /></Page></LazyPage>} />
       <Route path="/companies/:id" element={<LazyPage><Page><CompanyDetailPage /></Page></LazyPage>} />
-      <Route path="/login" element={<LazyPage><Page><LoginPage /></Page></LazyPage>} />
-      <Route path="/register" element={<LazyPage><Page><RegisterPage /></Page></LazyPage>} />
+      <Route path="/login" element={<LazyPage><Page><LoginPage initialMode="login" /></Page></LazyPage>} />
+      <Route path="/register" element={<LazyPage><Page><RegisterPage initialMode="register" /></Page></LazyPage>} />
       <Route path="/forgot-password" element={<LazyPage><Page><ForgotPasswordPage /></Page></LazyPage>} />
       <Route path="/reset-password" element={<LazyPage><Page><ResetPasswordPage /></Page></LazyPage>} />
       <Route path="/verify-email" element={<LazyPage><Page><VerifyEmailPage /></Page></LazyPage>} />
+      <Route path="/auth/callback" element={<LazyPage><Page><AuthCallbackPage /></Page></LazyPage>} />
     </Route>
 
     {/* Student (protected) */}

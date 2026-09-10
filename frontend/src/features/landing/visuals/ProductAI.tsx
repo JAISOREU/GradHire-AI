@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { useRef, useState } from 'react';
+import { PhosphorIcon, type PhosphorIconName } from '../../../components/PhosphorIcon';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -213,12 +214,12 @@ interface AIStateIndicatorProps {
 export const AIStateIndicator = ({ state, message, onRetry }: AIStateIndicatorProps) => {
   const reduceMotion = useReducedMotion();
 
-  const stateConfig = {
-    indexing: { label: 'Preparing your resume...', icon: '📄', color: 'var(--color-text-tertiary)' },
-    processing: { label: 'Analyzing your career profile...', icon: '⚙️', color: 'var(--color-primary)' },
-    ready: { label: 'AI insights ready', icon: '✓', color: 'var(--color-success)' },
-    failed: { label: message || "We couldn't analyze your document. Try again.", icon: '!', color: '#ef4444' },
-    'no-info': { label: message || "I couldn't find enough information to answer this confidently.", icon: '?', color: 'var(--color-text-tertiary)' },
+  const stateConfig: Record<AIState, { label: string; icon: PhosphorIconName; color: string }> = {
+    indexing: { label: 'Preparing your resume...', icon: 'FileText', color: 'var(--color-text-tertiary)' },
+    processing: { label: 'Analyzing your career profile...', icon: 'GearSix', color: 'var(--color-primary)' },
+    ready: { label: 'AI insights ready', icon: 'CheckCircle', color: 'var(--color-success)' },
+    failed: { label: message || "We couldn't analyze your document. Try again.", icon: 'Warning', color: '#ef4444' },
+    'no-info': { label: message || "I couldn't find enough information to answer this confidently.", icon: 'Question', color: 'var(--color-text-tertiary)' },
   };
 
   const config = stateConfig[state];
@@ -232,16 +233,16 @@ export const AIStateIndicator = ({ state, message, onRetry }: AIStateIndicatorPr
         className="product-ai-state__inner"
       >
         <div className="product-ai-state__icon" style={{ color: config.color }}>
-          {state === 'processing' || state === 'indexing' ? (
+          {state === 'processing' ? (
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
               style={{ display: 'inline-flex' }}
             >
-              ⚙️
+              <PhosphorIcon name="GearSix" size={18} />
             </motion.div>
           ) : (
-            config.icon
+            <PhosphorIcon name={config.icon} size={18} weight="bold" />
           )}
         </div>
         <div className="product-ai-state__content">
@@ -269,17 +270,17 @@ interface TrustBadgeProps {
 }
 
 export const TrustBadge = ({ level, label }: TrustBadgeProps) => {
-  const config = {
-    verified: { text: label || 'Verified profile information', bg: 'var(--color-success-soft)', color: 'var(--color-success)', icon: '✓' },
-    'ai-generated': { text: label || 'AI-generated insight', bg: 'var(--color-primary-soft)', color: 'var(--color-primary)', icon: 'AI' },
-    hybrid: { text: label || 'AI-assisted insight', bg: '#fef3c7', color: '#d97706', icon: '✦' },
+  const config: Record<TrustLevel, { text: string; bg: string; color: string; icon: PhosphorIconName }> = {
+    verified: { text: label || 'Verified profile information', bg: 'var(--color-success-soft)', color: 'var(--color-success)', icon: 'Check' },
+    'ai-generated': { text: label || 'AI-generated insight', bg: 'var(--color-primary-soft)', color: 'var(--color-primary)', icon: 'Sparkle' },
+    hybrid: { text: label || 'AI-assisted insight', bg: '#fef3c7', color: '#d97706', icon: 'Sparkle' },
   };
 
   const { text, bg, color, icon } = config[level];
 
   return (
     <span className="product-ai-trust" style={{ background: bg, color }}>
-      <span className="product-ai-trust__icon" aria-hidden="true">{icon}</span>
+      <span className="product-ai-trust__icon" aria-hidden="true"><PhosphorIcon name={icon} size={10} weight="bold" /></span>
       {text}
     </span>
   );

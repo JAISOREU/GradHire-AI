@@ -10,6 +10,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 import { Avatar } from '../../components/Avatar';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import type { Application } from '../../core/types';
 
 type Analytics = {
@@ -76,7 +77,7 @@ export const EmployerDashboardPage = () => {
         title="Recent applicants"
         subtitle="Candidates who recently applied to your jobs."
         action={
-          <Link to="/employer/applicants"><Button variant="ghost" size="sm">View all →</Button></Link>
+          <Link to="/employer/applicants"><Button variant="ghost" size="sm" iconRight={<PhosphorIcon name="ArrowRight" size={14} />}>View all</Button></Link>
         }
         className="section--mt"
       >

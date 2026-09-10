@@ -56,7 +56,7 @@ export const SEO = ({
           name: 'GradTure',
           description: 'AI-powered employment platform connecting fresh graduates with matched job opportunities.',
           url: SITE_URL,
-          logo: `${SITE_URL}/logo.png`,
+          logo: `${SITE_URL}/logo.svg`,
           sameAs: [],
         })}
       </script>

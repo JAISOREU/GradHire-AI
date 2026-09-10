@@ -9,6 +9,7 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { Tooltip } from '../../components/Tooltip';
 import { useState } from 'react';
 import type { Job } from '../../core/types';
@@ -65,7 +66,7 @@ export const JobDetailPage = () => {
     <div className="public-page">
       <section className="section-full">
         <div className="section-inner">
-          <Link to="/jobs" className="back-link">← Back to jobs</Link>
+          <Link to="/jobs" className="back-link"><PhosphorIcon name="ArrowLeft" size={14} /> Back to jobs</Link>
 
           <div className="card section--mt">
         <PageHeader

@@ -7,11 +7,12 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { LoadingState } from '../../components/LoadingState';
 import { categorize } from '../../core/utils/categorize';
+import { PhosphorIcon, type PhosphorIconName } from '../../components/PhosphorIcon';
 import { PageHeader } from '../../components/PageHeader';
 
 type Recommendation = {
   tag: string;
-  icon: string;
+  icon: PhosphorIconName;
 };
 
 export const StudentResumeBuilderPage = () => {
@@ -67,7 +68,9 @@ export const StudentResumeBuilderPage = () => {
                  <h3 className="card__title">Suggested categories</h3>
                  {recommendations.map((rec, idx) => (
                    <div key={`${rec.tag}-${idx}`} className="recommendation-item">
-                     <div className="recommendation-item__icon">{rec.icon}</div>
+                     <div className="recommendation-item__icon">
+  <PhosphorIcon name={rec.icon} size={19} weight="duotone" />
+</div>
                      <div className="recommendation-item__body">
                        <div className="recommendation-item__title">{rec.tag}</div>
                        <div className="recommendation-item__tag">Explore {rec.tag.toLowerCase()} roles</div>

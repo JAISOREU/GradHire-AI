@@ -13,7 +13,8 @@ type AuthContextValue = {
   register: (email: string, password: string, role: AuthUser['role'], name?: string) => Promise<AuthUser>;
   applyAuth: (data: AuthResponse) => void;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<AuthUser | null>;
+  oauthLogin: (provider: 'google' | 'github' | 'linkedin') => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -57,10 +58,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { user } = await authApi.me();
       setUser(user);
       setStatus('authenticated');
+      return user;
     } catch {
       setUser(null);
       setStatus('unauthenticated');
+      return null;
     }
+  }, []);
+
+  const oauthLogin = useCallback(async (provider: 'google' | 'github' | 'linkedin') => {
+    const data = await authApi.oauthInitiate(provider);
+    window.location.href = data.url;
   }, []);
 
   useEffect(() => {
@@ -101,8 +109,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       applyAuth,
       logout,
       refreshUser,
+      oauthLogin,
     }),
-    [user, status, login, register, applyAuth, logout, refreshUser],
+    [user, status, login, register, applyAuth, logout, refreshUser, oauthLogin],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

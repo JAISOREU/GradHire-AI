@@ -115,7 +115,7 @@ export const StudentRecommendedJobsPage = () => {
           ))
         ) : ready ? (
           <EmptyState
-            icon="✨"
+            icon="Sparkle"
             title="No recommendations yet"
             text="We could not find matching roles right now. Try broadening your profile or check back later."
               action={
@@ -130,7 +130,7 @@ export const StudentRecommendedJobsPage = () => {
         ) : (
           <div className="card section--mt">
             <EmptyState
-              icon="🎯"
+              icon="Target"
               title="Complete your profile to receive personalized job recommendations"
               text="Add your education, skills, and experience so we can match you with the right opportunities."
             />

@@ -1,0 +1,65 @@
+import { Sidebar } from '../components/Sidebar';
+import { AuthHeader } from '../components/AuthHeader';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import type { NavSection } from '../core/utils/navigation';
+
+type AppShellProps = {
+  role: 'STUDENT' | 'EMPLOYER' | 'ADMIN';
+  navConfig: NavSection[];
+  storageKey: string;
+  children: ReactNode;
+};
+
+export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProps) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { pathname } = useLocation();
+  const [collapsed, setCollapsed] = useState(() => {
+    const stored = localStorage.getItem(storageKey);
+    return stored === 'true';
+  });
+
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem(storageKey, String(next));
+  };
+
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
+    }
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="auth-layout">
+      <Sidebar
+        title={role}
+        sections={navConfig}
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        className={sidebarOpen ? 'is-open' : ''}
+        footer={
+          <div className="sidebar-user">
+            <div className="sidebar-user__meta">
+              <span className="sidebar-user__name">Gradture</span>
+              <span className="sidebar-user__role">{role}</span>
+            </div>
+          </div>
+        }
+      />
+      <div className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`} onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+      <div className="auth-main">
+        <AuthHeader
+          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+          sidebarOpen={sidebarOpen}
+        />
+        <main id="main-content" className="auth-content">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
