@@ -9,6 +9,7 @@ import { LoadingState } from '../../components/LoadingState';
 import { PageHeader } from '../../components/PageHeader';
 import { Avatar } from '../../components/Avatar';
 import { Tooltip } from '../../components/Tooltip';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import type { ApplicationStatus } from '../../core/types';
 
 type Applicant = {
@@ -16,7 +17,7 @@ type Applicant = {
   status: string;
   submittedAt?: string;
   viewedAt?: string;
-  student?: { profile?: { name?: string; skills?: string[] } | null } | null;
+  student?: { profile?: { name?: string; skills?: string[]; focus?: string } | null } | null;
   job?: { title?: string; company?: string } | null;
   lastEvent?: { previousStatus?: string; newStatus?: string; createdAt?: string } | null;
   interview?: { scheduledAt?: string; type?: string; status?: string } | null;
@@ -69,7 +70,7 @@ export const EmployerApplicantsPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Applicants" subtitle="Review and manage candidates across your jobs." />
+      <PageHeader title="Applicants" subtitle="Review and rank candidates across your jobs." />
 
       <div className="flex flex-wrap items-center gap-3 section--mt">
         <Tooltip content="Search candidates by name or job title">
@@ -111,73 +112,76 @@ export const EmployerApplicantsPage = () => {
         {loading ? (
           <LoadingState label="Loading applicants…" />
         ) : filtered.length > 0 ? (
-          <div className="table-container">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Candidate</th>
-                  <th>Job</th>
-                  <th>Skills</th>
-                  <th>Applied</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((app) => (
-                  <tr key={app.id}>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <Avatar src={undefined} name={app.student?.profile?.name} size="sm" />
-                        <div>
-                          <div className="font-medium">{app.student?.profile?.name ?? 'Unknown'}</div>
-                        </div>
+          <div className="candidate-grid">
+            {filtered.map((app) => {
+              const skills = app.student?.profile?.skills ?? [];
+              return (
+                <article key={app.id} className="candidate-card">
+                  <div className="candidate-card__head">
+                    <Avatar src={undefined} name={app.student?.profile?.name} size="md" />
+                    <div className="candidate-card__who">
+                      <h3 className="candidate-card__name">{app.student?.profile?.name ?? 'Unknown'}</h3>
+                      <div className="candidate-card__role">
+                        {app.student?.profile?.focus || app.job?.title || 'Candidate'}
                       </div>
-                    </td>
-                    <td>{app.job?.title ?? 'Unknown'}</td>
-                    <td>
-                      <div className="flex flex-wrap gap-1">
-                        {(app.student?.profile?.skills ?? []).slice(0, 3).map((skill) => (
-                          <span key={skill} className="badge badge--sm">{skill}</span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="text-secondary text-sm">{app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : '—'}</td>
-                    <td>
-                      <div className="flex flex-col gap-1">
-                        <Badge kind={resolveBadgeKind(app.status)}>{app.status}</Badge>
-                        {app.interview?.scheduledAt && (
-                          <span className="text-xs text-secondary">Interview: {new Date(app.interview.scheduledAt).toLocaleString()}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="flex gap-1">
-                        <Tooltip content="Move this applicant to a different stage">
-                          <select
-                            className="select"
-                            value=""
-                            onChange={(e) => {
-                              if (e.target.value) handleStatusChange(app.id, e.target.value as ApplicationStatus);
-                            }}
-                            disabled={updatingId === app.id}
-                          >
-                            <option value="">Move stage</option>
-                            <option value="UNDER_REVIEW">Review</option>
-                            <option value="ASSESSMENT">Assessment</option>
-                            <option value="SHORTLISTED">Shortlist</option>
-                            <option value="INTERVIEW">Interview</option>
-                            <option value="OFFER">Offer</option>
-                            <option value="HIRED">Hire</option>
-                            <option value="REJECTED">Reject</option>
-                          </select>
-                        </Tooltip>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <Badge kind={resolveBadgeKind(app.status)}>{app.status.replace(/_/g, ' ').toLowerCase()}</Badge>
+                    </div>
+                  </div>
+
+                  <div className="candidate-card__job">
+                    <PhosphorIcon name="Briefcase" size={14} />
+                    <span>{app.job?.title ?? 'Unknown role'}{app.job?.company ? ` · ${app.job.company}` : ''}</span>
+                  </div>
+
+                  {skills.length > 0 && (
+                    <div className="candidate-card__skills">
+                      {skills.slice(0, 4).map((skill) => (
+                        <span key={skill} className="badge badge--card-skill">
+                          <PhosphorIcon name="Check" size={11} weight="bold" /> {skill}
+                        </span>
+                      ))}
+                      {skills.length > 4 && <span className="text-xs text-tertiary">+{skills.length - 4} more</span>}
+                    </div>
+                  )}
+
+                  <div className="candidate-card__meta">
+                    <span>
+                      <PhosphorIcon name="PaperPlaneTilt" size={13} />
+                      Applied {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : '—'}
+                    </span>
+                    {app.interview?.scheduledAt && (
+                      <span>
+                        <PhosphorIcon name="VideoCamera" size={13} />
+                        Interview {new Date(app.interview.scheduledAt).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="candidate-card__actions">
+                    <Tooltip content="Move this applicant to a different stage">
+                      <select
+                        className="select"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) handleStatusChange(app.id, e.target.value as ApplicationStatus);
+                        }}
+                        disabled={updatingId === app.id}
+                      >
+                        <option value="">Move stage</option>
+                        <option value="UNDER_REVIEW">Review</option>
+                        <option value="ASSESSMENT">Assessment</option>
+                        <option value="SHORTLISTED">Shortlist</option>
+                        <option value="INTERVIEW">Interview</option>
+                        <option value="OFFER">Offer</option>
+                        <option value="HIRED">Hire</option>
+                        <option value="REJECTED">Reject</option>
+                      </select>
+                    </Tooltip>
+                    {app.viewedAt && <span className="candidate-card__viewed">Viewed</span>}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         ) : (
           <EmptyState title="No applicants found" text={search || statusFilter !== 'ALL' ? 'Try adjusting your filters.' : 'Applications will appear here as candidates apply.'} />

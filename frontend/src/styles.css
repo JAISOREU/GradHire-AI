@@ -7806,3 +7806,371 @@ input[type='file']::file-selector-button:hover {
     animation: none !important;
   }
 }
+
+/* ============================================================
+   Match Result Card — landing "AI Match" visual language for
+   the real product (Transparent AI, matched skills, reasons)
+   ============================================================ */
+.match-result-card__explain {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.match-result-card .badge--success {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.match-result-card__why {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.match-result-card__why > .text-sm:not(:last-child)::after {
+  content: '•';
+  margin-left: var(--space-2);
+  color: var(--color-text-faint);
+}
+
+.match-result-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .match-score--card {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   Application pipeline — landing "Talent Flow" visual language
+   in the real applications screen
+   ============================================================ */
+.chip--filter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.chip--filter:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.chip--filter--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.chip__count {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+  color: var(--color-text-tertiary);
+}
+
+.chip--filter--active .chip__count {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.stage-tracker {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-2) 0;
+}
+
+.stage-tracker__step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 0 0 auto;
+  width: 96px;
+}
+
+.stage-tracker__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-surface-muted);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.stage-tracker__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.stage-tracker__step--on .stage-tracker__dot {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.stage-tracker__step--on .stage-tracker__label {
+  color: var(--color-text);
+}
+
+.stage-tracker__step--current .stage-tracker__dot {
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.stage-tracker__connector {
+  position: absolute;
+  top: 5px;
+  left: calc(100% - 6px);
+  width: calc(100% - 6px);
+  height: 2px;
+  background: var(--color-border);
+}
+
+.stage-tracker__step--on .stage-tracker__connector {
+  background: var(--color-primary);
+  opacity: 0.45;
+}
+
+@media (max-width: 720px) {
+  .stage-tracker__step {
+    width: 72px;
+  }
+
+  .stage-tracker__label {
+    font-size: 9px;
+  }
+}
+
+.application-item__terminal {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.application-item__terminal--rejected {
+  color: var(--color-danger);
+}
+
+/* ============================================================
+   Resume Intelligence — AI-powered resume strength (landing
+   ResumeScoreSnippet visual language in the real product)
+   ============================================================ */
+.resume-intelligence {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-primary-soft), var(--color-surface-muted));
+}
+
+.resume-intelligence__ring {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+}
+
+.resume-intelligence__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.resume-intelligence__number {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.resume-intelligence__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.resume-intelligence__title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.resume-intelligence__metrics {
+  display: flex;
+  gap: var(--space-6);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.resume-intelligence__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resume-intelligence__metric strong {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.resume-intelligence__metric span {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .resume-intelligence {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ============================================================
+   Candidate cards — landing "For Employers" visual language in
+   the real applicants screen
+   ============================================================ */
+.candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.candidate-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.candidate-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.candidate-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.candidate-card__who {
+  min-width: 0;
+}
+
+.candidate-card__name {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.candidate-card__role {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: 2px 0 var(--space-1);
+}
+
+.candidate-card__job {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.candidate-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge--card-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-success);
+  background: var(--color-success-soft);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.candidate-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.candidate-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.candidate-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.candidate-card__viewed {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}

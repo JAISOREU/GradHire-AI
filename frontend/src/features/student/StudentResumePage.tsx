@@ -6,6 +6,7 @@ import { Card } from '../../components/Card';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import type { Resume, ResumeParseResult } from '../../core/types';
 
 const SUGGESTION_LINKS: Record<string, string> = {
@@ -52,6 +53,66 @@ const buildSuggestions = (parseResult: ResumeParseResult) => {
   }
 
   return suggestions;
+};
+
+const RESUME_SECTIONS = [
+  { key: 'phone', has: (p: ResumeParseResult['profile']) => Boolean(p.phone && p.phone.trim()) },
+  { key: 'location', has: (p: ResumeParseResult['profile']) => Boolean(p.location && p.location.trim()) },
+  { key: 'education', has: (p: ResumeParseResult['profile']) => Boolean(p.education && p.education.trim()) },
+  { key: 'experience', has: (p: ResumeParseResult['profile']) => Boolean(p.experience && p.experience.trim()) },
+  { key: 'summary', has: (p: ResumeParseResult['profile']) => Boolean(p.summary && p.summary.trim()) },
+  { key: 'skills', has: (p: ResumeParseResult['profile']) => Boolean(p.skills && p.skills.length > 0) },
+];
+
+const ResumeIntelligencePanel = ({ parse }: { parse: ResumeParseResult }) => {
+  const filled = RESUME_SECTIONS.filter((section) => section.has(parse.profile)).length;
+  const strength = Math.round((filled / RESUME_SECTIONS.length) * 100);
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+
+  return (
+    <div className="resume-intelligence section--mt">
+      <div className="resume-intelligence__ring" aria-label={`Resume strength ${strength}%`}>
+        <svg viewBox="0 0 100 100" className="resume-intelligence__svg">
+          <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--color-surface-muted)" strokeWidth="10" />
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke="var(--color-primary)"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference - (strength / 100) * circumference}
+            transform="rotate(-90 50 50)"
+          />
+        </svg>
+        <div className="resume-intelligence__number">{strength}%</div>
+      </div>
+      <div className="resume-intelligence__body">
+        <div className="resume-intelligence__header">
+          <span className="match-result-card__tag"><PhosphorIcon name="Sparkle" size={11} weight="fill" /> AI-powered</span>
+          <span className="resume-intelligence__title">Resume Intelligence</span>
+        </div>
+        <p className="text-muted text-sm">Profile sections auto-filled from &quot;{parse.resume.fileName}&quot; — keep this strength high to surface in more matches.</p>
+        <div className="resume-intelligence__metrics">
+          <div className="resume-intelligence__metric">
+            <strong>{parse.parsed.skills.length}</strong>
+            <span>Skills extracted</span>
+          </div>
+          <div className="resume-intelligence__metric">
+            <strong>{RESUME_SECTIONS.length - filled}</strong>
+            <span>Gaps identified</span>
+          </div>
+          <div className="resume-intelligence__metric">
+            <strong>{RESUME_SECTIONS.length}</strong>
+            <span>Sections checked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export const StudentResumePage = () => {
@@ -202,8 +263,10 @@ export const StudentResumePage = () => {
       </div>
 
       {lastParse && (
-        <div className="section--mt">
-          <Card title={`Extracted from ${lastParse.resume.fileName}`}>
+        <>
+          <ResumeIntelligencePanel parse={lastParse} />
+          <div className="section--mt">
+            <Card title={`Extracted from ${lastParse.resume.fileName}`}>
             <div className="stack">
               <div className="grid grid--2">
                 <div>
@@ -228,7 +291,8 @@ export const StudentResumePage = () => {
               </div>
             </div>
           </Card>
-        </div>
+          </div>
+        </>
       )}
 
       {suggestions.length > 0 && (

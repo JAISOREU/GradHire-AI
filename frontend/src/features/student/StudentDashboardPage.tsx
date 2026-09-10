@@ -15,7 +15,7 @@ import { Alert } from '../../components/Alert';
 import { PageHeader } from '../../components/PageHeader';
 import { ScrollReveal, AnimatedCounter } from '../../animations';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
-import type { AiRecommendation } from '../../core/types';
+import { MatchResultCard } from './MatchResultCard';
 
 const KPI_STAGGER = 80;
 const SECTION_STAGGER = 100;
@@ -142,20 +142,11 @@ export const StudentDashboardPage = () => {
           aiLoading ? (
             <Skeleton variant="table" lines={3} />
           ) : recommendations.length > 0 ? (
-            recommendations.slice(0, 3).map((job: AiRecommendation) => (
-              <Link key={job.id} to={`/jobs/${job.id}`} className="list-item card--hover link-reset">
-                <div className="list-item__head">
-                  <div>
-                    <h3 className="list-item__title">{job.title}</h3>
-                    <div className="list-item__meta">
-                      <span>{job.company || 'Not specified'}</span>
-                      <span>{job.location || 'Remote'}</span>
-                      <Badge kind={resolveBadgeKind(job.type)}>{job.type === 'INTERNSHIP' ? 'Internship' : job.type?.toLowerCase().replace('_', ' ') ?? 'Hiring'}</Badge>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))
+            <div className="list">
+              {recommendations.slice(0, 3).map((job) => (
+                <MatchResultCard key={job.id} job={job} />
+              ))}
+            </div>
           ) : (
             <EmptyState icon="Briefcase" title="No matches yet" text="Complete your profile to see matched jobs." action={<Link to="/student/account"><Button size="sm">Update profile</Button></Link>} />
           )
