@@ -49,7 +49,7 @@ export const AdminListPage = <T,>({
               <PhosphorIcon name={icon} size={20} weight="duotone" />
             </span>
           )}
-          <h2 className="page-title">{title}</h2>
+          <h2 className="section-title">{title}</h2>
         </div>
       )}
       <div className="list">

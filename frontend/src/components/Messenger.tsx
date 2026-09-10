@@ -356,7 +356,7 @@ export const Messenger = ({
 
             {error && (
               <div className="messenger__error" role="alert">
-                {error} {reload && <button onClick={reload} className="link">Retry</button>}
+                {error} {reload && <Button variant="ghost" size="sm" onClick={reload}>Retry</Button>}
               </div>
             )}
             {sendError && !error && (

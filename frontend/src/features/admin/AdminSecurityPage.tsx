@@ -25,7 +25,7 @@ export const AdminSecurityPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Security</h1>
-      <p className="card__subtitle card__subtitle--mt">Platform security posture, compliance, and data protection.</p>
+      <p className="page-subtitle">Platform security posture, compliance, and data protection.</p>
 
       <div className="resume-intelligence section--mt">
         <div className="resume-intelligence__ring" aria-label={`Security score ${score}%`}>

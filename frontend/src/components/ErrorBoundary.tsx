@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <div className="page fade-in flex flex-col items-center justify-center min-h-screen gap-4">
           <h1 className="text-4xl font-bold">Something went wrong</h1>
           <p className="card__subtitle">An unexpected error occurred. Please refresh the page.</p>
-          <button className="btn btn--primary" onClick={() => this.setState({ hasError: false, error: null })}>
+          <button type="button" className="btn btn--primary" onClick={() => this.setState({ hasError: false, error: null })}>
             Try again
           </button>
           <pre className="text-xs text-muted max-w-[600px] overflow-auto">

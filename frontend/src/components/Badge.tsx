@@ -31,12 +31,17 @@ const KIND_STYLES: Record<BadgeKind, string> = {
 /** Resolve a badge kind from a raw status/type string. */
 export const resolveBadgeKind = (value?: string): BadgeKind => {
   const v = value?.toLowerCase() ?? '';
-  if (v.includes('intern')) return 'applied';
   if (v.includes('withdraw')) return 'withdrawn';
-  if (v.includes('applied')) return 'applied';
+  if (v.includes('reject')) return 'closed';
+  if (v.includes('hire') || v.includes('offer')) return 'hiring';
+  if (v.includes('shortlist') || v.includes('interview')) return 'hiring';
+  if (v.includes('intern')) return 'applied';
+  if (v.includes('applied') || v.includes('submitted') || v.includes('assessment')) return 'applied';
+  if (v.includes('review')) return 'muted';
   if (v.includes('closed')) return 'closed';
   if (v.includes('archiv')) return 'archived';
-  if (v.includes('hire') || v.includes('hiring')) return 'hiring';
+  if (v.includes('pause') || v.includes('expired')) return 'muted';
+  if (v.includes('open') || v.includes('live') || v.includes('publish') || v.includes('active')) return 'hiring';
   return 'open';
 };
 

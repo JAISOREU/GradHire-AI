@@ -43,7 +43,7 @@ export const AdminJobsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <select className="select" value={j.status} onChange={(e) => handleStatusChange(j.id, e.target.value)}>
+                <select className="select" aria-label="Update job status" value={j.status} onChange={(e) => handleStatusChange(j.id, e.target.value)}>
                   <option value="PENDING">Pending</option>
                   <option value="PUBLISHED">Published</option>
                   <option value="REJECTED">Rejected</option>

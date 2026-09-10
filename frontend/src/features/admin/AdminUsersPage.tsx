@@ -59,7 +59,7 @@ export const AdminUsersPage = () => {
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Users</h1>
       <div className="mb-4 flex gap-2 items-center flex-wrap">
-        <select className="select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+        <select className="select" aria-label="Filter users by role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
           <option value="">All roles</option>
           <option value="STUDENT">Student</option>
           <option value="EMPLOYER">Employer</option>
@@ -109,7 +109,7 @@ export const AdminUsersPage = () => {
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <select className="select" value={u.role} onChange={(e) => handleRoleChange(u.id, e.target.value)}>
+                <select className="select" aria-label={`Change role for ${u.email}`} value={u.role} onChange={(e) => handleRoleChange(u.id, e.target.value)}>
                   <option value="STUDENT">Student</option>
                   <option value="EMPLOYER">Employer</option>
                   <option value="ADMIN">Admin</option>

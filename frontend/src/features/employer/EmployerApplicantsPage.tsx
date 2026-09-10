@@ -98,6 +98,7 @@ export const EmployerApplicantsPage = () => {
         <Tooltip content="Filter by application stage">
           <select
             className="select"
+            aria-label="Filter applicants by stage"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'ALL')}
           >
@@ -161,6 +162,7 @@ export const EmployerApplicantsPage = () => {
                     <Tooltip content="Move this applicant to a different stage">
                       <select
                         className="select"
+                        aria-label="Change applicant stage"
                         value=""
                         onChange={(e) => {
                           if (e.target.value) handleStatusChange(app.id, e.target.value as ApplicationStatus);

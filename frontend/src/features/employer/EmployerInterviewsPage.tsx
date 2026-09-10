@@ -85,7 +85,7 @@ export const EmployerInterviewsPage = () => {
       <div className="flex justify-between items-center flex-wrap gap-2">
         <div>
           <h1 className="page-title">Interview scheduling</h1>
-          <p className="card__subtitle card__subtitle--mt">Manage interviews with your candidates.</p>
+          <p className="page-subtitle">Manage interviews with your candidates.</p>
         </div>
         <Tooltip content={showSchedule ? 'Close scheduling form' : 'Schedule a new interview'}>
           <Button onClick={() => { loadJobs(); setShowSchedule(!showSchedule); }}>{showSchedule ? 'Close' : 'Schedule interview'}</Button>
@@ -96,15 +96,15 @@ export const EmployerInterviewsPage = () => {
         <Card title="Schedule interview" className="section--mt">
           <form onSubmit={handleSchedule} className="stack">
             <div className="form-group">
-              <label className="form-label">Job</label>
-              <select className="select" value={selectedJobId} onChange={(e) => { setSelectedJobId(e.target.value); loadApplicants(e.target.value); }}>
+              <label className="form-label" htmlFor="interview-job">Job</label>
+              <select id="interview-job" className="select" value={selectedJobId} onChange={(e) => { setSelectedJobId(e.target.value); loadApplicants(e.target.value); }}>
                 <option value="">Select a job</option>
                 {jobs.map((j) => <option key={j.id} value={j.id}>{j.title}</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Applicant</label>
-              <select className="select" value={selectedApplicationId} onChange={(e) => setSelectedApplicationId(e.target.value)}>
+              <label className="form-label" htmlFor="interview-applicant">Applicant</label>
+              <select id="interview-applicant" className="select" value={selectedApplicationId} onChange={(e) => setSelectedApplicationId(e.target.value)}>
                 <option value="">Select an applicant</option>
                 {applicants.map((a) => <option key={a.id} value={a.id}>{a.student?.profile?.name || a.student?.email}</option>)}
               </select>
@@ -148,7 +148,7 @@ export const EmployerInterviewsPage = () => {
                 </div>
                 <div className="flex gap-2 items-center">
                   <Tooltip content="Update interview status">
-                    <select className="select" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value as InterviewStatus)}>
+                    <select className="select" aria-label="Update interview status" value={inv.status} onChange={(e) => handleUpdateStatus(inv.id, e.target.value as InterviewStatus)}>
                       <option value="SCHEDULED">Scheduled</option>
                       <option value="COMPLETED">Completed</option>
                       <option value="CANCELLED">Cancelled</option>

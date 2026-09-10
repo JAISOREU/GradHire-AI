@@ -58,7 +58,7 @@ export const EmployerSettingsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Settings</h1>
-      <p className="card__subtitle card__subtitle card__subtitle--mt">Manage your account preferences.</p>
+      <p className="page-subtitle">Manage your account preferences.</p>
 
       <div className="form-container mt-4">
         <Card title="Notification preferences">

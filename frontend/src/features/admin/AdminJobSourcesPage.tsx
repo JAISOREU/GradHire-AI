@@ -186,8 +186,8 @@ export const AdminJobSourcesPage = () => {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block mb-1 font-semibold">Source Type</label>
-                 <select className="select" value={form.sourceType} onChange={(e) => setForm({ ...form, sourceType: e.target.value as JobSourceType })}>
+                <label className="block mb-1 font-semibold" htmlFor="js-source-type">Source Type</label>
+                 <select id="js-source-type" className="select" value={form.sourceType} onChange={(e) => setForm({ ...form, sourceType: e.target.value as JobSourceType })}>
                    <option value="API">API</option>
                    <option value="RSS">RSS</option>
                    <option value="JSON">JSON</option>
@@ -195,8 +195,8 @@ export const AdminJobSourcesPage = () => {
                  </select>
                </div>
                <div>
-                  <label className="block mb-1 font-semibold">Parser Type</label>
-                 <select className="select" value={form.parserType} onChange={(e) => setForm({ ...form, parserType: e.target.value as JobSourceParserType })}>
+                  <label className="block mb-1 font-semibold" htmlFor="js-parser-type">Parser Type</label>
+                 <select id="js-parser-type" className="select" value={form.parserType} onChange={(e) => setForm({ ...form, parserType: e.target.value as JobSourceParserType })}>
                    <option value="GENERIC">Generic</option>
                    <option value="GREENHOUSE">Greenhouse</option>
                    <option value="LEVER">Lever</option>
@@ -207,8 +207,8 @@ export const AdminJobSourcesPage = () => {
                  </select>
                </div>
                <div>
-                  <label className="block mb-1 font-semibold">Auth Type</label>
-                 <select className="select" value={form.authenticationType} onChange={(e) => setForm({ ...form, authenticationType: e.target.value as JobSourceAuthType })}>
+                  <label className="block mb-1 font-semibold" htmlFor="js-auth-type">Auth Type</label>
+                 <select id="js-auth-type" className="select" value={form.authenticationType} onChange={(e) => setForm({ ...form, authenticationType: e.target.value as JobSourceAuthType })}>
                    <option value="NONE">None</option>
                    <option value="API_KEY">API Key</option>
                    <option value="OAUTH">OAuth</option>

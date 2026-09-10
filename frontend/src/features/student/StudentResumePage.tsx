@@ -71,7 +71,7 @@ const ResumeIntelligencePanel = ({ parse }: { parse: ResumeParseResult }) => {
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className="resume-intelligence section--mt">
+    <div className="resume-intelligence">
       <div className="resume-intelligence__ring" aria-label={`Resume strength ${strength}%`}>
         <svg viewBox="0 0 100 100" className="resume-intelligence__svg">
           <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--color-surface-muted)" strokeWidth="10" />
@@ -263,10 +263,12 @@ export const StudentResumePage = () => {
       </div>
 
       {lastParse && (
-        <>
-          <ResumeIntelligencePanel parse={lastParse} />
-          <div className="section--mt">
-            <Card title={`Extracted from ${lastParse.resume.fileName}`}>
+        <div className="bento section--mt">
+          <div className="bento__span-3">
+            <ResumeIntelligencePanel parse={lastParse} />
+          </div>
+          <div className="bento__span-3">
+            <Card title={`Extracted from ${lastParse.resume.fileName}`} className="h-full">
             <div className="stack">
               <div className="grid grid--2">
                 <div>
@@ -292,7 +294,7 @@ export const StudentResumePage = () => {
             </div>
           </Card>
           </div>
-        </>
+        </div>
       )}
 
       {suggestions.length > 0 && (

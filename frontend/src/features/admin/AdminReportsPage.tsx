@@ -17,7 +17,7 @@ export const AdminReportsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title page-title--admin">Reports</h1>
-      <p className="card__subtitle card__subtitle--mt">Platform reports and exports.</p>
+      <p className="page-subtitle">Platform reports and exports.</p>
       <div className="section--mt">
         {stats ? (
           <AdminListPage

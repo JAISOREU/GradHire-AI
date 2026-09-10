@@ -33,7 +33,7 @@ export const AdminApplicationsPage = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <select className="select" value={a.status} onChange={(e) => handleStatusChange(a.id, e.target.value)}>
+                <select className="select" aria-label="Update application status" value={a.status} onChange={(e) => handleStatusChange(a.id, e.target.value)}>
                   <option value="PENDING">Pending</option>
                   <option value="REVIEWED">Reviewed</option>
                   <option value="INTERVIEW">Interview</option>

@@ -11,7 +11,7 @@ export const EmployerAnalyticsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Analytics</h1>
-      <p className="card__subtitle card__subtitle--mt">Track your hiring performance.</p>
+      <p className="page-subtitle">Track your hiring performance.</p>
 
       {error && (
         <Alert>

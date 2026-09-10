@@ -19,7 +19,7 @@ export const EmployerNotificationsPage = () => {
   return (
     <div className="page fade-in">
       <h1 className="page-title">Notifications</h1>
-      <p className="card__subtitle card__subtitle card__subtitle--mt">Updates on applicants and your postings.</p>
+      <p className="page-subtitle">Updates on applicants and your postings.</p>
 
       <div className="list mt-4">
         {loading ? (

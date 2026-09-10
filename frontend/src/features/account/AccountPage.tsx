@@ -113,7 +113,7 @@ function SectionHeader({ title, subtitle, onEdit, editing, onSave, onCancel, sav
   return (
     <div className="flex items-center justify-between">
       <div className="flex-1">
-        <h4 className="card__title">{title}</h4>
+        <h2 className="section-title">{title}</h2>
         {subtitle && <p className="card__subtitle">{subtitle}</p>}
       </div>
       <div className="flex gap-2">
@@ -870,8 +870,8 @@ function ProfileVisibilitySection({ profile, onUpdate }: { profile: Record<strin
   return (
     <Card title="Profile Visibility" subtitle="Control who can see your profile." className="section--mt" id="section-visibility">
       <div className="form-group">
-        <label className="form-label">Visibility</label>
-        <select value={visibility} onChange={(e) => handleChange(e.target.value)} disabled={saving} className="select">
+        <label className="form-label" htmlFor="account-visibility">Visibility</label>
+        <select id="account-visibility" value={visibility} onChange={(e) => handleChange(e.target.value)} disabled={saving} className="select">
           {VISIBILITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
@@ -1306,15 +1306,15 @@ export const AccountPage = () => {
 
           <Card title="Company visibility" subtitle="Control who can see your company profile." className="section--mt">
             <div className="form-group">
-              <label className="form-label">Profile visibility</label>
-               <select className="select" defaultValue="visible">
+              <label className="form-label" htmlFor="company-visibility">Profile visibility</label>
+               <select id="company-visibility" className="select" defaultValue="visible">
                  <option value="visible">Visible to talent</option>
                  <option value="hidden">Hidden from talent</option>
                </select>
              </div>
              <div className="form-group">
-               <label className="form-label">Recruiter visibility</label>
-               <select className="select" defaultValue="visible">
+               <label className="form-label" htmlFor="recruiter-visibility">Recruiter visibility</label>
+               <select id="recruiter-visibility" className="select" defaultValue="visible">
                 <option value="visible">Visible to recruiters</option>
                 <option value="hidden">Hidden from recruiters</option>
               </select>
