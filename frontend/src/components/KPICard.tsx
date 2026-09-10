@@ -10,6 +10,9 @@ type TrendIndicatorProps = {
 
 export const TrendIndicator = ({ direction, value, label }: TrendIndicatorProps) => (
   <div className={`trend-indicator trend-indicator--${direction}`}>
+    <span className="trend-indicator__arrow" aria-hidden="true">
+      {direction === 'up' ? '\u2191' : direction === 'down' ? '\u2193' : '\u00b7'}
+    </span>
     <span className="trend-indicator__value">{value}</span>
     {label && <span className="trend-indicator__label">{label}</span>}
   </div>
@@ -22,10 +25,11 @@ type KPICardProps = {
   hint?: string;
   action?: ReactNode;
   progress?: number;
+  className?: string;
 };
 
-export const KPICard = ({ label, value, trend, hint, action, progress }: KPICardProps) => (
-  <div className="kpi-card">
+export const KPICard = ({ label, value, trend, hint, action, progress, className }: KPICardProps) => (
+  <div className={className ? `kpi-card ${className}` : 'kpi-card'}>
     <div className="kpi-card__header">
       <span className="kpi-card__label">{label}</span>
     </div>

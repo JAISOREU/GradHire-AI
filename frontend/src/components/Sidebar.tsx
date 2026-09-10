@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import type { NavItem, NavSection } from '../core/utils/navigation';
-import { Logo } from './Logo';
+import { AnimatedLogo } from './AnimatedLogo';
 import { PhosphorIcon } from './PhosphorIcon';
 
 type SidebarProps = {
@@ -20,20 +20,21 @@ const SidebarIcon = ({ name, size = 20, weight = 'regular' }: { name: NavItem['i
 export const Sidebar = ({ sections, items, title, footer, className, collapsed, onToggle }: SidebarProps) => (
   <aside className={`sidebar ${className ?? ''} ${collapsed ? 'is-collapsed' : ''}`} aria-label={title}>
     <div className="sidebar__head">
-      <div className="sidebar__brand">
-        <Logo size={28} />
-        <span className="sidebar__head-text">{title}</span>
-      </div>
-      {onToggle && (
+      {onToggle ? (
         <button
           type="button"
+          className="sidebar__brand"
           onClick={onToggle}
-          className="sidebar__toggle sidebar__toggle--collapse"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--collapsed' : ''}`} aria-hidden="true" />
+          <AnimatedLogo size={24} showText />
         </button>
+      ) : (
+        <div className="sidebar__brand">
+          <AnimatedLogo size={24} showText />
+        </div>
       )}
     </div>
     <nav className="sidebar__nav" aria-label={`${title} navigation`}>

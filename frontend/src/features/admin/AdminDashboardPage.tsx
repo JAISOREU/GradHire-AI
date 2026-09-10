@@ -8,6 +8,7 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
+import { currentPeriodLabel } from '../../core/utils/format';
 
 export const AdminDashboardPage = () => {
   const { data: stats, loading } = useAsync(() => adminApi.dashboard(), []);
@@ -35,10 +36,11 @@ export const AdminDashboardPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Admin Dashboard" subtitle="Platform overview and key metrics." />
+      <PageHeader title="Admin Dashboard" subtitle={`Platform overview \u00b7 ${currentPeriodLabel()}`} />
 
-      <div className="status-strip status-strip--4 section--mt">
+      <div className="status-strip status-strip--hero section--mt">
         <KPICard
+          className="kpi-card--primary"
           label="Total users"
           value={stats.users}
 
@@ -65,6 +67,7 @@ export const AdminDashboardPage = () => {
           }
         />
         <KPICard
+          className="kpi-card--wide"
           label="Unread notifications"
           value={stats.notificationsUnread}
 

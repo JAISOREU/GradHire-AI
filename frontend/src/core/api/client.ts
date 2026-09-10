@@ -290,7 +290,7 @@ const probeApi = (): Promise<boolean> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 4000);
     try {
-      await fetch(`${API_BASE}/api/v1/auth/me`, {
+      await fetch(`${API_BASE}/api/v1/health`, {
         method: 'GET',
         credentials: 'include',
         signal: controller.signal,

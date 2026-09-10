@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { studentsApi } from '../../core/api/endpoints/students';
@@ -13,15 +12,11 @@ import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
 import { Alert } from '../../components/Alert';
 import { PageHeader } from '../../components/PageHeader';
-import { ScrollReveal, AnimatedCounter } from '../../animations';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
+import { currentPeriodLabel } from '../../core/utils/format';
 import { MatchResultCard } from './MatchResultCard';
 
-const KPI_STAGGER = 80;
-const SECTION_STAGGER = 100;
-
 export const StudentDashboardPage = () => {
-  const { user } = useAuth();
   const { data: _jobs, loading: _jobsLoading, error: jobsError } = useAsync(() => jobsApi.list(''), []);
   const { data: _profile, error: profileError } = useAsync(() => studentsApi.getProfile(), []);
   const { data: applications, loading: appsLoading, error: appsError } = useAsync(() => studentsApi.listApplications(), []);
@@ -45,20 +40,20 @@ export const StudentDashboardPage = () => {
   };
 
   return (
-    <div className="page fade-in pc-density">
+    <div className="page fade-in">
       <PageHeader
-        title={`Welcome back${user?.name ? `, ${user.name.split(' ')[0]}` : ''}`}
-        subtitle="Your job search at a glance."
+        title="Job search overview"
+        subtitle={`Applications, matches, and saved jobs \u00b7 ${currentPeriodLabel()}`}
       />
 
-      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up' }}>
-        <div className="status-strip section--mt">
+      <div className="status-strip status-strip--hero section--mt">
           {(jobsError || appsError || profileError) && (
             <Alert>Some dashboard data failed to load. Please refresh the page.</Alert>
           )}
           <KPICard
+            className="kpi-card--primary"
             label="Applications"
-            value={<AnimatedCounter to={appCount} duration={1000} delay={0} />}
+            value={appCount}
 
             trend={{ direction: appCount > 0 ? 'up' : 'neutral', value: `${appCount} total`, label: 'applications' }}
             action={
@@ -67,7 +62,7 @@ export const StudentDashboardPage = () => {
           />
           <KPICard
             label="Profile"
-            value={<AnimatedCounter to={profileCompletePct} duration={1000} delay={KPI_STAGGER} format={(v) => `${Math.round(v)}%`} />}
+            value={`${Math.round(profileCompletePct)}%`}
 
             trend={{ direction: profileCompletePct >= 80 ? 'up' : 'neutral', value: profileCompletePct >= 80 ? 'Strong' : 'In progress', label: 'completion' }}
             progress={profileCompletePct}
@@ -85,8 +80,9 @@ export const StudentDashboardPage = () => {
             }
           />
           <KPICard
+            className="kpi-card--wide"
             label="Saved Jobs"
-            value={<AnimatedCounter to={savedCount} duration={1000} delay={KPI_STAGGER * 2} />}
+            value={savedCount}
 
             trend={{ direction: 'neutral', value: `${savedCount} active`, label: 'saved' }}
             action={
@@ -94,10 +90,8 @@ export const StudentDashboardPage = () => {
             }
           />
         </div>
-      </ScrollReveal>
 
-      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up', delay: SECTION_STAGGER }}>
-        <DashboardSection
+      <DashboardSection
           title="Recent applications"
           subtitle="Track the status of roles you've applied to."
           action={
@@ -127,10 +121,8 @@ export const StudentDashboardPage = () => {
           <EmptyState icon="EnvelopeOpen" title="No applications yet" text="Start applying to jobs and track your progress here." action={<Link to="/jobs"><Button size="sm">Browse jobs</Button></Link>} />
         )}
         </DashboardSection>
-      </ScrollReveal>
 
-      <ScrollReveal options={{ threshold: 0.2, once: true, duration: '800ms', distance: '12px', direction: 'up', delay: SECTION_STAGGER * 2 }}>
-        <DashboardSection
+      <DashboardSection
           title={hasRecommendationAccess ? "Top matches for you" : "Unlock recommendations"}
           subtitle={hasRecommendationAccess ? "Ranked roles based on your profile." : "Complete your education, skills, and experience to unlock personalized job matches."}
           action={
@@ -170,7 +162,6 @@ export const StudentDashboardPage = () => {
           </div>
         )}
       </DashboardSection>
-      </ScrollReveal>
     </div>
   );
 };

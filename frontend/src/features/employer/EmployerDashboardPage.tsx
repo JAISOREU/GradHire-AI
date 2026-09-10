@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { employersApi, analyticsApi } from '../../core/api/endpoints/employers';
 import { KPICard } from '../../components/KPICard';
@@ -11,6 +10,7 @@ import { Skeleton } from '../../components/Skeleton';
 import { PageHeader } from '../../components/PageHeader';
 import { Avatar } from '../../components/Avatar';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
+import { currentPeriodLabel } from '../../core/utils/format';
 import type { Application } from '../../core/types';
 
 type Analytics = {
@@ -26,7 +26,6 @@ type EmployerApplicant = Application & {
 };
 
 export const EmployerDashboardPage = () => {
-  const { user } = useAuth();
   const { data: analytics, loading: analyticsLoading } = useAsync(() => analyticsApi.getSnapshot(), []);
   const { data: applicants, loading: applicantsLoading } = useAsync(() => employersApi.listApplicants(), []);
   const { data: jobs, loading: jobsLoading } = useAsync(() => employersApi.listJobs(), []);
@@ -42,12 +41,13 @@ export const EmployerDashboardPage = () => {
   return (
     <div className="page fade-in">
       <PageHeader
-        title={<>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</>}
-        subtitle="Your hiring activity at a glance."
+        title="Hiring overview"
+        subtitle={`Postings and applicant pipeline \u00b7 ${currentPeriodLabel()}`}
       />
 
-      <div className="status-strip status-strip--4 section--mt">
+      <div className="status-strip status-strip--hero section--mt">
         <KPICard
+          className="kpi-card--primary"
           label="Active jobs"
           value={activeJobs}
           trend={{ direction: activeJobs > 0 ? 'up' : 'neutral', value: `${activeJobs} live`, label: 'postings' }}
@@ -66,6 +66,7 @@ export const EmployerDashboardPage = () => {
           action={<Link to="/employer/company-profile"><Button variant="ghost" size="sm">Update</Button></Link>}
         />
         <KPICard
+          className="kpi-card--wide"
           label="Pending interviews"
           value={pendingInterviews}
           trend={{ direction: pendingInterviews > 0 ? 'up' : 'neutral', value: `${pendingInterviews} scheduled`, label: 'pending' }}

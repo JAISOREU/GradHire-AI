@@ -12,7 +12,7 @@ export const AnimatedLogo = ({ size = 40, showText = true, className = '' }: Ani
     <BrandMark />
     {showText && (
       <span className="animated-logo__text">
-        <span className="animated-logo__name">Gradture</span>
+        <span className="animated-logo__name">GradTure</span>
       </span>
     )}
   </span>

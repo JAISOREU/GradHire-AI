@@ -67,7 +67,16 @@ async function main() {
       companyId: company.id,
       title: 'Junior Software Engineer',
       company: 'Acme Corp',
-      location: 'San Francisco, CA',
+      country: 'USA',
+      region: 'California',
+      city: 'San Francisco',
+      location: {
+        create: {
+          country: 'USA',
+          region: 'California',
+          city: 'San Francisco',
+        },
+      },
       type: 'HIRING',
       experienceLevel: 'ENTRY_LEVEL',
       workplaceType: 'ONSITE',

@@ -36,7 +36,7 @@ export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProp
   return (
     <div className="auth-layout">
       <Sidebar
-        title={role}
+        title="GradTure"
         sections={navConfig}
         collapsed={collapsed}
         onToggle={toggleCollapsed}
@@ -44,7 +44,7 @@ export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProp
         footer={
           <div className="sidebar-user">
             <div className="sidebar-user__meta">
-              <span className="sidebar-user__name">Gradture</span>
+              <span className="sidebar-user__name">GradTure</span>
               <span className="sidebar-user__role">{role}</span>
             </div>
           </div>

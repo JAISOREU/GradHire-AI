@@ -18,7 +18,7 @@ export const AuthLayout = ({ title, subtitle, children, footer, showBackground =
           <p className="card__subtitle">{subtitle}</p>
         </div>
         {children}
-        {footer && <p className="auth-card__foot">{footer}</p>}
+        {footer && <div className="auth-card__foot">{footer}</div>}
       </div>
     </div>
   );

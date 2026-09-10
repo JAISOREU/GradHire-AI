@@ -5,6 +5,8 @@ import { StatCard } from '../../components/StatCard';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
 
+const FUNNEL_STAGES = ['Views', 'Applications', 'Interviews', 'Hired'];
+
 export const EmployerAnalyticsPage = () => {
   const { data: analytics, loading, error, reload } = useAsync(() => analyticsApi.getSnapshot(), []);
 
@@ -38,7 +40,7 @@ export const EmployerAnalyticsPage = () => {
                 {analytics.hiringFunnel.map((value, index) => (
                   <div key={index}>
                     <div className="flex justify-between text-xs text-muted">
-                      <span>Stage {index + 1}</span>
+                      <span>{FUNNEL_STAGES[index] ?? `Stage ${index + 1}`}</span>
                       <span>{value}</span>
                     </div>
                      <div className="match-score__track" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100} aria-label={`Stage ${index + 1} ${value}`}>

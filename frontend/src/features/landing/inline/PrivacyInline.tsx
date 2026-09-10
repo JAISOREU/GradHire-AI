@@ -301,7 +301,7 @@ const PrivacyInline = () => {
         .inline-ui--privacy {
           width: 100%;
           min-width: 340px;
-          max-width: 560px;
+          max-width: 900px;
         }
         @media (max-width: 767px) {
           .inline-ui--privacy {

@@ -7,7 +7,6 @@ import { Avatar } from './Avatar';
 import { PhosphorIcon } from './PhosphorIcon';
 import { useAuth } from '../core/auth/AuthContext';
 import { roleHomePath, type NavItem } from '../core/utils/navigation';
-import { AnimatedLogo } from './AnimatedLogo';
 
 type AuthHeaderProps = {
   onToggleSidebar: () => void;
@@ -187,8 +186,7 @@ export const AuthHeader = ({ onToggleSidebar, sidebarOpen }: AuthHeaderProps) =>
     <header ref={headerRef} className={headerClassName} style={headerStyle}>
       <div className="app-header__inner" style={innerStyle}>
         <div className="app-header__brand">
-          <AnimatedLogo size={24} showText={false} />
-          <span className="app-header__title">Gradture</span>
+          <span className="app-header__title">Talent</span>
         </div>
 
         <Button
