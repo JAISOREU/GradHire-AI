@@ -6272,6 +6272,7 @@ input[type='file']::file-selector-button:hover {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
   will-change: transform;
 }
 
@@ -6291,6 +6292,7 @@ input[type='file']::file-selector-button:hover {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 /* Allow slides to grow beyond viewport when content requires */
@@ -8173,4 +8175,8 @@ input[type='file']::file-selector-button:hover {
   font-size: 10px;
   font-weight: 600;
   color: var(--color-text-tertiary);
+}
+/* Smooth scrolling inside generic scroll containers as well */
+.overflow-y-auto {
+  scroll-behavior: smooth;
 }

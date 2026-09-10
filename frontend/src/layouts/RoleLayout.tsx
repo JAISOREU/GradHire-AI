@@ -20,8 +20,19 @@ export const RoleLayout = ({ role, navConfig, storageKey }: RoleLayoutProps) => 
   useEffect(() => {
     if (!location.hash) {
       window.scrollTo(0, 0);
+      return;
     }
-  }, [location.pathname]);
+    const id = location.hash.slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.setTimeout(() => {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 120);
+    }
+  }, [location.pathname, location.hash]);
 
   if (!isAuthenticated || user?.role !== role) {
     return <Navigate to={roleHomePath(user?.role)} replace />;
