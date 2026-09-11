@@ -18,7 +18,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 export const Button = ({ variant = 'primary', size = 'md', loading = false, icon, iconRight, to, rounded = 'lg', className = '', children, disabled, type = 'button', ...rest }: ButtonProps) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-[1px]';
+  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-[1px] hover:-translate-y-[1px] hover:shadow-md';
   const variantClasses: Record<Variant, string> = {
     primary: 'bg-primary text-primary-text hover:bg-primary-hover',
     secondary: 'bg-surface border border-border text-text hover:bg-surface-muted',
