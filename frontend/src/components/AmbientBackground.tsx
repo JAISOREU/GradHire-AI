@@ -47,7 +47,7 @@ const CYAN: Vec3 = [0, 217, 255];
 const FALLBACK_PRIMARY: Vec3 = [139, 131, 255];
 const TAU = Math.PI * 2;
 
-const SCENE_ORDER = ['hero', 'ai-matching', 'resume-intelligence', 'job-hub', 'talent', 'employers', 'ai-intelligence', 'applications', 'security', 'how-it-works', 'cta'];
+const SCENE_ORDER = ['hero', 'ai-matching', 'resume-intelligence', 'job-hub', 'talent', 'employers', 'ai-intelligence', 'applications', 'security', 'journey', 'how-it-works', 'cta'];
 
 const SCENES: Record<string, AmbientScene> = {
   hero: { cyanBias: 0.02, alphaMul: 1.0, drift: 1.0, density: 1, flowX: 0, flowY: 0 },
@@ -59,6 +59,7 @@ const SCENES: Record<string, AmbientScene> = {
   'ai-intelligence': { cyanBias: 0.12, alphaMul: 0.98, drift: 1.0, density: 1.1, flowX: 0, flowY: 0 },
   applications: { cyanBias: -0.05, alphaMul: 0.92, drift: 0.9, density: 1, flowX: 0.15, flowY: 0 },
   security: { cyanBias: -0.05, alphaMul: 0.78, drift: 0.7, density: 0.85, flowX: 0, flowY: 0 },
+  journey: { cyanBias: 0.12, alphaMul: 1.0, drift: 1.0, density: 1, flowX: 0, flowY: 0 },
   'how-it-works': { cyanBias: -0.15, alphaMul: 1.0, drift: 1.0, density: 1, flowX: 0, flowY: 0 },
   cta: { cyanBias: 0.15, alphaMul: 1.05, drift: 1.0, density: 1.05, flowX: 0, flowY: 0 },
   auth: { cyanBias: 0, alphaMul: 0.92, drift: 0.9, density: 0.9, flowX: 0, flowY: 0 },

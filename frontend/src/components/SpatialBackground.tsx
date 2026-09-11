@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef } from 'react';
  *   .spatial-layer--glow     (0.15) focused radial glows
  *   .spatial-layer--orb-a    (0.2)  slow-moving decorative orb
  *   .spatial-layer--orb-b    (0.12) secondary orb
+ *   .spatial-layer--network  (0.18) career-network node/edge pattern
  *   .spatial-layer--glyph    (0.25) slow geometric accent marks
  *   .spatial-layer--grain    (0.08) fixed film-grain texture
  *
@@ -160,6 +161,7 @@ export const SpatialBackground = () => {
         <div className="spatial-layer spatial-layer--glow"    data-depth="0.15" />
         <div className="spatial-layer spatial-layer--orb-a"   data-depth="0.20" />
         <div className="spatial-layer spatial-layer--orb-b"   data-depth="0.12" />
+        <div className="spatial-layer spatial-layer--network" data-depth="0.18" />
         <div className="spatial-layer spatial-layer--glyph"   data-depth="0.25" />
         <div className="spatial-layer spatial-layer--grain"   data-depth="0.08" data-idle="false" />
       </div>
