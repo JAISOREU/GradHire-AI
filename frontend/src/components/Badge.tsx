@@ -6,6 +6,7 @@ export type BadgeKind = 'hiring' | 'applied' | 'withdrawn' | 'open' | 'closed' |
 type BadgeProps = {
   kind: BadgeKind;
   children: ReactNode;
+  pulse?: boolean;
 };
 
 const KIND_LABELS: Record<BadgeKind, string> = {
@@ -45,8 +46,9 @@ export const resolveBadgeKind = (value?: string): BadgeKind => {
   return 'open';
 };
 
-export const Badge = ({ kind, children }: BadgeProps) => (
+export const Badge = ({ kind, children, pulse = false }: BadgeProps) => (
   <span className={cn('inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium', KIND_STYLES[kind])} role="status">
+    {pulse && <span className="mr-1.5 h-2 w-2 rounded-full bg-current animate-pulse" aria-hidden="true" />}
     {children ?? KIND_LABELS[kind]}
   </span>
 );

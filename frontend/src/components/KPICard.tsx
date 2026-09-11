@@ -25,15 +25,18 @@ type KPICardProps = {
   hint?: string;
   action?: ReactNode;
   progress?: number;
+  sparkline?: ReactNode;
+  comparison?: string;
   className?: string;
 };
 
-export const KPICard = ({ label, value, trend, hint, action, progress, className }: KPICardProps) => (
+export const KPICard = ({ label, value, trend, hint, action, progress, sparkline, comparison, className }: KPICardProps) => (
   <div className={className ? `kpi-card ${className}` : 'kpi-card'}>
     <div className="kpi-card__header">
       <span className="kpi-card__label">{label}</span>
     </div>
     <div className="kpi-card__value">{value}</div>
+    {sparkline && <div className="kpi-card__sparkline">{sparkline}</div>}
     {progress !== undefined && (
       <div className="kpi-card__progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
         <div className="kpi-card__progress-track">
@@ -42,7 +45,12 @@ export const KPICard = ({ label, value, trend, hint, action, progress, className
       </div>
     )}
     <div className="kpi-card__footer">
-      {trend ? <TrendIndicator direction={trend.direction} value={trend.value} label={trend.label} /> : hint && <span className="kpi-card__hint">{hint}</span>}
+      {trend ? (
+        <div className="kpi-card__trend-wrap">
+          <TrendIndicator direction={trend.direction} value={trend.value} label={trend.label} />
+          {comparison && <span className="kpi-card__comparison">{comparison}</span>}
+        </div>
+      ) : hint && <span className="kpi-card__hint">{hint}</span>}
       {action && <div className="kpi-card__action">{action}</div>}
     </div>
   </div>
