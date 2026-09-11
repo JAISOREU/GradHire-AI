@@ -60,17 +60,21 @@ const SEGMENTS = STAGES.length - 1;
 const SEGMENT_MS = 1050;
 const GAP_MS = 340;
 const INITIAL_MS = 460;
+const DASH = 16;
+const HORIZONTAL_MIN = 860;
 
 /**
  * CareerJourney
  * -------------
- * A staggered route path between the six career signals Gradture AI connects —
- * Profile, Skills, Education, Experience, Career Match, Opportunity. Cards
- * alternate sides while a step path (`|_|_|`) links their milestones: a
- * vertical leg down each card, then a horizontal dash reaching the top of the
- * next card. The path draws itself over time — only the first parts show at
- * first, then each connecting segment eases in and the earlier ones stay lit.
- * Reduced-motion users get the full path and every card immediately.
+ * A step route linking the six career signals Gradture AI connects — Profile,
+ * Skills, Education, Experience, Career Match, Opportunity. On wide screens the
+ * stages form a horizontal roadmap (a 3 + 3 snake grid) whose path runs
+ * left-to-right: a dash rises from each milestone, a horizontal run carries it
+ * across, and it drops into the next. Narrower screens fall back to a vertical
+ * zigzag of alternating cards. The path draws itself over time — only the first
+ * parts show at first, then each connecting segment eases in and the earlier
+ * ones stay lit. Reduced-motion users get the full path and every card
+ * immediately.
  */
 export const CareerJourney = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -105,6 +109,7 @@ export const CareerJourney = () => {
     let observer: MutationObserver | null = null;
     let settleTimer: number | null = null;
     let resizeTimer: number | null = null;
+    let finalTimer: number | null = null;
 
     const setStageState = (count: number) => {
       stageRefs.current.forEach((el, i) => el?.classList.toggle('journey-stage--active', i < count));
@@ -136,9 +141,19 @@ export const CareerJourney = () => {
         pts.push({ x: r.left - wrapRect.left + r.width / 2, y: r.top - wrapRect.top + r.height / 2 });
       }
       let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-      for (let i = 0; i < pts.length - 1; i += 1) {
-        d += ` L ${pts[i].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
-        d += ` L ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+      const horizontal = window.matchMedia(`(min-width: ${HORIZONTAL_MIN}px)`).matches;
+      if (horizontal) {
+        for (let i = 0; i < pts.length - 1; i += 1) {
+          const raise = pts[i].y - DASH;
+          d += ` L ${pts[i].x.toFixed(1)} ${raise.toFixed(1)}`;
+          d += ` L ${pts[i + 1].x.toFixed(1)} ${raise.toFixed(1)}`;
+          d += ` L ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+        }
+      } else {
+        for (let i = 0; i < pts.length - 1; i += 1) {
+          d += ` L ${pts[i].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+          d += ` L ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+        }
       }
       svg.setAttribute('width', wrapRect.width.toFixed(1));
       svg.setAttribute('height', wrapRect.height.toFixed(1));
@@ -163,6 +178,12 @@ export const CareerJourney = () => {
         global = 1;
         doneRef.current = true;
         runningRef.current = false;
+        if (finalTimer === null) {
+          finalTimer = window.setTimeout(() => {
+            finalTimer = null;
+            buildPath();
+          }, 650);
+        }
       }
 
       progressRef.current = global;
@@ -244,6 +265,7 @@ export const CareerJourney = () => {
       if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
       if (settleTimer !== null) window.clearTimeout(settleTimer);
       if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      if (finalTimer !== null) window.clearTimeout(finalTimer);
       observer?.disconnect();
       mql.removeEventListener('change', onReducedChange);
       window.removeEventListener('resize', scheduleResize);
