@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 
+type CardVariant = 'default' | 'spatial' | 'glass' | 'bento';
+
 type CardProps = {
   title?: string;
   subtitle?: string;
@@ -13,15 +15,22 @@ type CardProps = {
   icon?: ReactNode;
   footer?: ReactNode;
   id?: string;
+  variant?: CardVariant;
   children: ReactNode;
 };
 
-export const Card = ({ title, subtitle, action, hover = false, loading = false, compact = false, spacious = false, className = '', icon, footer, children }: CardProps) => {
+export const Card = ({ title, subtitle, action, hover = false, loading = false, compact = false, spacious = false, className = '', icon, footer, variant = 'default', children }: CardProps) => {
   const baseClasses = 'rounded-xl border border-border bg-surface shadow-sm';
+  const variantClasses: Record<CardVariant, string> = {
+    default: '',
+    spatial: 'shadow-[var(--space-depth-md)] border-border/50 hover:shadow-[var(--space-depth-lg)] transition-shadow duration-300',
+    glass: 'bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)] border-[var(--glass-border)]',
+    bento: 'rounded-[var(--bento-radius,16px)]',
+  };
   const paddingClasses = compact ? 'p-4' : spacious ? 'p-6' : 'p-5';
   const hoverClasses = hover ? 'transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5' : '';
 
-  const classes = cn(baseClasses, paddingClasses, hoverClasses, className);
+  const classes = cn(baseClasses, variantClasses[variant], paddingClasses, hoverClasses, className);
 
   if (loading) {
     return (
