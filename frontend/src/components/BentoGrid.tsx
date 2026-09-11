@@ -26,8 +26,15 @@ type BentoItemProps = {
   children: ReactNode;
 };
 
+const SPAN_CLASSES: Record<number, string> = {
+  1: 'col-span-1',
+  2: 'col-span-2',
+  3: 'col-span-3',
+  4: 'col-span-4',
+};
+
 export const BentoItem = ({ span = 1, className, children }: BentoItemProps) => (
-  <div data-bento-item className={cn(`col-span-${span}`, className)}>
+  <div data-bento-item className={cn(SPAN_CLASSES[span], className)}>
     {children}
   </div>
 );
