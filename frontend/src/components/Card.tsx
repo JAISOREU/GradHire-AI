@@ -23,9 +23,9 @@ export const Card = ({ title, subtitle, action, hover = false, loading = false, 
   const baseClasses = 'rounded-xl border border-border bg-surface shadow-sm';
   const variantClasses: Record<CardVariant, string> = {
     default: '',
-    spatial: 'shadow-[var(--space-depth-md)] border-border/50 hover:shadow-[var(--space-depth-lg)] transition-shadow duration-300',
-    glass: 'bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)] border-[var(--glass-border)]',
-    bento: 'rounded-[var(--bento-radius,16px)]',
+    spatial: '',
+    glass: '',
+    bento: '',
   };
   const paddingClasses = compact ? 'p-4' : spacious ? 'p-6' : 'p-5';
   const hoverClasses = hover ? 'transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5' : '';

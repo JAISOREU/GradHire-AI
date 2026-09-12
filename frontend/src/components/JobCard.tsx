@@ -46,10 +46,10 @@ export const JobCard = ({ job, selected, onClick, onToggleSave, className }: Job
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-xl border p-4 transition-all duration-200',
+        'w-full text-left rounded-xl border p-4 transition-colors duration-150',
         selected
-          ? 'border-primary bg-primary/5 shadow-[var(--space-depth-md)]'
-          : 'border-border/50 bg-surface hover:bg-surface-muted/50 hover:shadow-[var(--space-depth-sm)]',
+          ? 'border-primary bg-primary/5'
+          : 'border-border/50 bg-surface hover:bg-surface-muted/50',
         className
       )}
     >
