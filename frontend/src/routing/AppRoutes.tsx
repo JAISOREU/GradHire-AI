@@ -106,6 +106,7 @@ export const AppRoutes = () => (
         <Route path="/student/companies" element={<LazyPage><Page><StudentCompaniesPage /></Page></LazyPage>} />
         <Route path="/student/resume" element={<LazyPage><Page><StudentResumePage /></Page></LazyPage>} />
         <Route path="/student/applications" element={<LazyPage><Page><StudentApplicationsPage /></Page></LazyPage>} />
+        <Route path="/student/applications/:id" element={<LazyPage><Page><StudentApplicationsPage /></Page></LazyPage>} />
         <Route path="/student/saved" element={<LazyPage><Page><StudentSavedJobsPage /></Page></LazyPage>} />
         <Route path="/student/resume-builder" element={<LazyPage><Page><StudentResumeBuilderPage /></Page></LazyPage>} />
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />

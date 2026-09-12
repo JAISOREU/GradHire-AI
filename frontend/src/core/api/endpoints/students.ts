@@ -2,13 +2,20 @@ import { api } from '../client';
 import type { Application, StudentProfile, StudentSettings, Education, Experience, Skill, Certification, Project, CareerPreference, ProfileCompleteness, AiReadiness } from '../../types';
 
 export const usersApi = {
-  uploadAvatar: (file: File) => {
+  uploadAvatar: (file: Blob) => {
     const form = new FormData();
-    form.append('file', file);
+    form.append('file', file, 'crop.webp');
     return api<{ avatarUrl: string }>('/api/v1/users/me/avatar', { method: 'POST', formData: form });
   },
   deleteAvatar: () => api<void>('/api/v1/users/me/avatar', { method: 'DELETE' }),
   getAvatar: () => api<{ avatarUrl: string }>('/api/v1/users/me/avatar'),
+  uploadBanner: (file: Blob) => {
+    const form = new FormData();
+    form.append('file', file, 'crop.webp');
+    return api<{ bannerUrl: string | null }>('/api/v1/users/me/banner', { method: 'POST', formData: form });
+  },
+  deleteBanner: () => api<{ bannerUrl: null }>('/api/v1/users/me/banner', { method: 'DELETE' }),
+  getBanner: () => api<{ bannerUrl: string | null }>('/api/v1/users/me/banner'),
   deleteAccount: (password?: string) => api<{ deleted: boolean }>('/api/v1/users/me', { method: 'DELETE', json: password ? { password } : {} }),
 };
 
@@ -18,6 +25,7 @@ export const studentsApi = {
     api<StudentProfile>('/api/v1/students/me', { method: 'PUT', json: payload }),
   listApplications: (page = 1, limit = 20): Promise<Application[]> =>
     api<{ items: Application[] }>(`/api/v1/applications/me?page=${page}&limit=${limit}`).then((r) => r.items ?? []),
+  getApplication: (id: string): Promise<Application> => api<Application>(`/api/v1/applications/${id}`),
   apply: (jobId: string) => api<Application>('/api/v1/applications', { method: 'POST', json: { jobId } }),
   withdraw: (applicationId: string) =>
     api<void>(`/api/v1/applications/${applicationId}/withdraw`, { method: 'POST' }),
