@@ -6024,21 +6024,21 @@ input[type='file']::file-selector-button:hover {
    slide-to-slide transitions: the foreground visual leads the motion while
    the text column trails, so content slides past at a readable depth. */
 .presentation-slide > * {
-  transform: translateY(calc(var(--slide-offset, 0) * 1vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1dvh));
   transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .feature-section__visual,
 .presentation-slide > * .hero-visual-wrap {
-  transform: translateY(calc(var(--slide-offset, 0) * 1.12vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1.12dvh));
   transition: transform calc(var(--slide-duration, 0.85s) * 1.05) cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .feature-section__content,
 .presentation-slide > * .hero-content {
-  transform: translateY(calc(var(--slide-offset, 0) * 0.84vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 0.84dvh));
   transition: transform calc(var(--slide-duration, 0.85s) * 1.16) cubic-bezier(0.22, 0.8, 0.3, 1);
   will-change: transform;
 }
@@ -10431,19 +10431,19 @@ input[type='file']::file-selector-button:hover {
 }
 
 .presentation-slide > * {
-  transform: translateY(calc(var(--slide-offset, 0) * 1vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1dvh));
   transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .hero-visual-wrap {
-  transform: translateY(calc(var(--slide-offset, 0) * 1.12vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1.12dvh));
   transition: transform calc(var(--slide-duration, 0.85s) * 1.05) cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .hero-content {
-  transform: translateY(calc(var(--slide-offset, 0) * 0.84vh));
+  transform: translateY(calc(var(--slide-offset, 0) * 0.84dvh));
   transition: transform calc(var(--slide-duration, 0.85s) * 1.16) cubic-bezier(0.22, 0.8, 0.3, 1);
   will-change: transform;
 }
