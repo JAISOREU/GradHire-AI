@@ -361,7 +361,9 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
           aria-hidden={i === active ? undefined : true}
           style={
             {
-              '--slide-offset': (i - active) * 100,
+              '--slide-offset': `${(i - active) * 100}dvh`,
+              '--slide-offset-visual': `${(i - active) * 100 * 1.12}dvh`,
+              '--slide-offset-content': `${(i - active) * 100 * 0.84}dvh`,
               '--slide-duration': `${duration}ms`,
               opacity: Math.abs(i - active) <= 1 ? 1 : 0,
               transitionDuration: `${duration}ms`,
