@@ -326,7 +326,12 @@ body {
   height: 100%;
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
+  overflow-x: clip;
   background: var(--color-background);
   color: var(--color-text);
 }
