@@ -1,7 +1,6 @@
 import React, { useMemo, lazy, Suspense } from 'react';
 import { Button } from '../../components/Button';
 import { SEO } from '../../components/SEO';
-import { Magnetic } from '../../components/Magnetic';
 import { FEATURES, FeatureSlide } from './WhyGradture';
 import { SiteFooter } from '../../layouts/SiteFooter';
 import { LandingPresentation, PresentationSlide } from './LandingPresentation';
@@ -43,11 +42,9 @@ const HeroNode = () => {
             Build your profile, upload your resume, and discover roles tailored to your skills, education, and career goals.
           </p>
           <div className="hero-actions hero-actions--product hero-anim hero-anim--actions">
-            <Magnetic>
-              <Button to={jobsLink} size="lg">
-                Browse jobs
-              </Button>
-            </Magnetic>
+            <Button to={jobsLink} size="lg">
+              Browse jobs
+            </Button>
             <Button to="/register" variant="secondary" size="lg">
               Create account
             </Button>

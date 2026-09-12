@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { useAsync } from '../../core/hooks/useAsync';
@@ -7,7 +7,6 @@ import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
-import { MorphingText } from '../../components/MorphingText';
 import { PageHeader } from '../../components/PageHeader';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { Tooltip } from '../../components/Tooltip';
@@ -72,7 +71,8 @@ const workplaceLabel = (wt?: WorkplaceType | null) =>
 
 export const JobListPage = () => {
   const { isAuthenticated } = useAuth();
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [type, setType] = useState<JobType | ''>('');
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel | ''>('');
   const [workplaceType, setWorkplaceType] = useState<WorkplaceType | ''>('');
@@ -117,7 +117,7 @@ export const JobListPage = () => {
         <div className="section-inner">
           <div className="public-hero">
             <PageHeader
-              title={<MorphingText text="Find the career you always wanted" as="span" />}
+              title="Find the career you always wanted"
               subtitle="Fresh opportunities from companies hiring graduates and students — matched to your skills, not just your search terms."
               action={
                 preview ? (
