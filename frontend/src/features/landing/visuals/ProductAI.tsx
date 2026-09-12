@@ -1,5 +1,6 @@
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { PhosphorIcon, type PhosphorIconName } from '../../../components/PhosphorIcon';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -292,7 +293,7 @@ export const TrustBadge = ({ level, label }: TrustBadgeProps) => {
 
 interface ConversationBubbleProps {
   role: 'user' | 'assistant';
-  content: string;
+  content: ReactNode;
   timestamp?: string;
   sources?: string[];
   isStreaming?: boolean;

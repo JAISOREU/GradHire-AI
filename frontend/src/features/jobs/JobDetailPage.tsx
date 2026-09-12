@@ -1,5 +1,5 @@
 import { Alert } from '../../components/Alert';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { jobsApi, recommendationsApi } from '../../core/api/endpoints/jobs';
 import { applicationsApi } from '../../core/api/endpoints/applications';
 import { savedJobsApi } from '../../core/api/endpoints/employers';
@@ -40,6 +40,7 @@ type SimilarJob = {
 
 export const JobDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { data: job, loading, reload } = useAsync(() => jobsApi.getById(id ?? ''), [id]);
   const [applying, setApplying] = useState(false);
@@ -323,8 +324,23 @@ export const JobDetailPage = () => {
                       </Button>
                     </Tooltip>
                   )}
-                </div>
+</div>
                 {error && <Alert className="section--mt">{error}</Alert>}
+                {isAuthenticated && user?.role === 'STUDENT' && (
+                  <Tooltip content="Ask the AI assistant about this role">
+                    <Button
+                      variant="secondary"
+                      className="mt-3 w-full"
+                      onClick={() =>
+                        navigate('/student/ai-assistant', {
+                          state: { jobId: job.id, jobTitle: job.title, jobCompany: company },
+                        })
+                      }
+                    >
+                      Ask AI about this job
+                    </Button>
+                  </Tooltip>
+                )}
               </div>
 
               {match && (

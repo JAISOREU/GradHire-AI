@@ -14,6 +14,7 @@ import { jobsApi, recommendationsApi } from '../../core/api/endpoints/jobs';
 import { applicationsApi } from '../../core/api/endpoints/applications';
 import { useToast } from '../../core/toast/ToastContext';
 import { cleanText } from '../../core/utils/text';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import type { Job } from '../../core/types';
 
@@ -51,6 +52,7 @@ type JobDetailPanelProps = {
 
 export const JobDetailPanel = ({ jobId, matchScore = 0, saved, saving, applied, onToggleSave, onApplied }: JobDetailPanelProps) => {
   const { data: job, loading, error, reload } = useAsync(() => jobsApi.getById(jobId), [jobId]);
+  const navigate = useNavigate();
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState('');
   const { addToast } = useToast();
@@ -165,6 +167,18 @@ export const JobDetailPanel = ({ jobId, matchScore = 0, saved, saving, applied, 
           <Tooltip content={saved ? 'Remove from saved jobs' : 'Save this job'}>
             <Button variant="secondary" onClick={onToggleSave} disabled={saving} aria-pressed={saved}>
               {saved ? 'Saved' : 'Save'}
+            </Button>
+          </Tooltip>
+          <Tooltip content="Ask the AI assistant about this role">
+            <Button
+              variant="secondary"
+              onClick={() =>
+                navigate('/student/ai-assistant', {
+                  state: { jobId, jobTitle: job.title, jobCompany: company },
+                })
+              }
+            >
+              Ask AI
             </Button>
           </Tooltip>
         </div>
