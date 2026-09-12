@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useRef, useState, useCallback, CSSProperties } from 'react';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { ThemeNavArrow } from '../../components/ThemeNavArrow';
+import { AmbientBackground, AmbientBackgroundHandle } from '../../components/AmbientBackground';
+import { SpatialBackground } from '../../components/SpatialBackground';
 
 export interface PresentationSlide {
   id: string;
@@ -61,6 +63,8 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
   const railHideTimer = useRef<number | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [reduced, setReduced] = useState(false);
+  const backdropRef = useRef<AmbientBackgroundHandle | null>(null);
+  const previousActiveRef = useRef(0);
 
   // Show rail briefly on mount and after each navigation, then hide after 1s.
   useEffect(() => {
@@ -123,6 +127,37 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
         node.scrollTop = 0;
       }
     }
+  }, [active]);
+
+  // Push the interactive backdrop through the deck: the integer part is the
+  // active slide, plus a scroll fraction inside the active slide so the
+  // background parallax stays tied to the page contents. On slide changes we
+  // also announce the new scene and the direction of travel for the surge.
+  useEffect(() => {
+    const direction: 'forward' | 'backward' = active >= previousActiveRef.current ? 'forward' : 'backward';
+    previousActiveRef.current = active;
+    backdropRef.current?.setScene(slides[active].id, direction);
+    backdropRef.current?.setProgress(active);
+  }, [active, slides]);
+
+  useEffect(() => {
+    const el = slideRefs.current[active];
+    if (!el) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const range = el.scrollHeight - el.clientHeight;
+      const frac = range > 4 ? Math.min(1, el.scrollTop / range) : 0;
+      backdropRef.current?.setProgress(active + frac);
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [active]);
 
   // Wheel: advance only when the page's content is scrolled to its boundary.
@@ -305,12 +340,14 @@ export const LandingPresentation = ({ slides }: LandingPresentationProps) => {
 
   return (
 <div
-          className="landing-presentation"
-          role="region"
-          aria-roledescription="presentation"
-          aria-label="Gradture product presentation"
-        >
-          {slides.map((slide, i) => (
+        className="landing-presentation"
+        role="region"
+        aria-roledescription="presentation"
+        aria-label="Gradture product presentation"
+      >
+        <AmbientBackground ref={backdropRef} />
+        <SpatialBackground />
+        {slides.map((slide, i) => (
         <section
           key={slide.id}
           id={slide.id}

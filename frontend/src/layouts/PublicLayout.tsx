@@ -4,6 +4,7 @@ import { Button } from '../components/Button';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useState, useRef, useEffect } from 'react';
 import { roleHomePath } from '../core/utils/navigation';
+import { useHeaderMorph } from '../core/hooks/useHeaderMorph';
 import { SiteFooter } from './SiteFooter';
 import { Logo } from '../components/Logo';
 
@@ -11,7 +12,9 @@ export const PublicLayout = () => {
   const { user, isAuthenticated } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 992);
+  const headerRef = useRef<HTMLElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
+  const morph = useHeaderMorph(true);
   const homeRoute = roleHomePath(user?.role);
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -24,6 +27,23 @@ export const PublicLayout = () => {
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        header.classList.add('app-header--glass');
+      } else {
+        header.classList.remove('app-header--glass');
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -82,15 +102,68 @@ export const PublicLayout = () => {
     };
   }, [mobileNavOpen]);
 
+  const headerClassName = [
+    'app-header',
+    'app-header--landing',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const headerStyle: React.CSSProperties = {
+    transition: 'background-color var(--transition-theme), border-color var(--transition-theme)',
+  };
+
+  const innerStyle: React.CSSProperties = {
+    gap: `${morph.groupGap}px`,
+    padding: '0',
+    transition: 'gap 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+  };
+
+  const brandStyle: React.CSSProperties = {
+    gap: `${morph.itemGap}px`,
+    marginLeft: '0',
+    transform: 'scale(1)',
+    transformOrigin: 'left center',
+    transition: 'gap 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+  };
+
+  const titleStyle: React.CSSProperties = {
+    opacity: 1,
+    transform: 'scale(1)',
+    transformOrigin: 'left center',
+    transition: 'opacity 0.35s ease, transform 0.35s ease',
+  };
+
+  const navStyle: React.CSSProperties = {
+    opacity: 1,
+    flex: '1 1 0px',
+    padding: '0',
+    gap: `${morph.navGap}px`,
+    transition: 'opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), gap 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+    pointerEvents: 'auto',
+  };
+
+  const userGroupStyle: React.CSSProperties = {
+    gap: `${morph.itemGap}px`,
+    marginRight: '0',
+    opacity: 1,
+    transition: 'gap 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+  };
+
+  const themeStyle: React.CSSProperties = {
+    opacity: 1,
+    transition: 'opacity 0.35s ease',
+  };
+
   return (
     <div className="public-layout">
       {!isHome && (
-        <header className="app-header" style={{ height: 'var(--header-height)', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
-          <div className="app-header__inner" style={{ display: 'flex', alignItems: 'center', gap: '12px', height: '100%', padding: '0 var(--space-5)' }}>
+        <header ref={headerRef} className={headerClassName} style={headerStyle}>
+          <div className="app-header__inner" style={innerStyle}>
             <Link
               to={homeRoute}
-              className="brand"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'inherit' }}
+              className="brand inline-flex items-center no-underline text-inherit"
+              style={brandStyle}
               onClick={(e) => {
                 if (isMobile) {
                   e.preventDefault();
@@ -100,16 +173,16 @@ export const PublicLayout = () => {
               aria-label={isMobile ? (mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu') : undefined}
             >
               <Logo size={28} />
-              <span style={{ fontSize: '15px', fontWeight: 600 }}>Gradture</span>
+              <span className="header-logo__text" style={titleStyle}>
+                <span className="header-logo__inner">Gradture</span>
+              </span>
             </Link>
-
-            <nav className="public-nav" aria-label="Primary" style={{ display: 'flex', gap: '16px', marginLeft: 'auto' }}>
+            <nav className="public-nav" aria-label="Primary" style={navStyle}>
               <NavLink to="/" end className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
               <NavLink to="/jobs" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Jobs</NavLink>
               <NavLink to="/companies" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Companies</NavLink>
               <NavLink to="/about" className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>About</NavLink>
             </nav>
-
             <div className={`public-nav-overlay ${mobileNavOpen ? 'is-open' : ''}`} onClick={() => setMobileNavOpen(false)} aria-hidden="true" />
             <div className={`public-nav-drawer ${mobileNavOpen ? 'is-open' : ''}`} ref={mobileNavRef} role="dialog" aria-modal="true" aria-label="Navigation menu">
               <NavLink to="/" end onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `public-nav__link ${isActive ? 'is-active' : ''}`}>Home</NavLink>
@@ -132,15 +205,20 @@ export const PublicLayout = () => {
                 </div>
               )}
             </div>
-
-            <div className="header-user header-user--desktop" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
-              <ThemeToggle />
+            <div className="header-user header-user--desktop" style={userGroupStyle}>
+              <span style={themeStyle}>
+                <ThemeToggle />
+              </span>
               {isAuthenticated && user ? (
                 <Button to={homeRoute} onClick={() => setMobileNavOpen(false)} variant="secondary" size="sm">Go to dashboard</Button>
               ) : (
                 <>
-                  <Link to="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
-                  <Link to="/register"><Button variant="primary" size="sm">Register</Button></Link>
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm">Log in</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button variant="primary" size="sm">Register</Button>
+                  </Link>
                 </>
               )}
             </div>

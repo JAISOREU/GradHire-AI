@@ -7,6 +7,7 @@ import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
+import { MorphingText } from '../../components/MorphingText';
 import { PageHeader } from '../../components/PageHeader';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { Tooltip } from '../../components/Tooltip';
@@ -117,7 +118,7 @@ export const JobListPage = () => {
         <div className="section-inner">
           <div className="public-hero">
             <PageHeader
-              title="Find the career you always wanted"
+              title={<MorphingText text="Find the career you always wanted" as="span" />}
               subtitle="Fresh opportunities from companies hiring graduates and students — matched to your skills, not just your search terms."
               action={
                 preview ? (
