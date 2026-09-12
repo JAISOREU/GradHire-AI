@@ -54,6 +54,7 @@ const StudentResumeBuilderPage = lazy(() => import('../features/student/StudentR
 const StudentRecommendedJobsPage = lazy(() => import('../features/student/StudentRecommendedJobsPage').then((m) => ({ default: m.StudentRecommendedJobsPage })));
 const StudentNotificationsPage = lazy(() => import('../features/student/StudentNotificationsPage').then((m) => ({ default: m.StudentNotificationsPage })));
 const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
+const StudentNetworkPage = lazy(() => import('../features/student/StudentNetworkPage').then((m) => ({ default: m.StudentNetworkPage })));
 const StudentSettingsPage = lazy(() => import('../features/student/StudentSettingsPage').then((m) => ({ default: m.StudentSettingsPage })));
 const StudentInterviewsPage = lazy(() => import('../features/student/StudentInterviewsPage').then((m) => ({ default: m.StudentInterviewsPage })));
 const AIAssistantPage = lazy(() => import('../features/ai/AIAssistantPage').then((m) => ({ default: m.AIAssistantPage })));
@@ -111,6 +112,7 @@ export const AppRoutes = () => (
         <Route path="/student/resume-builder" element={<LazyPage><Page><StudentResumeBuilderPage /></Page></LazyPage>} />
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
         <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
+         <Route path="/student/network" element={<LazyPage><Page><StudentNetworkPage /></Page></LazyPage>} />
          <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
          <Route path="/student/interviews" element={<LazyPage><Page><StudentInterviewsPage /></Page></LazyPage>} />
          <Route path="/student/ai-assistant" element={<LazyPage><Page><AIAssistantPage /></Page></LazyPage>} />

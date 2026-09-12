@@ -15,30 +15,29 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/student/dashboard', label: 'Dashboard', icon: 'Square' },
-      { to: '/student/jobs', label: 'Browse Jobs', icon: 'Briefcase' },
-      { to: '/student/companies', label: 'Companies', icon: 'Buildings' },
+      { to: '/student/dashboard', label: 'Home', icon: 'House' },
+      { to: '/student/jobs', label: 'Jobs', icon: 'Briefcase' },
       { to: '/student/applications', label: 'Applications', icon: 'PaperPlaneRight' },
+      { to: '/student/messages', label: 'Messages', icon: 'ChatCircle' },
+      { to: '/student/notifications', label: 'Notifications', icon: 'Bell' },
+      { to: '/student/network', label: 'Network', icon: 'UsersThree' },
+    ],
+  },
+  {
+    label: 'Explore',
+    items: [
+      { to: '/student/companies', label: 'Companies', icon: 'Buildings' },
       { to: '/student/saved', label: 'Saved Jobs', icon: 'Bookmark' },
     ],
   },
   {
-    label: 'Career',
+    label: 'Career tools',
     items: [
       { to: '/student/resume', label: 'Resume', icon: 'FileText' },
       { to: '/student/resume-builder', label: 'Resume Builder', icon: 'PencilSimpleLine' },
-      { to: '/student/recommended', label: 'Recommended', icon: 'Sparkle' },
-    ],
-  },
-  {
-    label: 'Profile',
-    items: [
-      { to: '/student/account', label: 'Profile', icon: 'User' },
-      { to: '/student/messages', label: 'Messages', icon: 'ChatCircle' },
-      { to: '/student/interviews', label: 'Interviews', icon: 'Calendar' },
-      { to: '/student/notifications', label: 'Notifications', icon: 'Bell' },
+      { to: '/student/recommended', label: 'Recommended Matches', icon: 'Sparkle' },
       { to: '/student/ai-assistant', label: 'AI Assistant', icon: 'Sparkle' },
-      { to: '/student/settings', label: 'Settings', icon: 'Gear' },
+      { to: '/student/interviews', label: 'Interviews', icon: 'Calendar' },
     ],
   },
 ];
@@ -49,25 +48,26 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/employer/dashboard', label: 'Dashboard', icon: 'Square' },
+      { to: '/employer/dashboard', label: 'Home', icon: 'House' },
       { to: '/employer/jobs', label: 'Jobs', icon: 'Briefcase' },
       { to: '/employer/applicants', label: 'Applicants', icon: 'Users' },
       { to: '/employer/interviews', label: 'Interviews', icon: 'Calendar' },
-    ],
-  },
-  {
-    label: 'Company',
-    items: [
-      { to: '/employer/company-profile', label: 'Company', icon: 'Buildings' },
-      { to: '/employer/companies', label: 'Browse Companies', icon: 'Buildings' },
-    ],
-  },
-  {
-    label: 'Account',
-    items: [
       { to: '/employer/messages', label: 'Messages', icon: 'ChatCircle' },
       { to: '/employer/notifications', label: 'Notifications', icon: 'Bell' },
-      { to: '/employer/settings', label: 'Settings', icon: 'Gear' },
+    ],
+  },
+  {
+    label: 'Explore',
+    items: [
+      { to: '/employer/companies', label: 'Companies', icon: 'Buildings' },
+    ],
+  },
+  {
+    label: 'Career tools',
+    items: [
+      { to: '/employer/company-profile', label: 'Company Profile', icon: 'Buildings' },
+      { to: '/employer/post-job', label: 'Post Job', icon: 'Plus' },
+      { to: '/employer/analytics', label: 'Analytics', icon: 'ChartLineUp' },
     ],
   },
 ];
@@ -78,15 +78,9 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
   {
     label: 'Main',
     items: [
-      { to: '/admin/dashboard', label: 'Dashboard', icon: 'Square' },
+      { to: '/admin/dashboard', label: 'Home', icon: 'House' },
       { to: '/admin/users', label: 'Users', icon: 'Users' },
       { to: '/admin/jobs', label: 'Jobs', icon: 'Briefcase' },
-    ],
-  },
-  {
-    label: 'Management',
-    items: [
-      { to: '/admin/job-sources', label: 'Sources', icon: 'Database' },
       { to: '/admin/applications', label: 'Applications', icon: 'PaperPlaneRight' },
       { to: '/admin/companies', label: 'Companies', icon: 'Buildings' },
     ],
@@ -98,6 +92,7 @@ export const ADMIN_SIDEBAR_NAV: NavSection[] = [
       { to: '/admin/analytics', label: 'Analytics', icon: 'ChartLineUp' },
       { to: '/admin/monitoring', label: 'Monitoring', icon: 'Square' },
       { to: '/admin/audit-logs', label: 'Audit Logs', icon: 'Shield' },
+      { to: '/admin/job-sources', label: 'Sources', icon: 'Database' },
     ],
   },
   {

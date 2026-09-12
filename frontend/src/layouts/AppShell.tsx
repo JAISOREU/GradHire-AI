@@ -1,6 +1,9 @@
 import { Sidebar } from '../components/Sidebar';
 import { AuthHeader } from '../components/AuthHeader';
 import { CommandPalette } from '../components/CommandPalette';
+import { Avatar } from '../components/Avatar';
+import { PhosphorIcon } from '../components/PhosphorIcon';
+import { useAuth } from '../core/auth/AuthContext';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
@@ -14,12 +17,15 @@ type AppShellProps = {
 };
 
 export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProps) => {
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     const stored = localStorage.getItem(storageKey);
     return stored === 'true';
   });
+
+  const displayName = user?.name || user?.email || 'User';
 
   const toggleCollapsed = () => {
     const next = !collapsed;
@@ -44,10 +50,20 @@ export const AppShell = ({ role, navConfig, storageKey, children }: AppShellProp
         className={sidebarOpen ? 'is-open' : ''}
         footer={
           <div className="sidebar-user">
+            <Avatar src={user?.avatarUrl} name={displayName} size="sm" userId={user?.id} />
             <div className="sidebar-user__meta">
-              <span className="sidebar-user__name">GradTure</span>
+              <span className="sidebar-user__name">{displayName}</span>
               <span className="sidebar-user__role">{role}</span>
             </div>
+            <button
+              type="button"
+              className="sidebar-user__logout"
+              onClick={logout}
+              aria-label="Log out"
+              title="Log out"
+            >
+              <PhosphorIcon name="SignOut" size={16} weight="regular" />
+            </button>
           </div>
         }
       />
