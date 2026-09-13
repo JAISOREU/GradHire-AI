@@ -7,18 +7,6 @@ export interface AmbientBackgroundHandle {
 
 type Vec3 = [number, number, number];
 
-interface Orb {
-  x: number;
-  y: number;
-  size: number;
-  hue: number;
-  alpha: number;
-  depth: number;
-  vx: number;
-  vy: number;
-  phase: number;
-}
-
 interface Mote {
   x: number;
   y: number;
@@ -67,9 +55,6 @@ const SCENES: Record<string, AmbientScene> = {
 
 const DEFAULT_SCENE: AmbientScene = SCENES.hero;
 
-const ORB_MIN = 9;
-const ORB_MAX = 17;
-const ORBS_PER_PX = 96000;
 const MOTE_MIN = 44;
 const MOTE_MAX = 110;
 const MOTES_PER_PX = 15500;
@@ -104,7 +89,6 @@ export const AmbientBackground = forwardRef<AmbientBackgroundHandle, AmbientBack
   function AmbientBackground({ scene }: AmbientBackgroundProps, ref) {
     const wrapRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const orbs = useRef<Orb[]>([]);
     const motes = useRef<Mote[]>([]);
     const pointer = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
     const target = useRef(0);
@@ -197,19 +181,6 @@ export const AmbientBackground = forwardRef<AmbientBackgroundHandle, AmbientBack
         const density = scene.density;
         const { dark } = palette.current;
 
-        const orbCount = clamp(Math.round((area / ORBS_PER_PX) * density), ORB_MIN, ORB_MAX);
-        orbs.current = Array.from({ length: orbCount }, () => ({
-          x: Math.random(),
-          y: Math.random(),
-          size: 0.07 + Math.random() * 0.15,
-          hue: Math.random(),
-          alpha: dark ? 0.05 + Math.random() * 0.075 : 0.06 + Math.random() * 0.055,
-          depth: 0.25 + Math.random() * 0.75,
-          vx: (Math.random() - 0.5) * 0.012,
-          vy: (Math.random() - 0.5) * 0.012,
-          phase: Math.random() * TAU,
-        }));
-
         const moteCount = clamp(Math.round((area / MOTES_PER_PX) * density), MOTE_MIN, MOTE_MAX);
         motes.current = Array.from({ length: moteCount }, () => ({
           x: Math.random(),
@@ -236,7 +207,6 @@ export const AmbientBackground = forwardRef<AmbientBackgroundHandle, AmbientBack
         const surgeDY = surgeEnergy * surge.current.sign * 26;
         const pulse = themePulse.current;
         const alphaBoost = scene.alphaMul * (1 + pulse * 0.35);
-        const minDim = Math.min(width, height) || 1;
 
         ctx.clearRect(0, 0, width, height);
 
@@ -245,28 +215,6 @@ export const AmbientBackground = forwardRef<AmbientBackgroundHandle, AmbientBack
         ctx.translate(width / 2, height / 2);
         ctx.rotate(px * 0.0016 + py * 0.001);
         ctx.translate(-width / 2, -height / 2);
-
-        for (const orb of orbs.current) {
-          orb.x += (orb.vx * scene.drift + scene.flowX * 0.004) * dt;
-          orb.y += (orb.vy * scene.drift + scene.flowY * 0.004) * dt;
-          if (orb.x < -0.06) orb.x = 1.06;
-          else if (orb.x > 1.06) orb.x = -0.06;
-          if (orb.y < -0.06) orb.y = 1.06;
-          else if (orb.y > 1.06) orb.y = -0.06;
-
-          const breath = 1 + 0.05 * Math.sin(time * 0.6 + orb.phase);
-          const cx = orb.x * width + px * orb.depth * 0.045 * width + surgeDX * orb.depth;
-          const cy = orb.y * height + py * orb.depth * 0.045 * height - progress * orb.depth * 4 + surgeDY * orb.depth;
-          const radius = orb.size * breath * minDim;
-          const color = mix(primary, CYAN, clamp(orb.hue + scene.cyanBias * 0.5, 0, 1));
-          const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-          gradient.addColorStop(0, rgb(color, orb.alpha * alphaBoost));
-          gradient.addColorStop(1, rgb(color, 0));
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, TAU);
-          ctx.fill();
-        }
 
         const linkBase = dark ? 0.12 : 0.09;
         const moteOffset = (x: number, y: number, depth: number) => ({

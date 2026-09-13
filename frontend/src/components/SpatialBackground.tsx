@@ -13,7 +13,6 @@ import { useCallback, useEffect, useRef } from 'react';
  *   .spatial-layer--orb-b    (0.12) secondary orb
  *   .spatial-layer--network  (0.18) career-network node/edge pattern
  *   .spatial-layer--glyph    (0.25) slow geometric accent marks
- *   .spatial-layer--grain    (0.08) fixed film-grain texture
  *
  * All colours come from Gradture CSS variables, so DARK <-> LIGHT both
  * resolve correctly and the theme-toggle transition fades everything smoothly.
@@ -163,7 +162,6 @@ export const SpatialBackground = () => {
         <div className="spatial-layer spatial-layer--orb-b"   data-depth="0.12" />
         <div className="spatial-layer spatial-layer--network" data-depth="0.18" />
         <div className="spatial-layer spatial-layer--glyph"   data-depth="0.25" />
-        <div className="spatial-layer spatial-layer--grain"   data-depth="0.08" data-idle="false" />
       </div>
     </div>
   );

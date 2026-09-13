@@ -6024,22 +6024,22 @@ input[type='file']::file-selector-button:hover {
    slide-to-slide transitions: the foreground visual leads the motion while
    the text column trails, so content slides past at a readable depth. */
 .presentation-slide > * {
-  transform: translateY(var(--slide-offset, 0dvh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1vh));
   transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .feature-section__visual,
 .presentation-slide > * .hero-visual-wrap {
-  transform: translateY(var(--slide-offset-visual, var(--slide-offset, 0dvh)));
-  transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(calc(var(--slide-offset, 0) * 1.12vh));
+  transition: transform calc(var(--slide-duration, 0.85s) * 1.05) cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .feature-section__content,
 .presentation-slide > * .hero-content {
-  transform: translateY(var(--slide-offset-content, var(--slide-offset, 0dvh)));
-  transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 0.8, 0.3, 1);
+  transform: translateY(calc(var(--slide-offset, 0) * 0.84vh));
+  transition: transform calc(var(--slide-duration, 0.85s) * 1.16) cubic-bezier(0.22, 0.8, 0.3, 1);
   will-change: transform;
 }
 
@@ -10431,20 +10431,20 @@ input[type='file']::file-selector-button:hover {
 }
 
 .presentation-slide > * {
-  transform: translateY(var(--slide-offset, 0dvh));
+  transform: translateY(calc(var(--slide-offset, 0) * 1vh));
   transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .hero-visual-wrap {
-  transform: translateY(var(--slide-offset-visual, var(--slide-offset, 0dvh)));
-  transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(calc(var(--slide-offset, 0) * 1.12vh));
+  transition: transform calc(var(--slide-duration, 0.85s) * 1.05) cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .presentation-slide > * .hero-content {
-  transform: translateY(var(--slide-offset-content, var(--slide-offset, 0dvh)));
-  transition: transform var(--slide-duration, 0.85s) cubic-bezier(0.22, 0.8, 0.3, 1);
+  transform: translateY(calc(var(--slide-offset, 0) * 0.84vh));
+  transition: transform calc(var(--slide-duration, 0.85s) * 1.16) cubic-bezier(0.22, 0.8, 0.3, 1);
   will-change: transform;
 }
 
@@ -11191,25 +11191,10 @@ input[type='file']::file-selector-button:hover {
   border-bottom: 14px solid rgb(var(--color-primary-rgb) / 0.09);
 }
 
-.spatial-layer--grain {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transition: none;
-  opacity: 0.35;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
-  background-size: 120px 120px;
-}
-
-[data-theme='light'] .spatial-layer--grain {
-  opacity: 0.18;
-}
-
 @media (max-width: 640px) {
   .spatial-layer--orb-a { width: 180px; height: 180px; filter: blur(40px); }
   .spatial-layer--orb-b { width: 140px; height: 140px; filter: blur(36px); }
   .spatial-layer--glyph { display: none; }
-  .spatial-layer--grain { opacity: 0.2; }
   .spatial-layer--aurora {
     background:
       radial-gradient(ellipse 70% 40% at 30% -8%, rgb(var(--color-primary-rgb) / 0.05) 0%, transparent 60%);
