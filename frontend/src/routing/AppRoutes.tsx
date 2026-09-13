@@ -46,7 +46,7 @@ const ForgotPasswordPage = lazy(() => import('../features/auth/ForgotPasswordPag
 const ResetPasswordPage = lazy(() => import('../features/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })));
 const VerifyEmailPage = lazy(() => import('../features/auth/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })));
 const AuthCallbackPage = lazy(() => import('../features/auth/AuthCallbackPage').then((m) => ({ default: m.AuthCallbackPage })));
-const StudentDashboardPage = lazy(() => import('../features/student/StudentDashboardPage').then((m) => ({ default: m.StudentDashboardPage })));
+const StudentHomePage = lazy(() => import('../features/social/StudentHomePage').then((m) => ({ default: m.StudentHomePage })));
 const StudentResumePage = lazy(() => import('../features/student/StudentResumePage').then((m) => ({ default: m.StudentResumePage })));
 const StudentApplicationsPage = lazy(() => import('../features/student/StudentApplicationsPage').then((m) => ({ default: m.StudentApplicationsPage })));
 const StudentSavedJobsPage = lazy(() => import('../features/student/StudentSavedJobsPage').then((m) => ({ default: m.StudentSavedJobsPage })));
@@ -58,7 +58,7 @@ const StudentNetworkPage = lazy(() => import('../features/student/StudentNetwork
 const StudentSettingsPage = lazy(() => import('../features/student/StudentSettingsPage').then((m) => ({ default: m.StudentSettingsPage })));
 const StudentInterviewsPage = lazy(() => import('../features/student/StudentInterviewsPage').then((m) => ({ default: m.StudentInterviewsPage })));
 const AIAssistantPage = lazy(() => import('../features/ai/AIAssistantPage').then((m) => ({ default: m.AIAssistantPage })));
-const EmployerDashboardPage = lazy(() => import('../features/employer/EmployerDashboardPage').then((m) => ({ default: m.EmployerDashboardPage })));
+const EmployerHomePage = lazy(() => import('../features/social/EmployerHomePage').then((m) => ({ default: m.EmployerHomePage })));
 const EmployerPostJobPage = lazy(() => import('../features/employer/EmployerPostJobPage').then((m) => ({ default: m.EmployerPostJobPage })));
 const EmployerManageJobsPage = lazy(() => import('../features/employer/EmployerManageJobsPage').then((m) => ({ default: m.EmployerManageJobsPage })));
 const EmployerApplicantsPage = lazy(() => import('../features/employer/EmployerApplicantsPage').then((m) => ({ default: m.EmployerApplicantsPage })));
@@ -101,7 +101,7 @@ export const AppRoutes = () => (
     {/* Student (protected) */}
     <Route element={<ProtectedRoute role="STUDENT" />}>
       <Route element={<RoleLayout role="STUDENT" navConfig={STUDENT_SIDEBAR_NAV} storageKey="sidebar-collapsed-student" />}>
-        <Route path="/student/dashboard" element={<LazyPage><Page><StudentDashboardPage /></Page></LazyPage>} />
+        <Route path="/student/dashboard" element={<LazyPage><Page><StudentHomePage /></Page></LazyPage>} />
         <Route path="/student/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
         <Route path="/student/jobs" element={<LazyPage><Page><StudentJobsPage /></Page></LazyPage>} />
         <Route path="/student/companies" element={<LazyPage><Page><StudentCompaniesPage /></Page></LazyPage>} />
@@ -123,7 +123,7 @@ export const AppRoutes = () => (
     {/* Employer (protected) */}
     <Route element={<ProtectedRoute role="EMPLOYER" />}>
       <Route element={<RoleLayout role="EMPLOYER" navConfig={EMPLOYER_SIDEBAR_NAV} storageKey="sidebar-collapsed-employer" />}>
-        <Route path="/employer/dashboard" element={<LazyPage><Page><EmployerDashboardPage /></Page></LazyPage>} />
+        <Route path="/employer/dashboard" element={<LazyPage><Page><EmployerHomePage /></Page></LazyPage>} />
         <Route path="/employer/account" element={<LazyPage><Page><AccountPage /></Page></LazyPage>} />
         <Route path="/employer/post-job" element={<LazyPage><Page><EmployerPostJobPage /></Page></LazyPage>} />
         <Route path="/employer/edit-job/:id" element={<LazyPage><Page><EmployerEditJobPage /></Page></LazyPage>} />
