@@ -52,6 +52,7 @@ const StudentApplicationsPage = lazy(() => import('../features/student/StudentAp
 const StudentSavedJobsPage = lazy(() => import('../features/student/StudentSavedJobsPage').then((m) => ({ default: m.StudentSavedJobsPage })));
 const StudentResumeBuilderPage = lazy(() => import('../features/student/StudentResumeBuilderPage').then((m) => ({ default: m.StudentResumeBuilderPage })));
 const StudentRecommendedJobsPage = lazy(() => import('../features/student/StudentRecommendedJobsPage').then((m) => ({ default: m.StudentRecommendedJobsPage })));
+const StudentAnalyticsPage = lazy(() => import('../features/student/StudentAnalyticsPage').then((m) => ({ default: m.StudentAnalyticsPage })));
 const StudentNotificationsPage = lazy(() => import('../features/student/StudentNotificationsPage').then((m) => ({ default: m.StudentNotificationsPage })));
 const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
 const StudentNetworkPage = lazy(() => import('../features/student/StudentNetworkPage').then((m) => ({ default: m.StudentNetworkPage })));
@@ -111,6 +112,7 @@ export const AppRoutes = () => (
         <Route path="/student/saved" element={<LazyPage><Page><StudentSavedJobsPage /></Page></LazyPage>} />
         <Route path="/student/resume-builder" element={<LazyPage><Page><StudentResumeBuilderPage /></Page></LazyPage>} />
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
+<Route path="/student/analytics" element={<LazyPage><Page><StudentAnalyticsPage /></Page></LazyPage>} />
         <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
          <Route path="/student/network" element={<LazyPage><Page><StudentNetworkPage /></Page></LazyPage>} />
          <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />

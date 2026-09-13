@@ -1,15 +1,32 @@
+import { Link } from 'react-router-dom';
 import { Alert } from '../../components/Alert';
 import { useAsync } from '../../core/hooks/useAsync';
-import { analyticsApi } from '../../core/api/endpoints/employers';
+import { analyticsApi, employersApi } from '../../core/api/endpoints/employers';
 import { KPICard } from '../../components/KPICard';
+import { DashboardSection } from '../../components/DashboardSection';
+import { Badge, resolveBadgeKind } from '../../components/Badge';
+import { Avatar } from '../../components/Avatar';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingState } from '../../components/LoadingState';
+import { Skeleton } from '../../components/Skeleton';
+import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { currentPeriodLabel } from '../../core/utils/format';
+import type { Application } from '../../core/types';
 
 const FUNNEL_STAGES = ['Applications', 'Screening', 'Interview', 'Offer', 'Hired'];
 
+type EmployerApplicant = Application & {
+  student?: { profile?: { name?: string; skills?: string[] } | null } | null;
+};
+
 export const EmployerAnalyticsPage = () => {
   const { data: analytics, loading, error, reload } = useAsync(() => analyticsApi.getSnapshot(), []);
+  const { data: applicants, loading: applicantsLoading } = useAsync(() => employersApi.listApplicants(), []);
+  const { data: jobs, loading: jobsLoading } = useAsync(() => employersApi.listJobs(), []);
+
+  const recentApplicants = (applicants as EmployerApplicant[] | undefined)?.slice(0, 5) ?? [];
+  const recentJobs = jobs?.slice(0, 5) ?? [];
 
   return (
     <div className="page fade-in">
@@ -93,6 +110,87 @@ export const EmployerAnalyticsPage = () => {
               );
             })()}
           </div>
+
+          <DashboardSection
+            title="Recent applicants"
+            subtitle="Candidates who recently applied to your jobs."
+            action={
+              <Link to="/employer/applicants"><Button variant="ghost" size="sm" iconRight={<PhosphorIcon name="ArrowRight" size={14} />}>View all</Button></Link>
+            }
+            className="section--mt"
+          >
+            {loading || applicantsLoading ? (
+              <Skeleton variant="table" lines={4} />
+            ) : recentApplicants.length > 0 ? (
+              <div className="table-container">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Candidate</th>
+                      <th>Job</th>
+                      <th>Applied</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentApplicants.map((app) => (
+                      <tr key={app.id}>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <Avatar src={undefined} name={app.student?.profile?.name} size="sm" />
+                            <span className="font-medium">{app.student?.profile?.name ?? 'Unknown'}</span>
+                          </div>
+                        </td>
+                        <td>{app.job?.title ?? 'Unknown'}</td>
+                        <td className="text-secondary text-sm">{app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : '—'}</td>
+                        <td><Badge kind={resolveBadgeKind(app.status)}>{app.status}</Badge></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyState title="No applicants yet" text="Applications will appear here as candidates apply." action={<Link to="/employer/post-job"><Button size="sm">Post a job</Button></Link>} />
+            )}
+          </DashboardSection>
+
+          <DashboardSection
+            title="Active jobs"
+            subtitle="Your published job postings and applicant volume."
+            action={
+              <Link to="/employer/post-job"><Button variant="ghost" size="sm">+ Post job</Button></Link>
+            }
+            className="section--mt"
+          >
+            {jobsLoading ? (
+              <Skeleton variant="table" lines={3} />
+            ) : recentJobs.length > 0 ? (
+              <div className="table-container">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Job</th>
+                      <th>Location</th>
+                      <th>Status</th>
+                      <th>Applicants</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentJobs.map((job) => (
+                      <tr key={job.id}>
+                        <td className="font-medium">{job.title}</td>
+                        <td className="text-secondary text-sm">{job.location}</td>
+                        <td><Badge kind={resolveBadgeKind(job.status)}>{job.status}</Badge></td>
+                        <td className="text-secondary text-sm">{job.applicantCount ?? 0}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyState title="No jobs posted yet" text="Post your first opening to start receiving applicants." action={<Link to="/employer/post-job"><Button size="sm">Post a job</Button></Link>} />
+            )}
+          </DashboardSection>
         </>
       ) : (
        <EmptyState title="No analytics yet" text="Post jobs to start tracking performance." />
@@ -100,6 +198,3 @@ export const EmployerAnalyticsPage = () => {
     </div>
   );
 };
-
-
-

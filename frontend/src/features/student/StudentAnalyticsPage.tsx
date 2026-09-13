@@ -22,7 +22,7 @@ type ActivityEvent = {
   timestamp: string;
 };
 
-export const StudentDashboardPage = () => {
+export const StudentAnalyticsPage = () => {
   const { user } = useAuth();
 
   const { data: profile, loading: profileLoading } = useAsync(() => studentsApi.getProfile(), []);

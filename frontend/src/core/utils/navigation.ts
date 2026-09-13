@@ -36,6 +36,7 @@ export const STUDENT_SIDEBAR_NAV: NavSection[] = [
       { to: '/student/resume', label: 'Resume', icon: 'FileText' },
       { to: '/student/resume-builder', label: 'Resume Builder', icon: 'PencilSimpleLine' },
       { to: '/student/recommended', label: 'Recommended Matches', icon: 'Sparkle' },
+      { to: '/student/analytics', label: 'Analytics', icon: 'ChartLineUp' },
       { to: '/student/ai-assistant', label: 'AI Assistant', icon: 'Sparkle' },
       { to: '/student/interviews', label: 'Interviews', icon: 'Calendar' },
     ],
