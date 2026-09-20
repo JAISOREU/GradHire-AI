@@ -106,7 +106,12 @@ already handled by the repo (migrations, CORS, tests, SPA routing).
    - **Name:** `gradture-backend`
    - **Root Directory:** `backend`   ← important, the app lives in `backend/`
    - **Environment:** `Node` (native — NOT Docker; the Dockerfiles were deleted in the migration, so ignore the Docker/Registry/Secret-Files fields)
-   - **Build Command:** `npm ci && npm run build`
+   - **Build Command:** `npm ci --include=dev && npm run build`
+     (the `--include=dev` is **required**: the env block below sets
+     `NODE_ENV=production`, which makes `npm ci` skip devDependencies — without
+     `@types/multer` / `@types/cookie-parser` / `@types/xml2js` / `typescript`
+     the build fails with TS7016/TS2694. This was the exact failure on the
+     first clean-install deploy.)
    - **Start Command:** `npm start`
    - **Pre-Deploy Command:** leave empty (`npm start` already runs `prisma migrate deploy`)
    - **Health Check Path:** `/api/v1/health` — Render polls this. There is **no `/healthz` route** in the app (global prefix is `api/v1`); entering `/healthz` returns 404 and Render marks the service unhealthy.
