@@ -4,6 +4,7 @@ import { AuthUser } from '../auth/auth.service';
 import { ScheduleInterviewDto } from '../common/dto/interview.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PaginationParams, applyPagination } from '../common/pagination';
+import { employerStudentSelect, redactStudentForEmployer } from '../common/profile-visibility';
 
 @Injectable()
 export class InterviewsService {
@@ -122,7 +123,7 @@ export class InterviewsService {
         include: {
           application: {
             include: {
-              student: { include: { profile: { select: { id: true, name: true, focus: true } } } },
+              student: { select: employerStudentSelect },
               job: { select: { id: true, title: true, company: true, location: true } },
             },
           },
@@ -134,28 +135,41 @@ export class InterviewsService {
       this.prisma.interview.count({ where }),
     ]);
 
-    return applyPagination(interviews, total, page, limit);
+    const items = interviews.map((i: Record<string, unknown>) => ({
+      ...i,
+      application: { ...(i.application as Record<string, unknown>), student: redactStudentForEmployer((i.application as Record<string, unknown>).student as never) },
+    }));
+
+    return applyPagination(items, total, page, limit);
   }
 
   async getJobInterviews(user: AuthUser, jobId: string) {
     const job = await this.prisma.job.findUnique({ where: { id: jobId } });
-    if (!job || job.employerId !== user.id) {
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+    if (job.employerId !== user.id) {
       throw new ForbiddenException('You can only view interviews for your own jobs');
     }
 
-    return this.prisma.interview.findMany({
+    const interviews = await this.prisma.interview.findMany({
       where: {
         application: { jobId },
       },
       include: {
         application: {
           include: {
-            student: { include: { profile: { select: { id: true, name: true, focus: true } } } },
+            student: { select: employerStudentSelect },
           },
         },
       },
       orderBy: { scheduledAt: 'asc' },
     });
+
+    return interviews.map((i: Record<string, unknown>) => ({
+      ...i,
+      application: { ...(i.application as Record<string, unknown>), student: redactStudentForEmployer((i.application as Record<string, unknown>).student as never) },
+    }));
   }
 
   async updateStatus(user: AuthUser, interviewId: string, body: { status: string; feedback?: string }) {

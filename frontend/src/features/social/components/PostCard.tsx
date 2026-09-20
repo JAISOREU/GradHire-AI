@@ -7,7 +7,7 @@ import { timeAgo } from '../lib/format';
 interface PostCardProps {
   post: FeedPost;
   onToggleLike?: (postId: string) => void;
-  onAddComment?: (postId: string) => void;
+  onAddComment?: (postId: string, content: string) => void;
 }
 
 export const PostCard = ({ post, onToggleLike, onAddComment }: PostCardProps) => {
@@ -16,7 +16,7 @@ export const PostCard = ({ post, onToggleLike, onAddComment }: PostCardProps) =>
 
   const submitComment = () => {
     if (!comment.trim()) return;
-    onAddComment?.(post.id);
+    onAddComment?.(post.id, comment.trim());
     setComment('');
     setCommentOpen(false);
   };

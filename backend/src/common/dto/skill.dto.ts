@@ -1,4 +1,8 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { SkillLevel } from '@prisma/client';
+
+const validLevelIfPresent = (o: { level?: string | null }) =>
+  o.level !== undefined && o.level !== null && o.level !== '';
 
 export class CreateSkillDto {
   @IsString()
@@ -9,7 +13,8 @@ export class CreateSkillDto {
   category?: string;
 
   @IsOptional()
-  @IsString()
+  @ValidateIf(validLevelIfPresent)
+  @IsEnum(SkillLevel)
   level?: string;
 
   @IsOptional()
@@ -26,7 +31,8 @@ export class UpdateSkillDto {
   category?: string;
 
   @IsOptional()
-  @IsString()
+  @ValidateIf(validLevelIfPresent)
+  @IsEnum(SkillLevel)
   level?: string;
 
   @IsOptional()

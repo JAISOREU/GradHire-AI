@@ -61,8 +61,13 @@ export class HealthService {
       const start = Date.now();
       const ping = await this.cache.ping();
       checks.redis.latencyMs = Date.now() - start;
-      checks.redis.status = ping ? 'up' : 'down';
-    } catch {
+      if (ping === null) {
+        checks.redis.status = 'disabled';
+      } else {
+        checks.redis.status = ping ? 'up' : 'down';
+      }
+    } catch (error) {
+      this.logger.warn('Health check: redis check failed', error);
       checks.redis.status = 'down';
     }
 

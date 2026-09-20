@@ -26,17 +26,19 @@ export class NotificationsService {
       read: notification.read,
       createdAt: notification.createdAt,
       job: notification.application?.job ?? null,
+      type: notification.type,
     };
 
     this.gateway.server.to(`user:${recipientId}`).emit('notification', payload);
     return payload;
   }
 
-  async listForUser(user: AuthUser, includeRead = false, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async listForUser(user: AuthUser, includeRead = false, pagination?: PaginationParams, type?: string): Promise<PaginatedResponse<Record<string, unknown>>> {
     const { page = 1, limit = 20 } = pagination ?? {};
     const where: Record<string, unknown> = {
       recipientId: user.id,
       ...(includeRead ? {} : { read: false }),
+      ...(type ? { type } : {}),
     };
     const [notifications, total] = await Promise.all([
       this.prisma.notification.findMany({
@@ -61,8 +63,17 @@ export class NotificationsService {
       read: n.read,
       createdAt: n.createdAt,
       job: n.application?.job ?? null,
+      type: n.type,
     }));
     return applyPagination(items, total, page, limit);
+  }
+
+  async markAllRead(user: AuthUser): Promise<{ updated: number }> {
+    const result = await this.prisma.notification.updateMany({
+      where: { recipientId: user.id, read: false },
+      data: { read: true },
+    });
+    return { updated: result.count };
   }
 
   async markRead(user: AuthUser, notificationId: string): Promise<{ id: string; read: boolean }> {

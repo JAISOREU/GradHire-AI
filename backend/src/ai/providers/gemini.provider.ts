@@ -19,7 +19,7 @@ export class GeminiProvider extends BaseAIProvider {
     super(config, 'gemini');
     this.client = new GoogleGenerativeAI(config.apiKey);
     this.model = this.client.getGenerativeModel({
-      model: config.model || 'gemini-2.0-flash',
+      model: config.model || 'gemini-3.6-flash',
       generationConfig: {
         temperature: config.temperature ?? 0.7,
         maxOutputTokens: config.maxTokens ?? 8192,
@@ -28,7 +28,7 @@ export class GeminiProvider extends BaseAIProvider {
   }
 
   get supportedModels(): string[] {
-    return ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+    return ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-flash-lite-latest'];
   }
 
   async generateText(request: AIRequest): Promise<AIResponse> {
@@ -53,7 +53,7 @@ export class GeminiProvider extends BaseAIProvider {
         model: this.model.model,
       };
     } catch (error) {
-      this.logger.error('Gemini text generation failed', error);
+      this.logProviderError('text generation', error);
       throw new Error(`Gemini generation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
@@ -118,7 +118,7 @@ export class GeminiProvider extends BaseAIProvider {
         model: this.model.model,
       };
     } catch (error) {
-      this.logger.error('Gemini chat failed', error);
+      this.logProviderError('chat', error);
       throw new Error(`Gemini chat failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
@@ -154,7 +154,7 @@ export class GeminiProvider extends BaseAIProvider {
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.generateText({ prompt: 'Hello', systemInstruction: 'Respond with OK' });
+      await this.model.countTokens('Hello');
       return true;
     } catch {
       return false;

@@ -63,7 +63,7 @@ test.describe('Critical E2E flows', () => {
     });
     expect(applyRes.ok()).toBeTruthy();
     const application = await applyRes.json();
-    expect(application.status).toBe('APPLIED');
+    expect(application.status).toBe('SUBMITTED');
 
     const appsRes = await request.get(`${API_BASE}/applications/me`, {
       headers: { Authorization: `Bearer ${student.token}` },

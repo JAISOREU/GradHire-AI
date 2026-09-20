@@ -26,6 +26,8 @@ export const jobsApi = {
     internship?: boolean;
     search?: string;
     sort?: string;
+    skills?: string[];
+    datePosted?: '24h' | '7d' | '30d';
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<Job>> => {
@@ -41,9 +43,23 @@ export const jobsApi = {
     if (filters?.internship !== undefined) query.set('internship', String(filters.internship));
     if (filters?.search) query.set('search', filters.search);
     if (filters?.sort) query.set('sort', filters.sort);
+    filters?.skills?.forEach((skill) => {
+      if (skill) query.append('skills', skill);
+    });
+    if (filters?.datePosted) query.set('datePosted', filters.datePosted);
     query.set('page', String(filters?.page ?? 1));
     query.set('limit', String(filters?.limit ?? 20));
     return parsePaginatedJobs<Job>(`/api/v1/jobs?${query.toString()}`);
+  },
+
+  listSkillOptions: async (): Promise<string[]> => {
+    const data = await api<{ skills?: string[] }>('/api/v1/jobs/skills', { requiresAuth: false });
+    return data?.skills ?? [];
+  },
+
+  getMarketSnapshot: async (): Promise<{ byType: { type: string; count: number }[] }> => {
+    const data = await api<{ byType?: { type: string; count: number }[] }>('/api/v1/jobs/market-snapshot', { requiresAuth: false });
+    return { byType: data?.byType ?? [] };
   },
 
   listForEmployer: (page = 1, limit = 20): Promise<EmployerJob[]> =>

@@ -15,10 +15,16 @@ export class NotificationsController {
   async myNotifications(
     @Req() req: Request & { user: AuthUser },
     @Query('includeRead') includeRead?: string,
+    @Query('type') type?: string,
     @Query() query?: Record<string, unknown>,
   ) {
     const pagination = query ? normalizePagination(query) : undefined;
-    return this.notifications.listForUser(req.user, includeRead === 'true', pagination);
+    return this.notifications.listForUser(req.user, includeRead === 'true', pagination, type);
+  }
+
+  @Put('me/read')
+  async markAllRead(@Req() req: Request & { user: AuthUser }) {
+    return this.notifications.markAllRead(req.user);
   }
 
   @Put(':id/read')

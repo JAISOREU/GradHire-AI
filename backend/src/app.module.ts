@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
-import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
 import { ProfileController } from './profile.controller';
 import { AppService } from './app.service';
@@ -17,6 +16,8 @@ import { ResumesModule } from './resumes/resumes.module';
 import { EmployerModule } from './employer/employer.module';
 import { SettingsModule } from './settings/settings.module';
 import { CompaniesModule } from './companies/companies.module';
+import { NetworkModule } from './network/network.module';
+import { FeedModule } from './feed/feed.module';
 import { AdminModule } from './admin/admin.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
 import { StorageModule } from './storage/storage.module';
@@ -46,6 +47,8 @@ import { RecommendationService } from './ai/recommendation.service';
     EmployerModule,
     SettingsModule,
     CompaniesModule,
+    NetworkModule,
+    FeedModule,
     AdminModule,
     RateLimitModule,
     StorageModule,
@@ -67,10 +70,6 @@ import { RecommendationService } from './ai/recommendation.service';
     MetricsService,
     StartupValidator,
     RecommendationService,
-    {
-      provide: APP_FILTER,
-      useClass: SentryGlobalFilter,
-    },
   ],
 })
 export class AppModule {}

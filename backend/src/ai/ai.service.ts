@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy, ServiceUnavailableException } from '@nestjs/common';
 import { AIProvider, AIRequest, AIChatRequest, AIEmbeddingRequest } from './interfaces/ai-provider.interface';
 import { AIProviderFactory, ProviderFactoryConfig, ProviderType } from './utils/provider.factory';
 import { RESUME_PARSE_PROMPT, RESUME_ANALYSIS_PROMPT, JOB_MATCHING_PROMPT, CAREER_CHAT_PROMPT, SKILL_GAP_ANALYSIS_PROMPT } from './prompts/ai.prompts';
@@ -78,7 +78,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
       case 'gemini':
         baseConfig.gemini = {
           apiKey: process.env.GEMINI_API_KEY || '',
-          model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+          model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
           temperature: parseFloat(process.env.GEMINI_TEMPERATURE || '0.7'),
           maxTokens: parseInt(process.env.GEMINI_MAX_TOKENS || '8192', 10),
         };
@@ -95,7 +95,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
       case 'groq':
         baseConfig.groq = {
           apiKey: process.env.GROQ_API_KEY || '',
-          model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+          model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
           temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
           maxTokens: parseInt(process.env.GROQ_MAX_TOKENS || '8192', 10),
         };
@@ -150,7 +150,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
 
   async generateText(prompt: string, systemInstruction?: string): Promise<string> {
     if (!this.isReady()) {
-      throw new Error('AI service not available');
+      throw new ServiceUnavailableException('AI service not available');
     }
 
     return this.withFallback(async (provider) => {
@@ -161,7 +161,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
 
   async generateStructured<T>(request: AIRequest, schema: Record<string, unknown>): Promise<T> {
     if (!this.isReady()) {
-      throw new Error('AI service not available');
+      throw new ServiceUnavailableException('AI service not available');
     }
 
     return this.withFallback(async (provider) => {
@@ -172,7 +172,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
 
   async chat(messages: ChatMessage[], context?: ChatContext): Promise<string> {
     if (!this.isReady()) {
-      throw new Error('AI service not available');
+      throw new ServiceUnavailableException('AI service not available');
     }
 
     const aiMessages = messages.map(m => ({
@@ -541,11 +541,13 @@ Return a JSON array of exactly ${topK} personalized recommendations.`;
       return false;
     }
 
-    try {
-      return await this.provider.healthCheck();
-    } catch {
-      return false;
+    const primaryOk = await this.provider.healthCheck().catch(() => false);
+    if (primaryOk) return true;
+
+    if (this.fallbackProvider) {
+      return await this.fallbackProvider.healthCheck().catch(() => false);
     }
+    return false;
   }
 
   async countTokens(text: string): Promise<number> {

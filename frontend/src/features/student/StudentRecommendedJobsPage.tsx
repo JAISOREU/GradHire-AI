@@ -58,7 +58,7 @@ export const StudentRecommendedJobsPage = () => {
           fallback
             ? 'Showing best-match roles based on your profile.'
             : ready
-              ? 'matched roles based on your profile.'
+              ? 'Showing your strongest matched roles.'
               : 'Complete your profile to unlock personalized recommendations.'
         }
         action={
@@ -78,7 +78,7 @@ export const StudentRecommendedJobsPage = () => {
 
       {fallback && ready && (
         <div className="alert alert--info mb-4">
-          Recommendations are based on profile matching. enrichment will be applied when available.
+          Recommendations are based on your profile signals. AI enrichment will be applied when available.
         </div>
       )}
 
@@ -95,7 +95,7 @@ export const StudentRecommendedJobsPage = () => {
           <EmptyState
             icon="Sparkle"
             title="No recommendations yet"
-            text="We could not find matching roles right now. Try broadening your profile or check back later."
+            text="We couldn't find matching roles right now. Broaden your profile or check back later."
               action={
                 <div className="flex flex-col gap-2">
                   <Link to="/student/account"><Button size="sm">Update profile</Button></Link>

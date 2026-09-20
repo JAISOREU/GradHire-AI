@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { jobsApi } from '../../core/api/endpoints/jobs';
 import { savedJobsApi } from '../../core/api/endpoints/employers';
+import { applicationsApi } from '../../core/api/endpoints/applications';
+import { studentsApi } from '../../core/api/endpoints/students';
 import { useAsync } from '../../core/hooks/useAsync';
 import { useToast } from '../../core/toast/ToastContext';
 import { Button } from '../../components/Button';
@@ -16,6 +18,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
 import { Tooltip } from '../../components/Tooltip';
 import { JobDetailPanel } from './JobDetailPanel';
+import { JobInsightsSidebar } from './components/JobInsightsSidebar';
 import type { ExperienceLevel, Job, JobType, PaginatedResponse, WorkplaceType } from '../../core/types';
 
 const JOB_TYPES: { value: JobType | ''; label: string }[] = [
@@ -48,10 +51,17 @@ const WORKPLACE_TYPES: { value: WorkplaceType | ''; label: string }[] = [
 ];
 
 const SORT_OPTIONS = [
-  { value: 'createdAt', label: 'Newest' },
+  { value: 'createdAt', label: 'Most recent' },
   { value: '-createdAt', label: 'Oldest' },
-  { value: 'title', label: 'Featured' },
+  { value: 'title', label: 'Alphabetical' },
   { value: 'salaryMin', label: 'Highest salary' },
+];
+
+const DATE_POSTED_OPTIONS: { value: '' | '24h' | '7d' | '30d'; label: string }[] = [
+  { value: '', label: 'Any time' },
+  { value: '24h', label: 'Last 24 hours' },
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' },
 ];
 
 const FEED_TABS: { key: string; label: string }[] = [
@@ -83,11 +93,17 @@ const labelFor = (value: string, list: { value: string; label: string }[]) => {
 export const StudentJobsPage = () => {
   const { user } = useAuth();
 
+  const [heroKeyword, setHeroKeyword] = useState('');
+  const [heroLocation, setHeroLocation] = useState('');
   const [search, setSearch] = useState('');
+  const [city, setCity] = useState('');
   const [type, setType] = useState<JobType | ''>('');
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel | ''>('');
   const [workplaceType, setWorkplaceType] = useState<WorkplaceType | ''>('');
-  const [city, setCity] = useState('');
+  const [salaryMin, setSalaryMin] = useState('');
+  const [salaryMax, setSalaryMax] = useState('');
+  const [skills, setSkills] = useState<string[]>([]);
+  const [datePosted, setDatePosted] = useState<'' | '24h' | '7d' | '30d'>('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [page, setPage] = useState(1);
   const [feedTab, setFeedTab] = useState('recent');
@@ -107,9 +123,11 @@ export const StudentJobsPage = () => {
     return () => mq.removeEventListener('change', onMediaChange);
   }, []);
 
+  const skillsKey = skills.join(',');
+
   const activeFilterCount = useMemo(
-    () => [type, experienceLevel, workplaceType, city, search].filter(Boolean).length,
-    [type, experienceLevel, workplaceType, city, search],
+    () => [type, experienceLevel, workplaceType, city, search].filter(Boolean).length + skills.length + (datePosted ? 1 : 0) + (salaryMin || salaryMax ? 1 : 0),
+    [type, experienceLevel, workplaceType, city, search, skills, datePosted, salaryMin, salaryMax],
   );
 
   const activeFilterPills = useMemo(() => {
@@ -119,8 +137,15 @@ export const StudentJobsPage = () => {
     if (type) pills.push({ key: 'type', label: `Type: ${labelFor(type, JOB_TYPES)}` });
     if (experienceLevel) pills.push({ key: 'experienceLevel', label: `Level: ${labelFor(experienceLevel, EXPERIENCE_LEVELS)}` });
     if (workplaceType) pills.push({ key: 'workplaceType', label: `Workplace: ${labelFor(workplaceType, WORKPLACE_TYPES)}` });
+    if (salaryMin || salaryMax) {
+      const min = salaryMin ? `₱${Number(salaryMin).toLocaleString()}` : '0';
+      const max = salaryMax ? `₱${Number(salaryMax).toLocaleString()}` : '∞';
+      pills.push({ key: 'salary', label: `Salary: ${min} – ${max}` });
+    }
+    skills.forEach((skill) => pills.push({ key: `skill:${skill}`, label: `Skill: ${skill}` }));
+    if (datePosted) pills.push({ key: 'datePosted', label: `Posted: ${labelFor(datePosted, DATE_POSTED_OPTIONS)}` });
     return pills;
-  }, [search, city, type, experienceLevel, workplaceType]);
+  }, [search, city, type, experienceLevel, workplaceType, salaryMin, salaryMax, skills, datePosted]);
 
   const { data, loading, error, reload } = useAsync<PaginatedResponse<Job>>(
     () =>
@@ -130,24 +155,59 @@ export const StudentJobsPage = () => {
         experienceLevel: experienceLevel || undefined,
         workplaceType: workplaceType || undefined,
         city: city || undefined,
+        salaryMin: salaryMin ? Number(salaryMin) : undefined,
+        salaryMax: salaryMax ? Number(salaryMax) : undefined,
+        skills: skills.length > 0 ? skills : undefined,
+        datePosted: datePosted || undefined,
         sort: sortBy,
         page,
         limit: PAGE_SIZE,
       }),
-    [search, type, experienceLevel, workplaceType, city, sortBy, page],
+    [search, city, type, experienceLevel, workplaceType, salaryMin, salaryMax, skillsKey, datePosted, sortBy, page],
+  );
+
+  const { data: skillOptions } = useAsync(() => jobsApi.listSkillOptions(), []);
+  const skillOptionsList = skillOptions ?? [];
+
+  const { data: marketSnapshot } = useAsync(() => jobsApi.getMarketSnapshot(), []);
+  const marketSnapshotList = marketSnapshot?.byType ?? null;
+
+  const { data: profileSkillsData } = useAsync(() => studentsApi.getSkills(), []);
+  const profileSkills = useMemo(
+    () => (profileSkillsData ?? []).map((s) => s.name).filter(Boolean),
+    [profileSkillsData],
+  );
+
+  const { data: matchCount, loading: matchCountLoading } = useAsync<number | null>(
+    () =>
+      profileSkills.length > 0
+        ? jobsApi.listPaginated({ skills: profileSkills, page: 1, limit: 1 }).then((r) => r.total)
+        : Promise.resolve(null),
+    [profileSkills],
   );
 
   const { data: savedData } = useAsync(() => savedJobsApi.listMine<Job>(100), []);
 
+  const { data: myApplications } = useAsync(async () => {
+    const first = await applicationsApi.getMyApplications(1, 100);
+    return first.items ?? [];
+  }, []);
+
   useEffect(() => {
     setPage(1);
-  }, [search, type, experienceLevel, workplaceType, city, sortBy]);
+  }, [search, city, type, experienceLevel, workplaceType, salaryMin, salaryMax, skillsKey, datePosted, sortBy]);
 
   useEffect(() => {
     if (savedData) {
       setSaved(new Set(savedData.map((s) => s.id)));
     }
   }, [savedData]);
+
+  useEffect(() => {
+    if (myApplications) {
+      setAppliedIds(new Set(myApplications.map((a) => a.job?.id).filter((x): x is string => !!x)));
+    }
+  }, [myApplications]);
 
   const jobs = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -234,13 +294,28 @@ export const StudentJobsPage = () => {
     }
   };
 
+  const commitHero = () => {
+    setSearch(heroKeyword.trim());
+    setCity(heroLocation.trim());
+  };
+
   const clearFilters = () => {
     setSearch('');
+    setCity('');
+    setHeroKeyword('');
+    setHeroLocation('');
     setType('');
     setExperienceLevel('');
     setWorkplaceType('');
-    setCity('');
+    setSalaryMin('');
+    setSalaryMax('');
+    setSkills([]);
+    setDatePosted('');
     setSortBy('createdAt');
+  };
+
+  const applySkill = (skill: string) => {
+    setSkills((prev) => (prev.includes(skill) ? prev : [...prev, skill]));
   };
 
   const removeFilter = (key: string) => {
@@ -260,12 +335,29 @@ export const StudentJobsPage = () => {
       case 'workplaceType':
         setWorkplaceType('');
         break;
+      case 'salary':
+        setSalaryMin('');
+        setSalaryMax('');
+        break;
+      case 'datePosted':
+        setDatePosted('');
+        break;
+    }
+    if (key.startsWith('skill:')) {
+      setSkills((prev) => prev.filter((skill) => skill !== key.slice('skill:'.length)));
     }
   };
 
   const handleNlParse = (parsed: { keywords: string[]; location: string; experience: string; workplace: string }) => {
-    if (parsed.keywords.length > 0) setSearch(parsed.keywords.join(' '));
-    if (parsed.location) setCity(parsed.location);
+    if (parsed.keywords.length > 0) {
+      const keywords = parsed.keywords.join(' ');
+      setSearch(keywords);
+      setHeroKeyword(keywords);
+    }
+    if (parsed.location) {
+      setCity(parsed.location);
+      setHeroLocation(parsed.location);
+    }
     if (parsed.experience) {
       if (parsed.experience === 'MID') setExperienceLevel('MID_LEVEL');
       else if (parsed.experience === 'JUNIOR' || parsed.experience === 'SENIOR') setExperienceLevel(parsed.experience);
@@ -308,60 +400,79 @@ export const StudentJobsPage = () => {
 
       <section className="section-full">
         <div className="section-inner">
-          <div className="browse-shell">
-            <div className="card p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-2">
-                <JobFeedTabs
-                  tabs={tabs}
-                  active={feedTab}
-                  onChange={handleFeedTabChange}
-                  className="flex-1"
-                />
-                <Tooltip content={nlMode ? 'Show the structured filter bar' : 'Search with natural language'}>
-                  <button
-                    type="button"
-                    className="btn btn--sm btn--secondary whitespace-nowrap flex-shrink-0"
-                    onClick={() => setNlMode((m) => !m)}
-                    aria-pressed={nlMode}
-                  >
-                    <PhosphorIcon name={nlMode ? 'Sliders' : 'MagicWand'} size={14} weight="bold" />
-                    {nlMode ? 'Basic filters' : 'AI search'}
-                  </button>
-                </Tooltip>
-              </div>
+          <div className="jobs-layout">
+            <div className="jobs-main">
+              <div className="browse-shell">
+                <div className="card p-5 shadow-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <JobFeedTabs
+                      tabs={tabs}
+                      active={feedTab}
+                      onChange={handleFeedTabChange}
+                      className="flex-1"
+                    />
+                    <Tooltip content={nlMode ? 'Show the structured search' : 'Search with natural language'}>
+                      <button
+                        type="button"
+                        className="btn btn--sm btn--secondary whitespace-nowrap flex-shrink-0"
+                        onClick={() => setNlMode((m) => !m)}
+                        aria-pressed={nlMode}
+                      >
+                        <PhosphorIcon name={nlMode ? 'Sliders' : 'MagicWand'} size={14} weight="bold" />
+                        {nlMode ? 'Basic search' : 'AI search'}
+                      </button>
+                    </Tooltip>
+                  </div>
 
-              <div className="mt-3">
-                {nlMode ? (
-                  <NLSearchInput
-                    onParse={handleNlParse}
-                    className="w-full"
-                  />
-                ) : (
-                  <div className="filter-bar flex-wrap items-center gap-3">
-                    <Tooltip content="Search by job title, company, or skills">
-                      <div className="flex items-center gap-2 flex-[1_1_240px]">
-                        <input
-                          className="input"
-                          type="search"
-                          placeholder="Job title, company, skills…"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          aria-label="Keyword search"
-                        />
+                  <div className="mt-3">
+                    {nlMode ? (
+                      <NLSearchInput
+                        onParse={handleNlParse}
+                        className="w-full"
+                      />
+                    ) : (
+                      <div className="hero-search">
+                        <div className="hero-search__field">
+                          <PhosphorIcon name="MagnifyingGlass" size={18} className="text-text-secondary" />
+                          <input
+                            className="hero-search__input"
+                            type="search"
+                            placeholder="Search jobs, roles, skills, or companies…"
+                            value={heroKeyword}
+                            onChange={(e) => setHeroKeyword(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') commitHero();
+                            }}
+                            aria-label="Keyword search"
+                          />
+                        </div>
+                        <span className="hero-search__divider" aria-hidden="true" />
+                        <div className="hero-search__field hero-search__field--location">
+                          <PhosphorIcon name="MapPin" size={18} className="text-text-secondary" />
+                          <input
+                            className="hero-search__input"
+                            type="text"
+                            placeholder="City or region"
+                            value={heroLocation}
+                            onChange={(e) => setHeroLocation(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') commitHero();
+                            }}
+                            aria-label="Location"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn--primary hero-search__submit"
+                          onClick={commitHero}
+                        >
+                          Search
+                        </button>
                       </div>
-                    </Tooltip>
-                    <Tooltip content="Filter by city or region">
-                      <div className="flex items-center gap-2 flex-[1_1_160px]">
-                        <input
-                          className="input"
-                          type="text"
-                          placeholder="City or region"
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                          aria-label="Location"
-                        />
-                      </div>
-                    </Tooltip>
+                    )}
+                  </div>
+
+                  <div className="filter-bar flex-wrap items-center gap-3 mt-3">
                     <Tooltip content="Filter by employment type">
                       <select
                         className="select select--auto"
@@ -404,6 +515,60 @@ export const StudentJobsPage = () => {
                         ))}
                       </select>
                     </Tooltip>
+                    <Tooltip content="Filter by minimum salary">
+                      <input
+                        className="input"
+                        type="number"
+                        min={0}
+                        placeholder="Min salary (PHP)"
+                        value={salaryMin}
+                        onChange={(e) => setSalaryMin(e.target.value)}
+                        aria-label="Minimum salary"
+                      />
+                    </Tooltip>
+                    <Tooltip content="Filter by maximum salary">
+                      <input
+                        className="input"
+                        type="number"
+                        min={0}
+                        placeholder="Max salary (PHP)"
+                        value={salaryMax}
+                        onChange={(e) => setSalaryMax(e.target.value)}
+                        aria-label="Maximum salary"
+                      />
+                    </Tooltip>
+                    <Tooltip content="Add a required skill to filter by">
+                      <select
+                        className="select select--auto"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) applySkill(e.target.value);
+                          e.target.value = '';
+                        }}
+                        aria-label="Required skill"
+                      >
+                        <option value="">Skill…</option>
+                        {skillOptionsList.map((skill) => (
+                          <option key={skill} value={skill}>
+                            {skill}
+                          </option>
+                        ))}
+                      </select>
+                    </Tooltip>
+                    <Tooltip content="Filter by when the job was posted">
+                      <select
+                        className="select select--auto"
+                        value={datePosted}
+                        onChange={(e) => setDatePosted(e.target.value as '' | '24h' | '7d' | '30d')}
+                        aria-label="Date posted"
+                      >
+                        {DATE_POSTED_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </Tooltip>
                     <Tooltip content="Sort results by relevance or date">
                       <select
                         className="select select--auto"
@@ -430,187 +595,217 @@ export const StudentJobsPage = () => {
                       </Tooltip>
                     )}
                   </div>
-                )}
-              </div>
 
-              {activeFilterPills.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {activeFilterPills.map((pill) => (
-                    <FilterPill
-                      key={pill.key}
-                      label={pill.label}
-                      onRemove={() => removeFilter(pill.key)}
-                    />
-                  ))}
+                  {activeFilterPills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {activeFilterPills.map((pill) => (
+                        <FilterPill
+                          key={pill.key}
+                          label={pill.label}
+                          onRemove={() => removeFilter(pill.key)}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mt-3 gap-2 flex-wrap text-sm text-text-secondary">
+                    <span>
+                      {loading
+                        ? 'Searching opportunities…'
+                        : displayTotal > 0
+                          ? `Showing ${displayFirstIndex}–${displayLastIndex} of ${displayTotal} results`
+                          : 'No matching opportunities right now'}
+                    </span>
+                    <Tooltip content="Refresh job listings">
+                      <button type="button" className="btn btn--sm" onClick={() => reload()} disabled={loading}>
+                        Refresh
+                      </button>
+                    </Tooltip>
+                  </div>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between mt-3 gap-2 flex-wrap text-sm text-text-secondary">
-                <span>
-                  {loading
-                    ? 'Searching opportunities…'
-                    : displayTotal > 0
-                      ? `Showing ${displayFirstIndex}–${displayLastIndex} of ${displayTotal} results`
-                      : 'No matching opportunities right now'}
-                </span>
-                <Tooltip content="Refresh job listings">
-                  <button type="button" className="btn btn--sm" onClick={() => reload()} disabled={loading}>
-                    Refresh
-                  </button>
-                </Tooltip>
+                {error ? (
+                  <Alert className="browse-shell__error">
+                    {error ?? 'Failed to load jobs.'}{' '}
+                    <button onClick={reload} className="link">
+                      Retry
+                    </button>
+                  </Alert>
+                ) : loading ? (
+                  <div className="browse-shell__loading">
+                    <LoadingState label="Loading opportunities…" />
+                  </div>
+                ) : jobs.length === 0 ? (
+                  <EmptyState
+                    className="browse-shell__error"
+                    title="No matching jobs yet"
+                    text={
+                      activeFilterCount > 0
+                        ? 'We could not find jobs that match every filter right now. Try a broader search.'
+                        : 'No opportunities are available right now. Try again later.'
+                    }
+                    action={
+                      <div className="flex gap-2 flex-wrap justify-center">
+                        {activeFilterCount > 0 ? (
+                          <button type="button" className="btn btn--sm" onClick={clearFilters}>
+                            Remove all filters
+                          </button>
+                        ) : null}
+                        {city ? (
+                          <button
+                            type="button"
+                            className="btn btn--sm btn--secondary"
+                            onClick={() => {
+                              setCity('');
+                              setHeroLocation('');
+                            }}
+                          >
+                            Expand location
+                          </button>
+                        ) : null}
+                        <button type="button" className="btn btn--sm btn--secondary" onClick={() => reload()}>
+                          Refresh
+                        </button>
+                      </div>
+                    }
+                  />
+                ) : feedItems.length === 0 ? (
+                  <EmptyState
+                    className="browse-shell__error"
+                    title={feedTab === 'saved' ? 'No saved jobs yet' : 'No matching results'}
+                    text={
+                      feedTab === 'saved'
+                        ? 'Save jobs to build your shortlist. Saved jobs appear here.'
+                        : 'Try a different feed or adjust your filters.'
+                    }
+                    action={
+                      <button type="button" className="btn btn--sm" onClick={() => reload()}>
+                        Refresh
+                      </button>
+                    }
+                  />
+                ) : (
+                  <div className="browse-panes">
+                    <aside className="browse-list" aria-label="Job results">
+                      {feedItems.map((job) => {
+                        const isSelected = selectedId === job.id;
+
+                        return (
+                          <JobCard
+                            key={job.id}
+                            job={{
+                              id: job.id,
+                              title: job.title,
+                              company: job.company || job.companyRef?.name || 'Not specified',
+                              location: job.location || (job.city ? job.city : 'Remote'),
+                              salary: formatSalary(job),
+                              workplaceType: job.workplaceType,
+                              experienceLevel: job.experienceLevel,
+                              matchScore: job.matchScore,
+                              postedAt: job.createdAt,
+                              deadline: job.applicationDeadline,
+                              isSaved: saved.has(job.id),
+                              isApplied: appliedIds.has(job.id),
+                              logo: job.companyRef?.logo ?? null,
+                              skills: job.requiredSkills ?? [],
+                            }}
+                            selected={isSelected}
+                            onClick={() => setSelectedId(job.id)}
+                            onToggleSave={() => handleSave(job.id)}
+                            onApply={() => setSelectedId(job.id)}
+                            className={`browse-list__item${isSelected ? ' is-selected' : ''}`}
+                          />
+                        );
+                      })}
+
+                      {totalPages > 1 && (
+                        <div className="browse-list__pagination">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={page <= 1 || loading}
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          >
+                            Previous
+                          </Button>
+                          {Array.from({ length: totalPages }).map((_, i) => {
+                            const pageNumber = i + 1;
+                            const visible =
+                              pageNumber === 1 || pageNumber === totalPages || Math.abs(pageNumber - page) <= 1;
+                            const isEllipsis =
+                              visible === false &&
+                              pageNumber === (page < totalPages / 2 ? Math.max(2, page + 2) : Math.min(totalPages - 1, page - 2));
+                            if (isEllipsis) {
+                              return <span key={`e-${i}`} className="text-text-tertiary text-sm">…</span>;
+                            }
+                            if (!visible) return null;
+                            return (
+                              <button
+                                key={pageNumber}
+                                type="button"
+                                className={`btn btn--sm ${pageNumber === page ? 'btn--primary' : 'btn--secondary'} min-w-9`}
+                                onClick={() => setPage(pageNumber)}
+                                disabled={loading}
+                                aria-current={pageNumber === page ? 'page' : undefined}
+                              >
+                                {pageNumber}
+                              </button>
+                            );
+                          })}
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={page >= totalPages || loading}
+                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                          >
+                            Next
+                          </Button>
+                        </div>
+                      )}
+                    </aside>
+
+                    <section className="browse-detail" aria-label="Job details">
+                      {!isMobile &&
+                        (selectedId ? (
+                          <JobDetailPanel
+                            key={selectedId}
+                            jobId={selectedId}
+                            matchScore={selectedJob?.matchScore ?? 0}
+                            saved={saved.has(selectedId)}
+                            saving={saving.has(selectedId)}
+                            applied={appliedIds.has(selectedId)}
+                            onToggleSave={() => handleSave(selectedId)}
+                            onApplied={() => setAppliedIds((prev) => new Set(prev).add(selectedId))}
+                          />
+                        ) : (
+                          <div className="browse-detail__empty">
+                            <EmptyState
+                              icon="Briefcase"
+                              title="Select a job"
+                              text="Choose a role from the list to see full details and apply."
+                            />
+                          </div>
+                        ))}
+                    </section>
+                  </div>
+                )}
               </div>
             </div>
 
-            {error ? (
-              <Alert className="browse-shell__error">
-                {error ?? 'Failed to load jobs.'}{' '}
-                <button onClick={reload} className="link">
-                  Retry
-                </button>
-              </Alert>
-            ) : loading ? (
-              <div className="browse-shell__loading">
-                <LoadingState label="Loading opportunities…" />
-              </div>
-            ) : jobs.length === 0 ? (
-              <EmptyState
-                className="browse-shell__error"
-                title="No opportunities found"
-                text={
-                  activeFilterCount > 0
-                    ? 'Try adjusting your filters or search terms.'
-                    : 'No opportunities are available right now. Try again later.'
-                }
-                action={
-                  <div className="flex gap-2">
-                    {activeFilterCount > 0 ? (
-                      <button type="button" className="btn btn--sm" onClick={clearFilters}>
-                        Clear filters
-                      </button>
-                    ) : null}
-                    <button type="button" className="btn btn--sm btn--secondary" onClick={() => reload()}>
-                      Refresh
-                    </button>
-                  </div>
-                }
+            <aside className="jobs-aside" aria-label="Job insights">
+              <JobInsightsSidebar
+                profileSkills={profileSkills}
+                matchedJobsCount={matchCount}
+                loadingMatch={matchCountLoading}
+                snapshot={marketSnapshotList}
+                loadingSnapshot={marketSnapshot === undefined}
+                onApplySkill={applySkill}
+                onSuggestion={(query) => {
+                  setHeroKeyword(query);
+                  setSearch(query);
+                }}
               />
-            ) : feedItems.length === 0 ? (
-              <EmptyState
-                className="browse-shell__error"
-                title={feedTab === 'saved' ? 'No saved jobs on this page' : 'No matching results'}
-                text={
-                  feedTab === 'saved'
-                    ? 'Save jobs to build your shortlist. Saved jobs appear here.'
-                    : 'Try switching feeds or adjusting your filters.'
-                }
-                action={
-                  <button type="button" className="btn btn--sm" onClick={() => reload()}>
-                    Refresh
-                  </button>
-                }
-              />
-            ) : (
-              <div className="browse-panes">
-                <aside className="browse-list" aria-label="Job results">
-                  {feedItems.map((job) => {
-                    const isSelected = selectedId === job.id;
-
-                    return (
-                      <JobCard
-                        key={job.id}
-                        job={{
-                          id: job.id,
-                          title: job.title,
-                          company: job.company || job.companyRef?.name || 'Not specified',
-                          location: job.location || (job.city ? job.city : 'Remote'),
-                          salary: formatSalary(job),
-                          workplaceType: job.workplaceType,
-                          experienceLevel: job.experienceLevel,
-                          matchScore: job.matchScore,
-                          postedAt: job.createdAt,
-                          deadline: job.applicationDeadline,
-                          isSaved: saved.has(job.id),
-                          isApplied: appliedIds.has(job.id),
-                        }}
-                        selected={isSelected}
-                        onClick={() => setSelectedId(job.id)}
-                        onToggleSave={() => handleSave(job.id)}
-                        className={`browse-list__item${isSelected ? ' is-selected' : ''}`}
-                      />
-                    );
-                  })}
-
-                  {totalPages > 1 && (
-                    <div className="browse-list__pagination">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        disabled={page <= 1 || loading}
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      >
-                        Previous
-                      </Button>
-                      {Array.from({ length: totalPages }).map((_, i) => {
-                        const pageNumber = i + 1;
-                        const visible =
-                          pageNumber === 1 || pageNumber === totalPages || Math.abs(pageNumber - page) <= 1;
-                        const isEllipsis =
-                          visible === false &&
-                          pageNumber === (page < totalPages / 2 ? Math.max(2, page + 2) : Math.min(totalPages - 1, page - 2));
-                        if (isEllipsis) {
-                          return <span key={`e-${i}`} className="text-text-tertiary text-sm">…</span>;
-                        }
-                        if (!visible) return null;
-                        return (
-                          <button
-                            key={pageNumber}
-                            type="button"
-                            className={`btn btn--sm ${pageNumber === page ? 'btn--primary' : 'btn--secondary'} min-w-9`}
-                            onClick={() => setPage(pageNumber)}
-                            disabled={loading}
-                            aria-current={pageNumber === page ? 'page' : undefined}
-                          >
-                            {pageNumber}
-                          </button>
-                        );
-                      })}
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        disabled={page >= totalPages || loading}
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  )}
-                </aside>
-
-                <section className="browse-detail" aria-label="Job details">
-                  {!isMobile &&
-                    (selectedId ? (
-                      <JobDetailPanel
-                        key={selectedId}
-                        jobId={selectedId}
-                        matchScore={selectedJob?.matchScore ?? 0}
-                        saved={saved.has(selectedId)}
-                        saving={saving.has(selectedId)}
-                        applied={appliedIds.has(selectedId)}
-                        onToggleSave={() => handleSave(selectedId)}
-                        onApplied={() => setAppliedIds((prev) => new Set(prev).add(selectedId))}
-                      />
-                    ) : (
-                      <div className="browse-detail__empty">
-                        <EmptyState
-                          icon="Briefcase"
-                          title="Select a job"
-                          text="Choose a role from the list to see full details and apply."
-                        />
-                      </div>
-                    ))}
-                </section>
-              </div>
-            )}
+            </aside>
           </div>
         </div>
       </section>

@@ -8,6 +8,28 @@ import { CacheService } from './cache/cache.service';
 import { JobQueryDto } from './common/dto/job.dto';
 import { sanitizeDatabaseString } from './common/utils/sanitize';
 
+/** Fields on the Job model that callers may sort by. Anything not in this
+ *  whitelist is rejected rather than forwarded to Prisma's orderBy. */
+const SORTABLE_JOB_FIELDS = new Set([
+  'id',
+  'title',
+  'company',
+  'type',
+  'experienceLevel',
+  'workplaceType',
+  'country',
+  'city',
+  'salaryMin',
+  'salaryMax',
+  'views',
+  'featured',
+  'positions',
+  'createdAt',
+  'updatedAt',
+  'applicationDeadline',
+  'importedAt',
+]);
+
 @Injectable()
 export class AppService implements OnModuleInit {
   private readonly logger = new Logger(AppService.name);
@@ -77,6 +99,16 @@ export class AppService implements OnModuleInit {
     return sanitized;
   }
 
+  private dropEmptyStrings(data: Record<string, unknown>): Record<string, unknown> {
+    const cleaned: Record<string, unknown> = {};
+    for (const key of Object.keys(data)) {
+      const value = data[key];
+      if (typeof value === 'string' && value.trim() === '') continue;
+      cleaned[key] = value;
+    }
+    return cleaned;
+  }
+
   private allowlist(data: Record<string, unknown>, allowedFields: string[]): Record<string, unknown> {
     const filtered: Record<string, unknown> = {};
     for (const key of allowedFields) {
@@ -137,6 +169,13 @@ export class AppService implements OnModuleInit {
     if (query.internship !== undefined) {
       where.type = query.internship ? 'INTERNSHIP' : { not: 'INTERNSHIP' };
     }
+    if (query.skills?.length) {
+      where.requiredSkills = { hasSome: query.skills };
+    }
+    if (query.datePosted) {
+      const days = query.datePosted === '24h' ? 1 : query.datePosted === '7d' ? 7 : 30;
+      where.createdAt = { gte: new Date(Date.now() - days * 86400000) };
+    }
     if (query.salaryMin !== undefined || query.salaryMax !== undefined) {
       const salaryConditions: Record<string, unknown>[] = [];
       if (query.salaryMin !== undefined) {
@@ -154,9 +193,23 @@ export class AppService implements OnModuleInit {
     }
 
     const orderBy: Record<string, string> = {};
-    const sortField = query.sortBy || query.sort;
+    const rawSortField = query.sortBy || query.sort || '';
+    // The frontend uses a "-field" convention for ascending order.
+    const descending = !rawSortField.startsWith('-');
+    const sortField = rawSortField.replace(/^-/, '');
     if (sortField) {
-      orderBy[sortField] = query.sortOrder ?? 'desc';
+      // Whitelist sortable fields so attacker-controlled keys can never reach
+      // Prisma's orderBy (unknown fields previously caused a 500 on invalid input).
+      if (SORTABLE_JOB_FIELDS.has(sortField)) {
+        if (descending) {
+          orderBy[sortField] = query.sortOrder === 'asc' ? 'asc' : 'desc';
+        } else {
+          orderBy[sortField] = 'asc';
+        }
+      } else {
+        // Safe fallback: do not forward untrusted field names to Prisma.
+        orderBy.createdAt = 'desc';
+      }
     }
 
     const [jobs, total] = await Promise.all([
@@ -215,6 +268,41 @@ export class AppService implements OnModuleInit {
     const result = applyPagination(items, total, page, limit);
     await this.cache.set(cacheKey, result, 30);
     return result;
+  }
+
+  async listJobSkills(): Promise<string[]> {
+    const jobs = await this.prisma.job.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { requiredSkills: true },
+      take: 500,
+    });
+    const byKey = new Map<string, string>();
+    for (const job of jobs) {
+      for (const skill of job.requiredSkills ?? []) {
+        const trimmed = skill.trim();
+        if (!trimmed) continue;
+        const key = trimmed.toLowerCase();
+        if (!byKey.has(key)) byKey.set(key, trimmed);
+      }
+    }
+    return [...byKey.values()].sort((a, b) => a.localeCompare(b));
+  }
+
+  async getMarketSnapshot(): Promise<{ byType: { type: string; count: number }[] }> {
+    const jobs = await this.prisma.job.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { type: true },
+      take: 500,
+    });
+    const counts = new Map<string, number>();
+    for (const job of jobs) {
+      if (!job.type) continue;
+      counts.set(job.type, (counts.get(job.type) ?? 0) + 1);
+    }
+    const byType = [...counts.entries()]
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count || a.type.localeCompare(b.type));
+    return { byType };
   }
 
   async getJobById(id: string, requesterId?: string): Promise<Record<string, unknown>> {
@@ -406,7 +494,8 @@ export class AppService implements OnModuleInit {
   async createEducation(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['institution', 'degree', 'fieldOfStudy', 'startDate', 'endDate', 'currentlyStudying', 'description']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.education.create({ data: { userId, ...sanitized } as any });
   }
@@ -444,9 +533,11 @@ export class AppService implements OnModuleInit {
   async createExperience(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['jobTitle', 'company', 'employmentType', 'location', 'startDate', 'endDate', 'currentlyWorking', 'description', 'skillsUsed']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
-    return this.prisma.experience.create({ data: { userId, ...sanitized } as any });
+    const cleaned = this.dropEmptyStrings(sanitized);
+    return this.prisma.experience.create({ data: { userId, ...cleaned } as any });
   }
 
   async updateExperience(userId: string, experienceId: string, data: Record<string, unknown>) {
@@ -457,7 +548,8 @@ export class AppService implements OnModuleInit {
     const allowed = this.allowlist(data, ['jobTitle', 'company', 'employmentType', 'location', 'startDate', 'endDate', 'currentlyWorking', 'description', 'skillsUsed']);
     const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
-    return this.prisma.experience.update({ where: { id: experienceId }, data: sanitized as any });
+    const cleaned = this.dropEmptyStrings(sanitized);
+    return this.prisma.experience.update({ where: { id: experienceId }, data: cleaned as any });
   }
 
   async deleteExperience(userId: string, experienceId: string) {
@@ -485,11 +577,13 @@ export class AppService implements OnModuleInit {
     const name = sanitizeDatabaseString(String(data.name ?? '').trim());
     if (!name) throw new NotFoundException('Skill name is required');
     const normalizedName = name.toLowerCase();
+    const allowed = this.allowlist(data, ['name', 'category', 'level', 'yearsOfExperience']);
+    const cleaned = this.dropEmptyStrings(this.sanitizeStrings({ ...allowed, name: normalizedName }));
     const existing = await this.prisma.skill.findFirst({ where: { userId, name: { equals: normalizedName, mode: 'insensitive' } } });
     if (existing) {
-      return this.prisma.skill.update({ where: { id: existing.id }, data: { ...this.sanitizeStrings(data), name: normalizedName } as any });
+      return this.prisma.skill.update({ where: { id: existing.id }, data: { ...cleaned, name: normalizedName } as any });
     }
-    return this.prisma.skill.create({ data: { userId, name: normalizedName, ...this.sanitizeStrings(data) } as any });
+    return this.prisma.skill.create({ data: { userId, name: normalizedName, ...cleaned } as any });
   }
 
   async deleteSkill(userId: string, skillId: string) {
@@ -514,7 +608,8 @@ export class AppService implements OnModuleInit {
   async createCertification(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    const normalized = this.normalizeDates(data, ['issuedAt', 'expiresAt']);
+    const allowed = this.allowlist(data, ['name', 'issuer', 'issuedAt', 'expiresAt', 'credentialId', 'url']);
+    const normalized = this.normalizeDates(allowed, ['issuedAt', 'expiresAt']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.certification.create({ data: { userId, ...sanitized } as any });
   }
@@ -552,7 +647,8 @@ export class AppService implements OnModuleInit {
   async createProject(userId: string, data: Record<string, unknown>) {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
-    const normalized = this.normalizeDates(data, ['startDate', 'endDate']);
+    const allowed = this.allowlist(data, ['name', 'description', 'url', 'startDate', 'endDate', 'skillsUsed']);
+    const normalized = this.normalizeDates(allowed, ['startDate', 'endDate']);
     const sanitized = this.sanitizeStrings(normalized);
     return this.prisma.project.create({ data: { userId, ...sanitized } as any });
   }
@@ -591,7 +687,8 @@ export class AppService implements OnModuleInit {
     this.assertDbAvailable();
     if (!this.dbAvailable) throw new ServiceUnavailableException('Database unavailable');
     const existing = await this.prisma.careerPreference.findFirst({ where: { userId } });
-    const sanitized = this.sanitizeStrings(data);
+    const allowed = this.allowlist(data, ['preferredJobTitles', 'industries', 'preferredLocations', 'workArrangement', 'salaryExpectation', 'availability', 'workAuthorization', 'authorizedCountries', 'needsVisaSponsorship']);
+    const sanitized = this.dropEmptyStrings(this.sanitizeStrings(allowed));
     if (existing) {
       return this.prisma.careerPreference.update({ where: { id: existing.id }, data: sanitized as any });
     }

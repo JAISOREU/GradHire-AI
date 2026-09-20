@@ -52,8 +52,18 @@ export class CacheService {
     }
   }
 
-  async ping(): Promise<boolean> {
-    if (!this.enabled || !this.client) return false;
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  disconnect(): void {
+    if (this.client) {
+      this.client.disconnect();
+    }
+  }
+
+  async ping(): Promise<boolean | null> {
+    if (!this.enabled || !this.client) return null;
     try {
       const result = await this.client.ping();
       return result === 'PONG';

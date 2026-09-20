@@ -264,6 +264,8 @@ export type ApplicationJob = {
   company: string;
   location: string;
   type: JobType;
+  employerId?: string;
+  applicationDeadline?: string;
 };
 
 export type ApplicationStatusHistory = {
@@ -360,6 +362,7 @@ export type Notification = {
   message: string;
   read: boolean;
   createdAt: string;
+  type?: string;
   job?: { id: string; title: string; company: string } | null;
 };
 
@@ -524,6 +527,14 @@ export type Message = {
   to: string;
   fromName?: string;
   toName?: string;
+  fromRole?: string;
+  toRole?: string;
+  fromTitle?: string | null;
+  toTitle?: string | null;
+  fromCompany?: string | null;
+  toCompany?: string | null;
+  fromAvatar?: string | null;
+  toAvatar?: string | null;
   body: string;
   createdAt: string;
   read: boolean;
@@ -682,4 +693,35 @@ export type JobSourceType = 'API' | 'RSS' | 'JSON' | 'HTML';
 export type JobSourceStatus = 'ACTIVE' | 'PAUSED' | 'ERROR' | 'RATE_LIMITED';
 export type IngestionJobStatus = 'PENDING' | 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
 export type ImportedJobStatus = 'IMPORTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'EXPIRED' | 'ARCHIVED';
+
+export type NetworkRelation = 'NONE' | 'PENDING_IN' | 'PENDING_OUT' | 'CONNECTED';
+
+export type NetworkPerson = {
+  id: string;
+  name: string;
+  avatarUrl?: string | null;
+  title?: string;
+  organization?: string;
+  skills: string[];
+  mutualCount: number;
+  relation: NetworkRelation;
+  connectionId?: string | null;
+  followed?: boolean;
+  role?: UserRole;
+};
+
+export type NetworkCompanyCard = {
+  id: string;
+  name: string;
+  logo?: string | null;
+  industry?: string;
+  employeeCount?: number;
+  followed: boolean;
+};
+
+export type NetworkSidebar = {
+  peopleYouMayKnow: NetworkPerson[];
+  companiesToFollow: NetworkCompanyCard[];
+  popularSkills: string[];
+};
 

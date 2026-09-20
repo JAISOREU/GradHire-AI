@@ -23,7 +23,6 @@ export const buildStudentRail = (args: {
   quickStats: [
     { label: 'Applications', value: args.applications.length },
     { label: 'Saved Jobs', value: args.savedJobs },
-    { label: 'Profile Views', value: 0 }, // mock — no backend source yet
   ],
   activity: args.activity.map((a) => ({ id: a.id, text: a.text, timeAgo: timeAgo(a.createdAt) })).slice(0, 4),
   cta: { title: 'Need help finding the right job?', button: 'Try AI Assistant', to: '/student/ai-assistant' },

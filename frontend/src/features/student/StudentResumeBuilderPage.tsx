@@ -1,12 +1,12 @@
 import { Alert } from '../../components/Alert';
 import { useState } from 'react';
 import { studentsApi } from '../../core/api/endpoints/students';
-import { api } from '../../core/api/client';
+import { recommendationsApi } from '../../core/api/endpoints/jobs';
 import { useAsync } from '../../core/hooks/useAsync';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { LoadingState } from '../../components/LoadingState';
-import { categorize } from '../../core/utils/categorize';
+import { recommendationTitlesToCategories } from '../../core/utils/recommendations';
 import { PhosphorIcon, type PhosphorIconName } from '../../components/PhosphorIcon';
 import { PageHeader } from '../../components/PageHeader';
 
@@ -23,18 +23,14 @@ export const StudentResumeBuilderPage = () => {
 
   const handleGenerate = async () => {
     if (!profile?.focus) {
-      setError('Update your profile focus first.');
+      setError('Set your profile focus first to get started.');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const data = await api<{ recommendations?: string[] }>('/ai/recommendations', {
-        method: 'POST',
-        json: { focus: profile.focus },
-      });
-      const items = (data.recommendations ?? []).map((title: string) => categorize(title));
-      setRecommendations(items);
+      const data = await recommendationsApi.ai(5);
+      setRecommendations(recommendationTitlesToCategories(data.recommendations));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -48,7 +44,7 @@ export const StudentResumeBuilderPage = () => {
 
   return (
     <div className="page fade-in">
-      <PageHeader title="Career Suggestions" subtitle="Get tailored career direction based on your profile focus." />
+      <PageHeader title="Career suggestions" subtitle="Get tailored career direction based on your profile focus." />
 
       <div className="form-container">
         <Card title="Build your resume">

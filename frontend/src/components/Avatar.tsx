@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { cn } from '../lib/utils';
+import { getProfileMediaVersion } from '../lib/profileMediaVersion';
 
 type AvatarProps = {
-  src?: string;
+  src?: string | null;
   alt?: string;
   name?: string;
   initials?: string;
@@ -28,10 +29,10 @@ function getInitials(name?: string, fallback?: string): string {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-function resolveAvatarSrc(src?: string, userId?: string): string | undefined {
+function resolveAvatarSrc(src?: string | null, userId?: string): string | undefined {
   if (!src) return undefined;
   if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) return src;
-  if (userId) return `/users/avatar/${encodeURIComponent(userId)}`;
+  if (userId) return `/api/v1/users/avatar/${encodeURIComponent(userId)}?v=${getProfileMediaVersion()}`;
   return src;
 }
 

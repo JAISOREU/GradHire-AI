@@ -20,7 +20,7 @@ export class GroqProvider extends BaseAIProvider {
   }
 
   get supportedModels(): string[] {
-    return ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it'];
+    return ['qwen/qwen3.8-27b', 'qwen/qwen3.6-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'groq/compound'];
   }
 
   async generateText(request: AIRequest): Promise<AIResponse> {
@@ -28,7 +28,7 @@ export class GroqProvider extends BaseAIProvider {
 
     try {
       const response = await this.client.chat.completions.create({
-        model: this.config.model || 'llama-3.3-70b-versatile',
+        model: this.config.model || 'qwen/qwen3.8-27b',
         messages: [
           { role: 'system', content: request.systemInstruction || 'You are a helpful assistant.' },
           { role: 'user', content: request.prompt },
@@ -94,7 +94,7 @@ export class GroqProvider extends BaseAIProvider {
       }));
 
       const response = await this.client.chat.completions.create({
-        model: this.config.model || 'llama-3.3-70b-versatile',
+        model: this.config.model || 'qwen/qwen3.8-27b',
         messages,
         temperature: request.options?.temperature ?? this.config.temperature ?? 0.7,
         max_tokens: request.options?.maxTokens ?? this.config.maxTokens ?? 8192,
@@ -130,7 +130,7 @@ export class GroqProvider extends BaseAIProvider {
   async countTokens(text: string): Promise<number> {
     try {
       const response = await this.client.chat.completions.create({
-        model: this.config.model || 'llama-3.3-70b-versatile',
+        model: this.config.model || 'qwen/qwen3.8-27b',
         messages: [{ role: 'user', content: text }],
         max_tokens: 1,
       });

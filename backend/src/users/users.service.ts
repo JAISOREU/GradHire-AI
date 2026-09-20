@@ -5,7 +5,7 @@ import { STORAGE_SERVICE } from '../storage/storage.module';
 import { extname } from 'node:path';
 import { createReadStream, stat } from 'node:fs';
 import { Readable } from 'node:stream';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -148,6 +148,123 @@ export class UsersService {
       return { stream, contentType: mimeType };
     } catch {
       this.logger.warn(`Failed to serve avatar for user ${userId}: ${user.avatarUrl}`);
+      return null;
+    }
+  }
+
+  async getBanner(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { bannerUrl: true },
+    });
+
+    if (!user?.bannerUrl) {
+      return { bannerUrl: null };
+    }
+
+    return { bannerUrl: user.bannerUrl };
+  }
+
+  async uploadBanner(userId: string, file: Express.Multer.File) {
+    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      throw new BadRequestException('Unsupported file type. Please upload JPEG, PNG, or WebP.');
+    }
+
+    const ext = extname(file.originalname).toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      throw new BadRequestException('Unsupported file extension. Please upload .jpg, .jpeg, .png, or .webp.');
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new BadRequestException('File is too large. Maximum size is 5 MB.');
+    }
+
+    if (!verifyMagicBytes(file.buffer, file.mimetype)) {
+      throw new BadRequestException('Invalid file content. Please upload a valid image file.');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { bannerUrl: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const key = `banners/${userId}${ext}`;
+
+    if (user.bannerUrl) {
+      try {
+        await this.storage.remove(user.bannerUrl);
+      } catch {
+        this.logger.warn(`Failed to remove old banner: ${user.bannerUrl}`);
+      }
+    }
+
+    await this.storage.upload(
+      {
+        buffer: file.buffer,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+      },
+      key,
+    );
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { bannerUrl: key },
+      select: { bannerUrl: true },
+    });
+
+    return { bannerUrl: updated.bannerUrl };
+  }
+
+  async deleteBanner(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { bannerUrl: true },
+    });
+
+    if (!user?.bannerUrl) {
+      throw new NotFoundException('Banner not found');
+    }
+
+    try {
+      await this.storage.remove(user.bannerUrl);
+    } catch {
+      this.logger.warn(`Failed to remove banner: ${user.bannerUrl}`);
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { bannerUrl: null },
+      select: { bannerUrl: true },
+    });
+
+    return { bannerUrl: null };
+  }
+
+  async serveBanner(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { bannerUrl: true },
+    });
+
+    if (!user?.bannerUrl) {
+      return null;
+    }
+
+    const mimeType = this.getMimeType(user.bannerUrl);
+    try {
+      const stream = await this.storage.get(user.bannerUrl);
+      if (!stream) {
+        return null;
+      }
+      return { stream, contentType: mimeType };
+    } catch {
+      this.logger.warn(`Failed to serve banner for user ${userId}: ${user.bannerUrl}`);
       return null;
     }
   }

@@ -36,6 +36,12 @@ export class ApplicationsController {
     return this.applications.listForEmployer(req.user, pagination, jobId);
   }
 
+  @Get('status/:jobId')
+  @UseGuards(StudentGuard)
+  async hasApplied(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string) {
+    return this.applications.hasApplied(req.user, jobId);
+  }
+
   @Get(':id')
   async getById(@Req() req: Request & { user: AuthUser }, @Param('id') id: string) {
     return this.applications.getById(req.user, id);

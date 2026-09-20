@@ -1,4 +1,5 @@
-import { IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ExperienceLevel,
@@ -747,6 +748,18 @@ export class JobQueryDto {
   @IsOptional()
   internship?: boolean;
 
+  @ApiProperty({ required: false, type: [String], example: ['React', 'Node.js'] })
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
+  skills?: string[];
+
+  @ApiProperty({ required: false, enum: ['24h', '7d', '30d'], example: '7d' })
+  @IsOptional()
+  @IsIn(['24h', '7d', '30d'])
+  datePosted?: '24h' | '7d' | '30d';
+
   @ApiProperty({ required: false, default: 'createdAt' })
   @IsOptional()
   @IsString()
@@ -759,5 +772,6 @@ export class JobQueryDto {
 
   @ApiProperty({ required: false, enum: ['asc', 'desc'], default: 'desc' })
   @IsOptional()
+  @IsIn(['asc', 'desc'], { message: 'sortOrder must be either asc or desc' })
   sortOrder?: 'asc' | 'desc';
 }

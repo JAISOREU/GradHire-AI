@@ -3,7 +3,7 @@ import type { Message, PaginatedResponse } from '../../types';
 
 export const messagesApi = {
   listMine: (page = 1, limit = 20) =>
-    api<PaginatedResponse<Message>>(`/api/v1/messages/me?page=${page}&limit=${limit}`),
+    api<PaginatedResponse<Message>>(`/api/v1/messages/me?page=${page}&limit=${limit}`, { bypassCache: true }),
 
   send: (to: string, body: string) =>
     api<Message>('/api/v1/messages', { method: 'POST', json: { to, body } }),

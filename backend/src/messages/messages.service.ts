@@ -23,8 +23,8 @@ export class MessagesService {
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          sender: { select: { id: true, email: true } },
-          recipient: { select: { id: true, email: true } },
+          sender: { include: { profile: true, employerProfile: true } },
+          recipient: { include: { profile: true, employerProfile: true } },
         },
       }) as Promise<
         Array<{
@@ -34,20 +34,59 @@ export class MessagesService {
           body: string;
           createdAt: Date;
           read: boolean;
-          sender: { id: string; email: string };
-          recipient: { id: string; email: string };
+          sender: {
+            id: string;
+            email: string;
+            role: string;
+            avatarUrl: string | null;
+            profile?: { name: string; focus: string | null } | null;
+            employerProfile?: { companyName: string; industry: string | null } | null;
+          };
+          recipient: {
+            id: string;
+            email: string;
+            role: string;
+            avatarUrl: string | null;
+            profile?: { name: string; focus: string | null } | null;
+            employerProfile?: { companyName: string; industry: string | null } | null;
+          };
         }>
       >,
       this.prisma.message.count({ where }),
     ]);
+
+    const nameFor = (u: {
+      email: string;
+      profile?: { name: string } | null;
+      employerProfile?: { companyName: string } | null;
+    }): string =>
+      u.profile?.name ?? u.employerProfile?.companyName ?? u.email;
+
+    const titleFor = (u: {
+      profile?: { focus: string | null } | null;
+      employerProfile?: { industry: string | null } | null;
+    }): string | null =>
+      u.profile?.focus ?? u.employerProfile?.industry ?? null;
+
+    const companyFor = (u: {
+      employerProfile?: { companyName: string } | null;
+    }): string | null => u.employerProfile?.companyName ?? null;
 
     return applyPagination(
       messages.map((m) => ({
         id: m.id,
         from: m.senderId,
         to: m.recipientId,
-        fromName: m.sender.email,
-        toName: m.recipient.email,
+        fromName: nameFor(m.sender),
+        toName: nameFor(m.recipient),
+        fromRole: m.sender.role,
+        toRole: m.recipient.role,
+        fromTitle: titleFor(m.sender),
+        toTitle: titleFor(m.recipient),
+        fromCompany: companyFor(m.sender),
+        toCompany: companyFor(m.recipient),
+        fromAvatar: m.sender.avatarUrl ?? null,
+        toAvatar: m.recipient.avatarUrl ?? null,
         body: m.body,
         createdAt: m.createdAt.toISOString(),
         read: m.read,

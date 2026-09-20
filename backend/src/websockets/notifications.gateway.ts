@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Logger, BadRequestException } from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
 import { PrismaService } from '../prisma.service';
+import { JWT_SECRET } from '../common/jwt.config';
 
 @WebSocketGateway({
   cors: {
@@ -56,7 +57,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
 
         let payload: { sub: string; email: string; role: string; tokenVersion: number };
         try {
-          payload = this.jwt.verify(token, { secret: process.env.JWT_SECRET as string }) as { sub: string; email: string; role: string; tokenVersion: number };
+          payload = this.jwt.verify(token, { secret: JWT_SECRET }) as { sub: string; email: string; role: string; tokenVersion: number };
         } catch {
           this.logger.warn(`Socket ${client.id} rejected: invalid token`);
           client.disconnect();

@@ -23,10 +23,13 @@ services:
       - PORT=3000
       - DATABASE_URL=postgresql://gradhire:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/gradhire
       - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - REDIS_URL=redis://redis:6379
       - AI_PROVIDER=gemini
-      - AI_FALLBACK_PROVIDER=
+      - AI_FALLBACK_PROVIDER=groq
       - GEMINI_API_KEY=${GEMINI_API_KEY:-change-me-in-production}
-      - GEMINI_MODEL=gemini-2.0-flash
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.6-flash}
       - GEMINI_TEMPERATURE=0.7
       - GEMINI_MAX_TOKENS=8192
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
@@ -35,7 +38,7 @@ services:
       - OPENAI_TEMPERATURE=0.7
       - OPENAI_MAX_TOKENS=8192
       - GROQ_API_KEY=${GROQ_API_KEY:-}
-      - GROQ_MODEL=llama-3.3-70b-versatile
+      - GROQ_MODEL=${GROQ_MODEL:-qwen/qwen3.8-27b}
       - GROQ_TEMPERATURE=0.7
       - GROQ_MAX_TOKENS=8192
       - OLLAMA_BASE_URL=http://localhost:11434

@@ -42,6 +42,10 @@ describe('EMPLOYER_SIDEBAR_NAV', () => {
     expect(EMPLOYER_SIDEBAR_NAV[0].label).toBe('Main');
     expect(EMPLOYER_SIDEBAR_NAV[0].items[0].to).toBe('/employer/dashboard');
   });
+
+  it('includes Network in Main section', () => {
+    expect(EMPLOYER_SIDEBAR_NAV[0].items).toContainEqual({ to: '/employer/network', label: 'Network', icon: 'UsersThree' });
+  });
 });
 
 describe('ADMIN_SIDEBAR_NAV', () => {

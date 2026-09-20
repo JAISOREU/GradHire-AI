@@ -28,6 +28,16 @@ export class AppController {
     return this.appService.getJobs(query);
   }
 
+  @Get('jobs/skills')
+  async getJobSkills() {
+    return { skills: await this.appService.listJobSkills() };
+  }
+
+  @Get('jobs/market-snapshot')
+  async getMarketSnapshot() {
+    return this.appService.getMarketSnapshot();
+  }
+
   @Get('jobs/:id')
   async getJobById(@Param('id') id: string, @Req() req?: Request & { user: AuthUser }) {
     const requesterId = req?.user?.id;

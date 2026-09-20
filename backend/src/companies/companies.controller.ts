@@ -14,7 +14,22 @@ export class CompaniesController {
   @Get()
   async findAll(@Query() query?: Record<string, unknown>) {
     const pagination = query ? normalizePagination(query) : undefined;
-    return this.companies.findAll(pagination);
+    const filters = {
+      search: typeof query?.search === 'string' ? query.search : undefined,
+      industry: typeof query?.industry === 'string' ? query.industry : undefined,
+      location: typeof query?.location === 'string' ? query.location : undefined,
+      size: typeof query?.size === 'string' ? query.size : undefined,
+      remote: query?.remote === 'true',
+      hiring: query?.hiring === 'true',
+    };
+    return this.companies.findAll(pagination, filters);
+  }
+
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
+  @Get('hiring-for-skills')
+  @UseGuards(AuthGuard)
+  async hiringForSkills(@Req() req: Request & { user: AuthUser }) {
+    return this.companies.hiringForSkills(req.user.id);
   }
 
   @Throttle({ default: { ttl: 60000, limit: 30 } })

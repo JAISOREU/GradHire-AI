@@ -8,6 +8,8 @@ import { PrismaService } from './prisma.service';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { StartupValidator } from './common/startup-validator.service';
+import { createOriginCheckMiddleware } from './common/origin-check';
+import { cookiePolicyFromEnv } from './common/cookie-policy';
 import helmet from 'helmet';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
@@ -39,15 +41,8 @@ function createCorsOriginChecker(allowedOrigins: string[]) {
   };
 }
 
-let currentCsrfToken: string | null = null;
-let csrfTokenExpiresAt = 0;
-
-function getOrCreateCsrfToken(): string {
-  if (!currentCsrfToken || Date.now() > csrfTokenExpiresAt) {
-    currentCsrfToken = require('crypto').randomBytes(32).toString('hex');
-    csrfTokenExpiresAt = Date.now() + 60 * 60 * 1000;
-  }
-  return currentCsrfToken as string;
+function generateCsrfToken(): string {
+  return require('crypto').randomBytes(32).toString('hex');
 }
 
 async function bootstrap() {
@@ -77,16 +72,17 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use(createOriginCheckMiddleware(corsOrigins));
   app.use(new LoggingMiddleware().use.bind(new LoggingMiddleware()));
   app.use(auditLoggingMiddleware(prisma));
 
   app.use((req: Request, res: Response, next: Function) => {
-    const token = getOrCreateCsrfToken();
-    const isProduction = process.env.NODE_ENV === 'production';
+    const token = generateCsrfToken();
+    const policy = cookiePolicyFromEnv();
     res.cookie('XSRF-TOKEN', token, {
       httpOnly: false,
-      secure: isProduction,
-      sameSite: 'none',
+      secure: policy.secure,
+      sameSite: policy.sameSite,
       maxAge: 60 * 60 * 1000,
       path: '/',
     });
@@ -107,11 +103,8 @@ async function bootstrap() {
 
     const csrfCookie = (req as any).cookies?.['XSRF-TOKEN'];
     const csrfHeader = (req.headers as any)['x-xsrf-token'] || (req.headers as any)['x-csrf-token'];
-    const serverToken = (req as any).csrfToken;
 
-    const isValid =
-      (csrfCookie && csrfHeader && csrfCookie === csrfHeader) ||
-      (csrfHeader && serverToken && csrfHeader === serverToken);
+    const isValid = csrfCookie && csrfHeader && csrfCookie === csrfHeader;
 
     if (!isValid) {
       console.warn(`[CSRF] Blocked ${req.method} ${req.path}`, {

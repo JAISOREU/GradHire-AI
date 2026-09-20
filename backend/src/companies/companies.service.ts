@@ -1,23 +1,103 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { PaginationParams, PaginatedResponse, applyPagination, normalizePagination } from '../common/pagination';
 
+export type CompanyFilters = {
+  search?: string;
+  industry?: string;
+  location?: string;
+  size?: string;
+  remote?: boolean;
+  hiring?: boolean;
+};
+
+export type DiscoverCompany = {
+  id: string;
+  name: string;
+  industry?: string;
+  location?: string;
+  description?: string;
+  logo?: string;
+  size?: string;
+  openPositions: number;
+  followerCount: number;
+  remoteAvailable: boolean;
+};
+
 @Injectable()
 export class CompaniesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaClient) {}
 
-  async findAll(pagination?: PaginationParams) {
+  async findAll(pagination?: PaginationParams, filters: CompanyFilters = {}): Promise<PaginatedResponse<DiscoverCompany> & { facets: { industries: string[]; locations: string[] } }> {
     const { page = 1, limit = 20 } = pagination ?? {};
-    const [companies, total] = await Promise.all([
+    const where: Prisma.CompanyWhereInput = {
+      ...(filters.search ? { name: { contains: filters.search, mode: 'insensitive' } } : {}),
+      ...(filters.industry ? { industry: { contains: filters.industry, mode: 'insensitive' } } : {}),
+      ...(filters.location ? { location: { contains: filters.location, mode: 'insensitive' } } : {}),
+      ...(filters.size ? { size: filters.size } : {}),
+      ...(filters.remote ? { jobs: { some: { status: 'PUBLISHED', workplaceType: { in: ['REMOTE', 'HYBRID'] } } } } : {}),
+      ...(filters.hiring ? { jobs: { some: { status: 'PUBLISHED' } } } : {}),
+    };
+    const [companies, total, industryRows, locationRows] = await Promise.all([
       this.prisma.company.findMany({
+        where,
         orderBy: { name: 'asc' },
-        select: { id: true, name: true, industry: true, location: true, description: true, logo: true },
+        select: {
+          id: true,
+          name: true,
+          industry: true,
+          location: true,
+          description: true,
+          logo: true,
+          size: true,
+          _count: { select: { followers: true, jobs: { where: { status: 'PUBLISHED' } } } },
+          jobs: { where: { status: 'PUBLISHED' }, select: { workplaceType: true } },
+        },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      this.prisma.company.count(),
+      this.prisma.company.count({ where }),
+      this.prisma.company.findMany({ distinct: ['industry'], select: { industry: true } }),
+      this.prisma.company.findMany({ distinct: ['location'], select: { location: true } }),
     ]);
-    return applyPagination(companies, total, page, limit);
+    const items: DiscoverCompany[] = companies.map((c) => ({
+      id: c.id,
+      name: c.name,
+      industry: c.industry ?? undefined,
+      location: c.location ?? undefined,
+      description: c.description ?? undefined,
+      logo: c.logo ?? undefined,
+      size: c.size ?? undefined,
+      openPositions: c._count.jobs,
+      followerCount: c._count.followers,
+      remoteAvailable: c.jobs.some((j) => j.workplaceType === 'REMOTE' || j.workplaceType === 'HYBRID'),
+    }));
+    return {
+      ...applyPagination(items, total, page, limit),
+      facets: {
+        industries: industryRows.map((r) => r.industry).filter((v): v is string => Boolean(v)),
+        locations: locationRows.map((r) => r.location).filter((v): v is string => Boolean(v)),
+      },
+    };
+  }
+
+  async hiringForSkills(userId: string): Promise<Array<{ skill: string; companies: number }>> {
+    const profile = await this.prisma.profile.findUnique({ where: { userId }, select: { skills: true } });
+    const skills = profile?.skills ?? [];
+    const counts: Array<{ skill: string; companies: number }> = [];
+    for (const skill of skills) {
+      const grouped = await this.prisma.job.groupBy({
+        by: ['companyId'],
+        where: { status: 'PUBLISHED', companyId: { not: null }, requiredSkills: { has: skill } },
+        _count: { _all: true },
+      });
+      if (grouped.length > 0) {
+        counts.push({ skill, companies: grouped.length });
+      }
+    }
+    counts.sort((a, b) => b.companies - a.companies || a.skill.localeCompare(b.skill));
+    return counts.slice(0, 5);
   }
 
   async findOne(idOrName: string) {

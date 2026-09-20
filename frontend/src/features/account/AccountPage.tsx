@@ -1,5 +1,5 @@
 import { Alert } from '../../components/Alert';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useAsync } from '../../core/hooks/useAsync';
 import { studentsApi, usersApi } from '../../core/api/endpoints/students';
@@ -14,8 +14,11 @@ import { PageHeader } from '../../components/PageHeader';
 import { Skeleton } from '../../components/Skeleton';
 import { Badge } from '../../components/Badge';
 import { Avatar } from '../../components/Avatar';
+import { ImageCropDialog } from '../../components/ImageCropDialog';
 import { EmptyState } from '../../components/EmptyState';
 import { PhosphorIcon } from '../../components/PhosphorIcon';
+import type { PhosphorIconName } from '../../components/PhosphorIcon';
+import { bumpProfileMediaVersion } from '../../lib/profileMediaVersion';
 import type { UserRole, Education, Experience, Skill, CareerPreference, ProfileCompleteness, AiReadiness, Resume, Certification } from '../../core/types';
 
 const VISIBILITY_OPTIONS = [
@@ -166,7 +169,7 @@ function PersonalInfoSection({ profile, onUpdate }: { profile: Record<string, un
   };
 
   return (
-    <Card title="Personal Information" subtitle="Your basic contact details." className="section--mt" id="section-personal">
+    <Card title="Personal information" subtitle="Your basic contact details." className="section--mt" id="section-personal">
       {editing ? (
         <div className="grid grid-cols-2 gap-4">
           <FormInput label="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
@@ -220,7 +223,7 @@ function HeadlineSection({ profile, onUpdate }: { profile: Record<string, unknow
   };
 
   return (
-    <Card title="Professional Headline" subtitle="A short statement about your career focus." className="section--mt" id="section-headline">
+    <Card title="Professional headline" subtitle="A short statement about your career focus." className="section--mt" id="section-headline">
       {editing ? (
         <div>
           <FormTextarea label="Headline" value={focus} onChange={(e) => setFocus(e.target.value)} rows={2} />
@@ -804,7 +807,7 @@ function CareerPreferencesSection({ onSectionClick }: { onSectionClick?: (sectio
   };
 
   return (
-    <Card title="Career Preferences" subtitle="Set your preferences and we'll surface personalized job recommendations that match your goals, location, and interests." className="section--mt" id="section-preferences">
+    <Card title="Career preferences" subtitle="Set your preferences and we'll surface personalized job recommendations that match your goals, location, and interests." className="section--mt" id="section-preferences">
       {editing ? (
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
@@ -868,7 +871,7 @@ function ProfileVisibilitySection({ profile, onUpdate }: { profile: Record<strin
   };
 
   return (
-    <Card title="Profile Visibility" subtitle="Control who can see your profile." className="section--mt" id="section-visibility">
+    <Card title="Profile visibility" subtitle="Control who can see your profile." className="section--mt" id="section-visibility">
       <div className="form-group">
         <label className="form-label" htmlFor="account-visibility">Visibility</label>
         <select id="account-visibility" value={visibility} onChange={(e) => handleChange(e.target.value)} disabled={saving} className="select">
@@ -1107,6 +1110,345 @@ function DangerZone() {
   );
 }
 
+/* ============================================================
+   JobStreet-style profile shell
+   ============================================================ */
+
+type RailItem = {
+  key: string;
+  label: string;
+  icon: PhosphorIconName;
+  status?: 'incomplete' | 'complete' | 'neutral';
+};
+
+type AuthUserLite = {
+  avatarUrl?: string;
+  id?: string;
+  name?: string;
+  email?: string;
+};
+
+const STUDENT_RAIL: RailItem[] = [
+  { key: 'overview', label: 'Overview', icon: 'SquaresFour' },
+  { key: 'personal', label: 'Personal details', icon: 'IdentificationBadge' },
+  { key: 'experience', label: 'Career history', icon: 'Briefcase' },
+  { key: 'education', label: 'Education', icon: 'GraduationCap' },
+  { key: 'skills', label: 'Skills', icon: 'Lightning' },
+  { key: 'certifications', label: 'Licences & certifications', icon: 'Certificate' },
+  { key: 'projects', label: 'Projects', icon: 'Rocket' },
+  { key: 'resume', label: 'Resumé', icon: 'FileText' },
+  { key: 'preferences', label: 'Career interests', icon: 'Target' },
+  { key: 'visibility', label: 'Profile visibility', icon: 'Eye' },
+  { key: 'notifications', label: 'Notification settings', icon: 'Bell' },
+  { key: 'account', label: 'Account & security', icon: 'ShieldCheck' },
+  { key: 'danger', label: 'Danger zone', icon: 'Warning' },
+];
+
+const EMPLOYER_RAIL: RailItem[] = [
+  { key: 'overview', label: 'Overview', icon: 'SquaresFour' },
+  { key: 'company', label: 'Company information', icon: 'Buildings' },
+  { key: 'visibility', label: 'Company visibility', icon: 'Eye' },
+  { key: 'hiring', label: 'Hiring preferences', icon: 'Target' },
+  { key: 'account', label: 'Account & security', icon: 'ShieldCheck' },
+  { key: 'danger', label: 'Danger zone', icon: 'Warning' },
+];
+
+const STUDENT_SECTION_LABELS: Record<string, string[]> = {
+  personal: ['Personal Information', 'Phone', 'Location', 'Professional Headline', 'About'],
+  experience: ['Experience'],
+  education: ['Education'],
+  skills: ['Skills'],
+  resume: ['Resume'],
+  preferences: ['Career Preferences'],
+};
+
+const MISSING_LABEL_TO_SECTION: Record<string, string> = {
+  'Personal Information': 'personal',
+  Phone: 'personal',
+  Location: 'personal',
+  'Professional Headline': 'personal',
+  About: 'personal',
+  Education: 'education',
+  Experience: 'experience',
+  Skills: 'skills',
+  Resume: 'resume',
+  'Career Preferences': 'preferences',
+};
+
+function railItemStatus(key: string, missing: string[]): RailItem['status'] {
+  const labels = STUDENT_SECTION_LABELS[key];
+  if (!labels) return 'neutral';
+  return labels.some((label) => missing.includes(label)) ? 'incomplete' : 'complete';
+}
+
+function ProfileBanner({ role, profile, user, avatarError, bannerUrl, bannerError, mediaRefresh, onAvatarChange, onBannerChange }: {
+  role: UserRole;
+  profile: Record<string, unknown>;
+  user: AuthUserLite | null;
+  avatarError: string;
+  bannerUrl: string | null;
+  bannerError: string;
+  mediaRefresh: number;
+  onAvatarChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onBannerChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  const isEmployer = role === 'EMPLOYER';
+  const hasBanner = Boolean(bannerUrl);
+  const bannerSrc = bannerUrl
+    ? bannerUrl.startsWith('http://') || bannerUrl.startsWith('https://') || bannerUrl.startsWith('data:')
+      ? bannerUrl
+      : user?.id
+        ? `/api/v1/users/banner/${encodeURIComponent(user.id)}?v=${mediaRefresh}`
+        : ''
+    : '';
+  const displayName = (profile.companyName as string) || (profile.name as string) || user?.name || 'User';
+  const headline = isEmployer
+    ? `${(profile.industry as string) || 'Company'} · ${(profile.location as string) || 'Location not set'}`
+    : (profile.focus as string) || 'Tell employers what you want to be known for';
+
+  return (
+    <section
+      className={hasBanner ? 'profile-banner profile-banner--image' : 'profile-banner'}
+      aria-label="Profile banner"
+      style={bannerSrc ? { backgroundImage: `linear-gradient(125deg, rgba(16, 10, 51, 0.62) 0%, rgba(56, 44, 160, 0.45) 100%), url("${bannerSrc}")` } : undefined}
+    >
+      <label className="profile-banner__edit" title="Change banner photo" aria-label="Change banner photo">
+        <PhosphorIcon name="ImageSquare" size={18} weight="fill" />
+        <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onBannerChange} />
+      </label>
+      <div className="profile-banner__content">
+        <label className="avatar-upload profile-banner__avatar">
+          <Avatar src={user?.avatarUrl} name={displayName} size="xl" userId={user?.id} />
+          <span className="avatar-upload__overlay" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+          </span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={onAvatarChange} />
+        </label>
+        <div className="profile-banner__main">
+          <div className="profile-banner__badges">
+            <span className="profile-banner__pill"><PhosphorIcon name="ShieldCheck" size={14} weight="fill" />{getRoleLabel(role)}</span>
+            {isEmployer && Boolean(profile.verified) && (
+              <span className="profile-banner__pill"><PhosphorIcon name="CheckCircle" size={14} weight="fill" />Verified</span>
+            )}
+          </div>
+          <h2 className="profile-banner__name">{displayName}</h2>
+          {headline && <p className="profile-banner__headline">{headline}</p>}
+          <div className="profile-banner__chips">
+            {role === 'STUDENT' && (
+              <>
+                <span className="profile-banner__chip"><PhosphorIcon name="MapPin" size={15} />{(profile.location as string) || 'Location not set'}</span>
+                <span className="profile-banner__chip"><PhosphorIcon name="EnvelopeSimple" size={15} />{user?.email || 'Email not set'}</span>
+                <span className="profile-banner__chip"><PhosphorIcon name="Phone" size={15} />{(profile.phone as string) || 'Phone not set'}</span>
+              </>
+            )}
+            {isEmployer && (
+              <>
+                <span className="profile-banner__chip"><PhosphorIcon name="EnvelopeSimple" size={15} />{user?.email || 'Email not set'}</span>
+                <span className="profile-banner__chip"><PhosphorIcon name="MapPin" size={15} />{(profile.location as string) || 'Location not set'}</span>
+                <span className="profile-banner__chip"><PhosphorIcon name="Buildings" size={15} />{(profile.industry as string) || 'Industry not set'}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      {bannerError && <p className="profile-banner__error" role="alert">{bannerError}</p>}
+      {avatarError && <p className="profile-banner__error" role="alert">{avatarError}</p>}
+    </section>
+  );
+}
+
+function ProfileStrength({ completeness, onJump }: { completeness: ProfileCompleteness; onJump: (section: string) => void }) {
+  return (
+    <section className="profile-strength" aria-label="Profile strength">
+      <div className="profile-strength__head">
+        <span className="profile-strength__label">Profile strength</span>
+        <span className="profile-strength__value">{completeness.percentage}%</span>
+      </div>
+      <div className="profile-strength__track">
+        <div className="profile-strength__fill" style={{ width: `${completeness.percentage}%` }} />
+      </div>
+      {completeness.missing.length > 0 && (
+        <div className="profile-strength__pills">
+          <span className="profile-strength__hint">Add these to strengthen your profile:</span>
+          {completeness.missing.map((item) => (
+            <button key={item} type="button" className="profile-strength__pill" onClick={() => onJump(MISSING_LABEL_TO_SECTION[item] || item)}>
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function SectionRail({ items, active, onSelect }: { items: RailItem[]; active: string; onSelect: (key: string) => void }) {
+  return (
+    <nav className="profile-rail" aria-label="Profile sections">
+      {items.map((item) => (
+        <button
+          key={item.key}
+          type="button"
+          className={item.key === active ? 'profile-rail__item is-active' : 'profile-rail__item'}
+          onClick={() => onSelect(item.key)}
+          aria-current={item.key === active ? 'page' : undefined}
+        >
+          <span className="profile-rail__icon"><PhosphorIcon name={item.icon} size={18} /></span>
+          <span className="profile-rail__label">{item.label}</span>
+          {item.status === 'incomplete' && <span className="profile-rail__status is-missing" title="Incomplete" aria-label="Incomplete" />}
+          {item.status === 'complete' && <span className="profile-rail__status is-complete" title="Complete" aria-label="Complete" />}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function OverviewPanel({ profile, user, completeness, aiReadiness, onJump }: {
+  profile: Record<string, unknown>;
+  user: AuthUserLite | null;
+  completeness: ProfileCompleteness | null;
+  aiReadiness: AiReadiness | null;
+  onJump: (section: string) => void;
+}) {
+  return (
+    <>
+      <Card title="Profile overview" subtitle="A snapshot of your professional identity." className="section--mt">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Full name</label><div className="text-sm font-medium">{(profile.name as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Email</label><div className="text-sm font-medium">{user?.email || 'Not set'}</div></div>
+          <div><label className="form-label">Phone</label><div className="text-sm font-medium">{(profile.phone as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Location</label><div className="text-sm font-medium">{(profile.location as string) || 'Not set'}</div></div>
+          <div className="col-span-2"><label className="form-label">Professional headline</label><div className="text-sm font-medium">{(profile.focus as string) || 'Not set'}</div></div>
+        </div>
+      </Card>
+      <Card className="section--mt">
+        <ProfileCompleteness completeness={completeness} onSectionClick={onJump} />
+      </Card>
+      <Card className="section--mt">
+        <AiReadiness readiness={aiReadiness} onSectionClick={onJump} />
+      </Card>
+    </>
+  );
+}
+
+function EmployerOverviewPanel({ profile }: { profile: Record<string, unknown> }) {
+  return (
+    <>
+      <Card title="Company overview" subtitle="How your company appears to talent." className="section--mt">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Company name</label><div className="text-sm font-medium">{(profile.companyName as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Industry</label><div className="text-sm font-medium">{(profile.industry as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Location</label><div className="text-sm font-medium">{(profile.location as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Website</label><div className="text-sm font-medium">{(profile.website as string) || 'Not set'}</div></div>
+          <div className="col-span-2"><label className="form-label">Description</label><p className="text-sm text-secondary">{(profile.description as string) || 'No description provided.'}</p></div>
+          <div className="col-span-2"><label className="form-label">Verification</label><div className="text-sm font-medium">{Boolean(profile.verified) ? 'Verified employer' : 'Not verified'}</div></div>
+        </div>
+      </Card>
+      <Card title="Hiring at a glance" subtitle="Preferred candidate and job criteria." className="section--mt">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Preferred experience</label><div className="text-sm text-secondary">Entry-level, Junior, Mid-level</div></div>
+          <div><label className="form-label">Work arrangement</label><div className="text-sm text-secondary">Remote · Hybrid · On-site</div></div>
+          <div><label className="form-label">Hiring locations</label><div className="text-sm text-secondary">Manila · Laguna · Remote</div></div>
+          <div><label className="form-label">Employment types</label><div className="text-sm text-secondary">Full-time, Contract, Internship</div></div>
+        </div>
+      </Card>
+    </>
+  );
+}
+
+function CompanyInformationSection({ profile }: { profile: Record<string, unknown> }) {
+  return (
+    <Card title="Company information" subtitle="Manage your company profile." className="section--mt">
+      <div className="stack">
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">Company name</label><div className="text-sm font-medium">{(profile.companyName as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Industry</label><div className="text-sm font-medium">{(profile.industry as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Location</label><div className="text-sm font-medium">{(profile.location as string) || 'Not set'}</div></div>
+          <div><label className="form-label">Website</label><div className="text-sm font-medium">{(profile.website as string) || 'Not set'}</div></div>
+        </div>
+        <div>
+          <label className="form-label">Description</label>
+          <p className="text-sm text-secondary">{(profile.description as string) || 'No description provided.'}</p>
+        </div>
+        <div className="flex justify-end">
+          <Button variant="secondary" size="sm">Edit company profile</Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function CompanyVisibilitySection() {
+  return (
+    <Card title="Company visibility" subtitle="Control who can see your company profile." className="section--mt">
+      <div className="form-group">
+        <label className="form-label" htmlFor="company-visibility">Profile visibility</label>
+        <select id="company-visibility" className="select" defaultValue="visible">
+          <option value="visible">Visible to talent</option>
+          <option value="hidden">Hidden from talent</option>
+        </select>
+      </div>
+      <div className="form-group">
+        <label className="form-label" htmlFor="recruiter-visibility">Recruiter visibility</label>
+        <select id="recruiter-visibility" className="select" defaultValue="visible">
+          <option value="visible">Visible to recruiters</option>
+          <option value="hidden">Hidden from recruiters</option>
+        </select>
+      </div>
+    </Card>
+  );
+}
+
+function HiringPreferencesSection() {
+  return (
+    <Card title="Hiring preferences" subtitle="Set your preferred candidate and job criteria." className="section--mt">
+      <div className="grid grid-cols-2 gap-4">
+        <div><label className="form-label">Preferred experience</label><div className="text-sm text-secondary">Entry-level, Junior, Mid-level</div></div>
+        <div><label className="form-label">Work arrangement</label><div className="text-sm text-secondary">Remote · Hybrid · On-site</div></div>
+        <div><label className="form-label">Hiring locations</label><div className="text-sm text-secondary">Manila · Laguna · Remote</div></div>
+        <div><label className="form-label">Employment types</label><div className="text-sm text-secondary">Full-time, Contract, Internship</div></div>
+      </div>
+      <div className="flex justify-end mt-4">
+        <Button variant="secondary" size="sm">Edit hiring preferences</Button>
+      </div>
+    </Card>
+  );
+}
+
+function AccountSecuritySection({ email }: { email?: string }) {
+  return (
+    <Card title="Account & security" subtitle="Email, password, and login settings." className="section--mt">
+      <div className="stack">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-medium text-sm">Email address</div>
+            <div className="text-xs text-tertiary">{email}</div>
+          </div>
+          <Button variant="ghost" size="sm">Change email</Button>
+        </div>
+        <div className="border-t" />
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-medium text-sm">Password</div>
+            <div className="text-xs text-tertiary">••••••••</div>
+          </div>
+          <Button variant="ghost" size="sm">Change password</Button>
+        </div>
+        <div className="border-t" />
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-medium text-sm">Session</div>
+            <div className="text-xs text-tertiary">Active on this device</div>
+          </div>
+          <Button variant="ghost" size="sm" className="text-danger">Log out</Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export const AccountPage = () => {
   const { user, refreshUser } = useAuth();
   const role = (user?.role as UserRole) || 'STUDENT';
@@ -1117,6 +1459,22 @@ export const AccountPage = () => {
   const [completeness, setCompleteness] = useState<ProfileCompleteness | null>(null);
   const [aiReadiness, setAiReadiness] = useState<AiReadiness | null>(null);
   const [avatarError, setAvatarError] = useState('');
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
+  const [bannerError, setBannerError] = useState('');
+  const [mediaRefresh, setMediaRefresh] = useState(0);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropKind, setCropKind] = useState<'avatar' | 'banner'>('avatar');
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const loadBanner = async () => {
+    try {
+      const b = await usersApi.getBanner();
+      setBannerUrl(b.bannerUrl);
+    } catch {
+      setBannerUrl(null);
+    }
+  };
 
   const reloadProfile = async () => {
     setProfileLoading(true);
@@ -1151,27 +1509,78 @@ export const AccountPage = () => {
     }
   };
 
-  const scrollToSection = (section: string) => {
-    const map: Record<string, string> = {
-      education: 'section-education',
-      experience: 'section-experience',
-      skills: 'section-skills',
-      resume: 'section-resume',
-      preferences: 'section-preferences',
-      visibility: 'section-visibility',
-      personal: 'section-personal',
-      headline: 'section-headline',
-      about: 'section-about',
-    };
-    const id = map[section];
-    if (id) {
-      const el = document.getElementById(id);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => openCrop(e, 'avatar');
+  const handleBannerChange = (e: ChangeEvent<HTMLInputElement>) => openCrop(e, 'banner');
+
+  const openCrop = (e: ChangeEvent<HTMLInputElement>, kind: 'avatar' | 'banner') => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const maxSize = 5 * 1024 * 1024;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const setError = kind === 'avatar' ? setAvatarError : setBannerError;
+    if (!allowedTypes.includes(file.type)) {
+      setError('Invalid file type. Please upload JPEG, PNG, or WebP.');
+      return;
     }
+    if (file.size > maxSize) {
+      setError('File size must be under 5 MB.');
+      return;
+    }
+    setError('');
+    setCropKind(kind);
+    setCropFile(file);
+    setCropOpen(true);
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    if (cropKind === 'avatar') {
+      try {
+        await usersApi.uploadAvatar(blob);
+        bumpProfileMediaVersion();
+        setMediaRefresh((r) => r + 1);
+        await reloadProfile();
+        refreshUser();
+      } catch {
+        setAvatarError('Failed to upload avatar. Please try again.');
+      }
+      return;
+    }
+    try {
+      const result = await usersApi.uploadBanner(blob);
+      bumpProfileMediaVersion();
+      setMediaRefresh((r) => r + 1);
+      setBannerUrl(result.bannerUrl);
+    } catch {
+      setBannerError('Failed to upload banner. Please try again.');
+    }
+  };
+
+  const closeCrop = () => {
+    setCropOpen(false);
+    setCropFile(null);
+  };
+
+  const selectSection = (key: string) => {
+    setActiveSection(key);
+    const el = document.getElementById('profile-shell');
+    if (el) {
+      const r = el.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > window.innerHeight) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const jumpToSection = (section: string) => {
+    const railKeys = new Set((role === 'EMPLOYER' ? EMPLOYER_RAIL : STUDENT_RAIL).map((item) => item.key));
+    selectSection(railKeys.has(section) ? section : MISSING_LABEL_TO_SECTION[section] || section);
   };
 
   useEffect(() => { reloadProfile(); }, [role]);
   useEffect(() => { if (profile) loadMeta(); }, [profile]);
+  useEffect(() => { setActiveSection('overview'); }, [role]);
+  useEffect(() => { loadBanner(); }, [role, user?.id]);
 
   if (profileLoading) {
     return (
@@ -1193,263 +1602,174 @@ export const AccountPage = () => {
     );
   }
 
+  const railItems: RailItem[] = role === 'EMPLOYER'
+    ? EMPLOYER_RAIL
+    : STUDENT_RAIL.map((item) => ({ ...item, status: completeness ? railItemStatus(item.key, completeness.missing) : 'neutral' }));
+
+  const renderPanel = () => {
+    if (role === 'EMPLOYER') {
+      switch (activeSection) {
+        case 'company': return <CompanyInformationSection profile={profile} />;
+        case 'visibility': return <CompanyVisibilitySection />;
+        case 'hiring': return <HiringPreferencesSection />;
+        case 'account': return <AccountSecuritySection email={user?.email} />;
+        case 'danger': return <DangerZone />;
+        default: return <EmployerOverviewPanel profile={profile} />;
+      }
+    }
+    if (!user?.id) {
+      return <EmptyState icon="User" title="Account unavailable" text="Unable to load your account sections." />;
+    }
+    switch (activeSection) {
+      case 'overview':
+        return <OverviewPanel profile={profile} user={user} completeness={completeness} aiReadiness={aiReadiness} onJump={jumpToSection} />;
+      case 'personal':
+        return (
+          <>
+            <PersonalInfoSection profile={profile} onUpdate={reloadProfile} />
+            <HeadlineSection profile={profile} onUpdate={reloadProfile} />
+            <AboutSection profile={profile} onUpdate={reloadProfile} />
+          </>
+        );
+      case 'experience': return <ExperienceSection userId={user.id} onSectionClick={() => undefined} />;
+      case 'education': return <EducationSection userId={user.id} onSectionClick={() => undefined} />;
+      case 'skills': return <SkillsSection userId={user.id} onSectionClick={() => undefined} />;
+      case 'certifications': return <CertificationsSection onSectionClick={() => undefined} />;
+      case 'projects': return <ProjectsSection onSectionClick={() => undefined} />;
+      case 'resume': return <ResumeSection />;
+      case 'preferences': return <CareerPreferencesSection onSectionClick={() => undefined} />;
+      case 'visibility': return <ProfileVisibilitySection profile={profile} onUpdate={reloadProfile} />;
+      case 'notifications': return <TalentAccountSettings onUpdate={reloadProfile} />;
+      case 'account': return <AccountSecuritySection email={user?.email} />;
+      case 'danger': return <DangerZone />;
+      default: return <OverviewPanel profile={profile} user={user} completeness={completeness} aiReadiness={aiReadiness} onJump={jumpToSection} />;
+    }
+  };
+
+  if (role === 'ADMIN') {
+    return (
+      <div className="page fade-in">
+        <PageHeader title="Account" subtitle="Manage your profile and settings." />
+
+        {/* Identity Header */}
+        <Card className="section--mt">
+          <div className="flex items-start gap-4">
+            <label className="avatar-upload">
+              <Avatar src={user?.avatarUrl} name={(profile.name as string) || user?.name} size="xl" userId={user?.id} />
+              <span className="avatar-upload__overlay" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </span>
+              <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => openCrop(e, 'avatar')} />
+            </label>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-bold">{profile.name as string || user?.name || 'User'}</h2>
+              <p className="text-secondary text-sm mt-1">{user?.email}</p>
+              <p className="text-xs text-tertiary mt-1">Click your avatar to upload a photo.</p>
+              {avatarError && <p className="text-xs text-danger mt-1" role="alert">{avatarError}</p>}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Badge kind="hiring">{getRoleLabel(role)}</Badge>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Platform account" subtitle="Your administrative account information." className="section--mt">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="form-label">Email</label>
+              <div className="text-sm font-medium">{user?.email}</div>
+            </div>
+            <div>
+              <label className="form-label">Role</label>
+              <div className="text-sm font-medium">{getRoleLabel('ADMIN')}</div>
+            </div>
+            <div>
+              <label className="form-label">Account status</label>
+              <div className="flex items-center gap-2">
+                <span className="badge badge--open">Active</span>
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Permissions</label>
+              <div className="text-sm text-secondary">Full platform administration</div>
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Security" subtitle="Manage your account security settings." className="section--mt">
+          <div className="stack">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Password</div>
+                <div className="text-xs text-tertiary">Last changed 30 days ago</div>
+              </div>
+              <Button variant="secondary" size="sm">Change password</Button>
+            </div>
+            <div className="border-t" />
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Two-factor authentication</div>
+                <div className="text-xs text-tertiary">Not enabled</div>
+              </div>
+              <Button variant="secondary" size="sm">Enable 2FA</Button>
+            </div>
+            <div className="border-t" />
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Active sessions</div>
+                <div className="text-xs text-tertiary">1 active session</div>
+              </div>
+              <Button variant="ghost" size="sm" className="text-danger">Sign out all sessions</Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Platform navigation" subtitle="Quick access to administration areas." className="section--mt">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { to: '/admin/users', label: 'Users', icon: 'users' },
+              { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
+              { to: '/admin/applications', label: 'Applications', icon: 'applications' },
+              { to: '/admin/companies', label: 'Companies', icon: 'company' },
+              { to: '/admin/audit-logs', label: 'Audit logs', icon: 'security' },
+              { to: '/admin/settings', label: 'Settings', icon: 'settings' },
+            ].map((item) => (
+              <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3 no-underline text-inherit">
+                <span className="text-sm font-medium">{item.label}</span>
+                <span className="ml-auto text-muted">›</span>
+              </Link>
+            ))}
+          </div>
+        </Card>
+
+        <AccountSecuritySection email={user?.email} />
+        <DangerZone />
+
+        <ImageCropDialog open={cropOpen} file={cropFile} kind={cropKind} onCancel={closeCrop} onConfirm={(blob) => void handleCropConfirm(blob)} />
+      </div>
+    );
+  }
+
   return (
     <div className="page fade-in">
-      <PageHeader title="Account" subtitle="Manage your profile and settings." />
+      <PageHeader
+        title={role === 'EMPLOYER' ? 'Company profile' : 'Profile'}
+        subtitle={role === 'EMPLOYER' ? 'How your company appears to talent on GradTure.' : 'Your professional profile — make it stand out to employers.'}
+      />
 
-      {/* Identity Header */}
-      <Card className="section--mt">
-        <div className="flex items-start gap-4">
-          <label className="avatar-upload">
-            <Avatar src={user?.avatarUrl} name={profile.name as string || user?.name} size="xl" userId={user?.id} />
-            <span className="avatar-upload__overlay" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-            </span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              hidden
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const maxSize = 5 * 1024 * 1024;
-                  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                  if (!allowedTypes.includes(file.type)) {
-                    setAvatarError('Invalid file type. Please upload JPEG, PNG, or WebP.');
-                    return;
-                  }
-                  if (file.size > maxSize) {
-                    setAvatarError('File size must be under 5 MB.');
-                    return;
-                  }
-                  setAvatarError('');
-                  usersApi.uploadAvatar(file).then(() => {
-                    reloadProfile();
-                    refreshUser();
-                  }).catch(() => setAvatarError('Failed to upload avatar. Please try again.'));
-                }
-              }}
-            />
-          </label>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold">{profile.name as string || user?.name || 'User'}</h2>
-            <p className="text-secondary text-sm mt-1">{user?.email}</p>
-            <p className="text-xs text-tertiary mt-1">Click your avatar to upload a photo.</p>
-            {avatarError && <p className="text-xs text-danger mt-1" role="alert">{avatarError}</p>}
-            <div className="flex flex-wrap gap-2 mt-3">
-              <Badge kind="hiring">{getRoleLabel(role)}</Badge>
-              {role === 'EMPLOYER' && Boolean((profile as Record<string, unknown>).verified) && (
-                <Badge kind="open">Verified</Badge>
-              )}
-              {role === 'STUDENT' && completeness && (
-                <span className="text-xs text-tertiary">Your profile is {completeness.percentage}% complete</span>
-              )}
-            </div>
-            {role === 'STUDENT' && <ProfileCompleteness completeness={completeness} onSectionClick={scrollToSection} />}
-            {role === 'STUDENT' && <AiReadiness readiness={aiReadiness} onSectionClick={scrollToSection} />}
-          </div>
-        </div>
-      </Card>
+      <ProfileBanner role={role} profile={profile} user={user} avatarError={avatarError} bannerUrl={bannerUrl} bannerError={bannerError} mediaRefresh={mediaRefresh} onAvatarChange={handleAvatarChange} onBannerChange={handleBannerChange} />
 
-      {/* Role-specific sections */}
-      {role === 'STUDENT' && user?.id && (
-        <>
-          <PersonalInfoSection profile={profile} onUpdate={reloadProfile} />
-          <HeadlineSection profile={profile} onUpdate={reloadProfile} />
-          <AboutSection profile={profile} onUpdate={reloadProfile} />
-          <EducationSection userId={user.id} onSectionClick={scrollToSection} />
-          <ExperienceSection userId={user.id} onSectionClick={scrollToSection} />
-          <SkillsSection userId={user.id} onSectionClick={scrollToSection} />
-          <CertificationsSection onSectionClick={scrollToSection} />
-          <ProjectsSection onSectionClick={scrollToSection} />
-          <ResumeSection />
-          <CareerPreferencesSection onSectionClick={scrollToSection} />
-          <ProfileVisibilitySection profile={profile} onUpdate={reloadProfile} />
-          <TalentAccountSettings onUpdate={reloadProfile} />
-        </>
-      )}
+      {role === 'STUDENT' && completeness && <ProfileStrength completeness={completeness} onJump={jumpToSection} />}
 
-      {role === 'EMPLOYER' && (
-        <>
-          <Card title="Company information" subtitle="Manage your company profile." className="section--mt">
-            <div className="stack">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">Company name</label>
-                  <div className="text-sm font-medium">{(profile as Record<string, unknown>).companyName as string || 'Not set'}</div>
-                </div>
-                <div>
-                  <label className="form-label">Industry</label>
-                  <div className="text-sm font-medium">{(profile as Record<string, unknown>).industry as string || 'Not set'}</div>
-                </div>
-                <div>
-                  <label className="form-label">Location</label>
-                  <div className="text-sm font-medium">{(profile as Record<string, unknown>).location as string || 'Not set'}</div>
-                </div>
-                <div>
-                  <label className="form-label">Website</label>
-                  <div className="text-sm font-medium">{(profile as Record<string, unknown>).website as string || 'Not set'}</div>
-                </div>
-              </div>
-              <div>
-                <label className="form-label">Description</label>
-                <p className="text-sm text-secondary">{(profile as Record<string, unknown>).description as string || 'No description provided.'}</p>
-              </div>
-              <div className="flex justify-end">
-                <Button variant="secondary" size="sm">Edit company profile</Button>
-              </div>
-            </div>
-          </Card>
+      <div className="profile-shell" id="profile-shell">
+        <SectionRail items={railItems} active={activeSection} onSelect={selectSection} />
+        <div className="profile-panel">{renderPanel()}</div>
+      </div>
 
-          <Card title="Company visibility" subtitle="Control who can see your company profile." className="section--mt">
-            <div className="form-group">
-              <label className="form-label" htmlFor="company-visibility">Profile visibility</label>
-               <select id="company-visibility" className="select" defaultValue="visible">
-                 <option value="visible">Visible to talent</option>
-                 <option value="hidden">Hidden from talent</option>
-               </select>
-             </div>
-             <div className="form-group">
-               <label className="form-label" htmlFor="recruiter-visibility">Recruiter visibility</label>
-               <select id="recruiter-visibility" className="select" defaultValue="visible">
-                <option value="visible">Visible to recruiters</option>
-                <option value="hidden">Hidden from recruiters</option>
-              </select>
-            </div>
-          </Card>
-
-          <Card title="Hiring preferences" subtitle="Set your preferred candidate and job criteria." className="section--mt">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="form-label">Preferred experience</label>
-                <div className="text-sm text-secondary">Entry-level, Junior, Mid-level</div>
-              </div>
-              <div>
-                <label className="form-label">Work arrangement</label>
-                <div className="text-sm text-secondary">Remote · Hybrid · On-site</div>
-              </div>
-              <div>
-                <label className="form-label">Hiring locations</label>
-                <div className="text-sm text-secondary">Manila · Laguna · Remote</div>
-              </div>
-              <div>
-                <label className="form-label">Employment types</label>
-                <div className="text-sm text-secondary">Full-time, Contract, Internship</div>
-              </div>
-            </div>
-            <div className="flex justify-end mt-4">
-              <Button variant="secondary" size="sm">Edit hiring preferences</Button>
-            </div>
-          </Card>
-        </>
-      )}
-
-      {role === 'ADMIN' && (
-        <>
-          <Card title="Platform account" subtitle="Your administrative account information." className="section--mt">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="form-label">Email</label>
-                <div className="text-sm font-medium">{user?.email}</div>
-              </div>
-              <div>
-                <label className="form-label">Role</label>
-                <div className="text-sm font-medium">{getRoleLabel('ADMIN')}</div>
-              </div>
-              <div>
-                <label className="form-label">Account status</label>
-                <div className="flex items-center gap-2">
-                  <span className="badge badge--open">Active</span>
-                </div>
-              </div>
-              <div>
-                <label className="form-label">Permissions</label>
-                <div className="text-sm text-secondary">Full platform administration</div>
-              </div>
-            </div>
-          </Card>
-
-          <Card title="Security" subtitle="Manage your account security settings." className="section--mt">
-            <div className="stack">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-sm">Password</div>
-                  <div className="text-xs text-tertiary">Last changed 30 days ago</div>
-                </div>
-                <Button variant="secondary" size="sm">Change password</Button>
-              </div>
-              <div className="border-t" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-sm">Two-factor authentication</div>
-                  <div className="text-xs text-tertiary">Not enabled</div>
-                </div>
-                <Button variant="secondary" size="sm">Enable 2FA</Button>
-              </div>
-              <div className="border-t" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-sm">Active sessions</div>
-                  <div className="text-xs text-tertiary">1 active session</div>
-                </div>
-                <Button variant="ghost" size="sm" className="text-danger">Sign out all sessions</Button>
-              </div>
-            </div>
-          </Card>
-
-          <Card title="Platform navigation" subtitle="Quick access to administration areas." className="section--mt">
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { to: '/admin/users', label: 'Users', icon: 'users' },
-                { to: '/admin/jobs', label: 'Jobs', icon: 'jobs' },
-                { to: '/admin/applications', label: 'Applications', icon: 'applications' },
-                { to: '/admin/companies', label: 'Companies', icon: 'company' },
-                { to: '/admin/audit-logs', label: 'Audit logs', icon: 'security' },
-                { to: '/admin/settings', label: 'Settings', icon: 'settings' },
-              ].map((item) => (
-                <Link key={item.to} to={item.to} className="card card--compact card--hover flex items-center gap-3 no-underline text-inherit">
-                  <span className="text-sm font-medium">{item.label}</span>
-                  <span className="ml-auto text-muted">›</span>
-                </Link>
-              ))}
-            </div>
-          </Card>
-        </>
-      )}
-
-      {/* Account & Security */}
-      <Card title="Account & security" subtitle="Email, password, and login settings." className="section--mt">
-        <div className="stack">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">Email address</div>
-              <div className="text-xs text-tertiary">{user?.email}</div>
-            </div>
-            <Button variant="ghost" size="sm">Change email</Button>
-          </div>
-          <div className="border-t" />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">Password</div>
-              <div className="text-xs text-tertiary">••••••••</div>
-            </div>
-            <Button variant="ghost" size="sm">Change password</Button>
-          </div>
-          <div className="border-t" />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">Session</div>
-              <div className="text-xs text-tertiary">Active on this device</div>
-            </div>
-            <Button variant="ghost" size="sm" className="text-danger">Log out</Button>
-          </div>
-        </div>
-      </Card>
-
-      <DangerZone />
+      <ImageCropDialog open={cropOpen} file={cropFile} kind={cropKind} onCancel={closeCrop} onConfirm={(blob) => void handleCropConfirm(blob)} />
     </div>
   );
 };

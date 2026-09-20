@@ -32,8 +32,8 @@ export const SocialFeedPage = ({ currentUser, rail, railLoading, feed = defaultF
     }
   };
 
-  const addComment = async (postId: string) => {
-    const updated = await feed.addComment(postId);
+  const addComment = async (postId: string, content: string) => {
+    const updated = await feed.addComment(postId, content);
     setPosts((prev) => (prev.length > 0 ? prev.map((p) => (p.id === postId ? updated : p)) : prev));
     if (posts.length === 0 && initial) {
       setPosts(initial.map((p) => (p.id === postId ? updated : p)));
@@ -59,7 +59,7 @@ export const SocialFeedPage = ({ currentUser, rail, railLoading, feed = defaultF
               key={post.id}
               post={post}
               onToggleLike={(id) => void toggleLike(id)}
-              onAddComment={(id) => void addComment(id)}
+              onAddComment={(id, content) => void addComment(id, content)}
             />
           ))
         )}

@@ -1,53 +1,85 @@
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRealtimeQuery } from '../../core/hooks/useRealtimeQuery';
 import { notificationsApi } from '../../core/api/endpoints/notifications';
-import { EmptyState } from '../../components/EmptyState';
-import { LoadingState } from '../../components/LoadingState';
+import { employersApi } from '../../core/api/endpoints/employers';
+import { PageHeader } from '../../components/PageHeader';
 import { Button } from '../../components/Button';
+import { NotificationsCenter } from '../../components/NotificationsCenter';
+import { UpcomingSidebar } from '../../components/UpcomingSidebar';
+import { upcomingInterviewsFrom, closingDeadlines } from '../../components/notificationsRules';
+import type { Notification } from '../../core/types';
 
 export const EmployerNotificationsPage = () => {
-  const { data: notifications, loading, reload } = useRealtimeQuery(() => notificationsApi.listMine(), [], { eventName: 'notification' });
+  const navigate = useNavigate();
+  const { data: notifications, loading, reload } = useRealtimeQuery(
+    async () => (await notificationsApi.listMine(1, 100, { includeRead: true })).items ?? [],
+    [],
+    { eventName: 'notification' },
+  );
+  const { data: interviews } = useRealtimeQuery(
+    async () => (await employersApi.listInterviews(1, 50)).items ?? [],
+    [],
+    { eventName: 'notification' },
+  );
+  const { data: jobs } = useRealtimeQuery(
+    () => employersApi.listJobs(1, 50),
+    [],
+    { eventName: 'notification' },
+  );
 
-  const handleMarkRead = async (id: string) => {
+  const notificationsList = notifications ?? [];
+  const hasUnread = notificationsList.some((n) => !n.read);
+
+  const upcoming = useMemo(() => upcomingInterviewsFrom(interviews ?? []), [interviews]);
+  const deadlines = useMemo(
+    () => closingDeadlines((jobs ?? []).map((j) => ({ id: j.id, title: j.title, company: j.company, applicationDeadline: j.applicationDeadline }))),
+    [jobs],
+  );
+
+  const handleMarkAllRead = async () => {
     try {
-      await notificationsApi.markRead(id);
+      await notificationsApi.markAllRead();
       reload();
     } catch {
       // ignore
     }
   };
 
+  const handleOpen = async (n: Notification) => {
+    if (!n.read) {
+      try {
+        await notificationsApi.markRead(n.id);
+        reload();
+      } catch {
+        // ignore
+      }
+    }
+    if (n.type === 'MESSAGE') {
+      navigate('/employer/messages');
+    } else if (n.job) {
+      navigate('/employer/applicants');
+    }
+  };
+
   return (
     <div className="page fade-in">
-      <h1 className="page-title">Notifications</h1>
-      <p className="page-subtitle">Updates on applicants and your postings.</p>
+      <PageHeader
+        title="Notifications"
+        subtitle="Updates on applicants and your postings."
+        action={
+          <Button variant="ghost" size="sm" disabled={!hasUnread} onClick={handleMarkAllRead}>
+            Mark all as read
+          </Button>
+        }
+      />
 
-      <div className="list mt-4">
-        {loading ? (
-          <LoadingState label="Loading notifications…" />
-        ) : notifications && notifications.length > 0 ? (
-          notifications.map((n) => (
-            <article key={n.id} className="list-item">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-base">{n.message}</p>
-                  {n.job && (
-                    <p className="text-sm text-muted mt-1">
-                      {n.job.title} at {n.job.company}
-                    </p>
-                  )}
-                  <p className="text-xs text-faint mt-1">{new Date(n.createdAt).toLocaleString()}</p>
-                </div>
-                {!n.read && <Button variant="ghost" size="sm" onClick={() => handleMarkRead(n.id)}>Mark read</Button>}
-              </div>
-            </article>
-          ))
-        ) : (
-          <EmptyState title="No notifications" text="You're all caught up." />
-        )}
+      <div className="notifications-layout section--mt">
+        <main className="notifications-main">
+          <NotificationsCenter notifications={notificationsList} loading={loading} onOpenNotification={handleOpen} />
+        </main>
+        <UpcomingSidebar interviews={upcoming} deadlines={deadlines} />
       </div>
     </div>
   );
 };
-
-
-

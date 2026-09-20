@@ -32,7 +32,7 @@ function createMockPrisma() {
         if (include?.employerProfile && dataAny.employerProfile?.create) {
           employerProfile = { companyName: dataAny.employerProfile.create.companyName };
         }
-        const user = { id: `user-${users.length + 1}`, ...data, profile, employerProfile };
+        const user = { id: `user-${users.length + 1}`, ...data, tokenVersion: 0, profile, employerProfile };
         users.push(user);
         return user;
       },
@@ -46,9 +46,31 @@ function createMockPrisma() {
         return users.filter((u) => {
           if (where.emailVerified === false && u.emailVerified) return false;
           if (where.resetTokenExpires && new Date(u.resetTokenExpires as string) < new Date()) return false;
+          if (where.resetTokenHash && (where.resetTokenHash as { not?: null }).not === null && !u.resetTokenHash) return false;
           if (where.emailVerificationExpires && new Date(u.emailVerificationExpires as string) < new Date()) return false;
           return true;
         });
+      },
+      findFirst: async ({ where, orderBy }: { where: Record<string, unknown>; orderBy?: Record<string, string> }) => {
+        let matches = users.filter((u) => {
+          if (where.resetTokenExpires && new Date(u.resetTokenExpires as string) < new Date()) return false;
+          if (where.resetTokenHash && (where.resetTokenHash as { not?: null }).not === null && !u.resetTokenHash) return false;
+          return true;
+        });
+        if (orderBy?.updatedAt === 'desc') {
+          matches = [...matches].sort((a, b) => new Date(b.updatedAt as string).getTime() - new Date(a.updatedAt as string).getTime());
+        }
+        return matches[0] ?? null;
+      },
+      updateMany: async ({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) => {
+        let count = 0;
+        for (const u of users) {
+          if (where.resetTokenExpires && new Date(u.resetTokenExpires as string) < new Date()) continue;
+          if (where.resetTokenHash && (where.resetTokenHash as { not?: null }).not === null && !u.resetTokenHash) continue;
+          Object.assign(u, data);
+          count++;
+        }
+        return { count };
       },
     },
     profile: {
@@ -188,6 +210,20 @@ test('register creates EMPLOYER user without profile', async () => {
   assert.equal(result.user.role, 'EMPLOYER');
 });
 
+test('register issues a JWT that validateToken accepts immediately', async () => {
+  const { prisma } = createMockPrisma();
+  const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
+  const res = createMockRes();
+
+  const result = await service.register({ email: 'fresh@test.dev', password: 'SecurePass1!', name: 'Fresh User', role: 'STUDENT' }, res as never);
+
+  // A freshly-issued access token must be immediately valid — otherwise every
+  // authenticated request from a brand-new session is rejected as revoked.
+  const user = await service.validateToken(result.accessToken);
+  assert.equal(user.id, result.user.id);
+  assert.equal(user.email, 'fresh@test.dev');
+});
+
 test('register rejects ADMIN role', async () => {
   const { prisma } = createMockPrisma();
   const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
@@ -295,19 +331,88 @@ test('refresh issues new token for valid token', async () => {
   assert.equal(res.getCookies().length, 2);
 });
 
-test('clearAuthCookie clears cookie with proper options', async () => {
-  const { prisma } = createMockPrisma();
+test('clearAuthCookie clears cookie with lax policy for same-site dev', async () => {
+  const prevEnv = process.env.NODE_ENV;
+  const prevCors = process.env.CORS_ORIGIN;
+  process.env.NODE_ENV = 'development';
+  process.env.CORS_ORIGIN = 'http://localhost:5173,http://localhost:3000';
+  try {
+    const { prisma } = createMockPrisma();
+    const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
+    const res = createMockRes();
+
+    service.clearAuthCookie(res as never);
+
+    const cookie = res.getCookies()[0];
+    assert.equal(cookie.name, 'access_token');
+    assert.equal(cookie.clear, true);
+    assert.equal(cookie.options.path, '/');
+    assert.equal(cookie.options.secure, false);
+    assert.equal(cookie.options.sameSite, 'lax');
+  } finally {
+    if (prevEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = prevEnv;
+    if (prevCors === undefined) delete process.env.CORS_ORIGIN; else process.env.CORS_ORIGIN = prevCors;
+  }
+});
+
+test('auth cookies use None+Secure when CORS allows cross-site origins (127.0.0.1 vs localhost)', async () => {
+  const prevEnv = process.env.NODE_ENV;
+  const prevCors = process.env.CORS_ORIGIN;
+  process.env.NODE_ENV = 'development';
+  process.env.CORS_ORIGIN = 'http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:3000,http://localhost:3000';
+  try {
+    const { prisma } = createMockPrisma();
+    const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
+    const res = createMockRes();
+
+    await service.register({ email: 'cross@test.dev', password: 'SecurePass1!', name: 'Cross User', role: 'STUDENT' }, res as never);
+
+    const cookies = res.getCookies();
+    assert.equal(cookies.length, 2);
+    for (const cookie of cookies) {
+      assert.equal(cookie.options.sameSite, 'none');
+      assert.equal(cookie.options.secure, true);
+    }
+  } finally {
+    if (prevEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = prevEnv;
+    if (prevCors === undefined) delete process.env.CORS_ORIGIN; else process.env.CORS_ORIGIN = prevCors;
+  }
+});
+
+test('resetPassword does not wipe other pending reset tokens on invalid token', async () => {
+  const { prisma, users } = createMockPrisma();
+  const bcrypt = await import('bcryptjs');
+  const tokenA = 'reset-token-a';
+  const tokenB = 'reset-token-b';
+  users.push({ id: 'user-a', email: 'a@test.dev', passwordHash: 'hash-a', role: 'STUDENT', resetTokenHash: await bcrypt.hash(tokenA, 12), resetTokenExpires: new Date(Date.now() + 3600_000), updatedAt: new Date(Date.now() - 2000) });
+  users.push({ id: 'user-b', email: 'b@test.dev', passwordHash: 'hash-b', role: 'STUDENT', resetTokenHash: await bcrypt.hash(tokenB, 12), resetTokenExpires: new Date(Date.now() + 3600_000), updatedAt: new Date(Date.now() - 1000) });
   const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
-  const res = createMockRes();
 
-  service.clearAuthCookie(res as never);
+  await assert.rejects(
+    () => service.resetPassword('definitely-wrong-token', 'NewSecurePass1!'),
+    BadRequestException,
+  );
 
-  const cookie = res.getCookies()[0];
-  assert.equal(cookie.name, 'access_token');
-  assert.equal(cookie.clear, true);
-  assert.equal(cookie.options.path, '/');
-  assert.equal(cookie.options.secure, false);
-  assert.equal(cookie.options.sameSite, 'lax');
+  // A failed attempt must NOT invalidate every user's in-flight reset.
+  assert.ok((users.find((u) => u.id === 'user-a') as any).resetTokenHash, 'user-a token must survive');
+  assert.ok((users.find((u) => u.id === 'user-b') as any).resetTokenHash, 'user-b token must survive');
+});
+
+test('resetPassword resets the correct user even when another user has a newer pending token', async () => {
+  const { prisma, users } = createMockPrisma();
+  const bcrypt = await import('bcryptjs');
+  const tokenA = 'reset-token-a';
+  const tokenB = 'reset-token-b';
+  users.push({ id: 'user-a', email: 'a@test.dev', passwordHash: 'hash-a', role: 'STUDENT', resetTokenHash: await bcrypt.hash(tokenA, 12), resetTokenExpires: new Date(Date.now() + 3600_000), updatedAt: new Date(Date.now() - 2000) });
+  users.push({ id: 'user-b', email: 'b@test.dev', passwordHash: 'hash-b', role: 'STUDENT', resetTokenHash: await bcrypt.hash(tokenB, 12), resetTokenExpires: new Date(Date.now() + 3600_000), updatedAt: new Date(Date.now() - 1000) });
+  const service = new AuthService(prisma as never, createMockJwt() as never, createMockEmail() as never);
+
+  const result = await service.resetPassword(tokenA, 'NewSecurePass1!');
+
+  assert.equal(result.message, 'Password reset successfully');
+  assert.notEqual((users.find((u) => u.id === 'user-a') as any).passwordHash, 'hash-a', 'user-a password must change');
+  assert.equal((users.find((u) => u.id === 'user-b') as any).passwordHash, 'hash-b', 'user-b password must not change');
+  assert.equal((users.find((u) => u.id === 'user-a') as any).resetTokenHash, null);
 });
 
 test('password complexity validation rejects weak passwords', async () => {

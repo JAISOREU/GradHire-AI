@@ -28,7 +28,7 @@ type CompanyListItem = {
 export const CompaniesPage = () => {
   const { isAuthenticated } = useAuth();
   const preview = !isAuthenticated;
-  const { data: companies, loading } = useAsync(() => companiesApi.list(1, preview ? 3 : 20), []);
+  const { data: companies, loading } = useAsync(() => companiesApi.list(1, preview ? 3 : 20), [preview]);
 
   const industries = Array.from(new Set((companies ?? []).map((c) => c.industry).filter((i): i is string => !!i))).slice(0, 4);
 

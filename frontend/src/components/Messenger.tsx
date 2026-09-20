@@ -1,24 +1,70 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Message } from '../core/types';
 import { Button } from './Button';
 import { FormInput } from './FormField';
 import { EmptyState } from './EmptyState';
 import { LoadingState } from './LoadingState';
 import { PhosphorIcon } from './PhosphorIcon';
+import { Badge, resolveBadgeKind } from './Badge';
+import {
+  buildConversations,
+  filterByTab,
+  type Conversation,
+  type ParticipantKind,
+} from './conversationRules';
 
-type Conversation = {
+export type SharedApp = {
   id: string;
-  name: string;
-  lastMessage: string;
-  lastMessageAt: string;
-  unreadCount: number;
-  messages: Message[];
+  jobId: string;
+  jobTitle: string;
+  company: string;
+  status: string;
+  submittedAt?: string;
 };
 
-type MessengerProps = {
+export type MessengerTab = {
+  key: string;
+  label: string;
+  kind?: ParticipantKind;
+};
+
+export const STUDENT_TABS: MessengerTab[] = [
+  { key: 'all', label: 'All' },
+  { key: 'unread', label: 'Unread', kind: 'UNREAD' },
+  { key: 'recruiters', label: 'Recruiters', kind: 'RECRUITER' },
+  { key: 'companies', label: 'Companies', kind: 'COMPANY' },
+];
+
+export const EMPLOYER_TABS: MessengerTab[] = [
+  { key: 'all', label: 'All' },
+  { key: 'unread', label: 'Unread', kind: 'UNREAD' },
+  { key: 'candidates', label: 'Candidates', kind: 'CANDIDATE' },
+  { key: 'companies', label: 'Companies', kind: 'COMPANY' },
+];
+
+const APP_STATUS_LABELS: Record<string, string> = {
+  SUBMITTED: 'Applied',
+  UNDER_REVIEW: 'Screening',
+  SHORTLISTED: 'Screening',
+  ASSESSMENT: 'Screening',
+  INTERVIEW: 'Interview',
+  OFFER: 'Offer',
+  HIRED: 'Hired',
+  REJECTED: 'Rejected',
+  WITHDRAWN: 'Withdrawn',
+};
+
+const appStatusLabel = (status: string): string => APP_STATUS_LABELS[status] ?? status;
+
+const EMOJIS = ['👍', '😊', '🎉', '🙏', '💼', '📅', '✨', '✅'];
+
+export type MessengerProps = {
   messages: Message[];
   currentUserId: string;
+  role: 'STUDENT' | 'EMPLOYER';
+  sharedApps?: Record<string, SharedApp[]>;
   onSend: (to: string, body: string) => Promise<void>;
+  onMarkRead?: (messageIds: string[]) => Promise<void>;
   loading?: boolean;
   error?: string;
   reload?: () => void;
@@ -26,99 +72,158 @@ type MessengerProps = {
   loadingRecipients?: boolean;
   onSearchRecipients?: (q: string) => Promise<void>;
   newMessageLabel?: string;
-  searchPlaceholder?: string;
+  placeholder?: string;
+  tabs?: MessengerTab[];
+  getProfileHref: (conversation: Conversation) => string;
+  getJobHref: (app: SharedApp) => string;
+};
+
+const Avatar = ({ name, avatar }: { name: string; avatar: string | null }) => {
+  if (avatar) {
+    return <img src={avatar} alt="" className="messenger__avatar messenger__avatar-img" />;
+  }
+  return <div className="messenger__avatar">{name.charAt(0).toUpperCase()}</div>;
+};
+
+const formatTime = (iso: string) => {
+  const date = new Date(iso);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return date.toLocaleDateString([], { weekday: 'short' });
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 };
 
 export const Messenger = ({
   messages,
   currentUserId,
+  role,
+  sharedApps = {},
   onSend,
-  loading,
+  onMarkRead,
+  loading = false,
   error,
   reload,
   recipients,
   loadingRecipients,
   onSearchRecipients,
   newMessageLabel = 'New message',
-  searchPlaceholder = 'Search conversations…',
+  placeholder = 'Write a message…',
+  tabs = role === 'EMPLOYER' ? EMPLOYER_TABS : STUDENT_TABS,
+  getProfileHref,
+  getJobHref,
 }: MessengerProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [activeTabKey, setActiveTabKey] = useState<string>(tabs[0].key);
+  const [query, setQuery] = useState('');
+  const [chatQuery, setChatQuery] = useState('');
+  const [showChatSearch, setShowChatSearch] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
   const [showNewMessage, setShowNewMessage] = useState(false);
   const [newRecipient, setNewRecipient] = useState('');
-  const [filter, setFilter] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const conversations = useMemo<Conversation[]>(() => {
-    const map = new Map<string, Conversation>();
+  const conversations = useMemo(() => buildConversations(messages, currentUserId), [messages, currentUserId]);
 
-    for (const msg of messages) {
-      const otherId = msg.from === currentUserId ? msg.to : msg.from;
-      const otherName =
-        msg.from === currentUserId
-          ? msg.toName || msg.to
-          : msg.fromName || msg.from;
+  const activeTab = useMemo(() => tabs.find((t) => t.key === activeTabKey) ?? tabs[0], [tabs, activeTabKey]);
 
-      if (!map.has(otherId)) {
-        map.set(otherId, {
-          id: otherId,
-          name: otherName,
-          lastMessage: msg.body,
-          lastMessageAt: msg.createdAt,
-          unreadCount: 0,
-          messages: [],
-        });
-      }
-
-      const convo = map.get(otherId)!;
-      convo.messages.push(msg);
-
-      const msgTime = new Date(msg.createdAt).getTime();
-      const convoTime = new Date(convo.lastMessageAt).getTime();
-      if (msgTime > convoTime) {
-        convo.lastMessage = msg.body;
-        convo.lastMessageAt = msg.createdAt;
-      }
-
-      if (msg.to === currentUserId && !msg.read) {
-        convo.unreadCount += 1;
-      }
-    }
-
-    return Array.from(map.values()).sort(
-      (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+  const visibleConversations = useMemo(() => {
+    const byTab = filterByTab(conversations, activeTab.kind);
+    const q = query.trim().toLowerCase();
+    if (!q) return byTab;
+    return byTab.filter((c) =>
+      `${c.name} ${c.company ?? ''} ${c.subtitle ?? ''}`.toLowerCase().includes(q),
     );
-  }, [messages, currentUserId]);
+  }, [conversations, activeTab, query]);
 
-  const filteredConversations = useMemo(() => {
-    if (!filter.trim()) return conversations;
-    const q = filter.toLowerCase();
-    return conversations.filter((c) => c.name.toLowerCase().includes(q));
-  }, [conversations, filter]);
+  const selectedConvo = useMemo(
+    () => conversations.find((c) => c.id === selectedId) ?? null,
+    [conversations, selectedId],
+  );
+
+  const unreadIds = useMemo(
+    () =>
+      selectedConvo
+        ? selectedConvo.messages
+            .filter((m) => m.to === currentUserId && !m.read)
+            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            .map((m) => m.id)
+        : [],
+    [selectedConvo, currentUserId],
+  );
 
   const selectedMessages = useMemo(() => {
-    if (!selectedId) return [];
-    const convo = conversations.find((c) => c.id === selectedId);
-    if (!convo) return [];
-    return convo.messages.sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    if (!selectedConvo) return [];
+    const list = [...selectedConvo.messages].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
-  }, [selectedId, conversations]);
+    const q = chatQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((m) => m.body.toLowerCase().includes(q));
+  }, [selectedConvo, chatQuery]);
+
+  const panelApps = useMemo(
+    () => (selectedId ? sharedApps[selectedId] ?? [] : []),
+    [sharedApps, selectedId],
+  );
+
+  const sortedPanelApps = useMemo(
+    () =>
+      [...panelApps].sort(
+        (a, b) => new Date(b.submittedAt ?? 0).getTime() - new Date(a.submittedAt ?? 0).getTime(),
+      ),
+    [panelApps],
+  );
+
+  const currentJob = sortedPanelApps[0] ?? null;
+  const detailsRelevant = !!selectedConvo && (!!selectedConvo.company || panelApps.length > 0);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (typeof messagesEndRef.current?.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [selectedMessages]);
 
   useEffect(() => {
-    if (selectedId) {
-      setBody('');
-      setSendError('');
-      inputRef.current?.focus();
+    setBody('');
+    setSendError('');
+    setShowEmoji(false);
+    setChatQuery('');
+    setShowChatSearch(false);
+    setShowMoreMenu(false);
+    if (selectedConvo) inputRef.current?.focus();
+  }, [selectedConvo]);
+
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    if (onMarkRead) {
+      const convo = conversations.find((c) => c.id === id);
+      const ids = convo
+        ? convo.messages
+            .filter((m) => m.to === currentUserId && !m.read)
+            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            .map((m) => m.id)
+        : [];
+      if (ids.length > 0) {
+        onMarkRead(ids);
+      }
     }
-  }, [selectedId]);
+  };
+
+  const handleMarkAllRead = () => {
+    if (unreadIds.length > 0 && onMarkRead) onMarkRead(unreadIds);
+    setShowMoreMenu(false);
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,9 +252,7 @@ export const Messenger = ({
 
   const handleNewConversationInput = useCallback(async (q: string) => {
     setNewRecipient(q);
-    if (q.trim().length < 2 || !onSearchRecipients) {
-      return;
-    }
+    if (q.trim().length < 2 || !onSearchRecipients) return;
     setSendError('');
     try {
       await onSearchRecipients(q.trim());
@@ -164,28 +267,15 @@ export const Messenger = ({
     setNewRecipient('');
   };
 
-  const selectedConvo = conversations.find((c) => c.id === selectedId);
-
-  const formatTime = (iso: string) => {
-    const date = new Date(iso);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days === 0) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return date.toLocaleDateString([], { weekday: 'short' });
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  };
-
-  const formatMessageTime = (iso: string) => {
-    return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const handleInsertEmoji = (emoji: string) => {
+    setBody((prev) => prev + emoji);
+    inputRef.current?.focus();
   };
 
   return (
     <div className="messenger">
-      <div className="messenger__sidebar">
+      {/* Conversation list */}
+      <aside className={`messenger__sidebar ${selectedId ? 'messenger__sidebar--hidden' : ''}`}>
         <div className="messenger__sidebar-header">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold text-secondary uppercase tracking-wide m-0">
@@ -206,7 +296,7 @@ export const Messenger = ({
                 label="To"
                 value={newRecipient}
                 onChange={(e) => handleNewConversationInput(e.target.value)}
-                placeholder={searchPlaceholder}
+                placeholder="Search…"
                 autoComplete="off"
                 className="mb-2"
               />
@@ -222,17 +312,11 @@ export const Messenger = ({
               {recipients && recipients.length > 0 && (
                 <div className="mt-2 max-h-48 overflow-y-auto">
                   {recipients.map((r) => (
-                      <button
-                        key={r.id}
-                        type="button"
-                        className="w-full text-left p-2 rounded cursor-pointer border-0 bg-transparent text-sm text-text"
-                        onClick={() => handleSelectRecipient(r.id)}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--color-surface-hover)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                        }}
+                    <button
+                      key={r.id}
+                      type="button"
+                      className="w-full text-left p-2 rounded cursor-pointer border-0 bg-transparent text-sm text-text"
+                      onClick={() => handleSelectRecipient(r.id)}
                     >
                       <div className="font-semibold">{r.name}</div>
                     </button>
@@ -241,37 +325,57 @@ export const Messenger = ({
               )}
             </div>
           )}
-          <input
-            type="search"
-            className="input mt-2 w-full"
-            placeholder={searchPlaceholder}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <div className="messenger__search">
+            <input
+              type="search"
+              className="input"
+              aria-label="Search conversations"
+              placeholder="Search conversations"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="messenger__tabs" role="tablist" aria-label="Conversation filters">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={activeTab.key === tab.key}
+                className={`messenger__tab ${activeTab.key === tab.key ? 'messenger__tab--active' : ''}`}
+                onClick={() => setActiveTabKey(tab.key)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="messenger__conversation-list">
           {loading ? (
             <LoadingState label="Loading conversations…" />
-          ) : filteredConversations.length === 0 ? (
+          ) : visibleConversations.length === 0 ? (
             <div className="p-4">
               <EmptyState
                 icon="ChatCircle"
-                title="No conversations"
-                text="Start a new conversation to begin messaging."
+                title={conversations.length === 0 ? 'No conversations' : 'No matching conversations'}
+                text={
+                  conversations.length === 0
+                    ? 'Start a new conversation to begin messaging.'
+                    : 'Try a different search or tab.'
+                }
               />
             </div>
           ) : (
-            filteredConversations.map((convo) => (
+            visibleConversations.map((convo) => (
               <button
                 key={convo.id}
                 type="button"
+                aria-label={`Conversation with ${convo.name}`}
                 className={`messenger__conversation ${selectedId === convo.id ? 'messenger__conversation--active' : ''}`}
-                onClick={() => setSelectedId(convo.id)}
+                onClick={() => handleSelect(convo.id)}
               >
-                <div className="messenger__avatar">
-                  {convo.name.charAt(0).toUpperCase()}
-                </div>
+                <Avatar name={convo.name} avatar={convo.avatar} />
                 <div className="messenger__conversation-body min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-sm overflow-hidden text-ellipsis whitespace-nowrap">
@@ -286,37 +390,88 @@ export const Messenger = ({
                   </div>
                 </div>
                 {convo.unreadCount > 0 && (
-                  <span className="messenger__unread-badge">
-                    {convo.unreadCount}
-                  </span>
+                  <span className="messenger__unread-badge">{convo.unreadCount}</span>
                 )}
               </button>
             ))
           )}
         </div>
-      </div>
+      </aside>
 
-      <div className="messenger__chat">
+      {/* Active conversation */}
+      <section className={`messenger__chat ${selectedId ? 'messenger__chat--open' : ''}`}>
         {selectedId && selectedConvo ? (
           <>
-            <div className="messenger__chat-header">
-              <div className="flex items-center gap-2">
-                <div className="messenger__avatar w-8 h-8 text-sm">
-                  {selectedConvo.name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <div className="font-semibold text-sm">{selectedConvo.name}</div>
-                </div>
+            <header className="messenger__chat-header">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="messenger__back"
+                aria-label="Back to conversations"
+                onClick={() => setSelectedId(null)}
+              >
+                <PhosphorIcon name="ArrowLeft" size={18} />
+              </Button>
+              <Avatar name={selectedConvo.name} avatar={selectedConvo.avatar} />
+              <div className="messenger__chat-title min-w-0">
+                <div className="font-semibold text-sm truncate">{selectedConvo.name}</div>
+                {selectedConvo.subtitle && (
+                  <div className="text-xs text-tertiary truncate">{selectedConvo.subtitle}</div>
+                )}
               </div>
-            </div>
+              <div className="messenger__chat-actions">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Search in conversation"
+                  onClick={() => setShowChatSearch((v) => !v)}
+                >
+                  <PhosphorIcon name="MagnifyingGlass" size={18} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="More"
+                  onClick={() => setShowMoreMenu((v) => !v)}
+                >
+                  <PhosphorIcon name="DotsThreeVertical" size={18} />
+                </Button>
+              </div>
+              {showChatSearch && (
+                <input
+                  type="search"
+                  className="input messenger__chat-search"
+                  placeholder="Search in conversation…"
+                  aria-label="Search in conversation"
+                  value={chatQuery}
+                  onChange={(e) => setChatQuery(e.target.value)}
+                  autoFocus
+                />
+              )}
+              {showMoreMenu && (
+                <div className="messenger__more-menu">
+                  {unreadIds.length > 0 ? (
+                    <button type="button" onClick={handleMarkAllRead}>
+                      Mark as read
+                    </button>
+                  ) : (
+                    <span className="messenger__more-empty">All messages read</span>
+                  )}
+                </div>
+              )}
+            </header>
 
             <div className="messenger__messages">
               {selectedMessages.length === 0 ? (
                 <div className="p-4">
                   <EmptyState
-                    icon="HandWaving"
+                    icon="ChatCircle"
                     title="No messages yet"
-                    text="Say hello to start the conversation!"
+                    text={
+                      chatQuery
+                        ? 'No messages match your search.'
+                        : 'Say hello to start the conversation!'
+                    }
                   />
                 </div>
               ) : (
@@ -331,18 +486,17 @@ export const Messenger = ({
                         className={`messenger__message ${isSent ? 'messenger__message--sent' : 'messenger__message--received'}`}
                       >
                         <div>{msg.body}</div>
-                        <div className={`messenger__message-time ${isSent ? 'messenger__message-time--sent' : 'messenger__message-time--received'}`}>
-                          {formatMessageTime(msg.createdAt)}
+                        <div
+                          className={`messenger__message-time ${isSent ? 'messenger__message-time--sent' : 'messenger__message-time--received'}`}
+                        >
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
                           {isSent && (
                             <span style={{ marginLeft: '4px', display: 'inline-flex', gap: '2px' }}>
-                              {msg.read ? (
-                                <>
-                                  <PhosphorIcon name="Check" size={10} weight="bold" />
-                                  <PhosphorIcon name="Check" size={10} weight="bold" />
-                                </>
-                              ) : (
-                                <PhosphorIcon name="Check" size={10} weight="bold" />
-                              )}
+                              <PhosphorIcon name="Check" size={10} weight="bold" />
+                              {msg.read && <PhosphorIcon name="Check" size={10} weight="bold" />}
                             </span>
                           )}
                         </div>
@@ -366,11 +520,45 @@ export const Messenger = ({
             )}
 
             <form onSubmit={handleSend} className="messenger__input-area">
+              {showEmoji && (
+                <div className="messenger__emoji-popover">
+                  {EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      aria-label={`Insert emoji ${emoji}`}
+                      onClick={() => handleInsertEmoji(emoji)}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled
+                title="Attachments coming soon"
+                aria-label="Attachment"
+                className="messenger__composer-btn"
+              >
+                <PhosphorIcon name="Paperclip" size={18} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Emoji"
+                className="messenger__composer-btn"
+                onClick={() => setShowEmoji((v) => !v)}
+              >
+                <PhosphorIcon name="Smiley" size={18} />
+              </Button>
               <input
                 ref={inputRef}
                 type="text"
-                className="input"
-                placeholder="Type a message…"
+                className="input messenger__composer-input"
+                placeholder={placeholder}
+                aria-label="Compose message"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 disabled={sending}
@@ -390,7 +578,81 @@ export const Messenger = ({
             />
           </div>
         )}
-      </div>
+      </section>
+
+      {/* Details panel */}
+      {detailsRelevant && selectedConvo && (
+        <aside className="messenger__details" aria-label="Conversation details">
+          <div className="messenger__details-header">
+            <h3 className="text-sm font-semibold m-0">Details</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={detailsCollapsed ? 'Expand details' : 'Collapse details'}
+              onClick={() => setDetailsCollapsed((v) => !v)}
+            >
+              <PhosphorIcon name={detailsCollapsed ? 'ArrowLeft' : 'CaretDown'} size={16} />
+            </Button>
+          </div>
+          {!detailsCollapsed && (
+            <>
+              <div className="messenger__details-company">
+                <Avatar name={selectedConvo.company ?? selectedConvo.name} avatar={selectedConvo.avatar} />
+                <div className="min-w-0">
+                  <div className="font-semibold text-sm truncate">
+                    {selectedConvo.company ?? selectedConvo.name}
+                  </div>
+                  {selectedConvo.subtitle && (
+                    <div className="text-xs text-tertiary">{selectedConvo.subtitle}</div>
+                  )}
+                </div>
+              </div>
+
+              {currentJob && (
+                <section className="messenger__details-section">
+                  <h4 className="messenger__details-title">Current Job</h4>
+                  <div className="messenger__details-job">
+                    <span className="font-medium text-sm">{currentJob.jobTitle}</span>
+                    <Badge kind={resolveBadgeKind(currentJob.status)}>
+                      {appStatusLabel(currentJob.status)}
+                    </Badge>
+                  </div>
+                </section>
+              )}
+
+              {sortedPanelApps.length > 1 && (
+                <section className="messenger__details-section">
+                  <h4 className="messenger__details-title">Shared Applications</h4>
+                  <ul className="messenger__details-apps">
+                    {sortedPanelApps.slice(1).map((app) => (
+                      <li key={app.id} className="messenger__details-app">
+                        <span className="text-sm truncate">
+                          {app.jobTitle}
+                          <span className="text-tertiary"> · {app.company}</span>
+                        </span>
+                        <Badge kind={resolveBadgeKind(app.status)}>
+                          {appStatusLabel(app.status)}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <div className="messenger__details-actions">
+                <a href={getProfileHref(selectedConvo)} className="btn btn--primary">
+                  View Profile
+                </a>
+                {currentJob && (
+                  <a href={getJobHref(currentJob)} className="btn btn--ghost">
+                    View Job
+                  </a>
+                )}
+              </div>
+            </>
+          )}
+        </aside>
+      )}
     </div>
   );
 };

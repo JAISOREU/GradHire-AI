@@ -165,5 +165,306 @@ describe('AppService', () => {
     assert.ok(jobs.items.length > 0);
     assert.ok(jobs.items.every((job) => typeof job.type === 'string'));
   });
+
+  describe('enum normalization (blocker: empty string → Prisma enum 500)', () => {
+    const makeAvailablePrisma = () => {
+      const prisma = createMockPrisma() as any;
+      prisma.$queryRaw = async () => [{ one: 1 }] as never;
+      let captured = undefined as Record<string, unknown> | undefined;
+      prisma.experience = {
+        findMany: async () => [],
+        create: async ({ data }: { data: Record<string, unknown> }) => {
+          captured = data;
+          return { id: 'exp-1', ...data };
+        },
+      } as any;
+      return { prisma, getCaptured: () => captured };
+    };
+
+    it('createExperience drops empty-string enum fields before reaching Prisma', async () => {
+      const { prisma, getCaptured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createExperience('student-001', {
+        jobTitle: 'Software Engineer Intern',
+        company: 'Acme Corp',
+        employmentType: '',
+        location: '',
+        startDate: '2026-06-01',
+        endDate: '',
+      });
+
+      assert.ok(getCaptured(), 'expected prisma.experience.create to be called');
+      assert.equal(getCaptured()!.employmentType, undefined, 'empty employmentType must be dropped');
+      assert.equal(getCaptured()!.location, undefined, 'empty location must be dropped');
+      assert.equal(getCaptured()!.endDate, undefined, 'empty endDate must be dropped');
+    });
+  });
+
+  describe('create-path allowlists (extra fields must not reach Prisma)', () => {
+    const makeAvailablePrisma = () => {
+      const prisma = createMockPrisma() as any;
+      prisma.$queryRaw = async () => [{ one: 1 }] as never;
+      const captured: Array<{ model: string; data: Record<string, unknown> }> = [];
+      const captureCreate = (model: string) => (args: { data: Record<string, unknown> }) => {
+        captured.push({ model, data: args.data });
+        return { id: `${model}-1`, ...args.data };
+      };
+      prisma.experience = { findMany: async () => [], create: captureCreate('experience') } as any;
+      prisma.education = { create: captureCreate('education') } as any;
+      prisma.skill = {
+        findFirst: async () => null,
+        create: captureCreate('skill'),
+        update: async () => captured.push({ model: 'skill-update', data: {} }) && {}, 
+      } as any;
+      prisma.certification = { create: captureCreate('certification') } as any;
+      prisma.project = { create: captureCreate('project') } as any;
+      prisma.careerPreference = { findFirst: async () => null, create: captureCreate('careerPreference') } as any;
+      return { prisma, captured };
+    };
+
+    it('createExperience strips manager-injected fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createExperience('student-001', {
+        jobTitle: 'Engineer', company: 'Acme', startDate: '2026-06-01',
+        admin: true, isInternal: true,
+      });
+
+      const call = captured.find((c) => c.model === 'experience');
+      assert.ok(call, 'expected prisma.experience.create to be called');
+      assert.equal(call!.data.jobTitle, 'Engineer');
+      assert.equal(call!.data.company, 'Acme');
+      assert.ok(call!.data.startDate instanceof Date, 'startDate is an allowed field and must be preserved as a Date');
+      assert.equal(call!.data.admin, undefined, 'admin must be stripped on create');
+      assert.equal(call!.data.isInternal, undefined, 'isInternal must be stripped on create');
+    });
+
+    it('createEducation strips extra fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createEducation('student-001', { institution: 'MIT', injected: 'x', admin: true });
+
+      const call = captured.find((c) => c.model === 'education');
+      assert.ok(call, 'expected prisma.education.create to be called');
+      assert.equal(call!.data.institution, 'MIT');
+      assert.equal(call!.data.injected, undefined, 'injected must be stripped on create');
+      assert.equal(call!.data.admin, undefined, 'admin must be stripped on create');
+    });
+
+    it('createCertification strips extra fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createCertification('student-001', { name: 'AWS', injected: 'x' });
+
+      const call = captured.find((c) => c.model === 'certification');
+      assert.ok(call, 'expected prisma.certification.create to be called');
+      assert.equal(call!.data.name, 'AWS');
+      assert.equal(call!.data.injected, undefined, 'injected must be stripped on create');
+    });
+
+    it('createProject strips extra fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createProject('student-001', { name: 'Portfolio', injected: 'x' });
+
+      const call = captured.find((c) => c.model === 'project');
+      assert.ok(call, 'expected prisma.project.create to be called');
+      assert.equal(call!.data.name, 'Portfolio');
+      assert.equal(call!.data.injected, undefined, 'injected must be stripped on create');
+    });
+
+    it('createSkill strips extra fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.createSkill('student-001', { name: '  Python  ', injected: 'x' });
+
+      const call = captured.find((c) => c.model === 'skill');
+      assert.ok(call, 'expected prisma.skill.create to be called');
+      assert.equal(call!.data.name, 'python');
+      assert.equal(call!.data.injected, undefined, 'injected must be stripped on create');
+    });
+
+    it('upsertCareerPreference strips extra fields on create', async () => {
+      const { prisma, captured } = makeAvailablePrisma();
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+      await svc.onModuleInit();
+
+      await svc.upsertCareerPreference('student-001', { preferredJobTitles: ['Analyst'], injected: 'x' });
+
+      const call = captured.find((c) => c.model === 'careerPreference');
+      assert.ok(call, 'expected prisma.careerPreference.create to be called');
+      assert.equal((call!.data.preferredJobTitles as string[] | undefined)?.length, 1);
+      assert.equal(call!.data.injected, undefined, 'injected must be stripped on create');
+    });
+  });
+
+  describe('getJobs new filters (skills + datePosted)', () => {
+    const makeCapturingPrisma = () => {
+      const prisma = createMockPrisma() as any;
+      const calls: Array<{ where?: Record<string, unknown>; orderBy?: Record<string, unknown> }> = [];
+      prisma.job = {
+        findMany: async (args?: { where?: Record<string, unknown>; orderBy?: Record<string, unknown> }) => {
+          calls.push({ where: args?.where, orderBy: args?.orderBy });
+          return [];
+        },
+        count: async () => 0,
+      };
+      return {
+        prisma,
+        getLastWhere: () => calls[calls.length - 1]?.where,
+        getLastOrderBy: () => calls[calls.length - 1]?.orderBy,
+      };
+    };
+
+    const makeSvc = (prisma: any) =>
+      new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+
+    it('getJobs passes requiredSkills { hasSome } to Prisma when skills query is provided', async () => {
+      const { prisma, getLastWhere } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ skills: ['React', 'Node.js'] } as any);
+
+      const where = getLastWhere();
+      assert.deepEqual(where!.requiredSkills, { hasSome: ['React', 'Node.js'] });
+    });
+
+    it('getJobs omits the requiredSkills condition when skills is empty', async () => {
+      const { prisma, getLastWhere } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ skills: [] } as any);
+
+      assert.equal(getLastWhere()!.requiredSkills, undefined);
+    });
+
+    it('getJobs adds a createdAt window for datePosted=7d', async () => {
+      const { prisma, getLastWhere } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+      const before = Date.now();
+
+      await svc.getJobs({ datePosted: '7d' } as any);
+
+      const where = getLastWhere();
+      const gte = (where!.createdAt as { gte?: Date }).gte;
+      assert.ok(gte instanceof Date, 'expected a Date cutoff on createdAt.gte');
+      assert.ok(Math.abs(gte!.getTime() - (before - 7 * 86400000)) < 60000, `cutoff ${gte!.getTime()} not ~7d before ${before}`);
+    });
+
+    it('getJobs omits the createdAt window when datePosted is absent', async () => {
+      const { prisma, getLastWhere } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({} as any);
+
+      assert.equal(getLastWhere()!.createdAt, undefined);
+    });
+
+    it('getJobs passes a whitelisted sortBy to Prisma orderBy', async () => {
+      const { prisma, getLastOrderBy } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ sortBy: 'createdAt', sortOrder: 'asc' } as any);
+
+      assert.deepEqual(getLastOrderBy(), { createdAt: 'asc' });
+    });
+
+    it('getJobs falls back to a safe default when sortBy is not whitelisted', async () => {
+      const { prisma, getLastOrderBy } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ sortBy: 'passwordHash; DROP TABLE jobs' } as any);
+
+      // Must not pass attacker-controlled field names into Prisma.
+      assert.deepEqual(getLastOrderBy(), { createdAt: 'desc' });
+    });
+
+    it('getJobs coerces an invalid sortOrder to desc', async () => {
+      const { prisma, getLastOrderBy } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ sortBy: 'title', sortOrder: 'up' } as any);
+
+      assert.deepEqual(getLastOrderBy(), { title: 'desc' });
+    });
+
+    it('getJobs treats a "-field" sort as ascending (frontend convention)', async () => {
+      const { prisma, getLastOrderBy } = makeCapturingPrisma();
+      const svc = makeSvc(prisma);
+
+      await svc.getJobs({ sort: '-createdAt' } as any);
+
+      assert.deepEqual(getLastOrderBy(), { createdAt: 'asc' });
+    });
+  });
+
+  describe('listJobSkills', () => {
+    it('returns distinct, trimmed, case-preserving skills sorted alphabetically from published jobs only', async () => {
+      const prisma = createMockPrisma() as any;
+      let capturedWhere: Record<string, unknown> | undefined;
+      prisma.job = {
+        findMany: async (args?: { where?: Record<string, unknown>; select?: Record<string, unknown> }) => {
+          capturedWhere = args?.where;
+          return [
+            { requiredSkills: ['React', 'TypeScript'] },
+            { requiredSkills: ['TypeScript', 'Python'] },
+            { requiredSkills: ['React', '  GraphQL  '] },
+            { requiredSkills: [''] },
+          ] as any;
+        },
+        count: async () => 0,
+      };
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+
+      const skills = await svc.listJobSkills();
+
+      assert.deepEqual(skills, ['GraphQL', 'Python', 'React', 'TypeScript']);
+      assert.equal(capturedWhere!.status, 'PUBLISHED');
+    });
+  });
+
+  describe('getMarketSnapshot', () => {
+    it('returns published-job counts grouped by type, sorted by count desc then name', async () => {
+      const prisma = createMockPrisma() as any;
+      let capturedWhere: Record<string, unknown> | undefined;
+      prisma.job = {
+        findMany: async (args?: { where?: Record<string, unknown>; select?: Record<string, unknown> }) => {
+          capturedWhere = args?.where;
+          return [
+            { type: 'HIRING' },
+            { type: 'HIRING' },
+            { type: 'INTERNSHIP' },
+            { type: 'CONTRACT' },
+            { type: 'PART_TIME' },
+            { type: 'PART_TIME' },
+          ] as any;
+        },
+        count: async () => 0,
+      };
+      const svc = new AppService(prisma, {} as any, { get: async () => null, set: async () => {} } as any);
+
+      const snapshot = await svc.getMarketSnapshot();
+
+      assert.equal(capturedWhere!.status, 'PUBLISHED');
+      assert.deepEqual(snapshot.byType, [
+        { type: 'HIRING', count: 2 },
+        { type: 'PART_TIME', count: 2 },
+        { type: 'CONTRACT', count: 1 },
+        { type: 'INTERNSHIP', count: 1 },
+      ]);
+    });
+  });
 });
 

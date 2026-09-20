@@ -28,7 +28,7 @@ This repository contains a `.env` file with **placeholder values only**. If you 
 
 ## Deployment Security
 
-- **Railway / Vercel**: Store all secrets in the platform's environment variable UI, not in repo files.
+- **Render / Vercel / Neon**: Store all secrets in the platform's environment variable UI, not in repo files.
 - **Local development**: Copy `.env.example` to `.env` and fill in your own local values.
 - **Secrets managers**: In production, prefer AWS Secrets Manager, HashiCorp Vault, or Docker secrets over flat `.env` files.
 

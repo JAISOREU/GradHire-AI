@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, ForbiddenException, NotFoundException,
 import { PrismaService } from '../prisma.service';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
+import { employerStudentSelect, redactStudentForEmployer } from '../common/profile-visibility';
 import { CreateJobDto, UpdateJobDto } from '../common/dto/job.dto';
 import { CacheService } from '../cache/cache.service';
 
@@ -17,6 +18,40 @@ export class EmployerService {
     }
   }
 
+  private resolveLocation(body: {
+    location?: unknown;
+    country?: string;
+    region?: string;
+    city?: string;
+  }): { structured?: Record<string, string>; country?: string; region?: string; city?: string } {
+    const raw = body.location;
+    if (typeof raw === 'string' && raw.trim()) {
+      const parts = raw.split(',').map((p) => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        const parsed: { city: string; region?: string; country: string } = {
+          city: parts[0],
+          country: parts[parts.length - 1],
+        };
+        if (parts.length >= 3) parsed.region = parts.slice(1, parts.length - 1).join(', ');
+        return { structured: { ...parsed }, ...parsed };
+      }
+      return { city: parts[0] };
+    }
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      const rec = raw as Record<string, unknown>;
+      const structured = Object.fromEntries(
+        Object.entries(rec).filter(([, v]) => v != null),
+      ) as Record<string, string>;
+      return {
+        structured,
+        country: typeof rec.country === 'string' ? rec.country : undefined,
+        region: typeof rec.region === 'string' ? rec.region : undefined,
+        city: typeof rec.city === 'string' ? rec.city : undefined,
+      };
+    }
+    return {};
+  }
+
   async createJob(user: AuthUser, body: CreateJobDto) {
     this.requireEmployer(user);
 
@@ -26,6 +61,8 @@ export class EmployerService {
         throw new BadRequestException('Invalid company');
       }
     }
+
+    const location = this.resolveLocation(body);
 
     const data: Record<string, unknown> = {
       employerId: user.id,
@@ -49,9 +86,9 @@ export class EmployerService {
       requiredTimezone: body.requiredTimezone,
       timezoneOverlap: body.timezoneOverlap,
       expectedOfficeAttendance: body.expectedOfficeAttendance,
-      country: body.country,
-      region: body.region,
-      city: body.city,
+      country: location.country ?? body.country,
+      region: location.region ?? body.region,
+      city: location.city ?? body.city,
       postalCode: body.postalCode,
       address: body.address,
       latitude: body.latitude,
@@ -98,11 +135,11 @@ export class EmployerService {
 
     await this.prisma.syncJobCompany(job.id, body.companyId);
 
-    if (body.location) {
+    if (location.structured) {
       await this.prisma.jobLocation.create({
         data: {
           jobId: job.id,
-          ...body.location,
+          ...location.structured,
         } as any,
       });
     }
@@ -179,6 +216,11 @@ export class EmployerService {
       data.publishedAt = new Date();
     }
 
+    const location = this.resolveLocation(body);
+    if (location.country !== undefined) data.country = location.country;
+    if (location.region !== undefined) data.region = location.region;
+    if (location.city !== undefined) data.city = location.city;
+
     await this.cache.invalidate('jobs:*');
 
     // Update related entities in a transaction
@@ -186,30 +228,20 @@ export class EmployerService {
       // Update main job record
       await tx.job.update({ where: { id: jobId }, data: data as any });
 
-      // Update location if provided
-      if (body.location) {
+      // Update location if it resolves to a structured row
+      if (location.structured) {
         await tx.jobLocation.upsert({
           where: { jobId },
           update: {
-            country: (body.location.country as string) ?? job.country ?? '',
-            region: (body.location.region as string) ?? null,
-            city: (body.location.city as string) ?? '',
-            postalCode: (body.location.postalCode as string) ?? null,
-            address: (body.location.address as string) ?? null,
-            latitude: (body.location.latitude as number) ?? null,
-            longitude: (body.location.longitude as number) ?? null,
-            timezone: (body.location.timezone as string) ?? null,
+            ...location.structured,
+            country: location.structured.country ?? job.country ?? '',
+            city: location.structured.city ?? job.city ?? '',
           },
           create: {
             jobId,
-            country: (body.location.country as string) ?? job.country ?? '',
-            region: (body.location.region as string) ?? null,
-            city: (body.location.city as string) ?? '',
-            postalCode: (body.location.postalCode as string) ?? null,
-            address: (body.location.address as string) ?? null,
-            latitude: (body.location.latitude as number) ?? null,
-            longitude: (body.location.longitude as number) ?? null,
-            timezone: (body.location.timezone as string) ?? null,
+            ...location.structured,
+            country: location.structured.country ?? job.country ?? '',
+            city: location.structured.city ?? job.city ?? '',
           },
         });
       }
@@ -420,7 +452,7 @@ export class EmployerService {
         where,
         include: {
           job: { select: { id: true, title: true, company: true, location: true, type: true, status: true } },
-          student: { include: { profile: { select: { id: true, name: true, focus: true } } } },
+          student: { select: employerStudentSelect },
           interview: true,
         },
         orderBy: { createdAt: 'desc' } as any,
@@ -430,14 +462,19 @@ export class EmployerService {
       this.prisma.application.count({ where }),
     ]);
 
-    const items = applications.map((a) => ({
-      id: a.id,
-      job: a.job,
-      candidate: (a.student as { profile: { name: string } | null })?.profile?.name ?? (a.student as { email: string }).email,
-      interview: a.interview,
-      status: a.status,
-      createdAt: (a as any).createdAt,
-    }));
+    const items = applications.map((a) => {
+      const raw = a.student as { profile?: { visibility?: string } | null } | undefined;
+      const student = redactStudentForEmployer(a.student as never);
+      const isPrivate = raw?.profile?.visibility === 'PRIVATE';
+      return {
+        id: a.id,
+        job: a.job,
+        candidate: isPrivate ? 'Candidate' : student?.profile?.name ?? student?.email ?? 'Candidate',
+        interview: a.interview,
+        status: a.status,
+        createdAt: (a as any).createdAt,
+      };
+    });
     return applyPagination(items, total, page, limit);
   }
 }

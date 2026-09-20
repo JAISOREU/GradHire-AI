@@ -55,7 +55,7 @@ const StudentRecommendedJobsPage = lazy(() => import('../features/student/Studen
 const StudentAnalyticsPage = lazy(() => import('../features/student/StudentAnalyticsPage').then((m) => ({ default: m.StudentAnalyticsPage })));
 const StudentNotificationsPage = lazy(() => import('../features/student/StudentNotificationsPage').then((m) => ({ default: m.StudentNotificationsPage })));
 const StudentMessagesPage = lazy(() => import('../features/student/StudentMessagesPage').then((m) => ({ default: m.StudentMessagesPage })));
-const StudentNetworkPage = lazy(() => import('../features/student/StudentNetworkPage').then((m) => ({ default: m.StudentNetworkPage })));
+const NetworkPage = lazy(() => import('../features/network/NetworkPage').then((m) => ({ default: m.NetworkPage })));
 const StudentSettingsPage = lazy(() => import('../features/student/StudentSettingsPage').then((m) => ({ default: m.StudentSettingsPage })));
 const StudentInterviewsPage = lazy(() => import('../features/student/StudentInterviewsPage').then((m) => ({ default: m.StudentInterviewsPage })));
 const AIAssistantPage = lazy(() => import('../features/ai/AIAssistantPage').then((m) => ({ default: m.AIAssistantPage })));
@@ -114,7 +114,7 @@ export const AppRoutes = () => (
         <Route path="/student/recommended" element={<LazyPage><Page><StudentRecommendedJobsPage /></Page></LazyPage>} />
 <Route path="/student/analytics" element={<LazyPage><Page><StudentAnalyticsPage /></Page></LazyPage>} />
         <Route path="/student/notifications" element={<LazyPage><Page><StudentNotificationsPage /></Page></LazyPage>} />
-         <Route path="/student/network" element={<LazyPage><Page><StudentNetworkPage /></Page></LazyPage>} />
+         <Route path="/student/network" element={<LazyPage><Page><NetworkPage /></Page></LazyPage>} />
          <Route path="/student/messages" element={<LazyPage><Page><StudentMessagesPage /></Page></LazyPage>} />
          <Route path="/student/interviews" element={<LazyPage><Page><StudentInterviewsPage /></Page></LazyPage>} />
          <Route path="/student/ai-assistant" element={<LazyPage><Page><AIAssistantPage /></Page></LazyPage>} />
@@ -137,6 +137,7 @@ export const AppRoutes = () => (
         <Route path="/employer/messages" element={<LazyPage><Page><EmployerMessagesPage /></Page></LazyPage>} />
         <Route path="/employer/analytics" element={<LazyPage><Page><EmployerAnalyticsPage /></Page></LazyPage>} />
         <Route path="/employer/notifications" element={<LazyPage><Page><EmployerNotificationsPage /></Page></LazyPage>} />
+        <Route path="/employer/network" element={<LazyPage><Page><NetworkPage /></Page></LazyPage>} />
         <Route path="/employer/settings" element={<LazyPage><Page><EmployerSettingsPage /></Page></LazyPage>} />
       </Route>
     </Route>

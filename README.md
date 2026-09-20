@@ -1,33 +1,21 @@
 # Gradture
 
-This repository contains the initial SDLC-driven blueprint for the Gradture platform.
+Gradture is an AI-powered job-matching platform connecting students with relevant opportunities and helping employers surface the right candidates.
 
-## Documentation Set
+## Documentation
 
-### Architecture & Design
-- [docs/00_Project_Charter.md](docs/00_Project_Charter.md)
-- [docs/01_Software_Requirements_Specification.md](docs/01_Software_Requirements_Specification.md)
-- [docs/02_System_Architecture.md](docs/02_System_Architecture.md)
-- [docs/03_Database_Design.md](docs/03_Database_Design.md)
-- [docs/04_API_Design.md](docs/04_API_Design.md)
-- [docs/05_Security_Architecture.md](docs/05_Security_Architecture.md)
-- [docs/06_UI_UX_Guidelines.md](docs/06_UI_UX_Guidelines.md)
-- [docs/07_AI_Architecture.md](docs/07_AI_Architecture.md)
-- [docs/08_Deployment_Architecture.md](docs/08_Deployment_Architecture.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Development Completion Tracker](docs/processing-tracker.md)
+- Specs and implementation plans: `docs/superpowers/specs/`, `docs/superpowers/plans/`
 
-### Operations & Reliability
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- [docs/13_Monitoring_and_Alerting.md](docs/13_Monitoring_and_Alerting.md)
-- [docs/09_Testing_Strategy.md](docs/09_Testing_Strategy.md)
+## Architecture
 
-### Process
-- [docs/10_Coding_Standards.md](docs/10_Coding_Standards.md)
-- [docs/11_Git_Workflow.md](docs/11_Git_Workflow.md)
-- [docs/12_Roadmap.md](docs/12_Roadmap.md)
+- `backend/` — NestJS API, Prisma/PostgreSQL, Redis
+- `frontend/` — React 19, Vite, Tailwind, Vitest
+- `infrastructure/` / `deploy/` — Docker + deployment automation
 
 ## Status
-- Responsive layout audit completed for desktop, tablet, and mobile breakpoints.
 
-## Delivery Approach
-
-The project is structured around a documentation-first SDLC to support architecture review, technical planning, and scalable implementation.
+Backend and frontend are running locally with both test suites green:
+- Frontend: 39 test files, 273 tests passing, `tsc --noEmit` clean
+- Backend: 198 tests passing

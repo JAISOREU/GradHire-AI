@@ -81,13 +81,19 @@ export const JobDetailPage = () => {
     };
   }, [id]);
 
-  useEffect(() => {
+useEffect(() => {
     if (!id || !isAuthenticated || user?.role !== 'STUDENT') return;
     let cancelled = false;
     savedJobsApi
       .check(id)
       .then((r) => {
         if (!cancelled) setSaved(r.saved ?? false);
+      })
+      .catch(() => {});
+    applicationsApi
+      .checkApplied(id)
+      .then((r) => {
+        if (!cancelled) setApplied(r.applied ?? false);
       })
       .catch(() => {});
     return () => {

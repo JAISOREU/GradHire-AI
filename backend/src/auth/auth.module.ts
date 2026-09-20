@@ -4,13 +4,14 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { EmailModule } from '../email/email.module';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../common/jwt.config';
 
 @Module({
   imports: [
     EmailModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET as string,
-      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') as any },
+      secret: JWT_SECRET,
+      signOptions: { expiresIn: JWT_EXPIRES_IN },
     }),
   ],
   controllers: [AuthController],

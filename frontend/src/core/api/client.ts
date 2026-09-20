@@ -169,7 +169,7 @@ export const api = async <T>(path: string, options: RequestOptions = {}): Promis
   const requestMethod = method ?? (body !== undefined ? 'POST' : 'GET');
 
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestMethod.toUpperCase())) {
-    const token = csrfToken || getCookie('XSRF-TOKEN');
+    const token = getCookie('XSRF-TOKEN') || csrfToken;
     if (token) {
       finalHeaders['X-XSRF-TOKEN'] = token;
     }

@@ -2,14 +2,14 @@ export interface FeedAuthor {
   id: string;
   name: string;
   title: string;
-  avatar?: string;
+  avatar?: string | null;
   verified?: boolean;
 }
 
 export interface FeedJobRow {
   title: string;
   company: string;
-  location?: string;
+  location?: string | null;
   matchScore?: number;
 }
 
@@ -30,7 +30,7 @@ export interface FeedService {
   getFeed(): Promise<FeedPost[]>;
   createPost(input: { content: string; image?: string; author: FeedAuthor }): Promise<FeedPost>;
   toggleLike(postId: string): Promise<FeedPost>;
-  addComment(postId: string): Promise<FeedPost>;
+  addComment(postId: string, content: string): Promise<FeedPost>;
 }
 
 export interface HomeRailCard {

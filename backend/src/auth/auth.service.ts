@@ -1,26 +1,13 @@
 import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
-import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import { EmailService } from '../email/email.service';
 import { RefreshToken } from '@prisma/client';
-
-const JWT_SECRET = (() => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET environment variable is required');
-    }
-    return 'gradture-dev-secret-change-me';
-  }
-  if (process.env.NODE_ENV === 'production' && secret === 'gradture-dev-secret-change-me') {
-    throw new Error('JWT_SECRET must be changed in production');
-  }
-  return secret;
-})();
-const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '7d') as JwtSignOptions['expiresIn'];
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../common/jwt.config';
+import { cookiePolicyFromEnv } from '../common/cookie-policy';
 
 export type AuthUser = {
   id: string;
@@ -42,11 +29,11 @@ export class AuthService {
   ) {}
 
   private getCookieOptions(): Record<string, unknown> {
-    const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT === 'production';
+    const policy = cookiePolicyFromEnv();
     return {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
+      secure: policy.secure,
+      sameSite: policy.sameSite,
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     };
@@ -161,6 +148,7 @@ export class AuthService {
         role: user.role,
         name: user.profile?.name || user.employerProfile?.companyName,
         avatarUrl: user.avatarUrl ?? undefined,
+        tokenVersion: user.tokenVersion,
       });
 
       const refreshToken = await this.createRefreshToken(user.id);
@@ -343,30 +331,29 @@ export class AuthService {
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
     this.validatePasswordComplexity(newPassword);
 
-    const candidate = await this.prisma.user.findFirst({
+    const candidates = await this.prisma.user.findMany({
       where: {
         resetTokenExpires: { gte: new Date() },
         resetTokenHash: { not: null },
       },
       select: { id: true, resetTokenHash: true },
-      orderBy: { updatedAt: 'desc' },
+      take: 100,
     });
 
-    if (!candidate?.resetTokenHash || !bcrypt.compareSync(token, candidate.resetTokenHash)) {
-      await this.prisma.user.updateMany({
-        where: { resetTokenExpires: { gte: new Date() }, resetTokenHash: { not: null } },
-        data: { resetTokenHash: null, resetTokenExpires: null },
-      });
-      throw new BadRequestException('Invalid or expired reset token');
+    for (const candidate of candidates) {
+      if (candidate.resetTokenHash && await bcrypt.compare(token, candidate.resetTokenHash)) {
+        const passwordHash = await bcrypt.hash(newPassword, 12);
+        await this.prisma.user.update({
+          where: { id: candidate.id },
+          data: { passwordHash, resetTokenHash: null, resetTokenExpires: null },
+        });
+        return { message: 'Password reset successfully' };
+      }
     }
 
-    const passwordHash = await bcrypt.hash(newPassword, 12);
-    await this.prisma.user.update({
-      where: { id: candidate.id },
-      data: { passwordHash, resetTokenHash: null, resetTokenExpires: null },
-    });
-
-    return { message: 'Password reset successfully' };
+    // Deliberately do NOT invalidate other users' pending tokens here — a failed
+    // attempt on one account must never revoke every in-flight reset in the system.
+    throw new BadRequestException('Invalid or expired reset token');
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {

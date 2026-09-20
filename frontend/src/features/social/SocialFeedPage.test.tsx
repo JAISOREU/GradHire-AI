@@ -19,7 +19,7 @@ const fakeFeed = (posts: FeedPost[]): FeedService => ({
   getFeed: vi.fn().mockResolvedValue(posts),
   createPost: vi.fn(async (input: { content: string; image?: string }) => ({ ...posts[0], id: 'post-new', content: input.content })),
   toggleLike: vi.fn(async (id: string) => posts.find((p) => p.id === id) as FeedPost),
-  addComment: vi.fn(async (id: string) => posts.find((p) => p.id === id) as FeedPost),
+  addComment: vi.fn(async (id: string, _content: string) => posts.find((p) => p.id === id) as FeedPost),
 });
 
 const POST: FeedPost = {

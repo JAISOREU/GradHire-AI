@@ -8,10 +8,11 @@ function createMockPrisma() {
 
   const prisma = {
     notification: {
-      findMany: async ({ where, include, skip, take }: { where: { recipientId: string; read?: boolean }; include?: unknown; skip?: number; take?: number }) => {
+      findMany: async ({ where, include, skip, take }: { where: { recipientId: string; read?: boolean; type?: string }; include?: unknown; skip?: number; take?: number }) => {
         let filtered = notifications
           .filter((n) => n.recipientId === where.recipientId)
-          .filter((n) => (where.read === undefined ? true : n.read === where.read));
+          .filter((n) => (where.read === undefined ? true : n.read === where.read))
+          .filter((n) => (where.type === undefined ? true : n.type === where.type));
         if (skip !== undefined) filtered = filtered.slice(skip);
         if (take !== undefined) filtered = filtered.slice(0, take);
         return filtered.map((n) => ({ ...n, application: n.application ?? null }));
@@ -23,6 +24,16 @@ function createMockPrisma() {
         if (idx === -1) throw new Error('not found');
         notifications[idx] = { ...notifications[idx], ...data };
         return notifications[idx];
+      },
+      updateMany: async ({ where, data }: { where: { recipientId: string; read?: boolean }; data: Record<string, unknown> }) => {
+        let count = 0;
+        for (const n of notifications) {
+          if (n.recipientId !== where.recipientId) continue;
+          if (where.read !== undefined && n.read !== where.read) continue;
+          Object.assign(n, data);
+          count++;
+        }
+        return { count };
       },
       count: async ({ where }: { where: { recipientId: string; read?: boolean } }) => {
         return notifications.filter((n) => n.recipientId === where.recipientId)
@@ -99,5 +110,50 @@ test('markRead throws Forbidden when notification belongs to another user', asyn
   const service = new NotificationsService(prisma as never, createMockGateway() as never);
 
   await assert.rejects(() => service.markRead(user as never, 'n-1'), ForbiddenException);
+});
+
+test('listForUser includes type field in items', async () => {
+  const { prisma, notifications } = createMockPrisma();
+  notifications.push(
+    { id: 'n-1', recipientId: 'emp-1', message: 'New app', read: false, type: 'APPLICATION', application: { job: { id: 'j-1', title: 'Dev', company: 'Acme' } } },
+  );
+
+  const service = new NotificationsService(prisma as never, createMockGateway() as never);
+  const result = await service.listForUser(user as never);
+
+  assert.equal(result.items[0].type, 'APPLICATION');
+  assert.deepEqual(result.items[0].job, { id: 'j-1', title: 'Dev', company: 'Acme' });
+});
+
+test('listForUser filters by type when type is provided', async () => {
+  const { prisma, notifications } = createMockPrisma();
+  notifications.push(
+    { id: 'n-1', recipientId: 'emp-1', message: 'App', read: false, type: 'APPLICATION', application: null },
+    { id: 'n-2', recipientId: 'emp-1', message: 'Msg', read: false, type: 'MESSAGE', application: null },
+    { id: 'n-3', recipientId: 'emp-1', message: 'Interview', read: false, type: 'INTERVIEW', application: null },
+  );
+
+  const service = new NotificationsService(prisma as never, createMockGateway() as never);
+  const result = await service.listForUser(user as never, false, undefined, 'APPLICATION');
+
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].type, 'APPLICATION');
+});
+
+test('markAllRead marks all user notifications as read', async () => {
+  const { prisma, notifications } = createMockPrisma();
+  notifications.push(
+    { id: 'n-1', recipientId: 'emp-1', message: 'One', read: false, type: 'APPLICATION', application: null },
+    { id: 'n-2', recipientId: 'emp-1', message: 'Two', read: false, type: 'MESSAGE', application: null },
+    { id: 'n-3', recipientId: 'other', message: 'Other', read: false, type: 'GENERIC', application: null },
+  );
+
+  const service = new NotificationsService(prisma as never, createMockGateway() as never);
+  const result = await service.markAllRead(user as never);
+
+  assert.equal(result.updated, 2);
+  assert.equal(notifications[0].read, true);
+  assert.equal(notifications[1].read, true);
+  assert.equal(notifications[2].read, false);
 });
 

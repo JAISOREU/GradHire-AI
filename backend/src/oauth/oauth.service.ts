@@ -6,18 +6,7 @@ import { Response } from 'express';
 import { PrismaService } from '../prisma.service';
 import { AuthService, AuthUser } from '../auth/auth.service';
 import { OAuthProvider, OAuthUserInfo } from './dto/oauth.dto';
-
-const JWT_SECRET = (() => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET environment variable is required');
-    }
-    return 'gradture-dev-secret-change-me';
-  }
-  return secret;
-})();
-const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '7d') as any;
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../common/jwt.config';
 
 const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
 const OAUTH_HTTP_TIMEOUT_MS = 10_000;

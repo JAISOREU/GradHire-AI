@@ -2,6 +2,7 @@ import { Controller, Get, Query, Res, UseGuards, BadRequestException, Unauthoriz
 import { Response, Request } from 'express';
 import { OAuthService } from './oauth.service';
 import { OAuthProvider } from './dto/oauth.dto';
+import { cookiePolicyFromEnv } from '../common/cookie-policy';
 
 @Controller('auth/oauth')
 export class OAuthController {
@@ -19,10 +20,11 @@ export class OAuthController {
     }
     const state = await this.oauth.generateState(redirect);
     const url = await this.oauth.getAuthorizationUrl(provider, state);
+    const policy = cookiePolicyFromEnv();
     res?.cookie('oauth_state', state, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: policy.secure,
+      sameSite: policy.sameSite,
       maxAge: 5 * 60 * 1000,
       path: '/',
     });

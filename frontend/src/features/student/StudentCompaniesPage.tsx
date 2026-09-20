@@ -1,155 +1,152 @@
 import { Alert } from '../../components/Alert';
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Button } from '../../components/Button';
+import { EmptyState } from '../../components/EmptyState';
+import { LoadingState } from '../../components/LoadingState';
+import { PageHeader } from '../../components/PageHeader';
 import { useAsync } from '../../core/hooks/useAsync';
 import { companiesApi } from '../../core/api/endpoints/companies';
-import { useAuth } from '../../core/auth/AuthContext';
-import { useToast } from '../../core/toast/ToastContext';
-import { EmptyState } from '../../components/EmptyState';
-import { Button } from '../../components/Button';
-import { PageHeader } from '../../components/PageHeader';
-import { Tooltip } from '../../components/Tooltip';
-import { Skeleton } from '../../components/Skeleton';
+import { CompaniesFilterBar } from './companies/CompaniesFilterBar';
+import { CompanyCard } from './companies/CompanyCard';
+import { CompanyRow } from './companies/CompanyRow';
+import { SkillsSidebar } from './companies/SkillsSidebar';
+import type { DiscoverFilters } from '../../core/api/endpoints/companies';
+import { useState } from 'react';
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 20;
 
 export const StudentCompaniesPage = () => {
-  useAuth();
+  const [filters, setFilters] = useState<DiscoverFilters>({});
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [followed, setFollowed] = useState<Set<string>>(new Set());
-  const { addToast } = useToast();
 
-  const { data: companies, loading, error, reload } = useAsync(
-    () => companiesApi.list(page, PAGE_SIZE),
-    [page]
+  const { data: result, loading, error, reload } = useAsync(
+    () => companiesApi.discover({ ...filters, page, limit: PAGE_SIZE }),
+    [filters.search, filters.industry, filters.location, filters.size, filters.remote, filters.hiring, page],
   );
 
-  const allCompanies = companies ?? [];
+  const items = result?.items ?? [];
+  const total = result?.total ?? 0;
+  const totalPages = result?.totalPages ?? 1;
+  const facets = result?.facets ?? { industries: [], locations: [] };
 
-  const visibleCompanies = useMemo(() => {
-    if (!search.trim()) return allCompanies;
-    const q = search.trim().toLowerCase();
-    return allCompanies.filter((c) => c.name.toLowerCase().includes(q) || (c.industry ?? '').toLowerCase().includes(q));
-  }, [allCompanies, search]);
+  const featured = items.slice(0, 3);
+  const listItems = items.slice(3);
 
-  const handleFollow = async (companyId: string) => {
-    const isFollowed = followed.has(companyId);
-    const previousFollowed = new Set(followed);
-    setFollowed((prev) => {
-      const next = new Set(prev);
-      if (next.has(companyId)) {
-        next.delete(companyId);
-      } else {
-        next.add(companyId);
-      }
-      return next;
-    });
-
-    try {
-      if (isFollowed) {
-        await companiesApi.unfollow(companyId);
-        addToast('success', 'Unfollowed company');
-      } else {
-        await companiesApi.follow(companyId);
-        addToast('success', 'Now following company');
-      }
-    } catch (err) {
-      setFollowed(previousFollowed);
-      addToast('error', err instanceof Error ? err.message : 'Failed to update follow status');
-    }
+  const handleFilterChange = (next: DiscoverFilters) => {
+    setFilters(next);
+    setPage(1);
   };
 
-  const hasMore = !search.trim() && allCompanies.length >= PAGE_SIZE;
+  const handleClearFilters = () => {
+    setFilters({});
+    setPage(1);
+  };
 
   return (
-    <div className="page fade-in">
-      <PageHeader
-        title="Explore companies"
-        subtitle="Discover organizations hiring on Gradture."
-        action={
-           <input
-             type="search"
-             className="input w-40"
-             placeholder="Search companies…"
-             value={search}
-             onChange={(e) => {
-               setSearch(e.target.value);
-               setPage(1);
-             }}
-           />
-        }
-      />
-
-      {error && (
-        <Alert>
-          {error ?? 'Failed to load companies.'}{' '}
-          <button onClick={reload} className="link">Retry</button>
-        </Alert>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {loading ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="card card--spacious">
-              <Skeleton lines={3} />
-            </div>
-          ))
-        ) : visibleCompanies.length > 0 ? (
-          visibleCompanies.map((company) => (
-            <div key={company.id} className="card card--spacious flex flex-col gap-3">
-              <Link to={`/companies/${company.id}`} className="link-reset no-underline text-inherit">
-                <div>
-                  <h3 className="list-item__title mb-2">{company.name}</h3>
-                  <div className="flex flex-wrap gap-2 mb-3 items-center">
-                    {company.industry && (
-                      <span className="badge badge--primary">{company.industry}</span>
-                    )}
-                    {company.location && (
-                      <span className="text-muted text-sm">{company.location}</span>
-                    )}
-                  </div>
-                  {company.description && (
-                     <p className="text-sm text-secondary line-clamp-2">
-                      {company.description}
-                    </p>
-                  )}
-                </div>
-              </Link>
-              <div className="flex justify-between items-center mt-auto">
-                <span className="text-xs text-muted">
-                  {followed.has(company.id) ? 'Following' : 'Not following'}
+    <div className="public-page fade-in">
+      <section className="section-full">
+        <div className="section-inner">
+          <PageHeader
+            title="Explore companies"
+            subtitle="Discover companies, teams, and opportunities."
+            action={
+              total > 0 && !loading ? (
+                <span className="badge badge--muted">
+                  <span>{total} companies</span>
                 </span>
-                <Tooltip content={followed.has(company.id) ? 'Unfollow this company' : 'Follow this company'}>
-                  <Button
-                    variant={followed.has(company.id) ? 'secondary' : 'primary'}
-                    size="sm"
-                    onClick={() => handleFollow(company.id)}
-                  >
-                    {followed.has(company.id) ? 'Unfollow' : 'Follow'}
-                  </Button>
-                </Tooltip>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full">
-            <EmptyState
-              icon="Building"
-              title="No companies found"
-              text={search ? 'Try adjusting your search terms.' : 'Check back soon for new companies.'}
-            />
-          </div>
-        )}
-      </div>
-
-      {!loading && hasMore && (
-        <div className="flex justify-center mt-8">
-          <Button variant="secondary" onClick={() => setPage((p) => p + 1)}>
-            Load more
-          </Button>
+              ) : null
+            }
+          />
         </div>
-      )}
+      </section>
+
+      <section className="section-full">
+        <div className="section-inner">
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-6">
+            <div>
+              <CompaniesFilterBar
+                filters={filters}
+                industries={facets.industries}
+                locations={facets.locations}
+                onChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+
+              {error ? (
+                <Alert className="mt-4">
+                  {error ?? 'Failed to load companies.'}{' '}
+                  <button onClick={reload} className="link">Retry</button>
+                </Alert>
+              ) : loading && items.length === 0 ? (
+                <div className="mt-4">
+                  <LoadingState label="Loading companies…" />
+                </div>
+              ) : items.length === 0 ? (
+                <EmptyState
+                  className="mt-4"
+                  icon="Building"
+                  title="No companies found"
+                  text={
+                    (filters.search || filters.industry || filters.location || filters.size || filters.remote || filters.hiring)
+                      ? 'Try adjusting your filters to see more companies.'
+                      : 'Check back soon for new companies.'
+                  }
+                  action={
+                    (filters.search || filters.industry || filters.location || filters.size || filters.remote || filters.hiring) ? (
+                      <Button variant="secondary" size="sm" onClick={handleClearFilters}>
+                        Clear all filters
+                      </Button>
+                    ) : null
+                  }
+                />
+              ) : (
+                <>
+                  {featured.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4" data-testid="featured-companies">
+                      {featured.map((company) => (
+                        <CompanyCard key={company.id} company={company} />
+                      ))}
+                    </div>
+                  )}
+
+                  <ul className="flex flex-col mt-4" aria-label="Company listings">
+                    {listItems.map((company) => (
+                      <CompanyRow key={company.id} company={company} />
+                    ))}
+                  </ul>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-3 mt-8">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-text-secondary">
+                        Page {page} of {totalPages}
+                      </span>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <aside className="mt-6 lg:mt-0 lg:sticky lg:top-24 lg:self-start">
+              <SkillsSidebar />
+            </aside>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

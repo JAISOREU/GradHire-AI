@@ -16,6 +16,7 @@ const jobSchema = z.object({
   experienceLevel: z.enum(['NO_EXPERIENCE', 'ENTRY_LEVEL', 'JUNIOR', 'MID_LEVEL', 'SENIOR', 'LEAD', 'MANAGER']),
   workplaceType: z.enum(['ONSITE', 'HYBRID', 'REMOTE']),
   requiredSkills: z.array(z.string()).min(1, 'Add at least one required skill'),
+  requiredQualifications: z.string().min(1, 'Required qualifications is required'),
   preferredSkills: z.array(z.string()).optional(),
   description: z.string().optional(),
   responsibilities: z.string().optional(),
@@ -38,6 +39,7 @@ export const EmployerPostJobPage = () => {
       experienceLevel: 'ENTRY_LEVEL' as const,
       workplaceType: 'ONSITE' as const,
       requiredSkills: [],
+      requiredQualifications: '',
       preferredSkills: [],
       description: '',
       responsibilities: '',
@@ -51,6 +53,7 @@ export const EmployerPostJobPage = () => {
         requiredSkills: values.requiredSkills.filter(Boolean),
         preferredSkills: values.preferredSkills?.filter(Boolean) ?? [],
         benefits: values.benefits?.filter(Boolean) ?? [],
+        status: 'PUBLISHED',
       };
       if (payload.salaryMin === undefined || isNaN(Number(payload.salaryMin))) delete payload.salaryMin;
       if (payload.salaryMax === undefined || isNaN(Number(payload.salaryMax))) delete payload.salaryMax;
@@ -132,6 +135,19 @@ export const EmployerPostJobPage = () => {
           <Card title="Skills" subtitle="Required and preferred skills for this role.">
             {renderList('requiredSkills', 'Required skills', 'e.g. TypeScript, React, Node.js')}
             {renderList('preferredSkills', 'Preferred skills', 'e.g. GraphQL, Docker')}
+          </Card>
+
+          <Card title="Qualifications" subtitle="Minimum qualifications candidates must meet.">
+            <FormInput
+              label="Required qualifications"
+              id="job-required-qualifications"
+              required
+              value={values.requiredQualifications}
+              onChange={(e) => handleChange('requiredQualifications', e.target.value)}
+              onBlur={() => handleBlur('requiredQualifications')}
+              placeholder="e.g. Bachelor's degree in Computer Science"
+              error={touched.requiredQualifications ? errors.requiredQualifications : undefined}
+            />
           </Card>
 
           <Card title="Description">

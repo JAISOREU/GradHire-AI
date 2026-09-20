@@ -1,4 +1,5 @@
-import { IsBoolean, IsISO8601, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsISO8601, IsOptional, IsString, MinLength, ValidateIf } from 'class-validator';
+import { EmploymentType } from '@prisma/client';
 
 export class CreateExperienceDto {
   @IsString()
@@ -10,7 +11,8 @@ export class CreateExperienceDto {
   company!: string;
 
   @IsOptional()
-  @IsString()
+  @ValidateIf((o) => o.employmentType !== undefined && o.employmentType !== null && o.employmentType !== '')
+  @IsEnum(EmploymentType)
   employmentType?: string;
 
   @IsOptional()
@@ -48,7 +50,8 @@ export class UpdateExperienceDto {
   company?: string;
 
   @IsOptional()
-  @IsString()
+  @ValidateIf((o) => o.employmentType !== undefined && o.employmentType !== null && o.employmentType !== '')
+  @IsEnum(EmploymentType)
   employmentType?: string;
 
   @IsOptional()

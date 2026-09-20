@@ -37,13 +37,14 @@ Thumbs.db
 
 # Testing
 coverage
+playwright-report
+test-results
 
 # TypeScript
 tsconfig.tsbuildinfo
 
-# Prisma
-prisma/migrations/*.sql
-!prisma/migrations/migration_lock.toml
+# Prisma migrations are source of truth and MUST be committed
+# (removed the previous ignore rule that kept migration .sql files untracked)
 
 # recommendation service
 __pycache__
@@ -57,3 +58,18 @@ uploads
 # Deployment platforms
 .vercel
 .netlify
+
+# Tool caches / generated artifacts (regenerable)
+.kilo/worktrees
+graphify-out
+.neon
+
+# OpenCode/agent tooling — machine-local config with absolute paths
+.agents/
+.opencode/
+opencode.json
+skills-lock.json
+AGENTS.md
+
+# Generated env block output (render-env.ps1 -OutFile)
+render.env

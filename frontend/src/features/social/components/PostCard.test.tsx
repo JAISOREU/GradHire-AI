@@ -46,6 +46,6 @@ describe('PostCard', () => {
     expect(input).toBeInTheDocument();
     fireEvent.change(input, { target: { value: 'Congratulations!' } });
     fireEvent.click(screen.getByRole('button', { name: 'Post' }));
-    expect(onAddComment).toHaveBeenCalledWith('p1');
+    expect(onAddComment).toHaveBeenCalledWith('p1', 'Congratulations!');
   });
 });

@@ -132,6 +132,56 @@ test('listForUser returns only messages involving the user', async () => {
   assert.equal(result.items.length, 3);
 });
 
+test('listForUser enriches participants with display name, role, title and company', async () => {
+  const { prisma, messages, users } = createMockPrisma();
+  users.splice(
+    0,
+    users.length,
+    {
+      id: 'sender-1',
+      email: 'sender@gradture.dev',
+      role: 'STUDENT',
+      avatarUrl: 'https://x/avatar.png',
+      profile: { name: 'Demo Student', focus: 'Software engineering' },
+    },
+    {
+      id: 'recipient-1',
+      email: 'recipient@gradture.dev',
+      role: 'EMPLOYER',
+      avatarUrl: null,
+      employerProfile: { companyName: 'Acme Corp', industry: 'Technology', location: 'San Francisco, CA' },
+    },
+    { id: 'deleted-user', email: 'deleted@gradture.dev', role: 'STUDENT' },
+  );
+  const service = new MessagesService(prisma as never, createMockGateway() as never, createMockNotifications() as never);
+
+  messages.push({
+    id: 'msg-1',
+    senderId: 'recipient-1',
+    recipientId: 'sender-1',
+    body: 'Hi there!',
+    createdAt: new Date('2026-09-13T10:00:00.000Z'),
+    read: false,
+  });
+
+  const result = await service.listForUser(sender as never);
+  assert.equal(result.items.length, 1);
+
+  const item = result.items[0] as Record<string, unknown>;
+  assert.equal(item.from, 'recipient-1');
+  assert.equal(item.fromRole, 'EMPLOYER');
+  assert.equal(item.fromName, 'Acme Corp');
+  assert.equal(item.fromTitle, 'Technology');
+  assert.equal(item.fromCompany, 'Acme Corp');
+  assert.equal(item.fromAvatar, null);
+  assert.equal(item.to, 'sender-1');
+  assert.equal(item.toRole, 'STUDENT');
+  assert.equal(item.toName, 'Demo Student');
+  assert.equal(item.toTitle, 'Software engineering');
+  assert.equal(item.toCompany, null);
+  assert.equal(item.toAvatar, 'https://x/avatar.png');
+});
+
 test('markRead allows only the recipient', async () => {
   const { prisma, messages } = createMockPrisma();
   const service = new MessagesService(prisma as never, createMockGateway() as never, createMockNotifications() as never);

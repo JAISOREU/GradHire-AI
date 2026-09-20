@@ -78,4 +78,40 @@ describe('AiService', () => {
     const result = await service.getRecommendations('tech');
     assert.deepStrictEqual(result, []);
   });
+
+  describe('healthCheck fallback awareness', () => {
+    const setProviders = (s: AiService, primary: FakeProvider, fallback?: FakeProvider) => {
+      (s as any).provider = primary;
+      if (fallback) (s as any).fallbackProvider = fallback;
+      (s as any).ready = true;
+    };
+
+    it('returns true when primary provider is healthy (no fallback)', async () => {
+      setProviders(service, new FakeProvider({ health: true }));
+      assert.strictEqual(await service.healthCheck(), true);
+    });
+
+    it('returns false when primary is down and no fallback is configured', async () => {
+      setProviders(service, new FakeProvider({ health: false }));
+      assert.strictEqual(await service.healthCheck(), false);
+    });
+
+    it('returns true when primary is down but fallback is healthy', async () => {
+      setProviders(
+        service,
+        new FakeProvider({ health: false }),
+        new FakeProvider({ health: true }),
+      );
+      assert.strictEqual(await service.healthCheck(), true);
+    });
+
+    it('returns false when both primary and fallback are down', async () => {
+      setProviders(
+        service,
+        new FakeProvider({ health: false }),
+        new FakeProvider({ health: false }),
+      );
+      assert.strictEqual(await service.healthCheck(), false);
+    });
+  });
 });

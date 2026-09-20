@@ -1,7 +1,5 @@
 export { ScrollReveal } from './components/ScrollReveal';
 export { StaggerContainer, StaggerChild } from './components/StaggerContainer';
-export { AnimatedCounter } from './components/AnimatedCounter';
-export { AnimatedProgress } from './components/AnimatedProgress';
 
 export {
   fadeInVariants,
@@ -30,19 +28,7 @@ export {
   toSpringTransition,
 } from './transitions';
 
-export {
-  Reveal,
-  SlideIn,
-  ScaleIn,
-  HoverLift,
-  PageTransition,
-  AnimatedPresence,
-  FadeIn,
-} from './presets';
-
 export { useReducedMotion } from './hooks/useReducedMotion';
 export { MOTION } from './motion-tokens';
 export type { ScrollRevealOptions } from './components/ScrollReveal';
 export type { StaggerOptions } from './components/StaggerContainer';
-export type { AnimatedCounterOptions } from './components/AnimatedCounter';
-export type { AnimatedProgressOptions } from './components/AnimatedProgress';

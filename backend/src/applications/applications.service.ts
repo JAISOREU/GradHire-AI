@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 import { ApplicationStatus } from '@prisma/client';
 import { AuthUser } from '../auth/auth.service';
 import { PaginationParams, PaginatedResponse, applyPagination } from '../common/pagination';
+import { employerStudentSelect, redactStudentForEmployer } from '../common/profile-visibility';
 import { EmailService } from '../email/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -100,6 +101,15 @@ export class ApplicationsService {
     };
   }
 
+  async hasApplied(user: AuthUser, jobId: string): Promise<{ applied: boolean }> {
+    this.requireRole(user, 'STUDENT');
+    const existing = await this.prisma.application.findUnique({
+      where: { studentId_jobId: { studentId: user.id, jobId } },
+      select: { id: true },
+    });
+    return { applied: !!existing };
+  }
+
   async getMyApplications(user: AuthUser, pagination?: PaginationParams): Promise<PaginatedResponse<Record<string, unknown>>> {
     this.requireRole(user, 'STUDENT');
     const { page = 1, limit = 20 } = pagination ?? {};
@@ -111,6 +121,7 @@ export class ApplicationsService {
           job: {
             select: {
               id: true,
+              employerId: true,
               title: true,
               company: true,
               location: true,
@@ -123,6 +134,7 @@ export class ApplicationsService {
               status: true,
             },
           },
+          interview: true,
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
         },
         orderBy: { id: 'desc' },
@@ -138,6 +150,7 @@ export class ApplicationsService {
       submittedAt: a.createdAt,
       lastStatusChangeAt: a.lastStatusChangeAt,
       job: a.job,
+      interview: a.interview ?? null,
       lastEvent: (a.statusHistory as any)?.[0],
     }));
 
@@ -201,7 +214,7 @@ export class ApplicationsService {
       this.prisma.application.findMany({
         where,
         include: {
-          student: { include: { profile: { select: { id: true, name: true, focus: true, skills: true } } } },
+          student: { select: employerStudentSelect },
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
           interview: true,
         },
@@ -347,7 +360,7 @@ export class ApplicationsService {
       this.prisma.application.findMany({
         where,
         include: {
-          student: { include: { profile: { select: { id: true, name: true, focus: true, skills: true } } } },
+          student: { select: employerStudentSelect },
           job: { select: { id: true, title: true, company: true } },
           statusHistory: { orderBy: { createdAt: 'desc' } as any, take: 1 },
           interview: true,
@@ -364,7 +377,7 @@ export class ApplicationsService {
       status: a.status,
       submittedAt: a.submittedAt,
       viewedAt: a.viewedAt,
-      student: a.student,
+      student: redactStudentForEmployer(a.student as never),
       job: a.job,
       lastEvent: (a.statusHistory as any)?.[0],
       interview: a.interview,

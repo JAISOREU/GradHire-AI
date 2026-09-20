@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, Req, UseGuards, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Req, UseGuards, BadRequestException, ServiceUnavailableException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
@@ -13,6 +13,7 @@ import {
   CareerRecommendationResult,
   SkillGapAnalysisResult,
   ChatContext,
+  ChatMessage,
 } from './ai.types';
 import { AuthGuard } from '../auth/auth.guard';
 import { StudentGuard } from '../auth/student.guard';
@@ -63,18 +64,18 @@ export class AiController {
   }
 
   @Post('resume/parse')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async parseResume(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
     return this.ai.parseResume(body.resumeText.slice(0, 50000));
   }
 
   @Post('resume/analyze')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async analyzeResume(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string; jobDescription?: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const resumeText = sanitizeInput(body.resumeText);
     const jobDescription = body.jobDescription ? sanitizeInput(body.jobDescription) : undefined;
@@ -109,10 +110,10 @@ export class AiController {
   }
 
   @Post('resume/improve')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async improveResume(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string; targetRole?: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const target = body.targetRole ? ` for a ${body.targetRole} role` : '';
     const result = await this.ai.generateText(
@@ -124,10 +125,10 @@ export class AiController {
   }
 
   @Post('resume/skills')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async extractSkills(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     return this.ai.generateStructured<{ skills: string[]; categories: Record<string, string[]> }>(
       { prompt: `Extract all skills from this resume text. Categorize them into technical skills, soft skills, and tools/technologies:\n\n${body.resumeText.slice(0, 50000)}`, systemInstruction: 'You are a skills extraction engine. Extract only skills explicitly mentioned or clearly implied in the text.' },
@@ -142,10 +143,10 @@ export class AiController {
   }
 
   @Post('jobs/analyze')
-  @UseGuards(EmployerGuard)
+  @UseGuards(AuthGuard, EmployerGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async analyzeJob(@Req() req: Request & { user: AuthUser }, @Body() body: { jobDescription: string; jobTitle: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     return this.ai.generateStructured<{
       suggestions: string[];
@@ -171,10 +172,10 @@ export class AiController {
   }
 
   @Post('jobs/match')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async matchJob(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string; jobDescription: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const resumeText = sanitizeInput(body.resumeText);
     const jobDescription = sanitizeInput(body.jobDescription);
@@ -190,20 +191,20 @@ export class AiController {
   }
 
   @Post('jobs/match/:jobId')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async matchJobById(@Req() req: Request & { user: AuthUser }, @Param('jobId') jobId: string) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const job = await this.prisma.job.findUnique({
       where: { id: jobId },
       select: { title: true, description: true, requiredSkills: true, preferredSkills: true },
     });
 
-    if (!job) throw new Error('Job not found');
+    if (!job) throw new NotFoundException('Job not found');
 
     const profile = await this.prisma.profile.findFirst({ where: { userId: req.user.id } });
-    if (!profile) throw new Error('Profile not found');
+    if (!profile) throw new NotFoundException('Profile not found');
 
     const resume = await this.prisma.resume.findFirst({ where: { userId: req.user.id, isPrimary: true } });
     const resumeText = resume?.parsedText || `${profile.summary || ''} Skills: ${profile.skills?.join(', ') || ''}`;
@@ -215,10 +216,10 @@ export class AiController {
   }
 
   @Post('cover-letter')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async generateCoverLetter(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText: string; jobDescription: string; jobTitle: string; company: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const resumeText = sanitizeInput(body.resumeText);
     const jobDescription = sanitizeInput(body.jobDescription);
@@ -240,10 +241,10 @@ export class AiController {
   }
 
   @Post('job-description')
-  @UseGuards(EmployerGuard)
+  @UseGuards(AuthGuard, EmployerGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async generateJobDescription(@Req() req: Request & { user: AuthUser }, @Body() body: { title: string; skills: string[]; responsibilities: string[]; experience?: string; education?: string; employmentType?: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const description = await this.ai.generateText(
       `Generate a professional job description for:\n\nTitle: ${body.title}\nSkills: ${body.skills.join(', ')}\nResponsibilities: ${body.responsibilities.join(', ')}\nExperience: ${body.experience || 'Not specified'}\nEducation: ${body.education || 'Not specified'}\nEmployment Type: ${body.employmentType || 'Full-time'}`,
@@ -254,10 +255,10 @@ export class AiController {
   }
 
   @Post('interview/questions')
-  @UseGuards(EmployerGuard)
+  @UseGuards(AuthGuard, EmployerGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async generateInterviewQuestions(@Req() req: Request & { user: AuthUser }, @Body() body: { jobDescription: string; candidateSkills?: string[]; candidateExperience?: string; questionCount?: number }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const jobDescription = sanitizeInput(body.jobDescription);
     const candidateSkills = body.candidateSkills?.map(s => sanitizeInput(s)) || [];
@@ -296,10 +297,10 @@ export class AiController {
   }
 
   @Post('candidates/summary')
-  @UseGuards(EmployerGuard)
+  @UseGuards(AuthGuard, EmployerGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async generateCandidateSummary(@Req() req: Request & { user: AuthUser }, @Body() body: { candidateId: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const candidate = await this.prisma.user.findUnique({
       where: { id: body.candidateId },
@@ -314,7 +315,16 @@ export class AiController {
       },
     });
 
-    if (!candidate) throw new Error('Candidate not found');
+    if (!candidate) throw new NotFoundException('Candidate not found');
+
+    const candidateHasApplicationToThisEmployer = Array.isArray(candidate.applications) && candidate.applications.length > 0;
+    if (!candidateHasApplicationToThisEmployer) {
+      throw new NotFoundException('Candidate not found');
+    }
+
+    if ((candidate.profile as { visibility?: string } | null)?.visibility === 'PRIVATE') {
+      throw new ForbiddenException('This candidate has restricted their profile visibility');
+    }
 
     const profileText = JSON.stringify({
       profile: candidate.profile,
@@ -342,10 +352,10 @@ export class AiController {
   }
 
   @Post('career/recommendations')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async generateCareerRecommendations(@Req() req: Request & { user: AuthUser }, @Body() body: { resumeText?: string; skills?: string[]; interests?: string[] }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const profile = await this.prisma.profile.findFirst({ where: { userId: req.user.id } });
     const skills = body.skills || profile?.skills || [];
@@ -366,7 +376,7 @@ export class AiController {
   @UseGuards(AuthGuard)
   @Throttle({ default: { ttl: 60000, limit: 20 } })
   async careerChat(@Req() req: Request & { user: AuthUser }, @Body() body: { message: string; conversationHistory?: Array<{ role: string; content: string }> }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const profile = await this.prisma.profile.findFirst({ where: { userId: req.user.id } });
     const context: ChatContext = {
@@ -379,22 +389,22 @@ export class AiController {
         experience: profile.experience,
         education: profile.education,
       } : undefined,
-      recentMessages: (body.conversationHistory || []).map(m => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-        timestamp: new Date(),
-      })),
     };
 
-    const response = await this.ai.chat(context.recentMessages || [], context);
+    const messages: ChatMessage[] = [
+      ...(body.conversationHistory || []).map(m => ({ role: m.role as 'user' | 'assistant', content: m.content, timestamp: new Date() })),
+      { role: 'user', content: body.message, timestamp: new Date() },
+    ];
+
+    const response = await this.ai.chat(messages, context);
     return { response, timestamp: new Date().toISOString() };
   }
 
   @Post('skills/gap-analysis')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async skillGapAnalysis(@Req() req: Request & { user: AuthUser }, @Body() body: { targetRole: string; currentSkills: string[]; jobDescription?: string }) {
-    if (!this.ai.isReady()) throw new Error('AI service not available');
+    if (!this.ai.isReady()) throw new ServiceUnavailableException('AI service not available');
 
     const result = await this.ai.generateSkillGapAnalysis(body.currentSkills, body.targetRole, body.jobDescription);
 
@@ -402,7 +412,7 @@ export class AiController {
   }
 
   @Get('recommendations')
-  @UseGuards(StudentGuard)
+  @UseGuards(AuthGuard, StudentGuard)
   @Throttle({ default: { ttl: 60000, limit: 20 } })
   async getRecommendations(@Req() req: Request & { user: AuthUser }, @Query('top_k') topK?: string) {
     if (!this.ai.isReady()) {

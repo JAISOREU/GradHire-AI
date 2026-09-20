@@ -54,6 +54,7 @@ export const EMPLOYER_SIDEBAR_NAV: NavSection[] = [
       { to: '/employer/applicants', label: 'Applicants', icon: 'Users' },
       { to: '/employer/interviews', label: 'Interviews', icon: 'Calendar' },
       { to: '/employer/messages', label: 'Messages', icon: 'ChatCircle' },
+      { to: '/employer/network', label: 'Network', icon: 'UsersThree' },
       { to: '/employer/notifications', label: 'Notifications', icon: 'Bell' },
     ],
   },

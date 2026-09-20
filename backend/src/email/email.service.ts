@@ -34,6 +34,15 @@ export class EmailService {
     const id = `email-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     if (!this.resend) {
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      if (isProduction) {
+        // Never silently drop email in production — a user asking for a password
+        // reset must not be told "check your inbox" when no email was sent.
+        this.logger.error('Email service is not configured in production — refusing to silently drop email');
+        throw new InternalServerErrorException('Email service is not configured');
+      }
+
       this.logger.debug({ id, to: message.to, subject: message.subject }, 'Email dry-run');
       return { id, status: 'DRY_RUN' };
     }

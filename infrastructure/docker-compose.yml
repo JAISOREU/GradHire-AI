@@ -66,7 +66,6 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-change-me-in-production}
       RESEND_API_KEY: ${RESEND_API_KEY:-change-me-in-production}
       SMTP_FROM: ${SMTP_FROM:-GradTure <noreply@gradture.ai>}
-      SERVICE_URL: ${SERVICE_URL:-http://ai-service:8000}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
       SENTRY_DSN: ${SENTRY_DSN:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}
@@ -137,39 +136,6 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
-
-  ai-service:
-    build:
-      context: ../ai-service
-      dockerfile: Dockerfile
-    ports:
-      - "127.0.0.1:8000:8000"
-    environment:
-      MODEL_PROVIDER: ${MODEL_PROVIDER:-stub}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-change-me-in-production}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://gradhire:change-me-in-production@postgres:5432/gradhire}
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
-    networks:
-      - gradhire
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-        reservations:
-          cpus: '1.0'
-          memory: 1G
 
 volumes:
   postgres_data:

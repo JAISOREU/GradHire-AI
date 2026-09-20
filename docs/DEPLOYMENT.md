@@ -1,600 +1,415 @@
 # GradTure — Production Deployment Guide
-## Railway (Backend) + Vercel (Frontend)
+## Render (free) + Vercel (free) + Neon (free)
+
+> **Last updated:** 2026-09-20 — the deployment target was migrated from
+> Railway/Docker/VM to **Render (backend) + Vercel (frontend) + Neon Postgres**.
+> Railway configs, `cd.yml`, Dockerfiles, `docker-compose.prod.yml`,
+> `docker-compose.vps.yml`, and `deploy/` were removed. CI is now `ci.yml`
+> (lint + unit + load + e2e tests only); deploys happen natively on each push
+> to `main` (auto-deploy on Render and Vercel).
 
 ---
 
-## 1. Repository Structure Overview
+## 0. TL;DR — what needs *you* (all manual steps, ~20 minutes)
 
-Your repository contains three applications:
+This guide is written so a human can follow it top-to-bottom. Everything below
+in **bold** is a manual dashboard/intervention step. Anything not bolded is
+already handled by the repo (migrations, CORS, tests, SPA routing).
 
-| Folder | Purpose | Deploy To |
-|--------|---------|-----------|
-| `backend/` | NestJS API, Prisma, auth, jobs, applications, WebSocket | **Railway** |
-| `frontend/` | React + Vite SPA | **Vercel** |
-| `ai-service/` | Python FastAPI recommendation engine | Railway (separate service) or keep local |
-
-**Deploy in this order:**
-1. Railway PostgreSQL database
-2. Railway backend (NestJS)
-3. Vercel frontend (React/Vite)
-4. Custom domains + DNS
-
----
-
-## 2. Prerequisites
-
-Before starting, ensure you have:
-- A **GitHub account** with this repository pushed
-- A **Railway account** (railway.app) — sign up with GitHub
-- A **Vercel account** (vercel.com) — sign up with GitHub
-- A **domain name** (e.g., `gradture.ai`) registered at any registrar
-- **Cloudflare account** (for R2 storage) — already configured
+| # | Step | Where | Optional? |
+|---|------|-------|-----------|
+| 1 | Create Neon project + DB, copy connection strings | neon.tech | **REQUIRED** |
+| 2 | Create Render backend web service, paste env vars | render.com | **REQUIRED** |
+| 3 | Create Vercel project, set `VITE_API_URL` | vercel.com | **REQUIRED** |
+| 4 | Verify health + demo login + feed + jobs | browser | **REQUIRED** |
+| 5 | Add UptimeRobot keep-alive for Render 15-min sleep | uptimerobot.com | Recommended |
+| 6 | Cloudflare R2 bucket + token (persistent uploads) | cloudflare.com | Recommended |
+| 7 | Resend API key + sender | resend.com | Recommended |
+| 8 | Google AI Studio Gemini API key | aistudio.google.com | Recommended |
+| 9 | Custom domain / Redis / Sentry | varies | Skip |
 
 ---
 
-## 3. Step 1 — Rotate Exposed Credentials
+## 1. Architecture
 
-**Critical:** The current `.env` file contains credentials that were exposed in the repository history. You must generate new values before deploying.
+| Piece | Hosted on | Deploy trigger | Free-tier reality |
+|-------|-----------|----------------|-------------------|
+| Frontend SPA (`frontend/`) | **Vercel** | push to `main` | Never sleeps; generous bandwidth |
+| Backend API (`backend/`) | **Render** web service | push to `main` | Sleeps after 15 min idle; ~750 hrs/mo (~31 days) |
+| PostgreSQL | **Neon** | n/a (managed) | 0.5 GB, never expires, always on |
+| Redis (cache) | **skipped** | n/a | app degrades gracefully without it |
+| Email | **Resend** (free) | n/a | 100 emails/day |
+| AI | **Gemini** (free) | n/a | generous free tier |
+| Uploads | **Cloudflare R2** (free) | n/a | 10 GB + no egress fees |
 
-### Generate new secrets locally:
-
-```bash
-# Generate JWT_SECRET (64-character hex)
-openssl rand -hex 32
-
-# Generate ADMIN_SETUP_SECRET (64-character hex)
-openssl rand -hex 32
-```
-
-### Generate new Resend API key:
-1. Go to [resend.com/domains](https://resend.com/domains)
-2. Create a new API key
-3. Copy it (you'll paste it into Railway later)
-
-### Generate new Cloudflare R2 credentials:
-1. Go to Cloudflare Dashboard → R2 → Overview
-2. Under "API Tokens", create a new token with `Edit` permissions for your bucket
-3. Copy the **Access Key ID** and **Secret Access Key**
-
-**Do not reuse the old values from `.env`.** The old values should be considered compromised.
+- **Migrations are automatic:** backend `npm start` runs
+  `prisma migrate deploy && node dist/main.js`, so every Render deploy that
+  changes the schema migrates the DB on startup.
+- **No `cd.yml` anymore:** deploys are native platform auto-deploys on `main`.
+  Rollback = platform dashboard "deploy previous".
+- **Local dev is unchanged:** `docker-compose.yml` + `infrastructure/docker-compose.yml`
+  still run local Postgres/Redis; `ci.yml` still runs all tests on every push.
 
 ---
 
-## 4. Step 2 — Deploy PostgreSQL to Railway
+## 2. Step 1 — Neon Postgres (database)
 
-### 4.1 Create Railway Project
-1. Go to [railway.app/new](https://railway.app/new)
-2. Click **"New Project"**
-3. Select **"Provision PostgreSQL"** (this creates a new PostgreSQL instance)
-4. Name it `gradhire-postgres` or similar
-5. Click **"Create"**
+> **Why Neon and not Render's built-in Postgres?** Render's free Postgres
+> **expires after 30 days**. Neon's free tier never expires, supports live
+> branching, and is always-on.
 
-### 4.2 Get Database Connection String
-1. Click on the PostgreSQL service in your Railway project
-2. Go to the **"Connect"** tab
-3. Copy the **"Connection URL"** — it looks like:
+1. **Sign in** to <https://neon.tech> (GitHub OAuth is fine).
+2. **Create a project**:
+   - **Name:** `gradhire` (or anything).
+   - **Region:** pick the region closest to you (e.g. `US East (Virginia)` / `EU West`).
+   - **Plan:** Free.
+3. **Wait ~10 s** for provisioning, then open **Connect** → **Connection string**.
+4. **Copy the connection string** — use the **non-pooled** one:
    ```
-   postgresql://user:password@host:5432/gradhire
+   postgresql://neondb_owner:XXXX@ep-frosty-xxxx-aaaa.us-east-2.aws.neon.tech/neondb?sslmode=require
    ```
-4. Save this — you'll paste it into the backend service environment variables later
+5. **Keep the password visible** (Neon shows it only once at creation, though it
+   can be reset later).
+6. Create the app database (Neon's default DB is `neondb`):
+   - Use the Neon **SQL Editor** and run:
+     ```sql
+     CREATE DATABASE gradhire;
+     ```
+   - Or leave `neondb` — the name does not matter; it just has to be consistent.
+7. **Build the production URL** you will paste into Render (add Prisma params):
+   ```
+   <your neon string>&schema=public
+   ```
+   Example final value:
+   ```
+   postgresql://neondb_owner:XXXX@ep-frosty-xxxx-aaaa.us-east-2.aws.neon.tech/gradhire?sslmode=require&schema=public
+   ```
+   > Keep a second copy of the plain string — it is handy for `npx prisma
+   > migrate dev` from your machine against the cloud DB if a manual migration
+   > is ever needed.
 
-**Important:** Railway PostgreSQL connection URLs include the database name. Ensure yours ends with `/gradhire` or `/postgres` (matching your schema).
+   > **In this repo:** the connection strings are already written to the root
+   > `.env` by `neon link` (project `young-shape-97917493`, branch `GradTure`),
+   > and the DB is already migrated (16 migrations) + seeded. No manual copying
+   > is needed — `scripts/render-env.ps1` (§3) reads that same `.env`.
 
----
-
-## 5. Step 3 — Deploy Backend to Railway
-
-### 5.1 Create Backend Service
-1. In your Railway project, click **"New"** → **"GitHub Repo"**
-2. Select your GitHub repository
-3. Railway will detect the repository. Click **"Add to project"**
-
-### 5.2 Configure Root Directory
-1. Click on the newly created service
-2. Go to **"Settings"** → **"Build"** → **"Root Directory"**
-3. Set it to: `backend`
-4. Railway will automatically detect the `Dockerfile` in that directory
-
-### 5.3 Verify Build Configuration
-Railway should auto-detect:
-- **Builder:** Dockerfile
-- **Dockerfile path:** `backend/Dockerfile`
-- **Build command:** (auto from Dockerfile)
-- **Start command:** `prisma migrate deploy && node dist/main.js` (from `backend/package.json`)
-
-If Railway asks for a start command, enter:
-```
-prisma migrate deploy && node dist/main.js
-```
-
-### 5.4 Add Environment Variables
-In Railway backend service → **"Variables"** tab, add:
-
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `DATABASE_URL` | (paste from PostgreSQL service) | Get from PostgreSQL → Connect tab |
-| `POSTGRES_USER` | `gradhire` | Match your database user |
-| `POSTGRES_PASSWORD` | (your DB password) | From PostgreSQL connection URL |
-| `POSTGRES_DB` | `gradhire` | Database name |
-| `JWT_SECRET` | (your new 64-char hex) | Generated in Step 1 |
-| `JWT_EXPIRES_IN` | `7d` | Token expiration |
-| `CORS_ORIGIN` | `https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai` | Your Vercel domains |
-| `FRONTEND_URL` | `https://gradture.ai` | Primary frontend URL |
-| `RESEND_API_KEY` | (your new Resend key) | From Step 1 |
-| `SMTP_FROM` | `GradTure <noreply@gradture.ai>` | Sender email |
-| `SERVICE_URL` | `http://ai-service:8000` | Or external recommendation service URL |
-| `REDIS_URL` | (optional) | Redis connection string if using Railway Redis |
-| `SENTRY_DSN` | (optional) | Your Sentry DSN |
-| `SENTRY_ENVIRONMENT` | `production` | |
-| `SENTRY_RELEASE` | `gradhire@1.0.0` | |
-| `LOG_LEVEL` | `info` | |
-| `ADMIN_SETUP_SECRET` | (your new 64-char hex) | Generated in Step 1 |
-| `STORAGE_PROVIDER` | `r2` | Use `r2` for Cloudflare, `s3` for AWS, `local` for dev |
-| `STORAGE_LOCAL_PATH` | `./uploads` | Only used if `STORAGE_PROVIDER=local` |
-| `R2_ACCOUNT_ID` | (your Cloudflare account ID) | From Cloudflare dashboard |
-| `R2_BUCKET` | `gradhire-uploads` | Your R2 bucket name |
-| `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` | Replace `<account-id>` |
-| `R2_ACCESS_KEY` | (your new R2 access key) | From Step 1 |
-| `R2_SECRET_KEY` | (your new R2 secret key) | From Step 1 |
-
-**Do NOT add these to Vercel:** `DATABASE_URL`, `JWT_SECRET`, `RESEND_API_KEY`, `R2_*`, `REDIS_URL`, `SENTRY_DSN`, `ADMIN_SETUP_SECRET` — these are backend-only.
-
-### 5.5 Deploy
-1. Click **"Deploy"** in Railway
-2. Watch the build logs. The Docker build will:
-   - Install dependencies
-   - Run `prisma generate`
-   - Compile TypeScript
-   - Run `prisma migrate deploy` (on container start)
-   - Start the server on `process.env.PORT`
-
-### 5.6 Verify Backend Health
-After deployment completes, Railway provides a public URL like:
-```
-https://gradhire-backend-production.up.railway.app
-```
-
-Test it:
-```bash
-curl https://your-backend-url.up.railway.app/health
-# Expected: {"status":"healthy","service":"gradture-backend","version":"0.1.0",...}
-```
-
-Also test:
-```bash
-curl https://your-backend-url.up.railway.app/api/v1/jobs
-# Expected: {"items":[],"total":0,"page":1,"limit":20,"totalPages":1}
-```
-
-If health check fails, check Railway logs for errors.
+> **Neon free limits:** 0.5 GB storage, some compute hours — plenty for this
+> app. Neon never sleeps the DB.
 
 ---
 
-## 6. Step 4 — Deploy Frontend to Vercel
+## 3. Step 2 — Render backend (API)
 
-### 6.1 Import Project
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Click **"Import"** next to your GitHub repository
-3. Vercel will detect the repository structure
+1. **Sign in** to <https://dashboard.render.com> (GitHub OAuth).
+2. **New → Web Service → connect your GitHub repo** (`.../GradTure 1.0`, branch `main`).
+3. **Service settings:**
+   - **Name:** `gradture-backend`
+   - **Root Directory:** `backend`   ← important, the app lives in `backend/`
+   - **Environment:** `Node` (native — NOT Docker; the Dockerfiles were deleted in the migration, so ignore the Docker/Registry/Secret-Files fields)
+   - **Build Command:** `npm ci && npm run build`
+   - **Start Command:** `npm start`
+   - **Pre-Deploy Command:** leave empty (`npm start` already runs `prisma migrate deploy`)
+   - **Health Check Path:** `/api/v1/health` — Render polls this. There is **no `/healthz` route** in the app (global prefix is `api/v1`); entering `/healthz` returns 404 and Render marks the service unhealthy.
+   - **Instance Type:** Free
+4. **Set environment variables** — the single source of truth is the
+   **gitignored root `.env`** (`neon link` already wrote the real Neon URLs
+   there). The mistake-free way to fill Render's **Environment** tab:
 
-### 6.2 Configure Project Settings
-Vercel may auto-detect the root directory. If not:
-
-| Setting | Value |
-|---------|-------|
-| **Project Name** | `gradhire-frontend` (or your preference) |
-| **Root Directory** | `frontend` |
-| **Framework Preset** | Vite (auto-detected) |
-| **Build Command** | `npm run build` (auto-detected from `frontend/package.json`) |
-| **Output Directory** | `dist` (auto-detected from `frontend/vite.config.ts`) |
-| **Install Command** | `npm install` (auto-detected) |
-
-### 6.3 Add Environment Variables
-In Vercel → **"Environment Variables"** tab, add:
-
-| Variable | Value | Environment |
-|----------|-------|-------------|
-| `VITE_API_URL` | `https://gradhire-ai-production.up.railway.app` | Production, Preview, Development |
-| `VITE_SENTRY_DSN` | (your Sentry DSN, optional) | Production |
-| `VITE_APP_VERSION` | `1.0.0` | Production |
-
-**Critical:** `VITE_API_URL` must be the **base URL only** — do NOT append `/api/v1`. The frontend endpoint files already include `/api/v1/...` in their paths, so adding it here would create a doubled path like `/api/v1/api/v1/auth/login`.
-
-**Never add backend secrets to Vercel:** No `JWT_SECRET`, `DATABASE_URL`, `RESEND_API_KEY`, `R2_*`, etc.
-
-### 6.4 Deploy
-1. Click **"Deploy"**
-2. Vercel will:
-   - Install dependencies
-   - Run `tsc --noEmit && vite build`
-   - Deploy the `dist/` folder to Vercel's CDN
-3. You'll get a preview URL like: `https://gradhire-frontend.vercel.app`
-
-### 6.5 Verify Frontend
-Visit the Vercel preview URL and check:
-- Homepage loads
-- `/jobs` page loads
-- `/about` page loads
-- SPA navigation works (no 404s on refresh)
-
----
-
-## 7. Step 5 — Configure Custom Domains
-
-### 7.1 Vercel Frontend Domains
-1. In Vercel project → **"Settings"** → **"Domains"**
-2. Add domains:
-   - `gradture.ai`
-   - `www.gradture.ai`
-3. Vercel will show DNS records to add at your registrar
-
-### 7.2 Railway Backend Domain
-1. In Railway backend service → **"Settings"** → **"Networking"**
-2. Click **"Generate Domain"** or add custom domain
-3. Add domain: `api.gradture.ai`
-4. Railway will provide DNS instructions
-
-### 7.3 DNS Configuration at Your Registrar
-
-Add these records at your domain registrar (Namecheap, GoDaddy, Cloudflare, etc.):
-
-| Type | Host/Name | Value/Points to | TTL |
-|------|-----------|-----------------|-----|
-| A | `gradture.ai` | (Vercel A record from Vercel dashboard) | Auto |
-| CNAME | `www.gradture.ai` | `cname.vercel-dns.com` (or Vercel's provided CNAME) | Auto |
-| CNAME | `api.gradture.ai` | (Railway provided domain, e.g., `gradhire-backend-production.up.railway.app`) | Auto |
-| CNAME | `admin.gradture.ai` | `cname.vercel-dns.com` (same as www) | Auto |
-
-**Note:** Exact values depend on what Vercel and Railway provide in their dashboards. Use those values.
-
-### 7.4 Update Environment Variables After DNS Propagation
-Once DNS propagates and custom domains work:
-
-#### Railway:
-```
-CORS_ORIGIN=https://gradture.ai,https://www.gradture.ai,https://admin.gradture.ai
-FRONTEND_URL=https://gradture.ai
-```
-
-#### Vercel:
-```
-VITE_API_URL=https://api.gradture.ai
-```
-
-**Redeploy both services** after updating environment variables.
-
----
-
-## 8. Step 6 — Verify Prisma Migrations
-
-### 8.1 Check Migration Status
-The `backend/docker-entrypoint.sh` runs `prisma migrate deploy` automatically on container start. This applies any pending migrations.
-
-### 8.2 Manual Migration (if needed)
-If automatic migration fails, run manually:
-
-**Option A — Railway Shell:**
-1. Railway → Backend service → **"Shell"** tab
-2. Run:
-   ```bash
-   npx prisma migrate deploy
+   ```powershell
+   powershell -File scripts\render-env.ps1           # print the block
+   powershell -File scripts\render-env.ps1 -OutFile render.env   # or save it
    ```
 
-**Option B — Local with Railway DATABASE_URL:**
-```bash
-cd backend
-set DATABASE_URL=<your-railway-postgres-url>
-npx prisma migrate deploy
-```
+   Paste the generated KEY=VALUE lines into **Environment** (or **Advanced**
+   paste). The script filters local-dev keys, Neon metadata, Render-injected
+   `PORT`, and placeholder values (`REPLACE_WITH...`), so only real variables
+   are emitted.
 
-**Do NOT run `prisma migrate dev` in production** — it can reset data. Only use `prisma migrate deploy`.
+   Things the script deliberately skips — set by hand in the dashboard:
 
-### 8.3 Verify Database
-After migration, verify tables exist by checking Railway PostgreSQL → **"Data"** tab. You should see tables like `User`, `Job`, `Application`, etc.
+   | Key | Value |
+   |-----|-------|
+   | `NODE_VERSION` | `20` (Render uses it to select the Node runtime) |
+   | `BACKEND_URL` | your Render URL, e.g. `https://gradture-backend.onrender.com` (OAuth redirects) — fill it after the service exists; Render restarts on save |
+   | `CORS_ORIGIN` / `FRONTEND_URL` | your Vercel **frontend** origin(s), exactly, e.g. `https://gradture-frontend.vercel.app` (comma-separate multiple) |
+   | optional `RESEND_API_KEY`, `GEMINI_API_KEY`, `R2_*`, `SENTRY_DSN` | see optional steps (§7–§8); the app runs without them |
 
----
+   Already included from `.env` by the script: `DATABASE_URL` (pooled — what
+   the app uses), `DATABASE_URL_UNPOOLED`, the pre-generated `JWT_SECRET`,
+   `JWT_EXPIRES_IN`, `CORS_ORIGIN`, `FRONTEND_URL`, `LOG_LEVEL`, `AI_PROVIDER`
+   + `GEMINI_*` tuning, `STORAGE_PROVIDER` + `R2_BUCKET`.
 
-## 9. Step 7 — Configure Cloudflare R2 (Production Storage)
+   > `ADMIN_SETUP_SECRET` is **not read by the code** (admin routes use role
+   > guards) — do not set it.
+   > Leave unset on purpose: `PORT` (Render injects it), `REDIS_URL` (cache
+   > is disabled gracefully), real `GEMINI_API_KEY` / `RESEND_API_KEY` /
+   > `R2_*` values until you do the corresponding optional steps.
 
-### 9.1 Create R2 Bucket
-1. Cloudflare Dashboard → R2 → **"Create bucket"**
-2. Name: `gradhire-uploads`
-3. Location: Choose nearest to your users
-4. Enable **"Public bucket"** only if you need public URLs (recommended: keep private and use signed URLs)
+5. **Create Web Service** → wait for the first deploy (2–5 min). Watch **Logs**:
+   you should see migration lines (`prisma migrate deploy`) then
+   `Nest application successfully started`.
+6. **Health check** the deployed backend from your browser:
+   ```
+   https://gradture-backend.onrender.com/api/v1/health
+   ```
+   Expect JSON with `"status": "healthy"` and `checks.database.status` `"up"`
+   (the DB updates were verified against the real Neon DB before shipping).
+7. The service URL is now your **`BACKEND_URL`** — go back and set that env var
+   (Render shows it on the service page).
 
-### 9.2 Create API Token
-1. Cloudflare Dashboard → R2 → **"Manage R2 API Tokens"**
-2. Click **"Create API token"**
-3. Permissions: **"Edit"** for the bucket
-4. Copy the **Access Key ID** and **Secret Access Key**
-
-### 9.3 Configure in Railway
-Add these to Railway backend environment variables (if not already added):
-```
-STORAGE_PROVIDER=r2
-R2_ACCOUNT_ID=<your-cloudflare-account-id>
-R2_BUCKET=gradhire-uploads
-R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
-R2_ACCESS_KEY=<access-key-id>
-R2_SECRET_KEY=<secret-access-key>
-```
-
-### 9.4 Verify Storage
-Test file upload through the application (e.g., upload avatar). Check:
-- Railway logs for "File uploaded to R2"
-- Cloudflare R2 dashboard for the uploaded file
-
----
-
-## 10. Step 8 — Configure Email (Resend)
-
-### 10.1 Verify Resend Domain
-1. Go to [resend.com/domains](https://resend.com/domains)
-2. Ensure your domain (`gradture.ai`) is added and verified
-3. Add SPF/DKIM/DMARC records at your DNS provider as Resend instructs
-
-### 10.2 Configure in Railway
-Ensure `RESEND_API_KEY` and `SMTP_FROM` are set in Railway variables.
-
-### 10.3 Test Email
-Trigger a password reset or verification email through the app and verify:
-- Email is received
-- Links point to `https://gradture.ai` (not localhost)
+> **Auto-deploy:** any push to `main` triggers a rebuild + redeploy of the
+> backend. First deploy after a schema change runs migrations automatically.
+> To skip pointless rebuilds on frontend/docs-only pushes, set **Build Filters →
+> Ignored Paths**: `frontend/**`, `docs/**`, `.github/**`, `*.md`.
+>
+> **Free tier reality:** the instance sleeps after ~15 min with no traffic and
+> takes ~30–60 s to wake on the next request (cold start). Step 5 mitigates.
 
 ---
 
-## 11. Step 9 — Production Verification Checklist
+## 4. Step 3 — Vercel frontend (SPA)
 
-### 11.1 Frontend (Vercel)
-Visit `https://gradture.ai` and test:
+1. **Sign in** to <https://vercel.com> (GitHub OAuth).
+2. **Add New → Project → import your GitHub repo**.
+3. **Project settings:**
+   - **Framework Preset:** `Vite`
+   - **Root Directory:** `frontend`   ← important
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. **Environment Variables** (Settings → Environment Variables → Production):
+   | Key | Value |
+   |-----|-------|
+   | `VITE_API_URL` | your Render backend URL **base only** — e.g. `https://gradture-backend.onrender.com` |
 
-- [ ] **Homepage** loads with logo, hero, CTAs
-- [ ] **SPA routing** — navigate to `/jobs`, `/about`, refresh page (no 404)
-- [ ] **Direct navigation** — visit `https://gradture.ai/jobs` directly (no 404)
-- [ ] **Registration** — create STUDENT account
-- [ ] **Registration** — create EMPLOYER account
-- [ ] **Login** — sign in with both accounts
-- [ ] **Logout** — sign out successfully
-- [ ] **Role-based routing** — STUDENT goes to `/student/dashboard`, EMPLOYER to `/employer/dashboard`
+   > **No trailing slash, no `/api/v1`.** The frontend endpoint files already
+   > append `/api/v1/...`.
+5. **Deploy.** First build ~2–3 min.
+6. Copy the generated domain, e.g. `https://gradture-frontend.vercel.app` — this
+   is your **`CORS_ORIGIN`** / **`FRONTEND_URL`**. Set those two vars on Render
+   (Step 2.4) if not already correct, then redeploy Render (or it is enough to
+   just edit the vars — Render restarts the service on save).
 
-### 11.2 Student Flow
-- [ ] **Profile** — complete student profile
-- [ ] **Resume upload** — upload PDF/DOCX resume
-- [ ] **Job search** — browse jobs at `/jobs`
-- [ ] **Job detail** — view job at `/jobs/:id`
-- [ ] **Apply** — submit application
-- [ ] **Saved jobs** — save a job
-- [ ] **recommendations** — view recommended jobs
-- [ ] **Applications** — view application status
-- [ ] **Messages** — send/receive messages (if another user exists)
-- [ ] **Notifications** — view notifications
-
-### 11.3 Employer Flow
-- [ ] **Dashboard** — view analytics
-- [ ] **Post job** — create and publish a job
-- [ ] **Manage jobs** — edit/archive jobs
-- [ ] **Applicants** — view applications for a job
-- [ ] **Update status** — move applicant to INTERVIEW
-- [ ] **Schedule interview** — schedule interview for applicant
-- [ ] **Company profile** — update company info
-
-### 11.4 API & Backend
-- [ ] **Health check** — `curl https://api.gradture.ai/health` returns `{"status":"healthy",...}`
-- [ ] **API requests** — all frontend API calls succeed (check Network tab)
-- [ ] **CORS** — no CORS errors in browser console
-- [ ] **Authentication** — JWT tokens are set, protected routes work
-- [ ] **File uploads** — avatar upload succeeds, file appears in R2
-- [ ] **WebSocket** — real-time notifications/messages connect (check Socket.io connection)
-
-### 11.5 Email
-- [ ] **Verification email** — received after registration
-- [ ] **Password reset** — email received with correct `gradture.ai` link
-- [ ] **Application notification** — employer receives email when student applies
+> **How `/api/*` requests reach the backend:** the frontend calls the Render API
+> **cross-origin** using `VITE_API_URL`, with the CSRF double-submit cookie
+> (`XSRF-TOKEN`). `vercel.json` in `frontend/` only provides the SPA
+> `/* → /index.html` fallback plus security headers — it no longer proxies `/api`
+> (that was the old Railway setup).
 
 ---
 
-## 12. Step 10 — Check Logs for Errors
+## 5. Step 4 — First-round verification (must pass)
 
-### Railway Logs
-1. Railway → Backend service → **"Logs"** tab
-2. Look for:
-   - `PostgreSQL connection established`
-   - `Redis cache enabled` (or `disabled` if no Redis)
-   - `Email service configured (Resend)`
-   - `S3Client` or `R2StorageService` initialization
-   - Any `ERROR` or `WARN` messages
+1. **Backend health:** `https://<backend>.onrender.com/api/v1/health` → `status: ok`.
+2. **Login** at `https://<frontend>.vercel.app` with the seeded demo account:
+   - **Email:** `student@demo.gradhire.ai`
+   - **Password:** `DemoPassword123!`
+3. **Open `/student/dashboard`** — the feed should render the 7 seeded posts
+   (seed data shipped on your local DB; if the cloud DB is fresh, run the seed
+   once against it — see section 10).
+4. **POST a comment / like a post** in the feed UI — confirms CSRF + cookies +
+   CORS all work cross-origin (browser flow only; raw terminal POSTs will 403 by
+   design).
+5. **Open `/student/jobs`** — real jobs render, filters and market snapshot work
+   (this page is the one the QA automation targets).
+6. **Upload a profile/resume avatar** if `STORAGE_PROVIDER` is still `local` —
+   note uploads will vanish on the next Render redeploy (ephemeral disk). Do
+   Step 6 (R2) to make them permanent.
 
-### Vercel Logs
-1. Vercel → Project → **"Deployments"** → click latest deployment → **"Functions"** or **"Build"** logs
-2. Look for:
-   - Build errors
-   - Missing environment variables
-   - Failed API requests
-
----
-
-## 13. Step 11 — Security Hardening
-
-### 13.1 Verify Secrets Are Not Exposed
-- [ ] `.env` is in `.gitignore` and never pushed to GitHub
-- [ ] Vercel environment variables contain NO backend secrets
-- [ ] Railway environment variables are not visible in frontend source
-- [ ] No hardcoded passwords, API keys, or tokens in source code
-
-### 13.2 Verify HTTPS
-- [ ] `https://gradture.ai` loads with valid SSL certificate (Vercel provides automatically)
-- [ ] `https://api.gradture.ai` loads with valid SSL certificate (Railway provides automatically)
-- [ ] No mixed content warnings (all resources load over HTTPS)
-
-### 13.3 Verify CORS
-- [ ] Backend only accepts requests from `gradture.ai`, `www.gradture.ai`, `admin.gradture.ai`
-- [ ] No `Access-Control-Allow-Origin: *` in production API responses
-- [ ] Credentials mode is enabled (cookies/authorization headers work)
+> **WebSockets note:** forget-password / live chat use Socket.IO; Render
+> supports WebSockets. If a toast/message feels missing, check the browser
+> console for `websocket` errors and see Troubleshooting.
 
 ---
 
-## 14. Step 12 — Final Production Checklist
+## 6. Step 5 — Keep the backend awake (UptimeRobot, free)
 
-### Repository
-- [ ] All code pushed to GitHub
-- [ ] `.env` is gitignored and not in repository
-- [ ] No secrets in git history (if there were, rotate them)
-- [ ] `backend/railway.json` exists
-- [ ] `frontend/vercel.json` exists
-- [ ] `backend/docker-entrypoint.sh` runs migrations
+Render free instances sleep after ~15 min of no traffic. An external monitor
+pings your backend every 10–15 min and keeps it warm — it also alerts you if the
+app is actually down.
 
-### Railway Backend
-- [ ] Service connected to GitHub repository
-- [ ] Root directory set to `backend/`
-- [ ] PostgreSQL provisioned and connected
-- [ ] All required environment variables set
-- [ ] `JWT_SECRET` is a strong random value (not exposed)
-- [ ] `ADMIN_SETUP_SECRET` is a strong random value
-- [ ] `DATABASE_URL` points to Railway PostgreSQL
-- [ ] `CORS_ORIGIN` includes production Vercel domains
-- [ ] `PORT` is not hardcoded (uses `process.env.PORT`)
-- [ ] Health check endpoint responds at `/health`
-- [ ] Migrations run successfully on deploy
-- [ ] No runtime errors in logs
+1. **Sign in** to <https://uptimerobot.com> (free).
+2. **Add New Monitor:**
+   - **Type:** HTTPS
+   - **URL:** `https://<backend>.onrender.com/api/v1/health`
+   - **Interval:** `every 10 minutes` (stays under Render's monthly cap: 144 pings/day ≈ 24 hrs of runtime/mo, far below the 750 free hours).
+3. Optionally set **Alert Contacts** (email) so it pings you on downtime.
 
-### Railway PostgreSQL
-- [ ] Database is provisioned
-- [ ] Connection string is copied to Railway backend variables
-- [ ] Migrations have been applied
-- [ ] Database persistence is enabled (volume persists data)
-
-### Prisma Migrations
-- [ ] `prisma/migrations/` folder is in repository
-- [ ] `migration_lock.toml` exists
-- [ ] Migrations run automatically via docker-entrypoint.sh
-- [ ] Manual migration command works: `npx prisma migrate deploy`
-- [ ] No data loss during migration
-
-### Vercel Frontend
-- [ ] Project imported from GitHub
-- [ ] Root directory set to `frontend/`
-- [ ] Framework detected as Vite
-- [ ] Build command is `npm run build`
-- [ ] Output directory is `dist`
-- [ ] `VITE_API_URL` points to production Railway backend
-- [ ] No backend secrets in Vercel environment variables
-- [ ] SPA routing works (no 404 on refresh)
-- [ ] All pages load correctly
-
-### Environment Variables
-- [ ] Frontend-safe vars (`VITE_*`) only in Vercel
-- [ ] Backend-only vars (`DATABASE_URL`, `JWT_SECRET`, etc.) only in Railway
-- [ ] All required variables are set in both platforms
-- [ ] No placeholder values remain (`REPLACE_WITH_*`, `your-*`)
-
-### Cloudflare R2
-- [ ] Bucket created: `gradhire-uploads`
-- [ ] API token created with Edit permissions
-- [ ] R2 variables set in Railway
-- [ ] File uploads work in production
-- [ ] Files appear in R2 dashboard
-
-### Email (Resend)
-- [ ] Domain verified in Resend
-- [ ] SPF/DKIM/DMARC records added to DNS
-- [ ] API key configured in Railway
-- [ ] Test emails are received
-- [ ] Email links point to production domain
-
-### Monitoring (Sentry)
-- [ ] Sentry DSN configured in Railway (backend)
-- [ ] Sentry DSN configured in Vercel (frontend)
-- [ ] Test error reporting works
-
-### CORS
-- [ ] Only production domains are allowed
-- [ ] No wildcard `*` origin in production
-- [ ] Credentials mode is enabled
-
-### Custom Domain & DNS
-- [ ] `gradture.ai` → Vercel
-- [ ] `www.gradture.ai` → Vercel
-- [ ] `api.gradture.ai` → Railway
-- [ ] `admin.gradture.ai` → Vercel (or Railway)
-- [ ] DNS propagated (check with `nslookup`)
-- [ ] HTTPS certificates are valid on all domains
-
-### User Flow Testing
-- [ ] Registration works for STUDENT and EMPLOYER
-- [ ] Login/logout works
-- [ ] Job posting works (employer)
-- [ ] Job search works (student)
-- [ ] Application submission works
-- [ ] Status updates work
-- [ ] Interview scheduling works
-- [ ] Messaging works (real-time)
-- [ ] Notifications appear (real-time)
-- [ ] Profile updates persist
-- [ ] File uploads work
+> Why this is fine on the free tier: one 10-min monitor keeps the box awake
+> ~24 h/month of the ~31 available days. Cold starts still happen occasionally
+> (deploys, outages), but routine browsing stays instant.
 
 ---
 
-## 15. Quick Reference — Where Things Live
+## 7. Step 6 (Recommended) — Cloudflare R2 storage (persistent uploads)
 
-| Component | Platform | URL Pattern |
-|-----------|----------|-------------|
-| Frontend SPA | Vercel | `https://gradture.ai` |
-| Frontend SPA (www) | Vercel | `https://www.gradture.ai` |
-| Backend API | Railway | `https://api.gradture.ai` |
-| Backend Health | Railway | `https://api.gradture.ai/health` |
-| Admin panel | Vercel (same as frontend) | `https://admin.gradture.ai` |
-| Database | Railway PostgreSQL | Internal to Railway |
-| File Storage | Cloudflare R2 | S3-compatible API |
-| Email | Resend | API-based |
+Render's free disk is **ephemeral** — anything written to it is wiped on the
+next deploy. Set `STORAGE_PROVIDER=r2` so uploads live in R2's free 10 GB.
 
----
+1. **Sign in** to <https://dash.cloudflare.com> (free account).
+2. **R2 Object Storage** (sidebar) → **Create bucket**:
+   - **Name:** e.g. `gradture-uploads`
+   - **Location hint / other settings:** defaults are fine.
+3. **Manage R2 API Tokens → Create API Token:**
+   - Permissions: **Object Read & Write** on the bucket you just created.
+   - Copy **Account ID, Access Key ID, Secret Access Key**.
+4. On **Render**, add these vars and **Save** (service restarts):
+   | Key | Value |
+   |-----|-------|
+   | `STORAGE_PROVIDER` | `r2` |
+   | `R2_BUCKET` | `gradture-uploads` |
+   | `R2_ACCOUNT_ID` | your Cloudflare account ID |
+   | `R2_ACCESS_KEY` | the token's Access Key ID |
+   | `R2_SECRET_KEY` | the token's Secret Access Key |
+   | `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
+   - (Values mirror the AWS S3 client; the app's storage service already
+     supports `s3` and `r2`.)
 
-## 16. Troubleshooting Common Issues
-
-### Backend won't start on Railway
-- Check logs for missing environment variables
-- Ensure `DATABASE_URL` is correct
-- Ensure `JWT_SECRET` is set
-- Check that Prisma migrations can connect to database
-
-### Frontend can't reach backend
-- Verify `VITE_API_URL` in Vercel points to correct Railway URL
-- Check CORS settings in Railway backend
-- Ensure Railway backend is running and healthy
-
-### Database connection fails
-- Verify `DATABASE_URL` format: `postgresql://user:pass@host:5432/dbname`
-- Check Railway PostgreSQL is running
-- Ensure IP restrictions allow Railway to connect (Railway allows all by default)
-
-### Migrations fail
-- Don't run `prisma migrate dev` in production
-- Use `prisma migrate deploy` only
-- If migration fails due to existing data, check the migration SQL for destructive operations
-
-### CORS errors in browser
-- Ensure `CORS_ORIGIN` in Railway includes your exact Vercel domain (with `https://`)
-- Check for trailing slashes or typos
-
-### 404 on frontend refresh
-- `vercel.json` has SPA rewrite rule: `"src": "/(.*)", "dest": "/index.html"`
-- Ensure this is deployed and active
-
-### WebSocket won't connect
-- Verify `SocketContext.tsx` uses the correct `VITE_API_URL`
-- Ensure Railway backend allows WebSocket connections (CORS `connectSrc` includes `ws:` and `wss:`)
-- Check that Socket.io client version matches server version
+> **Cloudflare free:** 10 GB storage, no egress charges — genuinely $0.
 
 ---
 
-## 17. Post-Deployment
+## 8. Step 7 (Recommended) — Resend email
 
-Once everything is verified:
+The app sends password-reset and email-verification mail. Without a key it
+logs instead of sending (safe in dev, but in production the API **refuses
+silently-dropped mail** — so get a key if you want signups/password resets to
+work).
 
-1. **Set up Railway alerts** — configure Railway to alert you on downtime
-2. **Set up Vercel analytics** — enable Vercel Analytics in project settings
-3. **Configure Sentry alerts** — set up Sentry to notify you of errors
-4. **Set up database backups** — Railway PostgreSQL has automatic backups, verify they're enabled
-5. **Monitor costs** — both Railway and Vercel have free tiers, but monitor usage
-6. **Create an admin user** — use the admin setup flow to create your first ADMIN account
-7. **Test from external network** — use a VPN or mobile data to verify public access
+1. **Sign in** to <https://resend.com> (free: 100 emails/day).
+2. **API Keys → Create API Key** → copy it.
+3. Optional but better deliverability: **Domains → Add Domain** and add the DNS
+   records Resend shows (sender address becomes `no-reply@your-domain.com`).
+   Without a domain you can still send from `onboarding@resend.dev`.
+4. On **Render**, add:
+   | Key | Value |
+   |-----|-------|
+   | `RESEND_API_KEY` | `re_...` |
+   | `SMTP_FROM` | `GradTure <onboarding@resend.dev>` (or your verified domain sender) |
+
+---
+
+## 9. Step 8 (Recommended) — Gemini API key (AI features)
+
+Career chat, CV feedback, and recommendations need an AI provider key.
+
+1. Open <https://aistudio.google.com/apikey> (Google account, free tier).
+2. **Create API key** → copy it.
+3. On **Render**, add:
+   | Key | Value |
+   |-----|-------|
+   | `AI_PROVIDER` | `gemini` |
+   | `GEMINI_API_KEY` | `AIza...` |
+
+> Fallback provider (`AI_FALLBACK_PROVIDER`) is optional and only fires if the
+> primary fails. `ollama` can be used instead if you self-host.
+
+---
+
+## 10. Step 9 — Seed data for a fresh cloud database
+
+If the Neon DB is empty (no demo feed shown on `/student/dashboard`), seed it.
+Migrations run automatically on deploy; seeding is explicit:
+
+1. From a machine with the repo:
+   ```powershell
+   cd backend
+   $env:DATABASE_URL="<your-neon-url-with-?sslmode=require&schema=public>"
+   npx prisma migrate deploy   # safety-first, normally already applied
+   npx ts-node prisma/seed.ts
+   ```
+2. Re-load `https://<frontend>.vercel.app/student/dashboard` and log in again.
+
+---
+
+## 11. Optional — custom domain, Redis, Sentry
+
+### Custom domain (do this only if you own a domain)
+
+| Record | Name | Value | Target |
+|--------|------|-------|--------|
+| CNAME | `frontend` (Vercel), e.g. `app` or root | `cname.vercel-dns.com` | Vercel dashboard shows the exact value |
+| CNAME | `api` | `backend-xxxx.onrender.com` | Render dashboard shows the exact value |
+
+- Vercel: project → **Settings → Domains → Add**; Vercel validates ownership.
+- Render: service → **Settings → Custom Domain**; add `api.<your-domain>` and the
+  CNAME shown.
+- Then update Render envs: `CORS_ORIGIN` & `FRONTEND_URL` = `https://<your-domain>`,
+  `BACKEND_URL` = `https://api.<your-domain>`, and Vercel `VITE_API_URL` =
+  `https://api.<your-domain>`. TLS is automatic on both platforms.
+
+### Redis (optional — skip unless you care about cache hits)
+
+The app operates fine with no Redis; without `REDIS_URL` the cache layer is
+disabled. If you want it: Upstash free tier (~256 MB) is serverless and safe on
+Render's ephemeral disk:
+`Upstash → Create database → Redis URL` → set `REDIS_URL` on Render.
+
+### Sentry (optional)
+
+Enable error tracking: add `SENTRY_DSN` on Render and `VITE_SENTRY_DSN` on
+Vercel. Both apps only initialize Sentry when the DSN is present.
+
+---
+
+## 12. Rollback
+
+- **Render:** service → **Events** or the deploy list → **Deploy Previous**.
+- **Vercel:** project → **Deployments** → **⋮ → Promote** a previous deploy.
+- **Database:** Neon free supports **branching** — create a branch (snapshot)
+  before risky schema changes; use the Neon dashboard's point-in-time restore if
+  needed.
+
+---
+
+## 13. Troubleshooting
+
+| Symptom | Likely cause / fix |
+|---------|--------------------|
+| `DATABASE_URL` connection error at boot | Check the Neon URL has `?sslmode=require&schema=public`; verify the password (shown once) was copied whole. |
+| Backend restarts in a loop, "migration ... failed" | Prisma migration checksum/state drift. Run `npx prisma migrate resolve --rolled-back <migration>` or `--applied` against the cloud DB, then redeploy. |
+| First request after being idle takes 30–60 s | Normal Render free cold start; the UptimeRobot monitor (Step 5) prevents routine sleep. |
+| Feed/like/comment fails with 401 in browser, works in dev | `CORS_ORIGIN`/`FRONTEND_URL` mismatch on Render — must match the Vercel origin exactly (`https://` included). Also check the browser's `XSRF-TOKEN` cookie exists. |
+| `403` on POST from terminal/Postman | CSRF protection is by design; use the browser flow. |
+| 404 on a deep link like `/student/jobs` after refresh | Should not happen — `frontend/vercel.json` provides the `/* → /index.html` fallback. |
+| Uploads disappear after a deploy | Expected with `STORAGE_PROVIDER=local` on Render (ephemeral disk). Do Step 6 (R2) and re-upload. |
+| WebSocket messages missing | Check browser console; Render supports WebSockets, but CORS `connect-src` in `vercel.json` must allow the backend origin (`https: wss:` covers it). |
+| Push to `main` does not deploy | Check the repo/Render & Vercel auto-deploy settings + GitHub integration permissions. |
+| 401 `/auth/me` + `/auth/refresh` on a cold load | Expected unauthenticated probes by the frontend; log in and it resolves. |
+
+---
+
+## 14. Cost guardrails (all $0, but bounded)
+
+| Service | Free allowance | Watch for |
+|---------|----------------|-----------|
+| Render web service | 750 instance-hours/mo (~31 days) | Keep-alive every 10 min uses ~24 h/mo — well under |
+| Neon | 0.5 GB, 190 compute hours/mo | Long-running seeds/branches; pause compute if needed |
+| Vercel | 100 GB bandwidth/mo | Nothing at this scale |
+| Resend | 100 emails/day | Signup spam from bots |
+| Cloudflare R2 | 10 GB, no egress | Nothing at this scale |
+| Gemini | generous free tier (rate-limited) | App-scale traffic is negligible |
+
+---
+
+## 15. Where things live (map vs. code)
+
+| Concern | File/Doc |
+|---------|----------|
+| Backend env reference | `backend/.env.production.example` (auto-derived from actual `process.env` reads) |
+| Frontend env reference | `frontend/.env.production.example` |
+| Test-only CI (lint/unit/load/e2e) | `.github/workflows/ci.yml` |
+| SPA fallback + security headers | `frontend/vercel.json` |
+| Local dev stack | `docker-compose.yml`, `infrastructure/docker-compose.yml` |
+| Health endpoint | `GET /api/v1/health` (global `api/v1` prefix) |
+| Migrations on start | `backend/package.json` → `start` script |
+
+---
+
+## 16. Change log
+
+- **2026-09-20** — Migrated deployment from Railway + Docker/VM to Render +
+  Vercel + Neon. Removed: `cd.yml`, `deploy/`, root `deploy.sh`,
+  `docker-compose.prod.yml`, `docker-compose.vps.yml`, backend/frontend
+  Dockerfiles, `nginx.conf`, `docker-entrypoint.sh`, `backend/railway.json`,
+  frontend `/api` proxy in `vercel.json`, `RAILWAY_ENVIRONMENT` fallbacks in
+  `cookie-policy.ts` / `email.service.ts`. Local dev + `ci.yml` unchanged.

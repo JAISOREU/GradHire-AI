@@ -1,4 +1,10 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { EmploymentType, WorkAuthorizationStatus } from '@prisma/client';
+
+const validIfPresent = (o: Record<string, unknown>, key: string) => {
+  const value = o[key];
+  return value !== undefined && value !== null && value !== '';
+};
 
 export class UpdateCareerPreferenceDto {
   @IsOptional()
@@ -11,7 +17,8 @@ export class UpdateCareerPreferenceDto {
   preferredLocations?: string[];
 
   @IsOptional()
-  @IsString()
+  @ValidateIf((o) => validIfPresent(o, 'workArrangement'))
+  @IsEnum(EmploymentType)
   workArrangement?: string;
 
   @IsOptional()
@@ -23,7 +30,8 @@ export class UpdateCareerPreferenceDto {
   availability?: string;
 
   @IsOptional()
-  @IsString()
+  @ValidateIf((o) => validIfPresent(o, 'workAuthorization'))
+  @IsEnum(WorkAuthorizationStatus)
   workAuthorization?: string;
 
   @IsOptional()
